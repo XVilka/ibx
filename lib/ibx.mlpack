@@ -1,0 +1,33 @@
+# OASIS_START
+# DO NOT EDIT (digest: 6d71a4747f579d17eeb59e93329e0685)
+Config
+Std_internal
+Send_tag
+Recv_tag
+Tws_prot
+Pickable
+Unpickable
+Query_intf
+Submit_order
+Execution_id
+Query
+Response_intf
+Response
+Symbol
+Exchange
+Currency
+Price
+Account_code
+Raw_contract_intf
+Raw_contract
+Contract
+Raw_order_intf
+Raw_order
+Order
+Ib
+Tws_reqs
+Tws
+Client_id
+Client_intf
+Std
+# OASIS_STOP

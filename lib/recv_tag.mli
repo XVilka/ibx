@@ -1,0 +1,67 @@
+(* File: recv_tag.mli
+
+   IBX - Pure OCaml implementation of the Interactive Brokers TWS API
+
+   Copyright (C) 2013-  Oliver Gu
+   email: gu.oliver@yahoo.com
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Lesser General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with this library; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+*)
+
+open Core.Std
+open Tws_prot
+
+type t =
+| Tick_price
+| Tick_size
+| Order_status
+| Tws_error
+| Open_order
+| Account_update
+| Portfolio_update
+| Account_update_time
+| Next_order_id
+| Contract_data
+| Execution_report
+| Book_update
+| Book_update_L2
+| News_bulletins
+| Managed_accounts
+| Financial_advisor
+| Historical_data
+| Bond_contract_data
+| Scanner_parameters
+| Scanner_data
+| Tick_option
+| Tick_generic
+| Tick_string
+| Tick_efp
+| Server_time
+| Realtime_bar
+| Fundamental_data
+| Contract_data_end
+| Open_order_end
+| Account_download_end
+| Execution_report_end
+| Delta_neutral_validation
+| Snapshot_end
+| Commission_report
+with sexp
+include Stringable.S with type t := t
+include Unpickable.S with type t := t
+
+val corresponding_response_has_query_id : t -> bool
+
+val val_type : t Val_type.t
