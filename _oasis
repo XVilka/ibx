@@ -61,6 +61,7 @@ Library ibx
 Executable test_runner
   Path:             lib_test
   MainIs:           test_runner.ml
+  Install:          false
   BuildDepends:     ibx, core_extended
   CompiledObject:   best
 
