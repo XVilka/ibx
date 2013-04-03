@@ -9,7 +9,6 @@ open Ibx.Std
    Currently IBX cannot handle these open orders messages on connection.
    However, this will be solved in later versions of the library. *)
 
-
 let submit_and_wait_for_fill tws ~timeout ~contract ~order =
   let order_type = Order.Type.to_string (Order.order_type order) in
   printf "Submit %s buy order for %d shares of %s\n%!"
@@ -40,10 +39,7 @@ let main ~enable_logging ~host ~port ~timeout =
   let ibm = Contract.stock ~exchange:`BATS ~currency:`USD symbol in
   let num_shares = 100 in
   Tws.with_client ~enable_logging ~host ~port
-    ~on_handler_error:(`Call (fun e ->
-      prerr_endline (Error.to_string_hum e);
-      shutdown 1))
-    (fun tws ->
+    ~on_handler_error:`Raise (fun tws ->
       Tws.quote_snapshot_exn tws ~contract:ibm
       >>= fun snapshot ->
       let ask_price = Quote_snapshot.ask_price snapshot in
@@ -86,7 +82,13 @@ let main_cmd =
     )
     (fun enable_logging host port timeout () ->
       if enable_logging then Common.init_logger ();
-      main ~enable_logging ~host ~port ~timeout
-    )
+      Monitor.try_with (fun () ->
+        main ~enable_logging ~host ~port ~timeout
+      ) >>= function
+      | Error exn ->
+        let err = Error.of_exn (Monitor.extract_exn exn) in
+        prerr_endline (Error.to_string_hum err);
+        exit 1
+      | Ok () -> return ())
 
 let () = Command.run main_cmd

@@ -9,10 +9,7 @@ let main ~enable_logging ~host ~port =
     (Symbol.of_string "AAPL")
   in
   Tws.with_client ~enable_logging ~host ~port
-    ~on_handler_error:(`Call (fun e ->
-      prerr_endline (Error.to_string_hum e);
-      shutdown 1))
-    (fun tws ->
+    ~on_handler_error:`Raise (fun tws ->
       Stream.iter (Tws.execution_reports tws) ~f:(fun exec_report ->
         printf "%s\n\n%!"
           (Sexp.to_string_hum (Execution_report.sexp_of_t exec_report)));
@@ -43,8 +40,14 @@ let main_cmd =
       +> Common.port_arg ()
     )
     (fun enable_logging host port () ->
-      if enable_logging then Common.init_logger ();
-      main ~enable_logging ~host ~port
-    )
+      Monitor.try_with (fun () ->
+        if enable_logging then Common.init_logger ();
+        main ~enable_logging ~host ~port
+      ) >>= function
+      | Error exn ->
+        let err = Error.of_exn (Monitor.extract_exn exn) in
+        prerr_endline (Error.to_string_hum err);
+        exit 1
+      | Ok () -> return ())
 
 let () = Command.run main_cmd

@@ -6,10 +6,7 @@ let verbose = ref true
 
 let plot_taq_data ~enable_logging ~host ~port ~duration ~currency ~symbol =
   Tws.with_client ~enable_logging ~host ~port
-    ~on_handler_error:(`Call (fun e ->
-      prerr_endline (Error.to_string_hum e);
-      shutdown 1))
-    (fun tws ->
+    ~on_handler_error:`Raise (fun tws ->
       let stock = Contract.stock ~currency (Symbol.of_string symbol) in
       Tws.taq_data_exn tws ~contract:stock
       >>= fun (taq_data, id) ->
@@ -62,7 +59,13 @@ let plot_taq_data_cmd =
         prerr_endline "Maximum duration is 1 minute";
         exit 1;
       end else
-        plot_taq_data ~enable_logging ~host ~port ~duration ~currency ~symbol
-    )
+        Monitor.try_with (fun () ->
+          plot_taq_data ~enable_logging ~host ~port ~duration ~currency ~symbol
+        ) >>= function
+        | Error exn ->
+          let err = Error.of_exn (Monitor.extract_exn exn) in
+          prerr_endline (Error.to_string_hum err);
+          exit 1
+        | Ok () -> return ())
 
 let () = Command.run plot_taq_data_cmd

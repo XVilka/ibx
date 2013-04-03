@@ -50,11 +50,11 @@ let print_market_data_cmd  =
       if enable_logging then Common.init_logger ();
       Monitor.try_with (fun () ->
         print_market_data ~enable_logging ~host ~port ~duration
-      ) >>| function
+      ) >>= function
       | Error exn ->
         let err = Error.of_exn (Monitor.extract_exn exn) in
         prerr_endline (Error.to_string_hum err);
-        shutdown 1
-      | Ok () -> ())
+        exit 1
+      | Ok () -> return ())
 
 let () = Command.run print_market_data_cmd

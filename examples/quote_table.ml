@@ -26,10 +26,7 @@ let print_quote_table quotes =
 
 let main ~enable_logging ~host ~port =
   Tws.with_client ~enable_logging ~host ~port
-    ~on_handler_error:(`Call (fun e ->
-      prerr_endline (Error.to_string_hum e);
-      shutdown 1))
-    (fun tws ->
+    ~on_handler_error:`Raise (fun tws ->
       Deferred.all (List.map symbols ~f:(fun symbol ->
         let stock = Contract.stock
           ~exchange:`SMART
@@ -49,7 +46,13 @@ let main_cmd =
     )
     (fun enable_logging host port () ->
       if enable_logging then Common.init_logger ();
-      main ~enable_logging ~host ~port
-    )
+      Monitor.try_with (fun () ->
+        main ~enable_logging ~host ~port
+      ) >>= function
+      | Error exn ->
+        let err = Error.of_exn (Monitor.extract_exn exn) in
+        prerr_endline (Error.to_string_hum err);
+        exit 1
+      | Ok () -> return ())
 
 let () = Command.run main_cmd
