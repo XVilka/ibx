@@ -1,1 +1,4 @@
+2013-04-04: Fixed version mismatch in option price and implied volatility
+            request.
+
 2013-04-02: Initial public release.
