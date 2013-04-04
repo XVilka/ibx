@@ -350,7 +350,7 @@ module Message_generator = struct
           [ E.Server_response {
             Response.
             tag      = V.Tick_option;
-            version  = 1;
+            version  = 6;
             query_id = query.Query.id;
             data     = to_tws pickler Gen.tick_option }
           ]
