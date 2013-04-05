@@ -1,4 +1,4 @@
-IBX - Pure OCaml implementation of the Interactive Brokers TWS API
+IBX - OCaml implementation of the Interactive Brokers TWS API
 ==================================================================
 
 ---------------------------------------------------------------------------
