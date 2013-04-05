@@ -22,7 +22,7 @@ let host_arg () =
 let port_arg () =
   Command.Spec.(
     flag "-port" (optional_with_default 4001 int)
-      ~doc:" TWS port 7946 or Gateway port 4001 (default 4001)"
+      ~doc:" TWS port 7496 or Gateway port 4001 (default 4001)"
   )
 
 let duration_arg () =
