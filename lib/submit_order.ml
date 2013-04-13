@@ -1,6 +1,6 @@
 (* File: sumbmit_order.ml
 
-   IBX - Pure OCaml implementation of the Interactive Brokers TWS API
+   IBX - OCaml implementation of the Interactive Brokers TWS API
 
    Copyright (C) 2013-  Oliver Gu
    email: gu.oliver@yahoo.com
