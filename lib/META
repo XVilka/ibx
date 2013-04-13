@@ -1,8 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: ed9a5cca258912f9f53dbc3a54c40f56)
+# DO NOT EDIT (digest: 47912de6a7d59e32634433b0880f4d15)
 version = "0.5.1"
-description =
-"IBX - Pure OCaml implementation of the Interactive Brokers TWS API"
+description = "OCaml implementation of the Interactive Brokers TWS API"
 requires = "core async sexplib.syntax fieldslib.syntax threads str"
 archive(byte) = "ibx.cma"
 archive(byte, plugin) = "ibx.cma"
