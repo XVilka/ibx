@@ -50,7 +50,7 @@ Library ibx
                  Client_id,
                  Client_intf,
                  Std
-  BuildDepends:  core,
+  BuildDepends:  core (>= 109.07.00),
                  async,
                  sexplib.syntax,
                  fieldslib.syntax,

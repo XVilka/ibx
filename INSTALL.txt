@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 8b5ac213a1133a18b1dcc638fd45971d) *)
+(* DO NOT EDIT (digest: 51f42b568e97b2db42745a0227011faa) *)
 This is the INSTALL file for the ibx distribution.
 
 This package uses OASIS to generate its build system. See section OASIS for
@@ -11,7 +11,7 @@ Dependencies
 In order to compile this package, you will need:
 * ocaml (>= 3.12) for all, test test_runner, doc API
 * findlib (>= 1.3.1)
-* core for library ibx
+* core (>= 109.07.00) for library ibx
 * async for library ibx
 * sexplib for library ibx
 * fieldslib for library ibx
