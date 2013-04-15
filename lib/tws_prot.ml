@@ -155,9 +155,9 @@ module Pickler = struct
   let create ?(buf_size=256) ?name {Spec.f} =
     { f; name; buf_size }
 
-  let run pickler value =
-    let buf = Buffer.create pickler.buf_size in
-    pickler.f value buf;
+  let run t value =
+    let buf = Buffer.create t.buf_size in
+    t.f value buf;
     Buffer.contents buf
 end
 
@@ -265,11 +265,11 @@ module Unpickler = struct
     name = None;
   }
 
-  let run unpickler msg =
-    match Or_error.try_with (fun () -> unpickler.f msg) with
+  let run t msg =
+    match Or_error.try_with (fun () -> t.f msg) with
     | Ok thunk -> Ok (Lazy.force thunk)
     | Error err ->
-      Error (Option.value_map unpickler.name ~default:err ~f:(Error.tag err))
+      Error (Option.value_map t.name ~default:err ~f:(Error.tag err))
 
-  let run_exn unpickler msg = Or_error.ok_exn (run unpickler msg)
+  let run_exn t msg = Or_error.ok_exn (run t msg)
 end
