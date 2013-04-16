@@ -1,3 +1,7 @@
+2013-04-16: Added a new interface Twsable.
+            A type is 'Twsable' if it provides functions to convert between
+            values of that type and raw messages of the TWS protocol.
+
 2013-04-04: Fixed version mismatch in option price and implied volatility
             request.
 
