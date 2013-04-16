@@ -118,7 +118,7 @@ type t =
 | `MIBSX
 ] with sexp
 
-let to_string = function
+let tws_of_t = function
   | `SMART -> "SMART"
   | `ARCAEDGE -> "ARCAEDGE"
   | `BYX -> "BYX"
@@ -212,7 +212,7 @@ let to_string = function
   | `IDEALPRO -> "IDEALPRO"
   | `MIBSX -> "MIBSX"
 
-let of_string = function
+let t_of_tws = function
   | "SMART" -> `SMART
   | "ARCAEDGE" -> `ARCAEDGE
   | "BYX" -> `BYX
@@ -307,4 +307,7 @@ let of_string = function
   | "MIBSX" -> `MIBSX
   | s -> failwithf "Exchange.to_string: %S" s ()
 
-let val_type = Val_type.create to_string of_string
+let to_string = tws_of_t
+let of_string = t_of_tws
+
+let val_type = Val_type.create tws_of_t t_of_tws

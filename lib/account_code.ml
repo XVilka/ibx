@@ -24,8 +24,9 @@ open Core.Std
 open Tws_prot
 
 include String
-
-let val_type = Val_type.create to_string of_string
+let tws_of_t = to_string
+let t_of_tws = of_string
+let val_type = Val_type.create tws_of_t t_of_tws
 
 let unpickler =
   Unpickler.create ~name:"Account_code"

@@ -31,33 +31,36 @@ end
 module Action = struct
   type t = [ `Buy | `Sell | `Sell_short ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Buy -> "BUY"
     | `Sell -> "SELL"
     | `Sell_short -> "SSHORT"
 
-  let of_string = function
+  let t_of_tws = function
     | "BUY" -> `Buy
     | "SELL" -> `Sell
     | "SSHORT" -> `Sell_short
-    | s -> invalid_argf "Action.of_string: %S" s ()
+    | s -> invalid_argf "Action.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Type = struct
   type t = [ `MKT | `LMT ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `MKT -> "MKT"
     | `LMT -> "LMT"
 
-  let of_string = function
+  let t_of_tws = function
     | "MKT" -> `MKT
     | "LMT" -> `LMT
-    | s -> invalid_argf "Type.of_string: %S" s ()
+    | s -> invalid_argf "Type.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let to_string = tws_of_t
+  let of_string = t_of_tws
+
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Time_in_force = struct
@@ -69,22 +72,22 @@ module Time_in_force = struct
   | `Good_till_date_time
   ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Day -> "DAY"
     | `Good_till_cancel -> "GTC"
     | `Fill_or_kill -> "FOK"
     | `Immediate_or_cancel -> "IOC"
     | `Good_till_date_time -> "GTD"
 
-  let of_string = function
+  let t_of_tws = function
     | "DAY" -> `Day
     | "GTC" -> `Good_till_cancel
     | "FOK" -> `Fill_or_kill
     | "IOC" -> `Immediate_or_cancel
     | "GTD" -> `Good_till_date_time
-    | s -> invalid_argf "Time_in_force.of_string: %S" s ()
+    | s -> invalid_argf "Time_in_force.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Oca_type = struct
@@ -95,18 +98,18 @@ module Oca_type = struct
   ] with sexp
 
 
-  let to_string = function
+  let tws_of_t = function
     | `cancel_with_block -> "1"
     | `reduce_with_block -> "2"
     | `reduce_non_block -> "3"
 
-  let of_string = function
+  let t_of_tws = function
     | "1" -> `cancel_with_block
     | "2" -> `reduce_with_block
     | "3" -> `reduce_non_block
-    | s -> invalid_argf "Oca_type.of_string: %S" s ()
+    | s -> invalid_argf "Oca_type.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Stop_trigger_method = struct
@@ -120,7 +123,7 @@ module Stop_trigger_method = struct
   | `Midpoint
   ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Default -> "0"
     | `Double_bid_ask -> "1"
     | `Last -> "2"
@@ -129,7 +132,7 @@ module Stop_trigger_method = struct
     | `Last_bid_ask -> "7"
     | `Midpoint -> "8"
 
-  let of_string = function
+  let t_of_tws = function
     | "0" -> `Default
     | "1" -> `Double_bid_ask
     | "2" -> `Last
@@ -137,9 +140,9 @@ module Stop_trigger_method = struct
     | "4" -> `Bid_ask
     | "7" -> `Last_bid_ask
     | "8" -> `Midpoint
-    | s -> invalid_argf "Stop_trigger_method.of_string: %S" s ()
+    | s -> invalid_argf "Stop_trigger_method.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Rule80A = struct
@@ -155,7 +158,7 @@ module Rule80A = struct
   | `Agent_other_member_PT
   ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Individual -> "I"
     | `Agency -> "A"
     | `Agent_other_member -> "W"
@@ -166,7 +169,7 @@ module Rule80A = struct
     | `Agency_PT -> "Y"
     | `Agent_other_member_PT -> "N"
 
-  let of_string = function
+  let t_of_tws = function
     | "I" -> `Individual
     | "A" -> `Agency
     | "W" -> `Agent_other_member
@@ -176,124 +179,124 @@ module Rule80A = struct
     | "K" -> `Individual_PT
     | "Y" -> `Agency_PT
     | "N" -> `Agent_other_member_PT
-    | s -> invalid_argf "Rule80A.of_string: %S" s ()
+    | s -> invalid_argf "Rule80A.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Open_close = struct
   type t = [ `Open | `Close ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Open -> "O"
     | `Close -> "C"
 
-  let of_string = function
+  let t_of_tws = function
     | "O" -> `Open
     | "C" -> `Close
-    | s -> invalid_argf "Open_close.of_string: %S" s ()
+    | s -> invalid_argf "Open_close.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Origin = struct
   type t = [ `Customer | `Firm ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Customer -> "0"
     | `Firm -> "1"
 
-  let of_string = function
+  let t_of_tws = function
     | "0" -> `Customer
     | "1" -> `Firm
-    | s -> invalid_argf "Origin.of_string: %S" s ()
+    | s -> invalid_argf "Origin.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Auction_strategy = struct
   type t = [ `Match | `Improvement | `Transparent ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Match -> "1"
     | `Improvement -> "2"
     | `Transparent -> "3"
 
-  let of_string = function
+  let t_of_tws = function
     | "1" -> `Match
     | "2" -> `Improvement
     | "3" -> `Transparent
-    | s -> invalid_argf "Auction_strategy.of_string: %S" s ()
+    | s -> invalid_argf "Auction_strategy.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Volatility_type = struct
   type t = [ `daily | `annual ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `daily -> "1"
     | `annual -> "2"
 
-  let of_string = function
+  let t_of_tws = function
     | "1" -> `daily
     | "2" -> `annual
-    | s -> invalid_argf "Volatility_type.of_string: %S" s ()
+    | s -> invalid_argf "Volatility_type.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Reference_price_type = struct
   type t = [ `average | `bid_or_ask ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `average -> "1"
     | `bid_or_ask -> "2"
 
-  let of_string = function
+  let t_of_tws = function
     | "1" -> `average
     | "2" -> `bid_or_ask
-    | s -> invalid_argf "reference_price_type.of_string: %S" s ()
+    | s -> invalid_argf "reference_price_type.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Hedge_type = struct
   type t = [ `Delta | `Beta | `Fx | `Pair ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Delta -> "D"
     | `Beta -> "B"
     | `Fx -> "F"
     | `Pair -> "P"
 
-  let of_string = function
+  let t_of_tws = function
     | "D" -> `Delta
     | "B" -> `Beta
     | "F" -> `Fx
     | "P" -> `Pair
-    | s -> invalid_argf "Hedge_type.of_string: %S" s ()
+    | s -> invalid_argf "Hedge_type.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Clearing_intent = struct
   type t = [ `Default | `IB | `Away | `Post_trade_allocation ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Default -> ""
     | `IB -> "IB"
     | `Away -> "Away"
     | `Post_trade_allocation -> "PTA"
 
-  let of_string = function
+  let t_of_tws = function
     | "" -> `Default
     | "IB" -> `IB
     | "Away" -> `Away
     | "PTA" -> `Post_trade_allocation
-    | s -> invalid_argf "Clearing_intent.of_string: %S" s ()
+    | s -> invalid_argf "Clearing_intent.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 type t =

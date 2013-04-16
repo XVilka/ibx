@@ -59,7 +59,7 @@ type t =
 | Cancel_option_price
 with sexp
 
-let to_string = function
+let tws_of_t = function
   | Market_data -> "1"
   | Cancel_market_data -> "2"
   | Submit_order -> "3"
@@ -94,7 +94,7 @@ let to_string = function
   | Cancel_implied_volatility -> "56"
   | Cancel_option_price -> "57"
 
-let of_string = function
+let t_of_tws = function
   | "1" -> Market_data
   | "2" -> Cancel_market_data
   | "3" -> Submit_order
@@ -165,4 +165,4 @@ let corresponding_query_has_id = function
   | Cancel_implied_volatility -> true
   | Cancel_option_price -> true
 
-let val_type = Val_type.create to_string of_string
+let val_type = Val_type.create tws_of_t t_of_tws

@@ -25,4 +25,4 @@ open Tws_prot
 
 type t
 include Unique_id.Id with type t := t
-val val_type : t Val_type.t
+include Twsable.S with type t := t

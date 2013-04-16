@@ -39,7 +39,7 @@ let of_raw = Fn.id
 
 let ( = ) t1 t2 = Raw_order.(=) (to_raw t1) (to_raw t2)
 
-let order_type t = Type.of_string t.Raw_order.order_type
+let order_type t = Type.t_of_tws t.Raw_order.order_type
 let quantity t = t.Raw_order.quantity
 
 let buy_limit ~quantity limit_price =

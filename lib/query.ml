@@ -67,22 +67,22 @@ module Server_log_level = struct
   module Level = struct
     type t = [ `System | `Error | `Warning | `Information | `Detail ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `System -> "1"
       | `Error -> "2"
       | `Warning -> "3"
       | `Information -> "4"
       | `Detail -> "5"
 
-    let of_string = function
+    let t_of_tws = function
       | "1" -> `System
       | "2" -> `Error
       | "3" -> `Warning
       | "4" -> `Information
       | "5" -> `Detail
-      | s   -> invalid_argf "Level.of_string: %s" s ()
+      | s   -> invalid_argf "Level.t_of_tws: %s" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t = Level.t with sexp
@@ -127,7 +127,7 @@ module Market_data = struct
     | `Turn_off_market_data
     ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `Option_volume -> "100"
       | `Option_open_interest -> "101"
       | `Historical_volatility -> "104"
@@ -142,7 +142,7 @@ module Market_data = struct
       | `Fundamental_ratios -> "258"
       | `Turn_off_market_data -> "mdoff"
 
-    let of_string = function
+    let t_of_tws = function
       | "100" -> `Option_volume
       | "101" -> `Option_open_interest
       | "104" -> `Historical_volatility
@@ -156,7 +156,7 @@ module Market_data = struct
       | "256" -> `Inventory
       | "258" -> `Fundamental_ratios
       | "mdoff" -> `Turn_off_market_data
-      | s   -> invalid_argf "Tick_kind.of_string: %s" s ()
+      | s   -> invalid_argf "Tick_kind.t_of_tws: %s" s ()
   end
 
   type t =
@@ -212,7 +212,7 @@ module Market_data = struct
             ~snapshot:(fields_value (required bool)))
           (fun { contract; tick_generics; snapshot } ->
             let tick_generics =
-              String.concat (List.map tick_generics ~f:Tick_kind.to_string) ~sep:","
+              String.concat (List.map tick_generics ~f:Tick_kind.tws_of_t) ~sep:","
             in
             `Args $ contract $ tick_generics $ snapshot))
   ;;
@@ -264,7 +264,7 @@ module Market_data = struct
       (fun contract tick_generics snapshot ->
         let tick_generics = match tick_generics with
           | "" -> []
-          | s  -> List.map (String.split s ~on:',') ~f:Tick_kind.of_string
+          | s  -> List.map (String.split s ~on:',') ~f:Tick_kind.t_of_tws
         in
         { contract; tick_generics; snapshot }))
 end
@@ -471,9 +471,9 @@ module Submit_order = Submit_order
 module Execution_reports = struct
   module Time = struct
     include Time
-    let to_string tm = Time.format tm "%Y%m%d-%H:%M:%S"
-    let of_string s = Time.of_string (String.tr ~target:'-' ~replacement:' ' s)
-    let val_type = Val_type.create to_string of_string
+    let tws_of_t tm = Time.format tm "%Y%m%d-%H:%M:%S"
+    let t_of_tws s = Time.of_string (String.tr ~target:'-' ~replacement:' ' s)
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -740,7 +740,7 @@ module Historical_data = struct
     | `One_day
     ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `One_sec -> "1 sec"
       | `Five_secs -> "5 secs"
       | `Fifteen_secs -> "15 secs"
@@ -754,7 +754,7 @@ module Historical_data = struct
       | `One_hour -> "1 hour"
       | `One_day -> "1 day"
 
-    let of_string = function
+    let t_of_tws = function
       | "1 sec" -> `One_sec
       | "5 secs" -> `Five_secs
       | "15 secs" -> `Fifteen_secs
@@ -767,22 +767,22 @@ module Historical_data = struct
       | "30 mins" -> `Thirty_mins
       | "1 hour" -> `One_hour
       | "1 day" -> `One_day
-      | s -> invalid_argf "Bar_size.of_string: %S" s ()
+      | s -> invalid_argf "Bar_size.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   module Duration = struct
     type t = [ `S of int | `D of int | `W of int | `M of int | `Y ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `S x -> sprintf "%d S" x
       | `D x -> sprintf "%d D" x
       | `W x -> sprintf "%d W" x
       | `M x -> sprintf "%d M" x
       | `Y   -> sprintf "1 Y"
 
-    let of_string s =
+    let t_of_tws s =
       let extract_int s ~time_unit =
         let pattern = "\\([1-9][0-9]*\\)  " in
         String.nset pattern 16 time_unit;
@@ -798,7 +798,7 @@ module Historical_data = struct
       | 'Y' -> `Y
       | _ -> invalid_argf "Duration.of_string: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   module Show = struct
@@ -813,7 +813,7 @@ module Historical_data = struct
     | `Option_volume
     ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `Trades -> "TRADES"
       | `Midpoint -> "MIDPOINT"
       | `Bid -> "BID"
@@ -834,7 +834,7 @@ module Historical_data = struct
       | "OPTION_VOLUME" -> `Option_volume
       | s -> invalid_argf "Show.of_string: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t of_string
   end
 
   type t =
@@ -979,20 +979,20 @@ module Realtime_bars = struct
   module Bar_size = struct
     type t = [ `Five_secs ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `Five_secs -> "5"
 
     let of_string = function
       | "5" -> `Five_secs
       | s -> invalid_argf "Bar_size.of_string: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t of_string
   end
 
   module Show = struct
     type t = [ `Trades | `Midpoint | `Bid | `Ask ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `Trades -> "TRADES"
       | `Bid -> "BID"
       | `Ask -> "ASK"
@@ -1005,7 +1005,7 @@ module Realtime_bars = struct
       | "MIDPOINT" -> `Midpoint
       | s -> invalid_argf "Show.of_string: %s" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t of_string
   end
 
   type t =

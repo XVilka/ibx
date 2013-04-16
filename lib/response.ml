@@ -49,11 +49,11 @@ let field_name field = Fieldslib.Field.name field
 
 module Timestamp = struct
   include Time
-  let to_string tm = Time.format tm "%Y%m%d  %H:%M:%S"
-  let of_string s =
+  let tws_of_t tm = Time.format tm "%Y%m%d  %H:%M:%S"
+  let t_of_tws s =
     let unescape = unstage (String.Escaping.unescape ~escape_char:' ') in
     Time.of_string (unescape s)
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 (* +-----------------------------------------------------------------------+
@@ -123,7 +123,7 @@ module Tick_price = struct
   module Type = struct
     type t = Bid | Ask | Last | High | Low | Close with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | Bid -> "1"
       | Ask -> "2"
       | Last -> "4"
@@ -131,16 +131,16 @@ module Tick_price = struct
       | Low -> "7"
       | Close -> "9"
 
-    let of_string = function
+    let t_of_tws = function
       | "1" -> Bid
       | "2" -> Ask
       | "4" -> Last
       | "6" -> High
       | "7" -> Low
       | "9" -> Close
-      | s -> invalid_argf "Type.of_string: %S" s ()
+      | s -> invalid_argf "Type.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -200,20 +200,20 @@ module Tick_size = struct
   module Type = struct
     type t = Bid | Ask | Last | Volume with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | Bid -> "0"
       | Ask -> "3"
       | Last -> "5"
       | Volume -> "8"
 
-    let of_string = function
+    let t_of_tws = function
       | "0" -> Bid
       | "3" -> Ask
       | "5" -> Last
       | "8" -> Volume
-      | s -> invalid_argf "Type.of_string: %S" s ()
+      | s -> invalid_argf "Type.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -254,22 +254,22 @@ module Tick_option = struct
   module Type = struct
     type t = Bid | Ask | Last | Model | Custom with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | Bid -> "10"
       | Ask -> "11"
       | Last -> "12"
       | Model -> "13"
       | Custom -> "53"
 
-    let of_string = function
+    let t_of_tws = function
       | "10" -> Bid
       | "11" -> Ask
       | "12" -> Last
       | "13" -> Model
       | "53" -> Custom
-      | s -> invalid_argf "Type.of_string: %S" s ()
+      | s -> invalid_argf "Type.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -435,7 +435,7 @@ module Tick_string = struct
     | Cust_option_comp
     with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | Bid_size -> "0"
       | Bid_price -> "1"
       | Ask_price -> "2"
@@ -491,7 +491,7 @@ module Tick_string = struct
       | Last_yield -> "52"
       | Cust_option_comp -> "53"
 
-    let of_string = function
+    let t_of_tws = function
       | "0" -> Bid_size
       | "1" -> Bid_price
       | "2" -> Ask_price
@@ -546,9 +546,9 @@ module Tick_string = struct
       | "51" -> Ask_yield
       | "52" -> Last_yield
       | "53" -> Cust_option_comp
-      | s  -> invalid_argf "Type.of_string: %s" s ()
+      | s  -> invalid_argf "Type.t_of_tws: %s" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -627,7 +627,7 @@ module Order_status = struct
     | `Inactive
     ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `Pending_submit -> "PendingSubmit"
       | `Pending_cancel -> "PendingCancel"
       | `Pre_submitted -> "PreSubmitted"
@@ -636,7 +636,7 @@ module Order_status = struct
       | `Filled -> "Filled"
       | `Inactive -> "Inactive"
 
-    let of_string = function
+    let t_of_tws = function
       | "PendingSubmit" -> `Pending_submit
       | "PendingCancel" -> `Pending_cancel
       | "PreSubmitted" -> `Pre_submitted
@@ -644,9 +644,9 @@ module Order_status = struct
       | "Cancelled" -> `Cancelled
       | "Filled" -> `Filled
       | "Inactive" -> `Inactive
-      | s -> invalid_argf "State.of_string: %S" s ()
+      | s -> invalid_argf "State.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -862,7 +862,7 @@ module Contract_specs = struct
               if String.is_empty valid_exchanges then []
               else begin
                 String.split valid_exchanges ~on:','
-                |! List.map ~f:Exchange.of_string
+                |! List.map ~f:Exchange.t_of_tws
               end;
             price_magnifier;
             underlying_id;
@@ -925,7 +925,7 @@ module Contract_specs = struct
               $ t.min_tick
               $ t.multiplier
               $ (String.concat t.order_types ~sep:",")
-              $ (List.map t.valid_exchanges ~f:Exchange.to_string
+              $ (List.map t.valid_exchanges ~f:Exchange.tws_of_t
                  |! String.concat ~sep:",")
               $ t.price_magnifier
               $ t.underlying_id
@@ -944,7 +944,7 @@ module Contract_specs = struct
       Raw_contract.
       contract_id = Some t.contract_id;
       symbol = t.symbol;
-      contract_type = Raw_contract.Type.to_string t.contract_type;
+      contract_type = Raw_contract.Type.tws_of_t t.contract_type;
       expiry = t.expiry;
       strike = t.strike;
       option_right = t.option_right;
@@ -968,16 +968,16 @@ module Execution_report = struct
   module Side = struct
     type t = [ `Purchase | `Sale ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `Purchase -> "BOT"
       | `Sale     -> "SLD"
 
-    let of_string = function
+    let t_of_tws = function
       | "BOT" -> `Purchase
       | "SLD" -> `Sale
-      | s -> invalid_argf "Side.of_string: %S" s ()
+      | s -> invalid_argf "Side.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -1225,33 +1225,33 @@ module Book_update = struct
   module Operation = struct
     type t = Insert | Update | Delete with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | Insert -> "0"
       | Update -> "1"
       | Delete -> "2"
 
-    let of_string = function
+    let t_of_tws = function
       | "0" -> Insert
       | "1" -> Update
       | "2" -> Delete
-      | s -> invalid_argf "Operation.of_string: %S" s  ()
+      | s -> invalid_argf "Operation.t_of_tws: %S" s  ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   module Side = struct
     type t = Ask | Bid with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | Ask -> "0"
       | Bid -> "1"
 
-    let of_string = function
+    let t_of_tws = function
       | "0" -> Ask
       | "1" -> Bid
-      | s -> invalid_argf "Side.of_string: %S" s ()
+      | s -> invalid_argf "Side.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =

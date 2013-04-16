@@ -25,6 +25,7 @@ Library ibx
                  Send_tag,
                  Recv_tag,
                  Tws_prot,
+                 Twsable,
                  Pickable,
                  Unpickable,
                  Query_intf,

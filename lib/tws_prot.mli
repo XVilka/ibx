@@ -24,10 +24,12 @@
 
 open Core.Std
 
+(** Type of a raw TWS messages. *)
+type raw_tws = string with sexp
+
 module Val_type : sig
   type 'a t
-
-  val create : ('a -> string) -> (string -> 'a) -> 'a t
+  val create : ('a -> raw_tws) -> (raw_tws -> 'a) -> 'a t
 end
 
 module Pickler : sig
@@ -56,11 +58,11 @@ module Pickler : sig
     type 'a value
 
     val required : 'a Val_type.t -> 'a value
-    val optional : ?default_on_none:string -> 'a Val_type.t -> 'a option value
+    val optional : ?default_on_none:raw_tws -> 'a Val_type.t -> 'a option value
 
     val skipped_if_none : 'a Val_type.t -> 'a option value
     val skipped : _ value
-    val tws_data : string value
+    val tws_data : raw_tws value
 
     val value : 'a value -> 'a t
 
@@ -72,7 +74,7 @@ module Pickler : sig
 
   val create : ?buf_size:int -> ?name:string -> 'a Spec.t -> 'a t
 
-  val run : 'a t -> 'a -> string
+  val run : 'a t -> 'a -> raw_tws
 
 end
 
@@ -99,10 +101,10 @@ module Unpickler : sig
     type 'a value
 
     val required : 'a Val_type.t -> 'a value
-    val optional : ?none_on_default:string -> 'a Val_type.t -> 'a option value
+    val optional : ?none_on_default:raw_tws -> 'a Val_type.t -> 'a option value
 
     val value : 'a value -> name:string -> ('a -> 'c, 'c) t
-    val capture_remaining_message : (string Queue.t -> 'c, 'c) t
+    val capture_remaining_message : (raw_tws Queue.t -> 'c, 'c) t
 
 
     val fields_value
@@ -120,8 +122,8 @@ module Unpickler : sig
 
   val const : 'a -> 'a t
 
-  val run : 'a t -> string Queue.t -> 'a Or_error.t
+  val run : 'a t -> raw_tws Queue.t -> 'a Or_error.t
 
-  val run_exn : 'a t -> string Queue.t -> 'a
+  val run_exn : 'a t -> raw_tws Queue.t -> 'a
 
 end

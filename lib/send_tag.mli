@@ -58,8 +58,6 @@ type t =
 | Cancel_implied_volatility
 | Cancel_option_price
 with sexp
-include Stringable.S with type t := t
+include Twsable.S with type t := t
 
 val corresponding_query_has_id : t -> bool
-
-val val_type : t Val_type.t

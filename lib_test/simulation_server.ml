@@ -68,11 +68,11 @@ module Protocol = struct
           failwiths "wrong client header format" raw_msg <:sexp_of< string list >>
       else
         let query =
-          if Send_tag.corresponding_query_has_id (Send_tag.of_string raw_tag) then
+          if Send_tag.corresponding_query_has_id (Send_tag.t_of_tws raw_tag) then
             match raw_msg with
             | tag :: version :: query_id :: data ->
               { Query.
-                tag = Send_tag.of_string tag;
+                tag = Send_tag.t_of_tws tag;
                 version = Int.of_string version;
                 id = Some (Query_id.of_string query_id);
                 data = Queue.of_list data;
@@ -82,7 +82,7 @@ module Protocol = struct
             match raw_msg with
             | tag :: version :: data ->
               { Query.
-                tag = Send_tag.of_string tag;
+                tag = Send_tag.t_of_tws tag;
                 version = Int.of_string version;
                 id = None;
                 data = Queue.of_list data;
@@ -223,7 +223,7 @@ module Protocol = struct
             | `Ok [] -> failwith "missing client id"
             | `Ok (client_id :: _) -> `Ok (raw_tag :: client_id :: [])
           end else begin
-            let tag = Send_tag.of_string raw_tag in
+            let tag = Send_tag.t_of_tws raw_tag in
             read_version_and_query_id reader tag
             >>= function
             | `Eof -> return `Eof

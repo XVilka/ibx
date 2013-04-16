@@ -31,20 +31,20 @@ end
 module Type = struct
   type t = [ `Stock | `Futures | `Option | `Forex ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Stock   -> "STK"
     | `Futures -> "FUT"
     | `Option  -> "OPT"
     | `Forex   -> "CASH"
 
-  let of_string = function
+  let t_of_tws = function
   	| "STK"  -> `Stock
 	  | "FUT"  -> `Futures
 	  | "OPT"  -> `Option
     | "CASH" -> `Forex
-    | s -> invalid_argf "Type.of_string: %S" s ()
+    | s -> invalid_argf "Type.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Security_id = struct
@@ -52,38 +52,40 @@ module Security_id = struct
   module Type = struct
     type t = [ `ISIN | `CUSIP | `SEDOL | `RIC ] with sexp
 
-    let to_string = function
+    let tws_of_t = function
       | `ISIN  -> "ISIN"
       | `CUSIP -> "CUSIP"
       | `SEDOL -> "SEDOL"
       | `RIC   -> "RIC"
 
-    let of_string = function
+    let t_of_tws = function
       | "ISIN"  -> `ISIN
       | "CUSIP" -> `CUSIP
       | "SEDOL" -> `SEDOL
       | "RIC"   -> `RIC
-      | s -> invalid_argf "Security_id.Type.of_string: %S" s ()
+      | s -> invalid_argf "Security_id.Type.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create to_string of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
-  let val_type = Val_type.create to_string of_string
+  let tws_of_t = to_string
+  let t_of_tws = of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Option_right = struct
   type t = [ `Call | `Put ] with sexp
 
-  let to_string = function
+  let tws_of_t = function
     | `Call -> "C"
     | `Put  -> "P"
 
-  let of_string = function
+  let t_of_tws = function
     | "C" -> `Call
     | "P" -> `Put
-    | s -> invalid_argf "Option_right.of_string: %S" s ()
+    | s -> invalid_argf "Option_right.t_of_tws: %S" s ()
 
-  let val_type = Val_type.create to_string of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 type t =

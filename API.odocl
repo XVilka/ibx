@@ -1,10 +1,11 @@
 # OASIS_START
-# DO NOT EDIT (digest: 55cbe307fc22e2d031ccaf45993ada3a)
+# DO NOT EDIT (digest: 42e52aec17cbd2375c3ed7c867ea1507)
 lib/Config
 lib/Std_internal
 lib/Send_tag
 lib/Recv_tag
 lib/Tws_prot
+lib/Twsable
 lib/Pickable
 lib/Unpickable
 lib/Query_intf

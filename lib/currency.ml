@@ -45,7 +45,7 @@ type t =
 | `KRW
 ] with sexp
 
-let to_string = function
+let tws_of_t = function
   | `USD -> "USD"
   | `AUD -> "AUD"
   | `CAD -> "CAD"
@@ -66,7 +66,7 @@ let to_string = function
   | `SGD -> "SGD"
   | `KRW -> "KRW"
 
-let of_string = function
+let t_of_tws = function
   | "USD" -> `USD
   | "AUD" -> `AUD
   | "CAD" -> `CAD
@@ -88,4 +88,7 @@ let of_string = function
   | "KRW" -> `KRW
   | s -> failwithf "Currency.to_string: %S" s ()
 
-let val_type = Val_type.create to_string of_string
+let val_type = Val_type.create tws_of_t t_of_tws
+
+let to_string = tws_of_t
+let of_string = t_of_tws

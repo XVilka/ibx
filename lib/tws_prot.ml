@@ -22,48 +22,49 @@
 
 open Core.Std
 
+type raw_tws = string with sexp
+
 module Val_type = struct
   type 'a t = {
-    to_string : 'a -> string;
-    of_string : string -> 'a;
+    tws_of_a : 'a -> raw_tws;
+    a_of_tws : raw_tws -> 'a;
   }
 
-  let create to_string of_string =
-    { to_string; of_string }
+  let create tws_of_a a_of_tws = { tws_of_a; a_of_tws }
 
-  let unit_to_string () = ""
-  let unit_of_string = function
+  let tws_of_unit () = ""
+  let unit_of_tws = function
     | "" -> ()
-    | s -> invalid_argf "Val_type.unit_of_string: %S" s ()
-
-  let unit   = create unit_to_string unit_of_string
+    | s -> invalid_argf "Val_type.unit_of_tws: %S" s ()
+  let unit = create tws_of_unit unit_of_tws
 
   let string = create Fn.id Fn.id
   let int    = create Int.to_string Int.of_string
   let int64  = create Int64.to_string Int64.of_string
 
-  let float_to_string x =
+  let tws_of_float x =
     let s = Float.to_string x in
     let n = String.length s in
     if s.[n-1] = '.' then s^"0" else s
+  let float_of_tws = Float.of_string
+  let float = create tws_of_float float_of_tws
 
-  let float  = create float_to_string Float.of_string
-
-  let bool_to_string = function
+  let tws_of_bool = function
     | false -> "0"
     | true  -> "1"
-
-  let bool_of_string = function
+  let bool_of_tws = function
     | "0" -> false
     | "1" -> true
-    | s -> invalid_argf "Val_type.bool_of_string: %S" s ()
+    | s -> invalid_argf "Val_type.bool_of_tws: %S" s ()
+  let bool = create tws_of_bool bool_of_tws
 
-  let bool   = create bool_to_string bool_of_string
+  let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S"
+  let time_of_tws = Time.of_string
+  let time = create tws_of_time time_of_tws
 
-  let time_to_string tm = Time.format tm "%Y%m%d %H:%M:%S"
-  let time   = create time_to_string Time.of_string
-
-  let date   = create Date.to_string_iso8601_basic (Date.of_string_iso8601_basic ~pos:0)
+  let tws_of_date = Date.to_string_iso8601_basic
+  let date_of_tws = Date.of_string_iso8601_basic ~pos:0
+  let date = create tws_of_date date_of_tws
 end
 
 module Pickler = struct
@@ -116,18 +117,18 @@ module Pickler = struct
     }
 
     let required val_type = {
-      value = serialize val_type.Val_type.to_string;
+      value = serialize val_type.Val_type.tws_of_a;
     }
 
     let optional ?(default_on_none="") val_type = {
-      value = serialize_opt default_on_none val_type.Val_type.to_string;
+      value = serialize_opt default_on_none val_type.Val_type.tws_of_a;
     }
 
     let skipped_if_none val_type = {
       value = (fun v_opt buf ->
         match v_opt with
         | None -> ()
-        | Some v -> serialize val_type.Val_type.to_string v buf);
+        | Some v -> serialize val_type.Val_type.tws_of_a v buf);
     }
 
     let skipped = {
@@ -215,11 +216,11 @@ module Unpickler = struct
     }
 
     let optional ?(none_on_default="") val_type = {
-      value = parse_opt none_on_default val_type.Val_type.of_string;
+      value = parse_opt none_on_default val_type.Val_type.a_of_tws;
     }
 
     let required val_type = {
-      value = parse val_type.Val_type.of_string;
+      value = parse val_type.Val_type.a_of_tws;
     }
 
     let capture_remaining_message = {

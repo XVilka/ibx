@@ -1,4 +1,4 @@
-(* File: price.mli
+(* File: twsable.ml
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -20,9 +20,11 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
 open Tws_prot
 
-type t = private float
-include Float_intf.S with type t := t
-include Twsable.S with type t := t
+module type S = sig
+  type t
+  val tws_of_t : t -> raw_tws
+  val t_of_tws : raw_tws -> t
+  val val_type : t Val_type.t
+end

@@ -124,5 +124,4 @@ type t =
 | `MIBSX
 ] with sexp
 include Stringable.S with type t := t
-
-val val_type : t Val_type.t
+include Twsable.S with type t := t

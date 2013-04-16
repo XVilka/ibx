@@ -25,5 +25,4 @@ open Tws_prot
 
 type t = private string
 include Identifiable.S with type t := t
-
-val val_type : t Val_type.t
+include Twsable.S with type t := t

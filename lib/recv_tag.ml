@@ -60,7 +60,7 @@ type t =
 | Commission_report
 with sexp
 
-let to_string = function
+let tws_of_t = function
   | Tick_price -> "1"
   | Tick_size -> "2"
   | Order_status -> "3"
@@ -96,7 +96,7 @@ let to_string = function
   | Snapshot_end -> "57"
   | Commission_report -> "59"
 
-let of_string = function
+let t_of_tws = function
   | "1" -> Tick_price
   | "2" -> Tick_size
   | "3" -> Order_status
@@ -169,7 +169,7 @@ let corresponding_response_has_query_id = function
   | Snapshot_end -> true
   | Commission_report -> false
 
-let val_type = Val_type.create to_string of_string
+let val_type = Val_type.create tws_of_t t_of_tws
 
 let unpickler =
   Unpickler.create ~name:"Recv_tag"
