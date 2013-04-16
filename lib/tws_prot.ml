@@ -69,17 +69,16 @@ end
 
 module Pickler = struct
 
-  let serialize_aux string buf =
-    let nul_byte = Char.of_int_exn 0 in
-    Buffer.add_string buf string;
-    Buffer.add_char buf nul_byte
+  let serialize_aux raw_tws buf =
+    Buffer.add_string buf raw_tws;
+    Buffer.add_char buf '\000'
 
-  let serialize to_string v buf = serialize_aux (to_string v) buf
+  let serialize tws_of_a a buf = serialize_aux (tws_of_a a) buf
 
-  let serialize_opt default_on_none to_string v_opt buf =
-    match v_opt with
+  let serialize_opt default_on_none tws_of_a a_opt buf =
+    match a_opt with
     | None   -> serialize_aux default_on_none buf
-    | Some v -> serialize to_string v buf
+    | Some a -> serialize tws_of_a a buf
 
   module Spec = struct
     type 'a t = {
@@ -117,26 +116,27 @@ module Pickler = struct
     }
 
     let required val_type = {
-      value = serialize val_type.Val_type.tws_of_a;
+      value = (fun a buf -> serialize val_type.Val_type.tws_of_a a buf);
     }
 
     let optional ?(default_on_none="") val_type = {
-      value = serialize_opt default_on_none val_type.Val_type.tws_of_a;
+      value = (fun a buf ->
+        serialize_opt default_on_none val_type.Val_type.tws_of_a a buf);
     }
 
     let skipped_if_none val_type = {
-      value = (fun v_opt buf ->
-        match v_opt with
-        | None -> ()
-        | Some v -> serialize val_type.Val_type.tws_of_a v buf);
+      value = (fun a_opt buf ->
+        match a_opt with
+        | None   -> ()
+        | Some a -> serialize val_type.Val_type.tws_of_a a buf);
     }
 
     let skipped = {
-      value = (fun _v _buf -> ());
+      value = (fun _a _buf -> ());
     }
 
     let tws_data = {
-      value = (fun s buf -> Buffer.add_string buf s)
+      value = (fun raw_tws buf -> Buffer.add_string buf raw_tws)
     }
 
     let value v = {
@@ -163,28 +163,30 @@ end
 
 module Unpickler = struct
 
-  let parse_aux of_string name arg =
-    match Result.try_with (fun () -> of_string arg) with
-    | Ok value -> value
+  let parse_aux name a_of_tws raw_tws =
+    match Result.try_with (fun () -> a_of_tws raw_tws) with
+    | Ok a -> a
     | Error exn ->
-      failwithf "failed to parse %s value %S -- %s" name arg (Exn.to_string exn) ()
+      failwithf "failed to parse %s value %S -- %s" name raw_tws (Exn.to_string exn) ()
 
-  let parse_opt none_on_default of_string name msg =
+  let parse_opt none_on_default name a_of_tws msg =
     match Queue.dequeue msg with
     | None -> failwithf "missing message field %s" name ()
-    | Some arg ->
-      if String.equal arg none_on_default then (None, msg)
-      else (Some (parse_aux of_string name arg), msg)
+    | Some raw_tws ->
+      if String.equal raw_tws none_on_default then
+        (None, msg)
+      else
+        (Some (parse_aux name a_of_tws raw_tws), msg)
 
-  let parse of_string name msg =
+  let parse name a_of_tws msg =
     match Queue.dequeue msg with
     | None -> failwithf "missing message field %s" name ()
-    | Some arg -> (parse_aux of_string name arg, msg)
+    | Some raw_tws -> (parse_aux name a_of_tws raw_tws, msg)
 
   module Spec = struct
 
     type ('a, 'b) t = {
-      f : ('a Lazy.t * string Queue.t -> 'b Lazy.t * string Queue.t);
+      f : ('a Lazy.t * raw_tws Queue.t -> 'b Lazy.t * raw_tws Queue.t);
     }
 
     let (++) t1 t2 = {
@@ -209,30 +211,31 @@ module Unpickler = struct
       let date   = date
     end
 
-    type 'a parse = string Queue.t -> 'a * string Queue.t
+    type 'a parse = raw_tws Queue.t -> 'a * raw_tws Queue.t
 
     type 'a value = {
-      value : string -> 'a parse;
-    }
-
-    let optional ?(none_on_default="") val_type = {
-      value = parse_opt none_on_default val_type.Val_type.a_of_tws;
+      value : name:string -> 'a parse;
     }
 
     let required val_type = {
-      value = parse val_type.Val_type.a_of_tws;
+      value = (fun ~name msg -> parse name val_type.Val_type.a_of_tws msg);
+    }
+
+    let optional ?(none_on_default="") val_type = {
+      value = (fun ~name msg ->
+        parse_opt none_on_default name val_type.Val_type.a_of_tws msg);
     }
 
     let capture_remaining_message = {
       f = (fun (k, msg) ->
-        let q = Queue.create () in
-        Queue.transfer ~src:msg ~dst:q;
-        (lazy (Lazy.force k q), msg));
+        let captured_msg = Queue.create () in
+        Queue.transfer ~src:msg ~dst:captured_msg;
+        (lazy (Lazy.force k captured_msg), msg));
     }
 
     let value v ~name = {
       f = (fun (k, msg) ->
-        let (a, remaining_msg) = v.value name msg in
+        let (a, remaining_msg) = v.value ~name msg in
         (lazy (Lazy.force k a), remaining_msg));
     }
 
@@ -242,7 +245,7 @@ module Unpickler = struct
   end
 
   type 'a t = {
-    f : string Queue.t -> 'a Lazy.t;
+    f : raw_tws Queue.t -> 'a Lazy.t;
     name : string option;
   }
 
@@ -268,8 +271,7 @@ module Unpickler = struct
   let run t msg =
     match Or_error.try_with (fun () -> t.f msg) with
     | Ok thunk -> Ok (Lazy.force thunk)
-    | Error err ->
-      Error (Option.value_map t.name ~default:err ~f:(Error.tag err))
+    | Error err -> Error (Option.value_map t.name ~default:err ~f:(Error.tag err))
 
   let run_exn t msg = Or_error.ok_exn (run t msg)
 end
