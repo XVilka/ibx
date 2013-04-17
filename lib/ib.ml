@@ -801,7 +801,7 @@ module Streaming_request = struct
                   "TWS Error " ^ Tws_error.to_string_hum response
                 ) in
                 if Ivar.is_empty ivar then begin
-                  Ivar.fill_if_empty ivar (Error err);
+                  Ivar.fill ivar (Error err);
                   return `Remove
                 end else
                   return (`Die err)
