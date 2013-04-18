@@ -143,8 +143,8 @@ module Client : sig
   val create
     :  ?enable_logging:bool
     -> ?client_id:Client_id.t
-    -> ?port:int
     -> host:string
+    -> port:int
     -> unit
     -> t Deferred.t
 

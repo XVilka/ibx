@@ -957,8 +957,9 @@ module Client = struct
   let create
       ?(enable_logging = false)
       ?(client_id      = Client_id.of_int_exn 0)
-      ?(port = 4001)
-      ~host () =
+      ~host
+      ~port
+      () =
     return
       { client_id;
         enable_logging;
@@ -1079,13 +1080,13 @@ module Client = struct
   let with_client
       ?enable_logging
       ?client_id
-      ?port
       ~host
+      ~port
       ~on_handler_error
       handler =
     let module C = Client_msg in
     Monitor.try_with (fun () ->
-      create ?enable_logging ?client_id ?port ~host ()
+      create ?enable_logging ?client_id ~port ~host ()
       >>= fun t ->
       if t.enable_logging then begin
         Stream.iter (messages t) ~f:(fun clt_msg ->

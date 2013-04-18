@@ -1,3 +1,5 @@
+2013-04-18: Port number for TWS clients is longer optional.
+
 2013-04-16: Added a new interface Twsable.
             A type is 'Twsable' if it provides functions to convert between
             values of that type and raw messages of the TWS protocol.

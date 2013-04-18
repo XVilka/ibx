@@ -31,21 +31,20 @@ module type S = sig
 
   type t
 
-  (** [with_client ~host ~on_handler_error handler] connects by default
-      to the IB Gateway (running on [host] under port 4001) and runs the
-      [handler] until an exception is thrown or until the returned Deferred
-      is determined.
+  (** [with_client ~host ~port ~on_handler_error handler] connects to the
+      IB connectivity software on ([host], [port]) and runs the [handler]
+      until an exception is thrown or the returned Deferred is determined.
 
       [on_handler_error] determines what happens if the [handler] throws an
       exception.
 
-      In order to connect to TWS, you need to supply 7496 as port number.
+      The standard port for TWS is 7496 and for the IB Gateway it is 4001.
   *)
   val with_client
     :  ?enable_logging:bool
     -> ?client_id:Client_id.t
-    -> ?port:int
     -> host:string
+    -> port:int
     -> on_handler_error:[
     | `Raise
     | `Ignore
@@ -56,7 +55,7 @@ module type S = sig
 
   val is_connected : t -> bool
 
-  (* [state t] returns the state of the connection. *)
+  (** [state t] returns the state of the connection. *)
   val state : t -> [ `Disconnected | `Connecting | `Connected ]
 
   (** [set_server_log_level level] sets the log entry detail [level] of TWS
