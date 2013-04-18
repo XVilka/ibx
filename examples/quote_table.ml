@@ -24,19 +24,18 @@ let print_quote_table quotes =
     create_col "Ask price" get_ask_price;
   ] quotes
 
-let main ~enable_logging ~host ~port =
-  Tws.with_client ~enable_logging ~host ~port
-    ~on_handler_error:`Raise (fun tws ->
-      Deferred.all (List.map symbols ~f:(fun symbol ->
-        let stock = Contract.stock
-          ~exchange:`SMART
-          ~currency:`USD
-          (Symbol.of_string symbol)
-        in
-        Tws.quote_snapshot_exn tws ~contract:stock))
-      >>| fun quotes -> print_quote_table quotes)
+let run () =
+  Common.with_tws_client (fun tws ->
+    Deferred.all (List.map symbols ~f:(fun symbol ->
+      let stock = Contract.stock
+        ~exchange:`SMART
+        ~currency:`USD
+        (Symbol.of_string symbol)
+      in
+      Tws.quote_snapshot_exn tws ~contract:stock))
+    >>| fun quotes -> print_quote_table quotes)
 
-let main_cmd =
+let command =
   Command.async_basic ~summary:" print market data"
     Command.Spec.(
       empty
@@ -45,14 +44,10 @@ let main_cmd =
       +> Common.port_arg ()
     )
     (fun enable_logging host port () ->
-      if enable_logging then Common.init_logger ();
-      Monitor.try_with (fun () ->
-        main ~enable_logging ~host ~port
-      ) >>= function
-      | Error exn ->
-        let err = Error.of_exn (Monitor.extract_exn exn) in
-        prerr_endline (Error.to_string_hum err);
-        exit 1
-      | Ok () -> return ())
+      run ~enable_logging ~host ~port ()
+      >>= function
+      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
+      | Ok () -> return ()
+    )
 
-let () = Command.run main_cmd
+let () = Command.run command

@@ -2,21 +2,23 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-let main ~enable_logging ~host ~port ~currency ~symbol =
-  Tws.with_client ~enable_logging ~host ~port
-    ~on_handler_error:(`Call (fun e ->
+let print_last_price ~currency ~symbol =
+  Common.with_tws_client (fun tws ->
+    let stock = Contract.stock ~currency (Symbol.of_string symbol) in
+    Tws.trade_snapshot tws ~contract:stock
+    >>= function
+    | Error e ->
       eprintf "[Error] Failed to retrieve last price for %s:\n%!" symbol;
       prerr_endline (Error.to_string_hum e);
-      shutdown 1))
-    (fun tws ->
-      let stock = Contract.stock ~currency (Symbol.of_string symbol) in
-      Tws.trade_snapshot_exn tws ~contract:stock
-      >>| fun snapshot ->
+      exit 1
+    | Ok snapshot ->
       let last_price = Trade_snapshot.last_price snapshot in
       printf "[Info] Last price for %s was %4.2f %s\n"
-        symbol (Price.to_float last_price) (Currency.to_string currency))
+        symbol (Price.to_float last_price) (Currency.to_string currency);
+      return ()
+  )
 
-let main_cmd =
+let command =
   Command.async_basic ~summary:"Retrieve last stock price"
     Command.Spec.(
       empty
@@ -27,7 +29,10 @@ let main_cmd =
       +> anon ("STOCK-SYMBOL" %: string)
     )
     (fun enable_logging host port currency symbol () ->
-      main ~enable_logging ~host ~port ~currency ~symbol
+      print_last_price ~enable_logging ~host ~port ~currency ~symbol
+      >>= function
+      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
+      | Ok () -> return ()
     )
 
-let () = Command.run main_cmd
+let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)

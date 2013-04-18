@@ -2,11 +2,25 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-let init_logger () =
-  let cwd = Core.Std.Unix.getcwd () in
-  let logfile = cwd ^/ "ibx.log" in
-  Log.Global.set_level `Debug;
-  Log.Global.set_output [Log.Output.file `Text ~filename:logfile]
+let with_tws_client f ~enable_logging ~host ~port =
+  if enable_logging then begin
+    let basedir = Core.Std.Unix.getcwd () in
+    let logfile = basedir ^/ "ibx.log" in
+    Log.Global.set_level `Debug;
+    Log.Global.set_output [Log.Output.file `Text ~filename:logfile]
+  end;
+  Monitor.try_with (fun () ->
+    Tws.with_client
+      ~enable_logging
+      ~host
+      ~port
+      ~on_handler_error:`Raise
+      (fun tws -> f tws)
+  )
+  >>| fun result ->
+  match result with
+  | Ok _ as x -> x
+  | Error exn -> Error (Error.of_exn (Monitor.extract_exn exn))
 
 let logging_flag () =
   Command.Spec.(

@@ -16,19 +16,19 @@ let make_tick_printer id symbol ~color = stage (fun tick ->
     Console.Ansi.string_with_attr [`Bright; color] output
   else output)
 
-let print_market_data ~enable_logging ~host ~port ~duration =
-  Tws.with_client ~enable_logging ~host ~port ~on_handler_error:`Raise (fun tws ->
+let print_market_data ~duration =
+  Common.with_tws_client (fun tws ->
     let process_market_data symbol color =
       Tws.market_data tws ~contract:(Contract.stock ~currency:`USD symbol)
-      >>| function
+      >>= function
       | Error e ->
         prerr_endline (Error.to_string_hum e);
         let pipe_r, pipe_w = Pipe.create () in
         Pipe.close pipe_w;
-        pipe_r
+        return pipe_r
       | Ok (ticks, id) ->
         upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id);
-        Pipe.map ticks ~f:(unstage (make_tick_printer id symbol ~color))
+        return (Pipe.map ticks ~f:(unstage (make_tick_printer id symbol ~color)))
     in
     let symbols = ["AAPL"; "MSFT"; "GOOG"] in
     let colors  = [`Red; `Green; `Blue] in
@@ -37,7 +37,7 @@ let print_market_data ~enable_logging ~host ~port ~duration =
     >>= fun pipes ->
     Pipe.iter_without_pushback (Pipe.interleave pipes) ~f:print_endline)
 
-let print_market_data_cmd  =
+let command =
   Command.async_basic ~summary:" print market data"
     Command.Spec.(
       empty
@@ -47,14 +47,10 @@ let print_market_data_cmd  =
       +> Common.duration_arg ()
     )
     (fun enable_logging host port duration () ->
-      if enable_logging then Common.init_logger ();
-      Monitor.try_with (fun () ->
-        print_market_data ~enable_logging ~host ~port ~duration
-      ) >>= function
-      | Error exn ->
-        let err = Error.of_exn (Monitor.extract_exn exn) in
-        prerr_endline (Error.to_string_hum err);
-        exit 1
-      | Ok () -> return ())
+      print_market_data ~enable_logging ~host ~port ~duration
+      >>= function
+      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
+      | Ok () -> return ()
+    )
 
-let () = Command.run print_market_data_cmd
+let () = Command.run command

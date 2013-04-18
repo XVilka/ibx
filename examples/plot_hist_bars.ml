@@ -23,8 +23,8 @@ let sma10 xs = sma ~period:10 xs
 let sma20 xs = sma ~period:20 xs
 let sma50 xs = sma ~period:50 xs
 
-let plot_hist_bars ~host ~port ~currency ~symbol =
-  Tws.with_client ~host ~port ~on_handler_error:`Raise (fun tws ->
+let plot_hist_bars ~currency ~symbol =
+  Common.with_tws_client (fun tws ->
     Tws.historical_data_exn tws
       ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
       ~bar_size:`Five_mins
@@ -49,23 +49,21 @@ let plot_hist_bars ~host ~port ~currency ~symbol =
     ];
     Gnuplot.close g)
 
-let plot_hist_bars_cmd =
+let command =
   Command.async_basic ~summary:"plot historical bars"
     Command.Spec.(
       empty
+      +> Common.logging_flag ()
       +> Common.host_arg ()
       +> Common.port_arg ()
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun host port currency symbol () ->
-      Monitor.try_with (fun () ->
-        plot_hist_bars ~host ~port ~currency ~symbol
-      ) >>= function
-      | Error exn ->
-        let err = Error.of_exn (Monitor.extract_exn exn) in
-        prerr_endline (Error.to_string_hum err);
-        exit 1
-      | Ok () -> return ())
+    (fun enable_logging host port currency symbol () ->
+      plot_hist_bars ~enable_logging ~host ~port ~currency ~symbol
+      >>= function
+      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
+      | Ok () -> return ()
+    )
 
-let () = Command.run plot_hist_bars_cmd
+let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)

@@ -31,26 +31,29 @@ let contracts : Contract.Type.t Contract.t list = [
     (Symbol.of_string "USD");
 ]
 
-let main_cmd =
+let run () =
+  Common.with_tws_client (fun tws ->
+    Deferred.List.iter contracts ~f:(fun contract ->
+      Tws.contract_specs_exn tws ~contract
+      >>| fun con_specs ->
+      printf "===== [ %s ] =====\n%!"
+        (Contract.symbol contract |! Symbol.to_string);
+      printf "%s\n\n%!"
+        (Contract_specs.sexp_of_t con_specs |! Sexp.to_string_hum)))
+
+let command =
   Command.async_basic ~summary:"show contract specifications"
     Command.Spec.(
       empty
+      +> Common.logging_flag ()
       +> Common.host_arg ()
       +> Common.port_arg ()
     )
-    (fun host port () ->
-      Tws.with_client ~host ~port
-        ~on_handler_error:(`Call (fun e ->
-          prerr_endline (Error.to_string_hum e);
-          shutdown 1))
-        (fun tws ->
-          Deferred.List.iter contracts ~f:(fun contract ->
-            Tws.contract_specs_exn tws ~contract
-            >>| fun con_specs ->
-            printf "===== [ %s ] =====\n%!"
-              (Contract.symbol contract |! Symbol.to_string);
-            printf "%s\n\n%!"
-              (Contract_specs.sexp_of_t con_specs |! Sexp.to_string_hum)))
+    (fun enable_logging host port () ->
+      run ~enable_logging ~host ~port ()
+      >>= function
+      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
+      | Ok () -> return ()
     )
 
-let () = Command.run main_cmd
+let () = Command.run command

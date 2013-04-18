@@ -34,34 +34,33 @@ let submit_and_wait_for_fill tws ~timeout ~contract ~order =
     Tws.cancel_order_status tws oid
   | `Result () -> ()
 
-let main ~enable_logging ~host ~port ~timeout =
+let run ~timeout =
   let symbol = Symbol.of_string "IBM" in
   let ibm = Contract.stock ~exchange:`BATS ~currency:`USD symbol in
   let num_shares = 100 in
-  Tws.with_client ~enable_logging ~host ~port
-    ~on_handler_error:`Raise (fun tws ->
-      Tws.quote_snapshot_exn tws ~contract:ibm
-      >>= fun snapshot ->
-      let ask_price = Quote_snapshot.ask_price snapshot in
-      printf "Last ask price %4.2f\n%!" (Price.to_float ask_price);
-      let buy_mkt = Order.buy_market ~quantity:num_shares in
-      let buy_lmt = Order.buy_limit  ~quantity:num_shares ask_price in
-      Deferred.all_unit [
-        submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order:buy_mkt;
-        submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order:buy_lmt;
-      ] >>= fun () ->
-      Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
-      >>= fun exec_reports ->
-      Pipe.iter_without_pushback exec_reports ~f:(fun exec_report ->
-        printf "Execution: \
+  Common.with_tws_client (fun tws ->
+    Tws.quote_snapshot_exn tws ~contract:ibm
+    >>= fun snapshot ->
+    let ask_price = Quote_snapshot.ask_price snapshot in
+    printf "Last ask price %4.2f\n%!" (Price.to_float ask_price);
+    let buy_mkt = Order.buy_market ~quantity:num_shares in
+    let buy_lmt = Order.buy_limit  ~quantity:num_shares ask_price in
+    Deferred.all_unit [
+      submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order:buy_mkt;
+      submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order:buy_lmt;
+    ] >>= fun () ->
+    Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
+    >>= fun exec_reports ->
+    Pipe.iter_without_pushback exec_reports ~f:(fun exec_report ->
+      printf "Execution: \
           exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
-          (Execution_report.exec_id exec_report |! Execution_id.to_string)
-          (Execution_report.time exec_report |! Time.to_string_trimmed)
-          (Execution_report.exchange exec_report |! Exchange.to_string)
-          (match Execution_report.side exec_report with
-          | `Purchase -> "purchase" | `Sale -> "sale")
-          (Execution_report.quantity exec_report)
-          (Execution_report.price exec_report |! Price.to_float))
+        (Execution_report.exec_id exec_report |! Execution_id.to_string)
+        (Execution_report.time exec_report |! Time.to_string_trimmed)
+        (Execution_report.exchange exec_report |! Exchange.to_string)
+        (match Execution_report.side exec_report with
+        | `Purchase -> "purchase" | `Sale -> "sale")
+        (Execution_report.quantity exec_report)
+        (Execution_report.price exec_report |! Price.to_float))
     )
 
 let timeout_arg () =
@@ -71,7 +70,7 @@ let timeout_arg () =
       ~doc:" timeout on fill (default 5s)"
   )
 
-let main_cmd =
+let command =
   Command.async_basic ~summary:"submit market buy order"
     Command.Spec.(
       empty
@@ -81,14 +80,10 @@ let main_cmd =
       +> timeout_arg ()
     )
     (fun enable_logging host port timeout () ->
-      if enable_logging then Common.init_logger ();
-      Monitor.try_with (fun () ->
-        main ~enable_logging ~host ~port ~timeout
-      ) >>= function
-      | Error exn ->
-        let err = Error.of_exn (Monitor.extract_exn exn) in
-        prerr_endline (Error.to_string_hum err);
-        exit 1
-      | Ok () -> return ())
+      run ~enable_logging ~host ~port ~timeout
+      >>= function
+      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
+      | Ok () -> return ()
+    )
 
-let () = Command.run main_cmd
+let () = Command.run command

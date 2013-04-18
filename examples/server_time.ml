@@ -12,7 +12,7 @@ let print_server_time ~port ~host =
       >>| fun time ->
       print_endline (Time.to_string_trimmed time))
 
-let server_time_cmd =
+let command =
   Command.async_basic ~summary:"print server time"
     Command.Spec.(
       empty
@@ -21,4 +21,4 @@ let server_time_cmd =
     )
     (fun host port () -> print_server_time ~host ~port)
 
-let () = Command.run server_time_cmd
+let () = Command.run command
