@@ -285,7 +285,7 @@ module Message_generator = struct
             tag      = V.Server_time;
             version  = 1;
             query_id = None;
-            data     = to_tws pickler Gen.server_time }
+            data     = to_tws pickler (Lazy.force Gen.server_time) }
           ]
 
         | S.Set_server_log_level -> []
@@ -293,7 +293,7 @@ module Message_generator = struct
         (* ======================== Market data ========================== *)
 
         | S.Market_data ->
-          let market_data =  List.map Gen.market_data ~f:(function
+          let market_data =  List.map (Lazy.force Gen.market_data) ~f:(function
             | `Tick_price x ->
               let pickler = Only_in_test.force R.Tick_price.pickler in
               E.Server_response {
@@ -352,7 +352,7 @@ module Message_generator = struct
             tag      = V.Tick_option;
             version  = 6;
             query_id = query.Query.id;
-            data     = to_tws pickler Gen.tick_option }
+            data     = to_tws pickler (Lazy.force Gen.tick_option) }
           ]
 
         | S.Cancel_option_price
@@ -362,7 +362,7 @@ module Message_generator = struct
 
         | S.Submit_order ->
           let pickler = Only_in_test.force R.Order_status.pickler in
-          List.map Gen.order_states ~f:(fun x ->
+          List.map (Lazy.force Gen.order_states) ~f:(fun x ->
             E.Server_response {
               Response.
               tag      = V.Order_status;
@@ -388,7 +388,7 @@ module Message_generator = struct
         (* ======================== Executions =========================== *)
 
         | S.Execution_reports ->
-          List.map Gen.execution_reports ~f:(fun x ->
+          List.map (Lazy.force Gen.execution_reports) ~f:(fun x ->
             let pickler = Only_in_test.force R.Execution_report.pickler in
             E.Server_response {
               Response.
@@ -414,7 +414,7 @@ module Message_generator = struct
             tag      = V.Contract_data;
             version  = 8;
             query_id = query.Query.id;
-            data     = to_tws pickler Gen.contract_specs }
+            data     = to_tws pickler (Lazy.force Gen.contract_specs) }
           ; E.Server_response {
             Response.
             tag      = V.Contract_data_end;
@@ -426,7 +426,7 @@ module Message_generator = struct
         (* ========================= Market depth ======================== *)
 
         | S.Market_depth ->
-          List.map Gen.book_updates ~f:(fun x ->
+          List.map (Lazy.force Gen.book_updates) ~f:(fun x ->
             let pickler = Only_in_test.force R.Book_update.pickler in
             E.Server_response {
               Response.
@@ -469,7 +469,7 @@ module Message_generator = struct
             tag      = V.Historical_data;
             version  = 3;
             query_id = query.Query.id;
-            data     = to_tws pickler Gen.historical_data }
+            data     = to_tws pickler (Lazy.force Gen.historical_data) }
           ]
 
         | S.Cancel_historical_data -> []
@@ -477,7 +477,7 @@ module Message_generator = struct
         (* ======================= Realtime data ========================= *)
 
         | S.Realtime_bars ->
-          List.map Gen.realtime_bars ~f:(fun x ->
+          List.map (Lazy.force Gen.realtime_bars) ~f:(fun x ->
             let pickler = Only_in_test.force R.Realtime_bar.pickler in
             E.Server_response {
               Response.

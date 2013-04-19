@@ -22,12 +22,12 @@
 
 open Rg.R
 
-let server_time       = server_time_g ()
-let market_data       = market_data_g ()
-let tick_option       = tick_option_g ()
-let order_states      = order_states_g ()
-let execution_reports = execution_reports_g ()
-let contract_specs    = contract_specs_g ()
-let book_updates      = book_updates_g ()
-let historical_data   = historical_data_g ()
-let realtime_bars     = realtime_bars_g ()
+let server_time       = lazy (server_time_g ())
+let market_data       = lazy (market_data_g ())
+let tick_option       = lazy (tick_option_g ())
+let order_states      = lazy (order_states_g ())
+let execution_reports = lazy (execution_reports_g ())
+let contract_specs    = lazy (contract_specs_g ())
+let book_updates      = lazy (book_updates_g ())
+let historical_data   = lazy (historical_data_g ())
+let realtime_bars     = lazy (realtime_bars_g ())
