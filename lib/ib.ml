@@ -68,7 +68,7 @@ module Ibx_result = struct
 
   let make_try_with try_with (>>|) constructor f =
     try_with f >>| function
-    | Ok x -> Ok x
+    | Ok _ as x -> x
     | Error exn -> Error (constructor (Exn.sexp_of_t exn))
 
   let try_with_read f = make_try_with
@@ -84,7 +84,7 @@ module Ibx_result = struct
     f
 
   let or_error = function
-    | Ok x -> Ok x
+    | Ok _ as x -> x
     | Error (Ibx_error.Tws_error s) ->
       Or_error.error_string s
     | Error e ->
@@ -166,7 +166,7 @@ module Response = struct
   } with fields, sexp
 
   let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create
+    Pickler.create ~name:"Response"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -180,10 +180,9 @@ module Response = struct
               | Error _
               | Ok `Cancel -> assert false
               | Ok (`Response data) ->
-                let add_null s = s ^ "\000" in
                 Queue.to_list data
                 |! String.concat ~sep:"\000"
-                |! add_null
+                |! (^) "\000"
             in
             `Args $ tag $ version $ query_id $ tws_data)))
 end
@@ -1086,7 +1085,7 @@ module Client = struct
       handler =
     let module C = Client_msg in
     Monitor.try_with (fun () ->
-      create ?enable_logging ?client_id ~port ~host ()
+      create ?enable_logging ?client_id ~host ~port ()
       >>= fun t ->
       if t.enable_logging then begin
         Stream.iter (messages t) ~f:(fun clt_msg ->
