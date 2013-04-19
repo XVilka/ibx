@@ -1,3 +1,6 @@
+2013-04-19: Improved unpickler performance by removing the construction
+            of lazy values in unpickler combinators.
+
 2013-04-18: Port number for TWS clients is no longer optional.
 
 2013-04-16: Added a new interface Twsable.
