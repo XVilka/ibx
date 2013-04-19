@@ -169,24 +169,23 @@ module Unpickler = struct
     | Error exn ->
       failwithf "failed to parse %s value %S -- %s" name raw_tws (Exn.to_string exn) ()
 
-  let parse_opt none_on_default name a_of_tws msg =
-    match Queue.dequeue msg with
-    | None -> failwithf "missing message field %s" name ()
-    | Some raw_tws ->
-      if String.equal raw_tws none_on_default then
-        (None, msg)
-      else
-        (Some (parse_aux name a_of_tws raw_tws), msg)
-
   let parse name a_of_tws msg =
     match Queue.dequeue msg with
     | None -> failwithf "missing message field %s" name ()
     | Some raw_tws -> (parse_aux name a_of_tws raw_tws, msg)
 
+  let parse_opt none_on_default name a_of_tws msg =
+    match Queue.dequeue msg with
+    | None -> failwithf "missing message field %s" name ()
+    | Some raw_tws ->
+      if String.equal raw_tws none_on_default
+      then (None                                  , msg)
+      else (Some (parse_aux name a_of_tws raw_tws), msg)
+
   module Spec = struct
 
     type ('a, 'b) t = {
-      f : ('a Lazy.t * raw_tws Queue.t -> 'b Lazy.t * raw_tws Queue.t);
+      f : ('a * raw_tws Queue.t -> 'b * raw_tws Queue.t);
     }
 
     let (++) t1 t2 = {
@@ -194,7 +193,7 @@ module Unpickler = struct
     }
 
     let step f = {
-      f = (fun (thunk, msg) -> (lazy (f (Lazy.force thunk)), msg));
+      f = (fun (a, msg) -> (f a, msg));
     }
 
     let empty () = step Fn.id
@@ -230,13 +229,13 @@ module Unpickler = struct
       f = (fun (k, msg) ->
         let captured_msg = Queue.create () in
         Queue.transfer ~src:msg ~dst:captured_msg;
-        (lazy (Lazy.force k captured_msg), msg));
+        (k captured_msg, msg));
     }
 
     let value v ~name = {
       f = (fun (k, msg) ->
-        let (a, remaining_msg) = v.value ~name msg in
-        (lazy (Lazy.force k a), remaining_msg));
+        let (a, remaining_msg) = v.value msg ~name in
+        (k a, remaining_msg));
     }
 
     let fields_value v specs field =
@@ -245,32 +244,32 @@ module Unpickler = struct
   end
 
   type 'a t = {
-    f : raw_tws Queue.t -> 'a Lazy.t;
+    f : raw_tws Queue.t -> 'a;
     name : string option;
   }
 
   let create ?name {Spec.f} conv = {
     f = (fun msg ->
-      let (thunk, remaining_msg) = f (lazy conv, msg) in
-      if Queue.is_empty remaining_msg then
-        thunk
+      let (result, remaining_msg) = f (conv, msg) in
+      if Queue.is_empty remaining_msg
+      then result
       else failwiths "message is too long" (Queue.length msg) sexp_of_int);
     name;
   }
 
   let map t ~f = {
-    f = (fun msg -> lazy (f (Lazy.force (t.f msg))));
+    f = (fun msg -> (f (t.f msg)));
     name = t.name;
   }
 
   let const a = {
-    f = (fun _msg -> lazy a);
+    f = (fun _msg -> a);
     name = None;
   }
 
   let run t msg =
     match Or_error.try_with (fun () -> t.f msg) with
-    | Ok thunk -> Ok (Lazy.force thunk)
+    | Ok _ as x -> x
     | Error err -> Error (Option.value_map t.name ~default:err ~f:(Error.tag err))
 
   let run_exn t msg = Or_error.ok_exn (run t msg)
