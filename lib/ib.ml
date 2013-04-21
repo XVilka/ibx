@@ -393,13 +393,18 @@ module Connection : Connection_internal = struct
   let really_read reader ~len =
     Pipe.read_exactly reader ~num_values:len >>| function
     | `Eof -> `Eof
-    | `Fewer result   -> `Ok result
+    | `Fewer   result -> `Ok result
     | `Exactly result -> `Ok result
 
   let read_tws reader unpickler ~len =
     really_read reader ~len >>| function
-    | `Eof -> `Eof
-    | `Ok raw_msg -> `Ok (of_tws unpickler raw_msg)
+    | `Eof -> Ok `Eof
+    | `Ok raw_msg ->
+      begin
+        match of_tws unpickler raw_msg with
+        | Error _ as x -> x
+        | Ok x -> Ok (`Ok x)
+      end
 
   let read_version_and_query_id reader tag =
     if Recv_tag.corresponding_response_has_query_id tag then
@@ -473,31 +478,45 @@ module Connection : Connection_internal = struct
       | R.Commission_report -> read ~len:6
     )
 
+  module Deferred_read_result : sig
+    type 'a t = [ `Eof | `Ok of 'a ] Ibx_result.t Deferred.t
+    include Monad.S with type 'a t := 'a t
+  end = struct
+    module M = struct
+      type 'a t = [ `Eof | `Ok of 'a ] Ibx_result.t Deferred.t
+
+      let bind t f = t >>= function
+        | Error _ as x -> Deferred.return x
+        | Ok `Eof as x -> Deferred.return x
+        | Ok (`Ok x) -> f x
+
+      let return x = Deferred.return (Ok (`Ok x))
+    end
+    include M
+    include Monad.Make (M)
+
+    let map t ~f =
+      Deferred.map t ~f:(function
+      | Error _ as x -> x
+      | Ok `Eof as x -> x
+      | Ok (`Ok x) -> Ok (`Ok (f x)))
+  end
+  let (>>=~) = Deferred_read_result.(>>=)
+  let (>>|~) = Deferred_read_result.(>>|)
+
   let read_response reader =
     read_tws reader Recv_tag.unpickler ~len:1
-    >>= function
-    | `Eof -> return `Eof
-    | `Ok (Error _) as x -> return x
-    | `Ok (Ok tag) ->
-      read_version_and_query_id reader tag
-      >>= function
-      | `Eof -> return `Eof
-      | `Ok (Error _) as x -> return x
-      | `Ok (Ok (version, query_id)) ->
-        read_body reader tag
-        >>| function
-        | Error err -> `Ok (Error err)
-        | Ok `Eof -> `Eof
-        | Ok (`Ok data) ->
-          let response =
-            { Response.
-              tag;
-              version;
-              query_id;
-              data = Ok (`Response data);
-            }
-          in
-          `Ok (Ok response)
+    >>=~ fun tag ->
+    read_version_and_query_id reader tag
+    >>=~ fun (version, query_id) ->
+    read_body reader tag
+    >>|~ fun data ->
+    { Response.
+      tag;
+      version;
+      query_id;
+      data = Ok (`Response data);
+    }
 
   module Handshake_result = struct
     type t =
@@ -593,9 +612,9 @@ module Connection : Connection_internal = struct
           | Some () -> ()
           | None ->
             match read_result with
-            | `Eof -> Ibx_error.raise Ibx_error.Unexpected_eof
-            | `Ok (Error err) -> Ibx_error.raise err
-            | `Ok (Ok response) ->
+            | Error err -> Ibx_error.raise err
+            | Ok `Eof -> Ibx_error.raise Ibx_error.Unexpected_eof
+            | Ok (`Ok response) ->
               begin
                 match t.logfun with
                 | None -> ()
@@ -644,13 +663,13 @@ module Connection : Connection_internal = struct
       send_tws writer Client_header.pickler client_header;
       read_tws t.pipe_r Server_header.unpickler ~len:2
       >>= function
-      | `Eof ->
-        don't_wait_for (close t);
-        return (Ok Handshake_result.Eof)
-      | `Ok (Error err) ->
+      | Error err ->
         don't_wait_for (close t);
         return (Error err)
-      | `Ok (Ok header) ->
+      | Ok `Eof ->
+        don't_wait_for (close t);
+        return (Ok Handshake_result.Eof)
+      | Ok (`Ok header) ->
         let server_version = header.Server_header.server_version in
         if not (server_version >= Config.server_version) then
           return (Ok (Handshake_result.Version_failure server_version))
