@@ -494,12 +494,6 @@ module Connection : Connection_internal = struct
     end
     include M
     include Monad.Make (M)
-
-    let map t ~f =
-      Deferred.map t ~f:(function
-      | Error _ as x -> x
-      | Ok `Eof as x -> x
-      | Ok (`Ok x) -> Ok (`Ok (f x)))
   end
   let (>>=~) = Deferred_read_result.(>>=)
   let (>>|~) = Deferred_read_result.(>>|)
