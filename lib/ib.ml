@@ -182,7 +182,7 @@ module Response = struct
               | Ok (`Response data) ->
                 Queue.to_list data
                 |! String.concat ~sep:"\000"
-                |! (^) "\000"
+                |! Fn.flip (^) "\000"
             in
             `Args $ tag $ version $ query_id $ tws_data)))
 end
