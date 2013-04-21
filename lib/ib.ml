@@ -100,8 +100,6 @@ module Client_header = struct
       client_id      : Client_id.t;
     } with fields, sexp
 
-  let create = Fields.create
-
   let pickler =
     Pickler.create
       Pickler.Spec.(
@@ -308,9 +306,9 @@ module Connection : Connection_internal = struct
       ~extend_commission_report
       reader
       writer =
-    let null_delimiter_pred = `Char '\000' in
-    let read_one r =
-      Reader.read_until r null_delimiter_pred ~keep_delim:false >>| function
+    let null_delim_pred = `Char '\000' in
+    let read_one reader =
+      Reader.read_until reader null_delim_pred ~keep_delim:false >>| function
       | `Eof -> `Eof
       | `Ok _ as x -> x
         (* We pretend that everything is Ok here and handle the error later. *)
@@ -380,8 +378,8 @@ module Connection : Connection_internal = struct
 
   let writer t = if Ivar.is_full t.stop then Error `Closed else Ok t.writer
 
-  let send_tws writer tws_pickler msg =
-    Writer.write writer (to_tws tws_pickler msg)
+  let send_tws writer pickler msg =
+    Writer.write writer (to_tws pickler msg)
 
   let send_query ?logfun writer query =
     begin match logfun with
@@ -645,11 +643,11 @@ module Connection : Connection_internal = struct
     Scheduler.within ~monitor loop
 
   let try_connect t ~client_version ~client_id =
-    let client_header =
-      Client_header.create
-        ~client_version
-        ~client_id
-    in
+    let client_header = {
+      Client_header.
+      client_version;
+      client_id;
+    } in
     begin match writer t with
     | Error `Closed ->
       return (Error Ibx_error.Connection_closed)
@@ -1175,8 +1173,8 @@ module Client = struct
     dispatch_streaming_request t req query
     >>= function
     | Error _ as x -> return x
-    | Ok (pipe_r, id) ->
-      Pipe.read_at_most pipe_r ~num_values:1
+    | Ok (reader, id) ->
+      Pipe.read_at_most reader ~num_values:1
       >>| fun read_result ->
       Exn.protectx read_result ~f:(function
       | `Eof -> Error (Ibx_error.to_error Ibx_error.Unexpected_eof)
