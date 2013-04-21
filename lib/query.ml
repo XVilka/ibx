@@ -788,7 +788,7 @@ module Historical_data = struct
         String.nset pattern 16 time_unit;
         if Str.string_match (Str.regexp pattern) s 0 then
           Int.of_string (Str.matched_group 1 s)
-        else invalid_argf "Duration.of_string: %S" s ()
+        else invalid_argf "Duration.t_of_tws: %S" s ()
       in
       match String.nget s (String.length s - 1) with
       | 'S' -> `S (extract_int s ~time_unit:'S')
@@ -796,7 +796,7 @@ module Historical_data = struct
       | 'W' -> `W (extract_int s ~time_unit:'W')
       | 'M' -> `M (extract_int s ~time_unit:'M')
       | 'Y' -> `Y
-      | _ -> invalid_argf "Duration.of_string: %S" s ()
+      | _ -> invalid_argf "Duration.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
   end
@@ -823,7 +823,7 @@ module Historical_data = struct
       | `Implied_volatility -> "OPTION_IMPLIED_VOLATILITY"
       | `Option_volume -> "OPTION_VOLUME"
 
-    let of_string = function
+    let t_of_tws = function
       | "TRADES" -> `Trades
       | "MIDPOINT" -> `Midpoint
       | "BID" -> `Bid
@@ -832,9 +832,9 @@ module Historical_data = struct
       | "HISTORICAL_VOLATILITY" -> `Historical_volatility
       | "OPTION_IMPLIED_VOLATILITY" -> `Implied_volatility
       | "OPTION_VOLUME" -> `Option_volume
-      | s -> invalid_argf "Show.of_string: %S" s ()
+      | s -> invalid_argf "Show.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create tws_of_t of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -982,11 +982,11 @@ module Realtime_bars = struct
     let tws_of_t = function
       | `Five_secs -> "5"
 
-    let of_string = function
+    let t_of_tws = function
       | "5" -> `Five_secs
-      | s -> invalid_argf "Bar_size.of_string: %S" s ()
+      | s -> invalid_argf "Bar_size.t_of_tws: %S" s ()
 
-    let val_type = Val_type.create tws_of_t of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   module Show = struct
@@ -998,14 +998,14 @@ module Realtime_bars = struct
       | `Ask -> "ASK"
       | `Midpoint -> "MIDPOINT"
 
-    let of_string = function
+    let t_of_tws = function
       | "TRADES" -> `Trades
       | "BID" -> `Bid
       | "ASK" -> `Ask
       | "MIDPOINT" -> `Midpoint
-      | s -> invalid_argf "Show.of_string: %s" s ()
+      | s -> invalid_argf "Show.t_of_tws: %s" s ()
 
-    let val_type = Val_type.create tws_of_t of_string
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
