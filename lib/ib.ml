@@ -265,9 +265,8 @@ end
 
 module Connection : Connection_internal = struct
   type t =
-    { reader           : Reader.t;
-      writer           : Writer.t;
-      pipe_r           : string Pipe.Reader.t;
+    { writer           : Writer.t;
+      reader           : string Pipe.Reader.t;
       open_queries     : (Query_id.t * Recv_tag.t, response_handler) Hashtbl.t;
       default_query_id : Query_id.t;
       next_order_id    : Order_id.t Ivar.t;
@@ -326,9 +325,8 @@ module Connection : Connection_internal = struct
     in
     let t =
       {
-        reader;
         writer;
-        pipe_r           = Reader.read_all reader read_one;
+        reader           = Reader.read_all reader read_one;
         open_queries     = Hashtbl.Poly.create ~size:25 ();
         default_query_id = Query_id.of_int_exn (-1);
         next_order_id    = Ivar.create ();
@@ -372,8 +370,8 @@ module Connection : Connection_internal = struct
     if not (is_closed t) then begin
       Ivar.fill t.stop ();
       Writer.close t.writer
-      >>= fun () ->
-      Reader.close t.reader
+      >>| fun () ->
+      Pipe.close_read t.reader
     end else Deferred.unit
 
   let writer t = if Ivar.is_full t.stop then Error `Closed else Ok t.writer
@@ -596,7 +594,7 @@ module Connection : Connection_internal = struct
     let rec loop () =
       choose
         [ choice (Ivar.read t.stop) (fun () -> `Stop);
-          choice (read_response t.pipe_r) (fun x  -> `Read x);
+          choice (read_response t.reader) (fun x  -> `Read x);
         ] >>> function
         | `Stop -> ()
         | `Read read_result ->
@@ -653,7 +651,7 @@ module Connection : Connection_internal = struct
       return (Error Ibx_error.Connection_closed)
     | Ok writer ->
       send_tws writer Client_header.pickler client_header;
-      read_tws t.pipe_r Server_header.unpickler ~len:2
+      read_tws t.reader Server_header.unpickler ~len:2
       >>= function
       | Error err ->
         don't_wait_for (close t);
