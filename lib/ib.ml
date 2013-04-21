@@ -365,7 +365,6 @@ module Connection : Connection_internal = struct
       ~unpickler:Commission_report.unpickler
       ~action:`Keep
       ~f:extend_commission_report;
-
     return t
 
   let is_closed t = Ivar.is_full t.stop
@@ -405,9 +404,10 @@ module Connection : Connection_internal = struct
   let read_version_and_query_id reader tag =
     if Recv_tag.corresponding_response_has_query_id tag then
       let unpickler = Unpickler.create ~name:"Version_id"
-        Unpickler.Spec.(value (required int) ~name:"version"
-          ++ value (optional Query_id.val_type) ~name:"query_id")
-        (fun version query_id -> (version, query_id))
+        Unpickler.Spec.(
+          value (required int) ~name:"version"
+          ++ value (required Query_id.val_type) ~name:"query_id")
+        (fun version query_id -> (version, Some query_id))
       in
       read_tws reader unpickler ~len:2
     else
