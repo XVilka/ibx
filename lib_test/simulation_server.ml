@@ -134,34 +134,30 @@ module Protocol = struct
 
   module Transport = struct
     type t =
-      { reader : Reader.t;
+      { reader : string Pipe.Reader.t;
         writer : Writer.t;
-        pipe_r : string Pipe.Reader.t;
       }
 
     let create reader writer =
-      let null_delimiter_pred = `Char (Char.of_int_exn 0) in
-      let read_one r =
-        Reader.read_until r null_delimiter_pred ~keep_delim:false >>| function
+      let null_delim_pred = `Char '\000' in
+      let read_one reader =
+        Reader.read_until reader null_delim_pred ~keep_delim:false >>| function
         | `Eof
         | `Ok _ as x -> x
         | `Eof_without_delim s -> `Ok s
       in
       return {
-        reader;
         writer;
-        pipe_r = Reader.read_all reader read_one;
+        reader = Reader.read_all reader read_one;
       }
 
-    let close t =
-      Writer.close ~force_close:(Clock.after (sec 10.)) t.writer
-      >>= fun () -> Reader.close t.reader
+    let close t = Writer.close t.writer >>| fun () -> Pipe.close_read t.reader
 
     let really_read reader ~len =
       Pipe.read_exactly reader ~num_values:len >>| function
       | `Eof -> `Eof
       | `Exactly result -> `Ok (Queue.to_list result)
-      | `Fewer result -> `Ok (Queue.to_list result)
+      | `Fewer   result -> `Ok (Queue.to_list result)
 
     let read_version_and_query_id reader tag =
       let len = if Send_tag.corresponding_query_has_id tag then 2 else 1 in
@@ -206,34 +202,43 @@ module Protocol = struct
       | S.Option_price -> read ~len:13
       | S.Cancel_implied_volatility -> return (`Ok no_data)
       | S.Cancel_option_price -> return (`Ok no_data)
-    ;;
+
+    module Deferred_read_result : sig
+      type 'a t = [ `Eof | `Ok of 'a ] Deferred.t
+      include Monad.S with type 'a t := 'a t
+    end = struct
+      module M = struct
+        type 'a t = [ `Eof | `Ok of 'a ] Deferred.t
+
+        let bind t f = t >>= function
+          | `Eof -> Deferred.return `Eof
+          | `Ok x -> f x
+
+        let return x = Deferred.return (`Ok x)
+      end
+      include M
+      include Monad.Make (M)
+    end
+    let (>>=~) = Deferred_read_result.(>>=)
+    let (>>|~) = Deferred_read_result.(>>|)
 
     let read t =
-      let reader = t.pipe_r in
       Monitor.try_with ~name:"Transport reader" (fun () ->
-        really_read reader ~len:1
-        >>= function
-        | `Eof -> return `Eof
-        | `Ok [] -> failwith "missing send tag"
-        | `Ok (raw_tag :: _) ->
-          if String.equal raw_tag client_header_tag then begin
-            really_read reader ~len:1
-            >>| function
-            | `Eof -> `Eof
-            | `Ok [] -> failwith "missing client id"
-            | `Ok (client_id :: _) -> `Ok (raw_tag :: client_id :: [])
-          end else begin
+        really_read t.reader ~len:1 >>=~ function
+        | [] -> failwith "missing send tag"
+        | raw_tag :: _ ->
+          if String.equal raw_tag client_header_tag then
+            really_read t.reader ~len:1 >>|~ function
+            | [] -> failwith "missing client id"
+            | client_id :: _ -> raw_tag :: client_id :: []
+          else
             let tag = Send_tag.t_of_tws raw_tag in
-            read_version_and_query_id reader tag
-            >>= function
-            | `Eof -> return `Eof
-            | `Ok version_query_id ->
-              read_body reader tag
-              >>| function
-              | `Eof -> `Eof
-              | `Ok body -> `Ok (raw_tag :: version_query_id @ body)
-          end)
-      >>| fun read_result ->
+            read_version_and_query_id t.reader tag
+            >>=~ fun version_query_id ->
+            read_body t.reader tag
+            >>|~ fun body ->
+            raw_tag :: version_query_id @ body
+      ) >>| fun read_result ->
       match read_result with
       | Error exn -> raise exn
       | Ok `Eof -> `Eof
