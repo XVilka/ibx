@@ -1,3 +1,6 @@
+2013-04-30: Fixed occasional parse errors caused by empty price fields
+            in TWS messages.
+
 2013-04-21: Fixed response pickler bug in the Ib module that caused a
             missing terminating null byte.
 
