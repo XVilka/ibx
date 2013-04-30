@@ -102,10 +102,10 @@ module Unpickler : sig
 
     val required : 'a Val_type.t -> 'a value
     val optional : ?none_on_default:raw_tws -> 'a Val_type.t -> 'a option value
+    val optional_with_default : default:'a -> 'a Val_type.t -> 'a value
 
     val value : 'a value -> name:string -> ('a -> 'c, 'c) t
     val capture_remaining_message : (raw_tws Queue.t -> 'c, 'c) t
-
 
     val fields_value
       :  'a value

@@ -124,6 +124,8 @@ module Pickler = struct
         serialize_opt default_on_none val_type.Val_type.tws_of_a a buf);
     }
 
+
+
     let skipped_if_none val_type = {
       value = (fun a_opt buf ->
         match a_opt with
@@ -223,6 +225,13 @@ module Unpickler = struct
     let optional ?(none_on_default="") val_type = {
       value = (fun ~name msg ->
         parse_opt none_on_default name val_type.Val_type.a_of_tws msg);
+    }
+
+    let optional_with_default ~default val_type = {
+      value = (fun ~name msg ->
+        match parse_opt "" name val_type.Val_type.a_of_tws msg with
+        | None  , msg -> default, msg
+        | Some a, msg -> a      , msg);
     }
 
     let capture_remaining_message = {

@@ -168,7 +168,7 @@ module Tick_price = struct
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
-          ~price:(fields_value (required Price.val_type))
+          ~price:(fields_value (optional_with_default ~default:Price.zero Price.val_type))
           ~size:(fields_value (required int))
           ~can_auto_execute:(fields_value (optional bool ~none_on_default:"-1")))
       (fun tick_type price size can_auto_execute ->
