@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 51f42b568e97b2db42745a0227011faa) *)
+(* DO NOT EDIT (digest: 77b3136ebee922dfc3bd42db8af8bc38) *)
 This is the INSTALL file for the ibx distribution.
 
 This package uses OASIS to generate its build system. See section OASIS for
@@ -15,7 +15,9 @@ In order to compile this package, you will need:
 * async for library ibx
 * sexplib for library ibx
 * fieldslib for library ibx
-* core_extended for executable test_runner
+* core_extended for executable buy-market-order, executable demultiplex,
+  executable interactive-quotes, executable plot-hist-bars,
+  executable quote-table, executable test_runner
 
 Installing
 ==========

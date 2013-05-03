@@ -17,6 +17,14 @@ XStdFilesREADME: false
 BuildTools:      ocamlbuild, ocamldoc
 PostDistcleanCommand: $rmdir ibx.log
 
+# Flags
+
+Flag examples
+  Description:   Build all examples
+  Default:       false
+
+# Library
+
 Library ibx
   Path:          lib
   FindlibName:   ibx
@@ -72,6 +80,104 @@ Test test_runner
   Run$:             flag(tests)
   Command:          $test_runner
   WorkingDirectory: lib_test
+
+# Examples
+
+Executable "buy-market-order"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           buy_market_order.ml
+  Install:          false
+  BuildDepends:     ibx, core_extended
+  CompiledObject:   best
+
+Executable "demultiplex"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           demultiplex.ml
+  Install:          false
+  BuildDepends:     ibx, core_extended
+  CompiledObject:   best
+
+Executable "interactive-quotes"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           interactive_quotes.ml
+  Install:          false
+  BuildDepends:     ibx, core_extended
+  CompiledObject:   best
+
+Executable "last-price"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           last_price.ml
+  Install:          false
+  BuildDepends:     ibx
+  CompiledObject:   best
+
+Executable "plot-hist-bars"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           plot_hist_bars.ml
+  Install:          false
+  BuildDepends:     ibx, core_extended
+  CompiledObject:   best
+
+Executable "plot-taq-data"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           plot_taq_data.ml
+  Install:          false
+  BuildDepends:     ibx
+  CompiledObject:   best
+
+Executable "print-market-depth"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           print_market_depth.ml
+  Install:          false
+  BuildDepends:     ibx
+  CompiledObject:   best
+
+Executable "print-option-data"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           print_option_data.ml
+  Install:          false
+  BuildDepends:     ibx
+  CompiledObject:   best
+
+Executable "quote-table"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           quote_table.ml
+  Install:          false
+  BuildDepends:     ibx, core_extended
+  CompiledObject:   best
+
+Executable "server-time"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           server_time.ml
+  Install:          false
+  BuildDepends:     ibx
+  CompiledObject:   best
+
+Executable "show-contract-specs"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           show_contract_specs.ml
+  Install:          false
+  BuildDepends:     ibx
+  CompiledObject:   best
+
+Executable "submit-orders"
+  Build$:           flag(examples)
+  Path:             examples
+  MainIs:           submit_orders.ml
+  Install:          false
+  BuildDepends:     ibx
+  CompiledObject:   best
 
 # Documentation
 

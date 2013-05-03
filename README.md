@@ -40,6 +40,12 @@ For more detailed information please refer to the Interactive Brokers
 ### Examples
 
 To get started please refer to the `examples`-directory of this distribution.
+You can build the examples by typing
+
+    $ ./configure --enable-examples
+    $ make
+
+in the top-level directory of this distribution.
 
 
 Contact Information

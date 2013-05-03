@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: c2d28281ae674d54e9f346c15bad2a2f) *)
+(* DO NOT EDIT (digest: 52cf91d2948c9875392841d176f3c73b) *)
 module OASISGettext = struct
 (* # 21 "/home/ogu/.opam/4.00.1+short-types/build/oasis.0.3.0/src/oasis/OASISGettext.ml" *)
 
@@ -480,7 +480,7 @@ let package_default =
      MyOCamlbuildBase.lib_ocaml = [("ibx", ["lib"])];
      lib_c = [];
      flags = [];
-     includes = [("lib_test", ["lib"])];
+     includes = [("lib_test", ["lib"]); ("examples", ["lib"])];
      }
   ;;
 
