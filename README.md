@@ -37,6 +37,11 @@ done for TWS can be watched [here](http://www.youtube.com/watch?v=53tmypRq5wI).
 For more detailed information please refer to the Interactive Brokers
 [API Reference Guide](http://www.interactivebrokers.com/en/software/api/api.htm).
 
+### Documentation
+
+The _still incomplete_ API-documentation of this distribution can be built with `make doc`.
+It can also be found [online](http://ogu.bitbucket.org/ibx/api/).
+
 ### Examples
 
 To get started please refer to the `examples`-directory of this distribution.
