@@ -47,7 +47,7 @@ For more detailed information please refer to the Interactive Brokers
 This simple example will connect to the IB Gateway running on localhost
 and retrieve the last price for a given stock symbol:
 
-    ::: ocaml
+    :::ocaml
     open Core.Std
     open Async.Std
     open Ibx.Std
