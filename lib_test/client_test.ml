@@ -51,7 +51,8 @@ let suite = "Client" >::: [
         (module R : Response_intf.S with type t = R.t)
         ~expected:gen_server_time
         ~actual:server_time;
-      Log.Global.sexp ~level:`Debug server_time R.sexp_of_t)
+      Log.Global.sexp ~level:`Debug server_time R.sexp_of_t
+    )
   );
 
   "market-data" >:: (fun () ->
@@ -73,7 +74,8 @@ let suite = "Client" >::: [
               ~expected:gen_tick
               ~actual:tick;
           Log.Global.sexp ~level:`Debug tick W.sexp_of_t)
-      ) ~finally:(fun _ -> Tws.cancel_market_data tws id))
+      ) ~finally:(fun _ -> Tws.cancel_market_data tws id)
+    )
   );
 
   "option-price" >:: (fun () ->
@@ -87,7 +89,8 @@ let suite = "Client" >::: [
       >>| fun opt_price ->
       let gen_opt_price = Option.value_exn (R.option_price gen_tick_option) in
       assert (Price.(=.) gen_opt_price opt_price);
-      Log.Global.sexp ~level:`Debug opt_price Price.sexp_of_t)
+      Log.Global.sexp ~level:`Debug opt_price Price.sexp_of_t
+    )
   );
 
   "implied-volatility" >:: (fun () ->
@@ -101,7 +104,8 @@ let suite = "Client" >::: [
       >>| fun implied_vol ->
       let gen_implied_vol = Option.value_exn (R.implied_volatility gen_tick_option) in
       assert (Float.(=.) gen_implied_vol implied_vol);
-      Log.Global.sexp ~level:`Debug implied_vol <:sexp_of< float >>)
+      Log.Global.sexp ~level:`Debug implied_vol <:sexp_of< float >>
+    )
   );
 
   "submit-orders" >:: (fun () ->
@@ -123,7 +127,8 @@ let suite = "Client" >::: [
               ~expected:gen_order_state
               ~actual:order_state;
           Log.Global.sexp ~level:`Debug order_state R.sexp_of_t)
-      ) ~finally:(fun _ -> Tws.cancel_order_status tws oid))
+      ) ~finally:(fun _ -> Tws.cancel_order_status tws oid)
+    )
   );
 
   "filter-executions" >:: (fun () ->
@@ -141,7 +146,8 @@ let suite = "Client" >::: [
             (module R : Response_intf.S with type t = R.t)
             ~expected:gen_execution_report
             ~actual:execution_report;
-        Log.Global.sexp ~level:`Debug execution_report R.sexp_of_t))
+        Log.Global.sexp ~level:`Debug execution_report R.sexp_of_t)
+    )
   );
 
   "contract-specs" >:: (fun () ->
@@ -154,7 +160,8 @@ let suite = "Client" >::: [
         (module R : Response_intf.S with type t = R.t)
         ~expected:gen_contract_specs
         ~actual:contract_specs;
-      Log.Global.sexp ~level:`Debug contract_specs R.sexp_of_t)
+      Log.Global.sexp ~level:`Debug contract_specs R.sexp_of_t
+    )
   );
 
   "market-depth" >:: (fun () ->
@@ -176,7 +183,8 @@ let suite = "Client" >::: [
               ~expected:gen_book_update
               ~actual:book_update;
             Log.Global.sexp ~level:`Debug book_update R.sexp_of_t)
-      ) ~finally:(fun _ -> Tws.cancel_market_depth tws id))
+      ) ~finally:(fun _ -> Tws.cancel_market_depth tws id)
+    )
   );
 
   "historical-data" >:: (fun () ->
@@ -189,7 +197,8 @@ let suite = "Client" >::: [
         (module R : Response_intf.S with type t = R.t)
         ~expected:gen_historical_data
         ~actual:historical_data;
-      Log.Global.sexp ~level:`Debug historical_data R.sexp_of_t)
+      Log.Global.sexp ~level:`Debug historical_data R.sexp_of_t
+    )
   );
 
   "realtime-bars" >:: (fun () ->
@@ -211,6 +220,7 @@ let suite = "Client" >::: [
               ~expected:gen_realtime_bar
               ~actual:realtime_bar;
             Log.Global.sexp ~level:`Debug realtime_bar R.sexp_of_t)
-      ) ~finally:(fun _ -> Tws.cancel_realtime_bars tws id))
+      ) ~finally:(fun _ -> Tws.cancel_realtime_bars tws id)
+    )
   );
 ]

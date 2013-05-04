@@ -82,8 +82,9 @@ module Handshake = struct
           try_handshake con
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con))
-        ~finally:(fun ()-> Writer.close w)
+          | Error _ -> Ib.Connection.closed con
+        )
+      ) ~finally:(fun ()-> Writer.close w)
     );
 
     "handshake-unexpected-eof" >:: (fun () ->
@@ -96,12 +97,11 @@ module Handshake = struct
         >>= function
         | Error _ -> assert false
         | Ok handshake_result ->
-          begin
-            match handshake_result with
-            | H.Eof -> Ib.Connection.closed con
-            | H.Server_header _ -> assert false
-            | H.Version_failure _ -> assert false
-          end)
+          match handshake_result with
+          | H.Eof -> Ib.Connection.closed con
+          | H.Server_header _ -> assert false
+          | H.Version_failure _ -> assert false
+      )
     );
 
     "handshake-version-failure" >:: (fun () ->
@@ -112,19 +112,19 @@ module Handshake = struct
           let too_small_version = Int.to_string (Ibx.Std.Config.server_version-1) in
           Writer.write w (too_small_version ^@ "20121107 18:08:49 CET" ^@ "");
           try_handshake con
-          >>| function
+          >>= function
           | Error _ -> assert false
           | Ok handshake_result->
-            begin
-              match handshake_result with
-              | H.Eof -> assert false
-              | H.Server_header _ -> assert false
-              | H.Version_failure version ->
-                assert_string_equal
-                  ~expected:too_small_version
-                  ~actual:(Int.to_string version)
-            end))
-        ~finally:(fun () -> Writer.close w)
+            match handshake_result with
+            | H.Eof -> assert false
+            | H.Server_header _ -> assert false
+            | H.Version_failure version ->
+              assert_string_equal
+                ~expected:too_small_version
+                ~actual:(Int.to_string version);
+              Ib.Connection.close con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
 
     "successful-handshake" >:: (fun () ->
@@ -138,25 +138,25 @@ module Handshake = struct
           Writer.write w (server_version ^@ server_time ^@ "");
           Writer.write w ("15" ^@ "1" ^@ account_code ^@ "");
           try_handshake con
-          >>| function
+          >>= function
           | Error _ -> assert false
           | Ok handshake_result ->
-            begin
-              match handshake_result with
-              | H.Eof -> assert false
-              | H.Version_failure _ -> assert false
-              | H.Server_header (`Version version, time, name) ->
-                assert_string_equal
-                  ~expected:server_version
-                  ~actual:(Int.to_string version);
-                assert_string_equal
-                  ~expected:server_time
-                  ~actual:(Time.to_string time);
-                assert_string_equal
-                  ~expected:account_code
-                  ~actual:(Account_code.to_string name)
-            end))
-        ~finally:(fun () -> Writer.close w)
+            match handshake_result with
+            | H.Eof -> assert false
+            | H.Version_failure _ -> assert false
+            | H.Server_header (`Version version, time, name) ->
+              assert_string_equal
+                ~expected:server_version
+                ~actual:(Int.to_string version);
+              assert_string_equal
+                ~expected:server_time
+                ~actual:(Time.to_string time);
+              assert_string_equal
+                ~expected:account_code
+                ~actual:(Account_code.to_string name);
+              Ib.Connection.close con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
   ]
 end
@@ -184,8 +184,9 @@ module Request = struct
             server_time con
             >>= function
             | Ok _ -> assert false
-            | Error _ -> Ib.Connection.closed con))
-          ~finally:(fun () -> Writer.close w))
+            | Error _ -> Ib.Connection.closed con
+          )
+        ) ~finally:(fun () -> Writer.close w))
     );
 
     "missing-response-handler" >:: (fun () ->
@@ -205,10 +206,11 @@ module Request = struct
           >>= fun () ->
           Writer.write w ("49" ^@ "1" ^@ "1352386125" ^@ "");
           Ib.Request.dispatch buggy_req con (Query.Server_time.create ())
-          >>| function
+          >>= function
           | Ok _ -> assert false
-          | Error _ -> assert (Ib.Connection.is_closed con)))
-        ~finally:(fun () -> Writer.close w)
+          | Error _ -> Ib.Connection.closed con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
 
     "handler-parse-error" >:: (fun () ->
@@ -223,8 +225,9 @@ module Request = struct
           server_time con
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con))
-        ~finally:(fun () -> Writer.close w)
+          | Error _ -> Ib.Connection.closed con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
 
     "handler-no-input" >:: (fun () ->
@@ -240,7 +243,8 @@ module Request = struct
         server_time con
         >>= function
         | Ok _ -> assert false
-        | Error _ -> Ib.Connection.closed con)
+        | Error _ -> Ib.Connection.closed con
+      )
     );
 
     "successful-dispatch" >:: (fun () ->
@@ -257,8 +261,9 @@ module Request = struct
           | Error _ -> assert false
           | Ok _time ->
             assert (not (Ib.Connection.is_closed con));
-            Ib.Connection.close con))
-        ~finally:(fun () -> Writer.close w)
+            Ib.Connection.close con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
   ]
 end
@@ -311,8 +316,9 @@ module Streaming_request = struct
             tick_size con
             >>= function
             | Ok _ -> assert false
-            | Error _ -> Ib.Connection.closed con))
-          ~finally:(fun () -> Writer.close w))
+            | Error _ -> Ib.Connection.closed con
+          )
+        ) ~finally:(fun () -> Writer.close w))
     );
 
     "handler-parse-error" >:: (fun () ->
@@ -328,9 +334,9 @@ module Streaming_request = struct
           tick_size con
           >>= function
           | Ok _ -> assert false
-          | Error _ ->
-            Ib.Connection.closed con))
-        ~finally:(fun () -> Writer.close w)
+          | Error _ -> Ib.Connection.closed con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
 
     "update-parse-error" >:: (fun () ->
@@ -349,10 +355,11 @@ module Streaming_request = struct
           >>= function
           | Ok (pipe_r, _id) ->
             Ib.Connection.closed con
-            >>| fun () ->
-            assert (Pipe.is_closed pipe_r);
-          | Error _ -> assert false))
-        ~finally:(fun () -> Writer.close w)
+            >>= fun () ->
+            Pipe.closed pipe_r
+          | Error _ -> assert false
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
 
     "cancel-streaming" >:: (fun () ->
@@ -375,8 +382,9 @@ module Streaming_request = struct
             assert (Pipe.is_closed pipe_r);
             Ib.Connection.close con
             >>= fun () ->
-            Ib.Connection.closed con))
-        ~finally:(fun () -> Writer.close w)
+            Ib.Connection.closed con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
 
     "unpickler-mismatch" >:: (fun () ->
@@ -406,8 +414,9 @@ module Streaming_request = struct
           Ib.Streaming_request.dispatch buggy_req con (Rg.Q.market_data_g ())
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con))
-        ~finally:(fun () -> Writer.close w)
+          | Error _ -> Ib.Connection.closed con
+        )
+      ) ~finally:(fun () -> Writer.close w)
     );
   ]
 
