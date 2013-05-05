@@ -213,6 +213,24 @@ module Request = struct
       ) ~finally:(fun () -> Writer.close w)
     );
 
+    "handler-version-failure" >:: (fun () ->
+      unix_pipe ()
+      >>= fun (r, w) ->
+      Monitor.protect (fun () ->
+        with_tws_conn r ~f:(fun con ->
+          send_server_header w;
+          connect con
+          >>= fun () ->
+          let wrong_version = "2" in
+          Writer.write w ("49" ^@ wrong_version ^@ "1352386125" ^@ "");
+          server_time con
+          >>= function
+          | Ok _ -> assert false
+          | Error _ -> Ib.Connection.closed con
+        )
+      ) ~finally:(fun () -> Writer.close w)
+    );
+
     "handler-parse-error" >:: (fun () ->
       unix_pipe ()
       >>= fun (r, w) ->
@@ -321,6 +339,25 @@ module Streaming_request = struct
         ) ~finally:(fun () -> Writer.close w))
     );
 
+    "handler-version-failure" >:: (fun () ->
+      unix_pipe ()
+      >>= fun (r, w) ->
+      Monitor.protect (fun () ->
+        with_tws_conn r ~f:(fun con ->
+          send_server_header w;
+          send_next_order_id w;
+          connect con
+          >>= fun () ->
+          let wrong_version = "1" in
+          Writer.write w ("2" ^@ wrong_version ^@ next_query_id () ^@ "0" ^@ "1" ^@ "");
+          tick_size con
+          >>= function
+          | Ok _ -> assert false
+          | Error _ -> Ib.Connection.closed con
+        )
+      ) ~finally:(fun () -> Writer.close w)
+    );
+
     "handler-parse-error" >:: (fun () ->
       unix_pipe ()
       >>= fun (r, w) ->
@@ -374,9 +411,7 @@ module Streaming_request = struct
           Writer.write w ("2" ^@ "6" ^@ next_query_id () ^@ "0" ^@ "1" ^@ "");
           tick_size con
           >>= function
-          | Error e ->
-            print_endline (Error.to_string_hum e);
-            assert false
+          | Error _ -> assert false
           | Ok (pipe_r, id) ->
             cancel_tick_size con id;
             assert (Pipe.is_closed pipe_r);
