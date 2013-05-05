@@ -1,3 +1,5 @@
+2013-05-05: More robust version checking of incoming TWS messages.
+
 2013-04-30: Fixed occasional parse errors caused by empty price fields
             in TWS messages.
 

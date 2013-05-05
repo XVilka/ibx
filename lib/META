@@ -1,6 +1,6 @@
 # OASIS_START
-# DO NOT EDIT (digest: 4b4c99b40f3feec261990a6b71ee5634)
-version = "0.5.5"
+# DO NOT EDIT (digest: 499bc814dfe7c63a795cfe3c1ead0171)
+version = "0.5.6"
 description = "OCaml implementation of the Interactive Brokers TWS API"
 requires = "core async sexplib.syntax fieldslib.syntax threads str"
 archive(byte) = "ibx.cma"
