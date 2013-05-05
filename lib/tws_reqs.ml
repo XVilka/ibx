@@ -89,7 +89,7 @@ let req_submit_order = Ib.Streaming_request.create
   ~send_header:(Ib.Header.create ~tag:S.Submit_order ~version:39)
   ~canc_header:(Ib.Header.create ~tag:S.Cancel_order ~version:1)
   ~recv_header:[Ib.Header.create ~tag:R.Order_status ~version:6]
-  ~skip_header:[Ib.Header.create ~tag:R.Open_order ~version:1]
+  ~skip_header:[Ib.Header.create ~tag:R.Open_order ~version:30]
   ~tws_query:Query.Submit_order.pickler
   ~tws_response:[Response.Order_status.unpickler]
   ()
