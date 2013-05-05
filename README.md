@@ -42,9 +42,12 @@ done for TWS can be watched [here](http://www.youtube.com/watch?v=53tmypRq5wI).
 For more detailed information please refer to the Interactive Brokers
 [API Reference Guide](http://www.interactivebrokers.com/en/software/api/api.htm).
 
+__NOTE:__ You can use the username _edemo_ with password _demouser_
+to log into the demo account.
+
 ### Examples
 
-This simple example will connect to the IB Gateway running on localhost
+This simple program will connect to the IB Gateway running on localhost
 and retrieve the last price for a given stock symbol:
 
     :::ocaml
@@ -81,11 +84,13 @@ and retrieve the last price for a given stock symbol:
 
     let () = Command.run command
 
-You can simply build it by running
+Assuming the above program is stored in the file `last_price.ml`,
+you can simply build it by running
 
-    $ ocamlbuild -use-ocamlfind -tag thread -pkgs ibx,threads last_price.native
+    $ ocamlbuild -use-ocamlfind -tag thread -pkg ibx last_price.native
 
-and then use it to retrieve the last price of Apple Inc. as follows:
+and then use it to get the last price of a stock (e.g. Apple Inc.)
+as follows:
 
     $ ./last_price.native AAPL
 
