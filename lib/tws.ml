@@ -46,16 +46,15 @@ module Market_data = struct
   ] with sexp
 
   let ( = ) t1 t2 = match t1, t2 with
-    | `Tick_price  x, `Tick_price  y -> Tick_price.(=)  x y
-    | `Tick_size   x, `Tick_size   y -> Tick_size.(=)   x y
+    | `Tick_price  x, `Tick_price  y -> Tick_price. (=) x y
+    | `Tick_size   x, `Tick_size   y -> Tick_size.  (=) x y
     | `Tick_option x, `Tick_option y -> Tick_option.(=) x y
     | `Tick_string x, `Tick_string y -> Tick_string.(=) x y
     | _ -> false
 
-  let pp ppf t =
-    match t with
-    | `Tick_price  t -> Tick_price.pp  ppf t
-    | `Tick_size   t -> Tick_size.pp   ppf t
+  let pp ppf t = match t with
+    | `Tick_price  t -> Tick_price. pp ppf t
+    | `Tick_size   t -> Tick_size.  pp ppf t
     | `Tick_option t -> Tick_option.pp ppf t
     | `Tick_string t -> Tick_string.pp ppf t
 end

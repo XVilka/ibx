@@ -69,7 +69,6 @@ module Ibx_error = struct
   | Parse_error of Sexp.t
   | Tws_error of string
   | Unknown_response_handler of Query_id.t * Recv_tag.t * [ `Version of int ]
-  | Version_failure of int * Recv_tag.t
   | Unpickler_mismatch of Sexp.t * Recv_tag.t Header.t list
   | Uncaught_exn of Sexp.t
   with sexp
@@ -303,25 +302,24 @@ module Connection : Connection_internal = struct
   and logfun = [ `Send of Query.t | `Recv of Response.t ] -> unit
 
   let init_handler ?id t ~header ~unpickler ~action ~f =
+    let id = Option.value id ~default:t.default_query_id in
     let tag = header.Header.tag in
     let version = header.Header.version in
-    Hashtbl.replace t.open_queries
-      ~key:(Option.value id ~default:t.default_query_id, tag, version)
-      ~data:(fun response ->
-        match response.Response.data with
-        | Error err ->
-          return (`Die err)
-        | Ok `Cancel ->
-          assert false (* Response handler is not cancelable. *)
-        | Ok (`Response data) ->
-          begin
-            match of_tws unpickler data with
-            | Error err ->
-              return (`Die err)
-            | Ok response ->
-              f response;
-              return action
-          end)
+    Hashtbl.replace t.open_queries ~key:(id, tag, version) ~data:(fun response ->
+      match response.Response.data with
+      | Error err ->
+        return (`Die err)
+      | Ok `Cancel ->
+        assert false (* Response handler is not cancelable. *)
+      | Ok (`Response data) ->
+        begin
+          match of_tws unpickler data with
+          | Error err ->
+            return (`Die err)
+          | Ok response ->
+            f response;
+            return action
+        end)
 
   let create
       ?(enable_logging = false)
@@ -376,7 +374,7 @@ module Connection : Connection_internal = struct
       ~header:Header.managed_accounts
       ~unpickler:Account_code.unpickler
       ~action:`Remove
-      ~f:(Ivar.fill_if_empty t.account_code);
+      ~f:(Ivar.fill t.account_code);
     init_handler t
       ~header:Header.execution_report
       ~unpickler:Execution_report.unpickler
@@ -447,8 +445,8 @@ module Connection : Connection_internal = struct
   let read_body reader tag =
     let module R = Recv_tag in
     let unimplemented x = Error.failwiths "unimplemented" x R.sexp_of_t in
+    let empty_read = return (`Ok (Queue.create ())) in
     let read ~len = really_read reader ~len in
-    let no_data = Queue.create () in
     Ibx_result.try_with_read (fun () ->
       match tag with
       | R.Tick_price -> read ~len:4
@@ -491,12 +489,12 @@ module Connection : Connection_internal = struct
       | R.Server_time -> read ~len:1
       | R.Realtime_bar -> read ~len:8
       | R.Fundamental_data -> unimplemented R.Fundamental_data
-      | R.Contract_data_end -> return (`Ok no_data)
-      | R.Open_order_end -> return (`Ok no_data)
+      | R.Contract_data_end -> empty_read
+      | R.Open_order_end -> empty_read
       | R.Account_download_end -> unimplemented R.Account_download_end
-      | R.Execution_report_end -> return (`Ok no_data)
+      | R.Execution_report_end -> empty_read
       | R.Delta_neutral_validation -> unimplemented R.Delta_neutral_validation
-      | R.Snapshot_end -> return (`Ok no_data)
+      | R.Snapshot_end -> empty_read
       | R.Commission_report -> read ~len:6
     )
 
@@ -562,7 +560,7 @@ module Connection : Connection_internal = struct
     | Error `Closed as x -> x
     | Ok writer ->
       send_query ?logfun:t.logfun writer query;
-      let id = Option.value ~default:t.default_query_id query.Query.id in
+      let id = Option.value query.Query.id ~default:t.default_query_id in
       List.iter handlers ~f:(fun h ->
         let tag = h.Response_handler.tag in
         let version = h.Response_handler.version in
@@ -598,7 +596,7 @@ module Connection : Connection_internal = struct
     >>| fun oid -> Query_id.increase new_id (Raw_order.Id.to_int_exn oid)
 
   let handle_response t response =
-    let id = Option.value ~default:t.default_query_id response.Response.query_id in
+    let id = Option.value response.Response.query_id ~default:t.default_query_id in
     let tag = response.Response.tag in
     let version = response.Response.version in
     let key = (id, tag, version) in

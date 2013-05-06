@@ -252,6 +252,8 @@ end
 module Message_generator = struct
   open Protocol
 
+  let (^@) s t = s^"\000"^t;;
+
   let generate_messages clt_msg =
     let to_tws = Pickler.run in
     let module Query = Client_message.Query in
@@ -268,13 +270,13 @@ module Message_generator = struct
         tag      = V.Managed_accounts;
         version  = 1;
         query_id = None;
-        data     = "DU15111\x00" }
+        data     = "DU15111" ^@ "" }
       ; E.Server_response {
         Response.
         tag      = V.Next_order_id;
         version  = 1;
         query_id = None;
-        data     = "1\x00" }
+        data     = "1" ^@ "" }
       ]
 
     | Client_message.Client_query query ->
