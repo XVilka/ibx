@@ -1039,7 +1039,7 @@ module Client = struct
             | H.Eof ->
               Error.raise (Ibx_error.to_error Ibx_error.Unexpected_eof)
             | H.Version_failure version ->
-              raise (Server_version_too_small (Config.server_version, `Min version))
+              raise (Server_version_too_small (version, `Min Config.server_version))
             | H.Server_header (`Version version, conn_time, account_code) ->
               t.con <- `Connected con;
               t.server_version  <- Some version;
