@@ -3,39 +3,38 @@ open Core_extended.Std
 open Async.Std
 open Ibx.Std
 
-let make_tick_printer id symbol ~color = stage (fun tick ->
-  Format.fprintf Format.str_formatter "@[<h 0>\\<%s\\>@ id=%s@ symbol=%s@ %a@]"
-    (Time.to_string (Time.now ()))
+let make_tick_printer ~id ~symbol ~color = stage (fun tick ->
+  Format.fprintf
+    Format.str_formatter "@[<h 0>\\<%s\\>@ id=%s@ symbol=%s@ %a@]"
+    (Time.to_string_trimmed (Time.now ()))
     (Query_id.to_string id)
     (Symbol.to_string symbol)
     Market_data.pp tick;
   Format.close_box ();
   let unescape = unstage (String.Escaping.unescape ~escape_char:'\\') in
   let output = unescape (Format.flush_str_formatter ()) in
-  if Console.is_color_tty () then
-    Console.Ansi.string_with_attr [`Bright; color] output
-  else output)
+  if Console.is_color_tty ()
+  then Console.Ansi.printf [`Bright; color] "%s\n%!" output
+  else print_endline output;
+  return ())
 
 let print_market_data ~duration =
   Common.with_tws_client (fun tws ->
-    let process_market_data symbol color =
+    let print_ticks symbol color =
       Tws.market_data tws ~contract:(Contract.stock ~currency:`USD symbol)
       >>= function
       | Error e ->
-        prerr_endline (Error.to_string_hum e);
-        let pipe_r, pipe_w = Pipe.create () in
-        Pipe.close pipe_w;
-        return pipe_r
+        print_endline (Error.to_string_hum e);
+        return ()
       | Ok (ticks, id) ->
         upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id);
-        return (Pipe.map ticks ~f:(unstage (make_tick_printer id symbol ~color)))
+        Pipe.iter ticks ~f:(unstage (make_tick_printer ~id ~symbol ~color))
     in
     let symbols = ["AAPL"; "MSFT"; "GOOG"] in
     let colors  = [`Red; `Green; `Blue] in
-    Deferred.all (List.map2_exn symbols colors ~f:(fun symbol color ->
-      process_market_data (Symbol.of_string symbol) color))
-    >>= fun pipes ->
-    Pipe.iter_without_pushback (Pipe.interleave pipes) ~f:print_endline)
+    Deferred.all_unit (List.map2_exn symbols colors ~f:(fun symbol color ->
+      print_ticks (Symbol.of_string symbol) color))
+  )
 
 let command =
   Command.async_basic ~summary:" print market data"

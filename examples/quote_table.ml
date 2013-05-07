@@ -4,8 +4,6 @@ open Ibx.Std
 
 module Ascii_table = Core_extended.Ascii_table
 
-let symbols = ["AAPL";"AMZN";"CSCO";"FB";"GOOG";"IBM";"MSFT";"ORCL";"SAP";"YHOO"]
-
 let print_quote_table quotes =
   let module Q = Quote_snapshot in
   let get_symbol    quote = sprintf "%s"    (Q.symbol quote |! Symbol.to_string) in
@@ -24,15 +22,17 @@ let print_quote_table quotes =
     create_col "Ask price" get_ask_price;
   ] quotes
 
+let symbols = ["AAPL";"AMZN";"CSCO";"FB";"GOOG";"IBM";"MSFT";"ORCL";"SAP";"YHOO"]
+
 let run () =
   Common.with_tws_client (fun tws ->
-    Deferred.all (List.map symbols ~f:(fun symbol ->
+    Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
       let stock = Contract.stock
         ~exchange:`SMART
         ~currency:`USD
         (Symbol.of_string symbol)
       in
-      Tws.quote_snapshot_exn tws ~contract:stock))
+      Tws.quote_snapshot_exn tws ~contract:stock)
     >>| fun quotes -> print_quote_table quotes)
 
 let command =
