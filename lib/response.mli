@@ -243,6 +243,11 @@ end
 (*****************************************************************************)
 
 module Execution_report : sig
+  module Side : sig
+    type t = [ `Purchase | `Sale ] with sexp
+    include Stringable.S with type t := t
+  end
+
   type t = private
     { order_id : Order_id.t;
       contract : Contract.Type.t Contract.t;
@@ -250,7 +255,7 @@ module Execution_report : sig
       time : Time.t;
       account_code : Account_code.t;
       exchange : Exchange.t;
-      side : [ `Purchase | `Sale ];
+      side : Side.t;
       quantity : int;
       price : Price.t;
       permanent_id : int;

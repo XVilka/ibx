@@ -17,16 +17,13 @@ let submit_and_wait_for_fill tws ~timeout ~contract ~order =
     (Contract.symbol contract |! Symbol.to_string);
   Tws.submit_order_exn tws ~contract ~order
   >>= fun (order_status, oid) ->
-  let wait_for_fill =
-    Pipe.iter_without_pushback order_status ~f:(fun status ->
-      begin
-        match Order_status.state status with
-        | `Filled ->
-          printf "%s buy order filled at %4.2f\n%!" order_type
-            (Price.to_float (Order_status.last_fill_price status));
-          Tws.cancel_order_status tws oid
-        | _ -> ()
-      end)
+  let wait_for_fill = Pipe.iter order_status ~f:(fun status ->
+    match Order_status.state status with
+    | `Filled ->
+      printf "%s buy order filled at %4.2f\n%!" order_type
+        (Price.to_float (Order_status.last_fill_price status));
+      Tws.cancel_order_status tws oid; return ()
+    | _ -> return ())
   in
   Clock.with_timeout timeout wait_for_fill >>| function
   | `Timeout ->
@@ -35,20 +32,22 @@ let submit_and_wait_for_fill tws ~timeout ~contract ~order =
   | `Result () -> ()
 
 let run ~timeout =
-  let symbol = Symbol.of_string "IBM" in
-  let ibm = Contract.stock ~exchange:`BATS ~currency:`USD symbol in
+  let ibm = Contract.stock
+    ~exchange:`BATS
+    ~currency:`USD
+    (Symbol.of_string "IBM")
+  in
   let num_shares = 100 in
   Common.with_tws_client (fun tws ->
     Tws.quote_snapshot_exn tws ~contract:ibm
     >>= fun snapshot ->
     let ask_price = Quote_snapshot.ask_price snapshot in
     printf "Last ask price %4.2f\n%!" (Price.to_float ask_price);
-    let buy_mkt = Order.buy_market ~quantity:num_shares in
-    let buy_lmt = Order.buy_limit  ~quantity:num_shares ask_price in
-    Deferred.all_unit [
-      submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order:buy_mkt;
-      submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order:buy_lmt;
-    ] >>= fun () ->
+    Deferred.List.iter ~how:`Parallel [
+      Order.buy_market ~quantity:num_shares;
+      Order.buy_limit  ~quantity:num_shares ask_price;
+    ] ~f:(fun order -> submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order)
+    >>= fun () ->
     Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
     >>= fun exec_reports ->
     Pipe.iter_without_pushback exec_reports ~f:(fun exec_report ->
@@ -57,8 +56,7 @@ let run ~timeout =
         (Execution_report.exec_id exec_report |! Execution_id.to_string)
         (Execution_report.time exec_report |! Time.to_string_trimmed)
         (Execution_report.exchange exec_report |! Exchange.to_string)
-        (match Execution_report.side exec_report with
-        | `Purchase -> "purchase" | `Sale -> "sale")
+        (Execution_report.side exec_report |! Execution_report.Side.to_string)
         (Execution_report.quantity exec_report)
         (Execution_report.price exec_report |! Price.to_float))
     )

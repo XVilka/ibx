@@ -978,6 +978,15 @@ module Execution_report = struct
       | s -> invalid_argf "Side.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
+
+    let to_string = function
+      | `Purchase -> "purchase"
+      | `Sale -> "sale"
+
+    let of_string = function
+      | "purchase" -> `Purchase
+      | "sale" -> `Sale
+      | s -> invalid_argf "Side.of_string: %S" s ()
   end
 
   type t =
