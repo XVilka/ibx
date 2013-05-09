@@ -149,7 +149,7 @@ module Client : sig
 
   (** [connect t] initiates a connection and returns a deferred that becomes
       determined when the connection is established. *)
-  val connect : t -> unit Or_error.t Deferred.t
+  val connect : t -> unit Deferred.t
 
   val disconnect : t -> unit Deferred.t
 
