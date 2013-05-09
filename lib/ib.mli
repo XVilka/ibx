@@ -22,8 +22,7 @@
 
 (** A module for building TWS clients
 
-    Parts of this module are inspired by the Rpc module of JaneSt's Async
-    library.
+    Parts of this module are inspired by Async's Rpc module.
 *)
 
 open Core.Std
@@ -89,14 +88,14 @@ module Request : sig
     -> tws_response : 'response Tws_prot.Unpickler.t
     -> ('query, 'response) t
 
-  val dispatch :
-    ('query, 'response) t
+  val dispatch
+    :  ('query, 'response) t
     -> Connection.t
     -> 'query
     -> 'response Or_error.t Deferred.t
 
-  val dispatch_exn :
-    ('query, 'response) t
+  val dispatch_exn
+    :  ('query, 'response) t
     -> Connection.t
     -> 'query
     -> 'response Deferred.t
@@ -117,14 +116,14 @@ module Streaming_request : sig
     -> unit
     -> ('query, 'response) t
 
-  val dispatch :
-    ('query, 'response) t
+  val dispatch
+    :  ('query, 'response) t
     -> Connection.t
     -> 'query
     -> ('response Pipe.Reader.t * Id.t) Or_error.t Deferred.t
 
-  val dispatch_exn :
-    ('query, 'response) t
+  val dispatch_exn
+    :  ('query, 'response) t
     -> Connection.t
     -> 'query
     -> ('response Pipe.Reader.t * Id.t) Deferred.t
