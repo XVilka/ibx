@@ -1134,7 +1134,14 @@ module Client = struct
       end);
     connect t >>= fun () ->
     match state t with
-    | `Connected -> handler t >>= fun () -> disconnect t
+    | `Connected ->
+      Monitor.try_with (fun () -> handler t) >>= (function
+      | Error exn ->
+        disconnect t
+        >>| fun () ->
+        handle_error (Error.of_exn (Monitor.extract_exn exn));
+      | Ok () ->
+        disconnect t)
     | _ -> return ()
 
   let dispatch_request t req query =
