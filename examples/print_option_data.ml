@@ -43,7 +43,7 @@ module Option_client : sig
 
   val cancel_option_data : t -> Query_id.t -> unit
 end = struct
-  include Ib.Client
+  include Ibx.Client
 
   let option_data t ~option =
     let q =

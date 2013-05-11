@@ -55,6 +55,7 @@ Library ibx
                   Raw_order,
                   Order,
                   Ib,
+                  Client,
                   Tws_reqs,
                   Tws,
                   Client_id,

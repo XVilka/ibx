@@ -20,10 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-(** A module for building TWS clients
-
-    Parts of this module are inspired by Async's Rpc module.
-*)
+(** Core building blocks for IBX applications, e.g. TWS clients *)
 
 open Core.Std
 open Async.Std
@@ -132,49 +129,4 @@ module Streaming_request : sig
       associated with the unique identifier [id], which was returned
       as part of a call to [dispatch]. *)
   val cancel : (_, _) t -> Connection.t -> Id.t -> unit
-end
-
-module Client : sig
-  type t
-  include Client_intf.S with type t := t
-
-  (** Creates a new (initially disconnected) client. *)
-  val create
-    :  ?enable_logging:bool
-    -> ?client_id:Client_id.t
-    -> host:string
-    -> port:int
-    -> unit
-    -> t Deferred.t
-
-  (** [connect t] initiates a connection and returns a deferred that becomes
-      determined when the connection is established. *)
-  val connect : t -> unit Deferred.t
-
-  val disconnect : t -> unit Deferred.t
-
-  val dispatch_request
-    :  t
-    -> ('query, 'response) Request.t
-    -> 'query
-    -> 'response Or_error.t Deferred.t
-
-  val dispatch_streaming_request
-    :  t
-    -> ('query, 'response) Streaming_request.t
-    -> 'query
-    -> ('response Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
-
-  val cancel_streaming_request
-    :  t
-    -> (_, _) Streaming_request.t
-    -> Query_id.t
-    -> unit
-
-  val dispatch_and_cancel
-    :  t
-    -> ('query, 'response) Streaming_request.t
-    -> 'query
-    -> 'response Or_error.t Deferred.t
-
 end

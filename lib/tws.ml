@@ -25,7 +25,7 @@ open Async.Std
 open Std_internal
 open Response
 
-include Ib.Client
+include Client
 
 (* Connection and server *)
 
