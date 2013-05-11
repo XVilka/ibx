@@ -74,10 +74,7 @@ module Ibx_error = struct
   with sexp
   exception Ibx of t with sexp
   let raise t = raise (Ibx t)
-
-  let to_error = function
-    | Tws_error s -> Error.of_string s
-    | e -> Error.create "IBX" e sexp_of_t
+  let to_error t = Error.of_thunk (fun () -> Sexp.to_string_hum (sexp_of_t t))
 end
 
 module Ibx_result = struct
@@ -102,10 +99,7 @@ module Ibx_result = struct
 
   let or_error = function
     | Ok _ as x -> x
-    | Error (Ibx_error.Tws_error s) ->
-      Or_error.error_string s
-    | Error e ->
-      Or_error.error "IBX" e Ibx_error.sexp_of_t
+    | Error err -> Error (Ibx_error.to_error err)
 end
 
 let to_tws p x = Pickler.run p x
@@ -375,7 +369,7 @@ module Connection : Connection_internal = struct
       ~header:Header.tws_error
       ~unpickler:Tws_error.unpickler
       ~action:`Keep
-      ~f:(fun e -> extend_status ("TWS " ^ Tws_error.to_string_hum e));
+      ~f:(fun e -> extend_status (Tws_error.to_string_hum e));
     init_handler t
       ~header:Header.execution_report
       ~unpickler:Execution_report.unpickler
@@ -819,10 +813,9 @@ module Streaming_request = struct
             | Error err ->
               Pipe.close pipe_w;
               return (`Die err)
-            | Ok response ->
-              let err = Ibx_error.Tws_error (
-                "TWS Error " ^ Tws_error.to_string_hum response
-              ) in
+            | Ok tws_error ->
+              let err_string = Tws_error.to_string_hum tws_error in
+              let err = Ibx_error.Tws_error err_string in
               if Ivar.is_empty ivar then begin
                 Ivar.fill ivar (Error err);
                 return `Remove
