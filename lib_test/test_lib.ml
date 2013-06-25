@@ -24,7 +24,7 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-module Console = Core_extended.Console.Ansi
+module Console = Textutils.Console.Ansi
 
 type test = {
   test_name : string;

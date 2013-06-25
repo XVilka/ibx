@@ -1,7 +1,8 @@
 open Core.Std
-open Core_extended.Std
 open Async.Std
 open Ibx.Std
+
+module Console = Textutils.Console
 
 let make_tick_printer ~id ~symbol ~color = stage (fun tick ->
   Format.fprintf

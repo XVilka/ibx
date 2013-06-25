@@ -2,7 +2,7 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-module Ascii_table = Core_extended.Ascii_table
+module Ascii_table = Textutils.Ascii_table
 
 let print_quote_table quotes =
   let module Q = Quote_snapshot in

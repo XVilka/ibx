@@ -74,7 +74,7 @@ Executable test_runner
   Path:           lib_test
   MainIs:         test_runner.ml
   Install:        false
-  BuildDepends:   ibx, core_extended
+  BuildDepends:   ibx, textutils
   CompiledObject: best
 
 Test test_runner
@@ -89,7 +89,7 @@ Executable "buy-market-order"
   Path:           examples
   MainIs:         buy_market_order.ml
   Install:        false
-  BuildDepends:   ibx, core_extended
+  BuildDepends:   ibx
   CompiledObject: best
 
 Executable "demultiplex"
@@ -97,7 +97,7 @@ Executable "demultiplex"
   Path:           examples
   MainIs:         demultiplex.ml
   Install:        false
-  BuildDepends:   ibx, core_extended
+  BuildDepends:   ibx, textutils
   CompiledObject: best
 
 Executable "interactive-quotes"
@@ -121,7 +121,7 @@ Executable "plot-hist-bars"
   Path:           examples
   MainIs:         plot_hist_bars.ml
   Install:        false
-  BuildDepends:   ibx, core_extended
+  BuildDepends:   ibx
   CompiledObject: best
 
 Executable "plot-taq-data"
@@ -153,7 +153,7 @@ Executable "quote-table"
   Path:           examples
   MainIs:         quote_table.ml
   Install:        false
-  BuildDepends:   ibx, core_extended
+  BuildDepends:   ibx, textutils
   CompiledObject: best
 
 Executable "server-time"
