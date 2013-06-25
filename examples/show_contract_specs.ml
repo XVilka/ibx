@@ -13,7 +13,7 @@ let contracts : Contract.Type.t Contract.t list = [
   Contract.futures
     ~exchange:`GLOBEX
     ~currency:`USD
-    ~expiry:(Date.create_exn ~y:2013 ~m:Month.Jun ~d:21)
+    ~expiry:(Date.create_exn ~y:2014 ~m:Month.Mar ~d:21)
     (Symbol.of_string "ES");
 
   (* For current contracts check: http://finance.yahoo.com/q/op?s=GOOG *)
@@ -34,12 +34,19 @@ let contracts : Contract.Type.t Contract.t list = [
 let run () =
   Common.with_tws_client (fun tws ->
     Deferred.List.iter contracts ~f:(fun contract ->
-      Tws.contract_specs_exn tws ~contract
-      >>| fun con_specs ->
-      printf "===== [ %s ] =====\n%!"
-        (Contract.symbol contract |! Symbol.to_string);
-      printf "%s\n\n%!"
-        (Contract_specs.sexp_of_t con_specs |! Sexp.to_string_hum)))
+      let symbol = Symbol.to_string (Contract.symbol contract) in
+      let message s =
+        printf "===== [ %s ] =====\n" symbol;
+        print_endline s;
+        print_newline ()
+      in
+      Tws.contract_specs tws ~contract
+      >>| function
+      | Ok con_specs ->
+        message (Contract_specs.sexp_of_t con_specs |! Sexp.to_string_hum)
+      | Error e ->
+        message (Error.to_string_hum e))
+  )
 
 let command =
   Command.async_basic ~summary:"show contract specifications"
