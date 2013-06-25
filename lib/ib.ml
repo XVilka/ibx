@@ -93,7 +93,7 @@ module Ibx_result = struct
 
   let try_with_unpickle f = make_try_with
     Result.try_with
-    (|!)
+    (|>)
     (fun e -> Ibx_error.Parse_error e)
     f
 
@@ -190,8 +190,8 @@ module Response = struct
               | Ok `Cancel -> assert false
               | Ok (`Response data) ->
                 Queue.to_list data
-                |! String.concat ~sep:"\000"
-                |! Fn.flip (^) "\000"
+                |> String.concat ~sep:"\000"
+                |> Fn.flip (^) "\000"
             in
             `Args $ tag $ version $ query_id $ tws_data)))
 end

@@ -24,8 +24,8 @@ let plot t data_opts =
   let data, opts = List.unzip data_opts in
   let cmd =
     List.map opts ~f:(sprintf "'-' %s")
-    |! String.concat ~sep:","
-    |! sprintf "plot %s"
+    |> String.concat ~sep:","
+    |> sprintf "plot %s"
   in
   send t cmd;
   List.iter data ~f:(fun cols -> send_cols t cols)

@@ -43,7 +43,7 @@ let run () =
       Tws.contract_specs tws ~contract
       >>| function
       | Ok con_specs ->
-        message (Contract_specs.sexp_of_t con_specs |! Sexp.to_string_hum)
+        message (Contract_specs.sexp_of_t con_specs |> Sexp.to_string_hum)
       | Error e ->
         message (Error.to_string_hum e))
   )

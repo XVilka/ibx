@@ -525,5 +525,5 @@ let start_on_port port =
         ~f:(Server.send_ignore_errors server clt_id)
     in
     Pipe.iter_without_pushback (Server.listen_ignore_errors server) ~f:send_response
-    |! Deferred.don't_wait_for);
+    |> Deferred.don't_wait_for);
   Ivar.read server_is_ready

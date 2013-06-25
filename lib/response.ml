@@ -188,7 +188,7 @@ module Tick_price = struct
 
   let pp ppf t =
     Format.fprintf ppf "type=%s price=%4.2f size=%d %s"
-      (Type.sexp_of_t t.tick_type |! Sexp.to_string_hum)
+      (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
       (Price.to_float t.price)
       t.size
       (Option.value_map t.can_auto_execute ~default:"n/a" ~f:(function
@@ -246,7 +246,7 @@ module Tick_size = struct
 
   let pp ppf t =
     Format.fprintf ppf "type=%s size=%i"
-      (Type.sexp_of_t t.tick_type |! Sexp.to_string_hum)
+      (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
       t.size
 end
 
@@ -365,7 +365,7 @@ module Tick_option = struct
     Format.fprintf ppf
       "type=%s vol=%s delta=%sf gamma=%s vega=%s theta=%s \
        opt_price=%s pv_dividend=%s und_price=%s"
-      (Type.sexp_of_t t.tick_type |! Sexp.to_string_hum)
+      (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
       (Option.value_map t.implied_volatility ~default:"n/a" ~f:float_to_string)
       (Option.value_map t.delta ~default:"n/a" ~f:float_to_string)
       (Option.value_map t.gamma ~default:"n/a" ~f:float_to_string)
@@ -587,7 +587,7 @@ module Tick_string = struct
 
   let pp ppf t =
     Format.fprintf ppf "type=%s value=%s"
-      (Type.sexp_of_t t.tick_type |! Sexp.to_string_hum)
+      (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
       begin match t.tick_type with
       | Type.Last_timestamp ->
         Time.to_string_trimmed (Time.of_float (Float.of_string t.value))
@@ -862,7 +862,7 @@ module Contract_specs = struct
               if String.is_empty valid_exchanges then []
               else begin
                 String.split valid_exchanges ~on:','
-                |! List.map ~f:Exchange.t_of_tws
+                |> List.map ~f:Exchange.t_of_tws
               end;
             price_magnifier;
             underlying_id;
@@ -926,7 +926,7 @@ module Contract_specs = struct
               $ t.multiplier
               $ (String.concat t.order_types ~sep:",")
               $ (List.map t.valid_exchanges ~f:Exchange.tws_of_t
-                 |! String.concat ~sep:",")
+                 |> String.concat ~sep:",")
               $ t.price_magnifier
               $ t.underlying_id
               $ t.long_name
@@ -1118,7 +1118,7 @@ module Execution_report = struct
           ~security_id_type:(fields_value skipped)
           ~security_id:(fields_value skipped)
           ~combo_legs:(fields_value skipped))
-      |! wrap_contract_spec
+      |> wrap_contract_spec
     in
     Pickler.create ~name:"Execution"
       Pickler.Spec.(
@@ -1440,7 +1440,7 @@ module Historical_data = struct
         let bars = List.map (List.range 0 num_bars) ~f:(fun i ->
           let bar_msg =
             Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
-            |! Queue.of_array
+            |> Queue.of_array
           in
           Unpickler.run_exn Bar.unpickler bar_msg)
         in
@@ -1464,7 +1464,7 @@ module Historical_data = struct
             let pickler = Only_in_test.force Bar.pickler in
             let bars_msg =
               List.map t.bars ~f:(fun bar -> Pickler.run pickler bar)
-              |! String.concat
+              |> String.concat
             in
             `Args
               $ t.start_time

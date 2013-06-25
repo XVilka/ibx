@@ -200,7 +200,7 @@ module Market_data = struct
           ~security_id_type:(fields_value skipped)
           ~security_id:(fields_value skipped)
           ~combo_legs:(fields_value (required int)))
-      |! wrap_contract_spec
+      |> wrap_contract_spec
     in
     Pickler.create ~name:"Market_data"
       Pickler.Spec.(
@@ -290,7 +290,7 @@ module Common_option_calc = struct
           ~security_id_type:(fields_value skipped)
           ~security_id:(fields_value skipped)
           ~combo_legs:(fields_value skipped))
-      |! wrap_contract_spec
+      |> wrap_contract_spec
   end
 end
 
@@ -586,7 +586,7 @@ module Contract_specs = struct
           ~security_id_type:(fields_value (optional Raw_contract.Security_id.Type.val_type))
           ~security_id:(fields_value (optional Raw_contract.Security_id.val_type))
           ~combo_legs:(fields_value skipped))
-      |! wrap_contract_spec
+      |> wrap_contract_spec
     in
     Pickler.create ~name:"Contract_specs" contract_spec
 
@@ -676,7 +676,7 @@ module Market_depth = struct
           ~security_id_type:(fields_value skipped)
           ~security_id:(fields_value skipped)
           ~combo_legs:(fields_value skipped))
-      |! wrap_contract_spec
+      |> wrap_contract_spec
     in
     Pickler.create ~name:"Market_depth"
       Pickler.Spec.(
@@ -890,7 +890,7 @@ module Historical_data = struct
           ~security_id_type:(fields_value skipped)
           ~security_id:(fields_value skipped)
           ~combo_legs:(fields_value skipped))
-      |! wrap_contract_spec
+      |> wrap_contract_spec
     in
     Pickler.create ~name:"Historical_data"
       Pickler.Spec.(
@@ -1052,7 +1052,7 @@ module Realtime_bars = struct
           ~security_id_type:(fields_value skipped)
           ~security_id:(fields_value skipped)
           ~combo_legs:(fields_value skipped))
-      |! wrap_contract_spec
+      |> wrap_contract_spec
     in
     Pickler.create ~name:"Realtime_bars"
       Pickler.Spec.(

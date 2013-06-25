@@ -14,7 +14,7 @@ let submit_and_wait_for_fill tws ~timeout ~contract ~order =
   printf "Submit %s buy order for %d shares of %s\n%!"
     order_type
     (Order.quantity order)
-    (Contract.symbol contract |! Symbol.to_string);
+    (Contract.symbol contract |> Symbol.to_string);
   Tws.submit_order_exn tws ~contract ~order
   >>= fun (order_status, oid) ->
   let wait_for_fill = Pipe.iter order_status ~f:(fun status ->
@@ -53,12 +53,12 @@ let run ~timeout =
     Pipe.iter_without_pushback exec_reports ~f:(fun exec_report ->
       printf "Execution: \
           exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
-        (Execution_report.exec_id exec_report |! Execution_id.to_string)
-        (Execution_report.time exec_report |! Time.to_string_trimmed)
-        (Execution_report.exchange exec_report |! Exchange.to_string)
-        (Execution_report.side exec_report |! Execution_report.Side.to_string)
+        (Execution_report.exec_id exec_report |> Execution_id.to_string)
+        (Execution_report.time exec_report |> Time.to_string_trimmed)
+        (Execution_report.exchange exec_report |> Exchange.to_string)
+        (Execution_report.side exec_report |> Execution_report.Side.to_string)
         (Execution_report.quantity exec_report)
-        (Execution_report.price exec_report |! Price.to_float))
+        (Execution_report.price exec_report |> Price.to_float))
     )
 
 let timeout_arg () =

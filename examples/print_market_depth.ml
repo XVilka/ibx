@@ -9,7 +9,7 @@ let print_market_depth ~duration ~currency ~symbol =
     >>= fun (book_updates, id) ->
     upon (after duration) (fun () -> Tws.cancel_market_depth tws id);
     Pipe.iter_without_pushback book_updates ~f:(fun book_update ->
-      printf "%s\n%!" (Book_update.sexp_of_t book_update |! Sexp.to_string_hum))
+      printf "%s\n%!" (Book_update.sexp_of_t book_update |> Sexp.to_string_hum))
   )
 
 let command =

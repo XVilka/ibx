@@ -79,10 +79,10 @@ end = struct
 
   let tmg () =
     Time.now ()
-    |! Time.to_float
-    |! Float.modf
-    |! Float.Parts.integral
-    |! Time.of_float
+    |> Time.to_float
+    |> Float.modf
+    |> Float.Parts.integral
+    |> Time.of_float
 
   let og g () =
     if bg () then Some (g ()) else None
