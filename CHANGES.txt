@@ -1,3 +1,5 @@
+2013-06-25: Fixed build problem by using textutils instead of core_extended.
+
 2013-05-11: Changed string representation of error messages in Ib module.
             Moved client module in ib.ml into separate file.
 
