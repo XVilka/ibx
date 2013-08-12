@@ -13,7 +13,7 @@ let plot_taq_data ~duration ~currency ~symbol =
     Pipe.fold taq_data ~init:([], [], [], [], [])
       ~f:(fun (ttms, tpxs, qtms, asks, bids) taq_record ->
         if !verbose then Format.printf "@[%a@]@\n%!" TAQ.pp taq_record;
-        match taq_record with
+        return (match taq_record with
         | TAQ.Trade trade ->
           Trade.time  trade :: ttms,
           Trade.price trade :: tpxs,
@@ -22,7 +22,7 @@ let plot_taq_data ~duration ~currency ~symbol =
           ttms, tpxs,
           Quote.time      quote :: qtms,
           Quote.ask_price quote :: asks,
-          Quote.bid_price quote :: bids)
+          Quote.bid_price quote :: bids))
     >>| fun (ttms, tpxs, qtms, asks, bids) ->
     let ttms = Array.of_list_rev (ttms : Time.t  list :> float list) in
     let tpxs = Array.of_list_rev (tpxs : Price.t list :> float list) in

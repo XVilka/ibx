@@ -507,7 +507,8 @@ let quote_snapshot t ~contract =
         cancel_streaming_request t Tws_reqs.req_taq_snapshot id;
         Pipe.close_read ticks
       end;
-      counter, quote) >>| fun (_, quote) -> Ok quote
+      return (counter, quote))
+    >>| fun (_, quote) -> Ok quote
 
 let quote_snapshot_exn t ~contract =
   quote_snapshot t ~contract >>| Or_error.ok_exn
@@ -548,7 +549,8 @@ let trade_snapshot t ~contract =
         cancel_streaming_request t Tws_reqs.req_taq_snapshot id;
         Pipe.close_read ticks
       end;
-      counter, trade) >>| fun (_, trade) -> Ok trade
+      return (counter, trade))
+    >>| fun (_, trade) -> Ok trade
 
 let trade_snapshot_exn t ~contract =
   trade_snapshot t ~contract >>| Or_error.ok_exn
