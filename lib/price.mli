@@ -21,7 +21,6 @@
 *)
 
 open Core.Std
-open Tws_prot
 
 type t = private float
 include Float_intf.S with type t := t

@@ -21,7 +21,6 @@
 *)
 
 open Core.Std
-open Tws_prot
 
 (* Futher information about the exchange listings can be found
    {{:http://www.interactivebrokers.com/en/index.php?f=exchanges} online}. *)

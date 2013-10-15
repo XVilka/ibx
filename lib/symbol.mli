@@ -21,7 +21,6 @@
 *)
 
 open Core.Std
-open Tws_prot
 
 type t = private string
 include Identifiable.S with type t := t
