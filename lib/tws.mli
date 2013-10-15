@@ -285,12 +285,12 @@ end
 
 val trades
   : t
-  -> contract:[< `Stock | `Future | `Option ] Contract.t
+  -> contract:[< `Stock | `Futures | `Option ] Contract.t
   -> (Trade.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val trades_exn
   : t
-  -> contract:[< `Stock | `Future | `Option ] Contract.t
+  -> contract:[< `Stock | `Futures | `Option ] Contract.t
   -> (Trade.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_trades : t -> Query_id.t -> unit
@@ -322,12 +322,12 @@ end
 
 val quotes
   :  t
-  -> contract:[< `Stock | `Future | `Option ] Contract.t
+  -> contract:[< `Stock | `Futures | `Option ] Contract.t
   -> (Quote.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val quotes_exn
   :  t
-  -> contract:[< `Stock | `Future | `Option ] Contract.t
+  -> contract:[< `Stock | `Futures | `Option ] Contract.t
   -> (Quote.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_quotes : t -> Query_id.t -> unit
@@ -343,12 +343,12 @@ end
 
 val taq_data
   :  t
-  -> contract:[< `Stock | `Future | `Option ] Contract.t
+  -> contract:[< `Stock | `Futures | `Option ] Contract.t
   -> (TAQ.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val taq_data_exn
   :  t
-  -> contract:[< `Stock | `Future | `Option ] Contract.t
+  -> contract:[< `Stock | `Futures | `Option ] Contract.t
   -> (TAQ.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_taq_data : t -> Query_id.t -> unit
