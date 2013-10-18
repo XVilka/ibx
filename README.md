@@ -15,7 +15,7 @@ this software for actual trading is at your own risk.
 Installation
 ------------
 
-From [OPAM](http://opam.ocamlpro.com)
+From [OPAM](http://opam.ocaml.org)
 
     $ opam install ibx
 
