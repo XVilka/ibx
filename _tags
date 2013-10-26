@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: c623b155ca14fe1bc8d2e0d3abc384d0)
+# DO NOT EDIT (digest: a3ffef327577c68bd398a02936ee3fb8)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -87,16 +87,6 @@
 <examples/demultiplex.{native,byte}>: pkg_fieldslib.syntax
 <examples/demultiplex.{native,byte}>: pkg_threads
 <examples/demultiplex.{native,byte}>: pkg_str
-# Executable interactive-quotes
-<examples/interactive_quotes.{native,byte}>: use_ibx
-<examples/interactive_quotes.{native,byte}>: pkg_core_extended
-<examples/interactive_quotes.{native,byte}>: pkg_core
-<examples/interactive_quotes.{native,byte}>: pkg_async
-<examples/interactive_quotes.{native,byte}>: pkg_sexplib.syntax
-<examples/interactive_quotes.{native,byte}>: pkg_fieldslib.syntax
-<examples/interactive_quotes.{native,byte}>: pkg_threads
-<examples/interactive_quotes.{native,byte}>: pkg_str
-<examples/*.ml{,i}>: pkg_core_extended
 # Executable last-price
 <examples/last_price.{native,byte}>: use_ibx
 <examples/last_price.{native,byte}>: pkg_core

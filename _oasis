@@ -100,14 +100,6 @@ Executable "demultiplex"
   BuildDepends:   ibx, textutils
   CompiledObject: best
 
-Executable "interactive-quotes"
-  Build$:         flag(examples)
-  Path:           examples
-  MainIs:         interactive_quotes.ml
-  Install:        false
-  BuildDepends:   ibx, core_extended
-  CompiledObject: best
-
 Executable "last-price"
   Build$:         flag(examples)
   Path:           examples
