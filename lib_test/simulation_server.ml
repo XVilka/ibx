@@ -52,44 +52,53 @@ module Protocol = struct
     | Client_query  of Query.t
     with sexp
 
+    let client_header_of_tws raw_msg =
+      match raw_msg with
+      | client_version :: client_id :: [] ->
+        Client_header (
+          Int.of_string client_version,
+          Client_id.of_string client_id
+        )
+      | _ ->
+        failwiths "wrong client header format" raw_msg <:sexp_of< string list >>
+
+    let client_query_of_tws ~query_has_id raw_msg =
+      let query =
+        if query_has_id then
+          match raw_msg with
+          | tag :: version :: query_id :: data ->
+            { Query.
+              tag = Send_tag.t_of_tws tag;
+              version = Int.of_string version;
+              id = Some (Query_id.of_string query_id);
+              data = Queue.of_list data;
+            }
+          | _ ->
+            failwiths "wrong query format" raw_msg <:sexp_of< string list >>
+        else
+          match raw_msg with
+          | tag :: version :: data ->
+            { Query.
+              tag = Send_tag.t_of_tws tag;
+              version = Int.of_string version;
+              id = None;
+              data = Queue.of_list data;
+            }
+          | _ ->
+            failwiths "wrong query format" raw_msg <:sexp_of< string list >>
+      in
+      Client_query query
+
     let of_tws raw_msg =
       let raw_tag = List.hd_exn raw_msg in
-      let is_client_header =
-        String.equal raw_tag client_header_tag
-      in
+      let is_client_header = String.equal raw_tag client_header_tag in
       if is_client_header then
-        match raw_msg with
-        | client_version :: client_id :: [] ->
-          Client_header (
-            Int.of_string client_version,
-            Client_id.of_string client_id
-          )
-        | _ ->
-          failwiths "wrong client header format" raw_msg <:sexp_of< string list >>
+        client_header_of_tws raw_msg
       else
-        let query =
-          if Send_tag.corresponding_query_has_id (Send_tag.t_of_tws raw_tag) then
-            match raw_msg with
-            | tag :: version :: query_id :: data ->
-              { Query.
-                tag = Send_tag.t_of_tws tag;
-                version = Int.of_string version;
-                id = Some (Query_id.of_string query_id);
-                data = Queue.of_list data;
-              }
-            | _ -> failwiths "wrong query format" raw_msg <:sexp_of< string list >>
-          else
-            match raw_msg with
-            | tag :: version :: data ->
-              { Query.
-                tag = Send_tag.t_of_tws tag;
-                version = Int.of_string version;
-                id = None;
-                data = Queue.of_list data;
-              }
-            | _ -> failwiths "wrong query format" raw_msg <:sexp_of< string list >>
+        let query_has_id =
+          Send_tag.corresponding_query_has_id (Send_tag.t_of_tws raw_tag)
         in
-        Client_query query
+        client_query_of_tws ~query_has_id raw_msg
   end
 
   module Server_message = struct
