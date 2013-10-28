@@ -152,6 +152,12 @@ module Response = struct
       let module R = Response.Order_status in
       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.order_status_g);
 
+    (* ======================= Account and Portfolio ======================= *)
+
+    (fun () ->
+      let module R = Response.Account_update in
+      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.account_update_g);
+
     (* ========================== Contract specs =========================== *)
 
     (fun () ->

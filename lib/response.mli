@@ -239,72 +239,24 @@ module Order_status : sig
     -> t
 end
 
-(** {1 Execution} *)
+(** {1 Account and Portfolio} *)
 (*****************************************************************************)
 
-module Execution_report : sig
-  module Side : sig
-    type t = [ `Purchase | `Sale ] with sexp
-    include Stringable.S with type t := t
-  end
-
+module Account_update : sig
   type t = private
-    { order_id : Order_id.t;
-      contract : Contract.Type.t Contract.t;
-      exec_id : Execution_id.t;
-      time : Time.t;
+    { key : string;
+      value : string;
+      currency : Currency.t;
       account_code : Account_code.t;
-      exchange : Exchange.t;
-      side : Side.t;
-      quantity : int;
-      price : Price.t;
-      permanent_id : int;
-      client_id : Client_id.t;
-      liquidation : int;
-      cumulative_quantity : int;
-      average_price : Price.t;
-      order_ref : string option;
     }
   with sexp, fields
   include Response_intf.S with type t := t
 
   val create :
-    order_id:Order_id.t
-    -> contract:Contract.Type.t Contract.t
-    -> exec_id:Execution_id.t
-    -> time:Time.t
-    -> account_code:Account_code.t
-    -> exchange:Exchange.t
-    -> side:[ `Purchase | `Sale ]
-    -> quantity:int
-    -> price:Price.t
-    -> permanent_id:int
-    -> client_id:Client_id.t
-    -> liquidation:int
-    -> cumulative_quantity:int
-    -> average_price:Price.t
-    -> order_ref:string option
-    -> t
-end
-
-module Commission_report : sig
-  type t = private
-    { exec_id : Execution_id.t;
-      commission : Price.t;
-      currency : Currency.t;
-      realized_pnl : Price.t;
-      yield : float;
-      yield_redemption_date : int option;
-    } with sexp, fields
-  include Response_intf.S with type t := t
-
-  val create
-    :  exec_id:Execution_id.t
-    -> commission:Price.t
+    key:string
+    -> value:string
     -> currency:Currency.t
-    -> realized_pnl:Price.t
-    -> yield:float
-    -> yield_redemption_date:int option
+    -> account_code:Account_code.t
     -> t
 end
 
@@ -372,6 +324,75 @@ module Contract_specs : sig
     -> t
 
   val to_contract : t -> Contract.Type.t Contract.t
+end
+
+(** {1 Execution} *)
+(*****************************************************************************)
+
+module Execution_report : sig
+  module Side : sig
+    type t = [ `Purchase | `Sale ] with sexp
+    include Stringable.S with type t := t
+  end
+
+  type t = private
+    { order_id : Order_id.t;
+      contract : Contract.Type.t Contract.t;
+      exec_id : Execution_id.t;
+      time : Time.t;
+      account_code : Account_code.t;
+      exchange : Exchange.t;
+      side : Side.t;
+      quantity : int;
+      price : Price.t;
+      permanent_id : int;
+      client_id : Client_id.t;
+      liquidation : int;
+      cumulative_quantity : int;
+      average_price : Price.t;
+      order_ref : string option;
+    }
+  with sexp, fields
+  include Response_intf.S with type t := t
+
+  val create :
+    order_id:Order_id.t
+    -> contract:Contract.Type.t Contract.t
+    -> exec_id:Execution_id.t
+    -> time:Time.t
+    -> account_code:Account_code.t
+    -> exchange:Exchange.t
+    -> side:[ `Purchase | `Sale ]
+    -> quantity:int
+    -> price:Price.t
+    -> permanent_id:int
+    -> client_id:Client_id.t
+    -> liquidation:int
+    -> cumulative_quantity:int
+    -> average_price:Price.t
+    -> order_ref:string option
+    -> t
+end
+
+module Commission_report : sig
+  type t = private
+    { exec_id : Execution_id.t;
+      commission : Price.t;
+      currency : Currency.t;
+      realized_pnl : Price.t;
+      yield : float;
+      yield_redemption_date : int option;
+    } with sexp, fields
+  include Response_intf.S with type t := t
+
+  val create
+    :  exec_id:Execution_id.t
+    -> commission:Price.t
+    -> currency:Currency.t
+    -> realized_pnl:Price.t
+    -> yield:float
+    -> yield_redemption_date:int option
+    -> t
 end
 
 (** {1 Market depth} *)

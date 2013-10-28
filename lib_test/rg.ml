@@ -714,14 +714,18 @@ module R : sig
   val order_status_g : Response.Order_status.t gen
   val order_states_g : Response.Order_status.t list gen
 
-  (* Executions *)
+  (* Account and Portfolio *)
 
-  val execution_report_g  : Response.Execution_report.t gen
-  val execution_reports_g : Response.Execution_report.t list gen
+  val account_update_g : Response.Account_update.t gen
 
   (* Contract specs *)
 
   val contract_specs_g : Response.Contract_specs.t gen
+
+  (* Executions *)
+
+  val execution_report_g  : Response.Execution_report.t gen
+  val execution_reports_g : Response.Execution_report.t list gen
 
   (* Market depth *)
 
@@ -749,43 +753,6 @@ end = struct
       ~error_msg:(sg ())
 
   let server_time_g () = Response.Server_time.create ~time:(tmg ())
-
-  (* ============================ Contract specs =========================== *)
-
-  let contract_specs_g () =
-    let contract_type_g () = oneof [
-      always (`Stock);
-      always (`Option);
-      always (`Futures);
-    ] ()
-    in
-    Response.Contract_specs.create
-      ~symbol:(symbol_g ())
-      ~contract_type:(contract_type_g ())
-      ~expiry:(og expiry_g ())
-      ~strike:(og price_g ())
-      ~option_right:(og option_right_g ())
-      ~exchange:(exchange_g ())
-      ~currency:(currency_g ())
-      ~local_symbol:(og symbol_g ())
-      ~market_name:(sg ())
-      ~trading_class:(sg ())
-      ~contract_id:(contract_id_g ())
-      ~min_tick:(pfg ())
-      ~multiplier:(og sg ())
-      ~order_types:(List.init (Random.int 10) ~f:(fun _ -> sg ()))
-      ~valid_exchanges:(List.init (Random.int 10) ~f:(fun _ -> exchange_g ()))
-      ~price_magnifier:(nng ())
-      ~underlying_id:(nng ())
-      ~long_name:(sg ())
-      ~listing_exchange:(og exchange_g ())
-      ~contract_month:(sg ())
-      ~industry:(sg ())
-      ~category:(sg ())
-      ~subcategory:(sg ())
-      ~timezone_id:(sg ())
-      ~trading_hours:(sg ())
-      ~liquid_hours:(sg ())
 
   (* ============================== Market data ============================ *)
 
@@ -944,6 +911,52 @@ end = struct
   let order_states_g () =
     List.permute ~random_state:(Random.State.make_self_init ())
       (List.init (1 + Random.int bound) ~f:(fun _ -> order_status_g ()))
+
+  (* ======================== Account and Portfolio ======================== *)
+
+  let account_update_g () =
+    Response.Account_update.create
+      ~key:(sg ())
+      ~value:(sg ())
+      ~currency:(currency_g ())
+      ~account_code:(account_code_g ())
+
+  (* ============================ Contract specs =========================== *)
+
+  let contract_specs_g () =
+    let contract_type_g () = oneof [
+      always (`Stock);
+      always (`Option);
+      always (`Futures);
+    ] ()
+    in
+    Response.Contract_specs.create
+      ~symbol:(symbol_g ())
+      ~contract_type:(contract_type_g ())
+      ~expiry:(og expiry_g ())
+      ~strike:(og price_g ())
+      ~option_right:(og option_right_g ())
+      ~exchange:(exchange_g ())
+      ~currency:(currency_g ())
+      ~local_symbol:(og symbol_g ())
+      ~market_name:(sg ())
+      ~trading_class:(sg ())
+      ~contract_id:(contract_id_g ())
+      ~min_tick:(pfg ())
+      ~multiplier:(og sg ())
+      ~order_types:(List.init (Random.int 10) ~f:(fun _ -> sg ()))
+      ~valid_exchanges:(List.init (Random.int 10) ~f:(fun _ -> exchange_g ()))
+      ~price_magnifier:(nng ())
+      ~underlying_id:(nng ())
+      ~long_name:(sg ())
+      ~listing_exchange:(og exchange_g ())
+      ~contract_month:(sg ())
+      ~industry:(sg ())
+      ~category:(sg ())
+      ~subcategory:(sg ())
+      ~timezone_id:(sg ())
+      ~trading_hours:(sg ())
+      ~liquid_hours:(sg ())
 
   (* ============================= Executions ============================== *)
 

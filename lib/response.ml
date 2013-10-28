@@ -738,6 +738,51 @@ end
    | Account and Portfolio                                                 |
    +-----------------------------------------------------------------------+ *)
 
+module Account_update = struct
+  type t = {
+    key : string;
+    value : string;
+    currency : Currency.t;
+    account_code : Account_code.t;
+  } with sexp, fields
+
+  let create = Fields.create
+
+  let ( = ) t1 t2 : bool =
+    let use op = fun field ->
+      op (Field.get field t1) (Field.get field t2)
+    in
+    Fields.for_all
+      ~key:(use (=))
+      ~value:(use (=))
+      ~currency:(use (=))
+      ~account_code:(use (=))
+
+  let unpickler =
+    Unpickler.create ~name:"Account_update"
+      Unpickler.Spec.(
+        Fields.fold
+          ~init:(empty ())
+          ~key:(fields_value (required string))
+          ~value:(fields_value (required string))
+          ~currency:(fields_value (required Currency.val_type))
+          ~account_code:(fields_value (required Account_code.val_type)))
+      (fun key value currency account_code ->
+        { key; value; currency; account_code })
+
+  let pickler = Only_in_test.of_thunk (fun () ->
+    Pickler.create ~name:"Account_update"
+      Pickler.Spec.(
+        wrap (
+          Fields.fold
+            ~init:(empty ())
+            ~key:(fields_value (required string))
+            ~value:(fields_value (required string))
+            ~currency:(fields_value (required Currency.val_type))
+            ~account_code:(fields_value (required Account_code.val_type)))
+          (fun t -> `Args $ t.key $ t.value $ t.currency $ t.account_code)))
+end
+
 (* +-----------------------------------------------------------------------+
    | Contract specs                                                        |
    +-----------------------------------------------------------------------+ *)
