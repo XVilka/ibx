@@ -58,8 +58,8 @@ and retrieve the last price for a given stock symbol:
     let host = "localhost"
     let port = 4001
 
-    let print_last_price symbol =
-      Tws.with_client ~host ~port
+    let print_last_price enable_logging symbol =
+      Tws.with_client ~enable_logging ~host ~port
         ~on_handler_error:(`Call (fun e ->
           eprintf "[Error] Failed to retrieve last price for %s:\n" symbol;
           prerr_endline (Error.to_string_hum e);
@@ -78,9 +78,13 @@ and retrieve the last price for a given stock symbol:
       Command.async_basic ~summary:"Retrieve last stock price"
         Command.Spec.(
           empty
+          +> flag "-enable-logging" no_arg ~doc:" enable logging"
           +> anon ("STOCK-SYMBOL" %: string)
         )
-        (fun symbol () -> print_last_price symbol)
+        (fun enable_logging symbol () ->
+          if enable_logging then Log.Global.set_level `Debug;
+          print_last_price enable_logging symbol
+        )
 
     let () = Command.run command
 
@@ -93,6 +97,10 @@ and then use it to get the last price of a stock (e.g. Apple Inc.)
 as follows:
 
     $ ./last_price.native AAPL
+
+or alternatively
+
+    $ ./last_price.native -enable-logging AAPL 2> ibx.log
 
 For more complex examples please refer to the `examples`-directory of this
 distribution. You can build the examples by typing
