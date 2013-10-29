@@ -40,6 +40,7 @@ module Query_id = struct
   include Unique_id.Int63 (struct end)
   let increase t num = of_int_exn (to_int_exn t + num)
   let val_type = Val_type.create to_string of_string
+  let default = of_int_exn (-1)
 end
 
 module Header = struct
@@ -281,22 +282,21 @@ end
 
 module Connection : Connection_internal = struct
   type t =
-    { writer           : Writer.t;
-      reader           : string Pipe.Reader.t;
-      open_queries     : (Query_id.t * Recv_tag.t * version, response_handler) Hashtbl.t;
-      default_query_id : Query_id.t;
-      next_order_id    : Order_id.t Ivar.t;
-      account_code     : Account_code.t Ivar.t;
-      stop             : unit Ivar.t;
-      logfun           : logfun option;
-      extend_error     : Error.t -> unit;
+    { writer        : Writer.t;
+      reader        : string Pipe.Reader.t;
+      open_queries  : (Query_id.t * Recv_tag.t * version, response_handler) Hashtbl.t;
+      next_order_id : Order_id.t Ivar.t;
+      account_code  : Account_code.t Ivar.t;
+      stop          : unit Ivar.t;
+      logfun        : logfun option;
+      extend_error  : Error.t -> unit;
     }
   and version = int
   and response_handler = Response_handler.handler
   and logfun = [ `Send of Query.t | `Recv of Response.t ] -> unit
 
   let init_handler t ~header ~unpickler ~action ~f =
-    let id = t.default_query_id in
+    let id = Query_id.default in
     let tag = header.Header.tag in
     let version = header.Header.version in
     Hashtbl.replace t.open_queries ~key:(id, tag, version) ~data:(fun response ->
@@ -345,13 +345,12 @@ module Connection : Connection_internal = struct
     let t =
       {
         writer;
-        reader           = Reader.read_all reader read_one;
-        open_queries     = Hashtbl.Poly.create ~size:25 ();
-        default_query_id = Query_id.of_int_exn (-1);
-        next_order_id    = Ivar.create ();
-        account_code     = Ivar.create ();
-        stop             = Ivar.create ();
-        logfun           = Option.some_if enable_logging logfun;
+        reader        = Reader.read_all reader read_one;
+        open_queries  = Hashtbl.Poly.create ~size:25 ();
+        next_order_id = Ivar.create ();
+        account_code  = Ivar.create ();
+        stop          = Ivar.create ();
+        logfun        = Option.some_if enable_logging logfun;
         extend_error;
       }
     in
@@ -556,7 +555,7 @@ module Connection : Connection_internal = struct
     | Error `Closed as x -> x
     | Ok writer ->
       send_query ?logfun:t.logfun writer query;
-      let id = Option.value query.Query.id ~default:t.default_query_id in
+      let id = Option.value query.Query.id ~default:Query_id.default in
       List.iter handlers ~f:(fun h ->
         let tag = h.Response_handler.tag in
         let version = h.Response_handler.version in
@@ -591,7 +590,7 @@ module Connection : Connection_internal = struct
       Ok ()
 
   let handle_response t response =
-    let id = Option.value response.Response.query_id ~default:t.default_query_id in
+    let id = Option.value response.Response.query_id ~default:Query_id.default in
     let tag = response.Response.tag in
     let version = response.Response.version in
     let key = (id, tag, version) in
