@@ -716,7 +716,8 @@ module R : sig
 
   (* Account and Portfolio *)
 
-  val account_update_g : Response.Account_update.t gen
+  val account_update_g   : Response.Account_update.t gen
+  val portfolio_update_g : Response.Portfolio_update.t gen
 
   (* Contract specs *)
 
@@ -919,6 +920,54 @@ end = struct
       ~key:(sg ())
       ~value:(sg ())
       ~currency:(currency_g ())
+      ~account_code:(account_code_g ())
+
+  let portfolio_update_g () =
+    let contract_g () = oneof
+      [ always (
+        Contract.stock
+          ?id:(og contract_id_g ())
+          ?listing_exchange:None
+          ?local_symbol:(og symbol_g ())
+          ?security_id:None
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          (symbol_g ()))
+      ; always (
+        Contract.futures
+          ?id:(og contract_id_g ())
+          ?multiplier:(og sg ())
+          ?listing_exchange:None
+          ?local_symbol:(og symbol_g ())
+          ?security_id:None
+          ?include_expired:None
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          ~expiry:(expiry_g ())
+          (symbol_g ()))
+      ; always (
+        Contract.option
+          ?id:(og contract_id_g ())
+          ?multiplier:(og sg ())
+          ?listing_exchange:None
+          ?local_symbol:(og symbol_g ())
+          ?security_id:None
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          ~option_right:(option_right_g ())
+          ~expiry:(expiry_g ())
+          ~strike:(price_g ())
+          (symbol_g ()))
+      ] ()
+    in
+    Response.Portfolio_update.create
+      ~contract:(contract_g ())
+      ~position:(nng ())
+      ~market_price:(price_g ())
+      ~market_value:(price_g ())
+      ~average_cost:(price_g ())
+      ~unrealized_pnl:(price_g ())
+      ~realized_pnl:(price_g ())
       ~account_code:(account_code_g ())
 
   (* ============================ Contract specs =========================== *)

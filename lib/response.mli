@@ -260,6 +260,32 @@ module Account_update : sig
     -> t
 end
 
+module Portfolio_update : sig
+  type t = private
+    { contract : Contract.Type.t Contract.t;
+      position : int;
+      market_price : Price.t;
+      market_value : Price.t;
+      average_cost : Price.t;
+      unrealized_pnl : Price.t;
+      realized_pnl : Price.t;
+      account_code : Account_code.t;
+    }
+  with sexp, fields
+  include Response_intf.S with type t := t
+
+  val create :
+    contract:Contract.Type.t Contract.t
+    -> position:int
+    -> market_price:Price.t
+    -> market_value:Price.t
+    -> average_cost:Price.t
+    -> unrealized_pnl:Price.t
+    -> realized_pnl:Price.t
+    -> account_code:Account_code.t
+    -> t
+end
+
 (** {1 Contract specs} *)
 (*****************************************************************************)
 

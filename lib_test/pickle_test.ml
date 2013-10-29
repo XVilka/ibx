@@ -158,6 +158,10 @@ module Response = struct
       let module R = Response.Account_update in
       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.account_update_g);
 
+    (fun () ->
+      let module R = Response.Portfolio_update in
+      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.portfolio_update_g);
+
     (* ========================== Contract specs =========================== *)
 
     (fun () ->

@@ -783,6 +783,137 @@ module Account_update = struct
           (fun t -> `Args $ t.key $ t.value $ t.currency $ t.account_code)))
 end
 
+module Portfolio_update = struct
+  type t = {
+    contract : Contract.Type.t Contract.t;
+    position : int;
+    market_price : Price.t;
+    market_value : Price.t;
+    average_cost : Price.t;
+    unrealized_pnl : Price.t;
+    realized_pnl : Price.t;
+    account_code : Account_code.t;
+  } with sexp, fields
+
+  let create = Fields.create
+
+  let ( = ) t1 t2 : bool =
+    let use op = fun field ->
+      op (Field.get field t1) (Field.get field t2)
+    in
+    Fields.for_all
+      ~contract:(use Contract.(=))
+      ~position:(use (=))
+      ~market_price:(use Price.(=.))
+      ~market_value:(use Price.(=.))
+      ~average_cost:(use Price.(=.))
+      ~unrealized_pnl:(use Price.(=.))
+      ~realized_pnl:(use Price.(=.))
+      ~account_code:(use Account_code.(=))
+
+  let unpickler =
+    let contract_spec =
+      Unpickler.Spec.(
+        step (fun conv id symbol contract_type expiry strike option_right
+          multiplier exchange currency local_symbol ->
+            let contract = Raw_contract.create ?id ~contract_type ?expiry ?strike
+              ?option_right ?multiplier ~exchange ~currency ?local_symbol symbol
+            in
+            conv (Contract.of_raw contract)
+        )
+        ++ value (optional Raw_contract.Id.val_type)
+          ~name:(field_name Raw_contract.Fields.contract_id)
+        ++ value (required Symbol.val_type)
+          ~name:(field_name Raw_contract.Fields.symbol)
+        ++ value (required string)
+          ~name:(field_name Raw_contract.Fields.contract_type)
+        ++ value (optional date)
+          ~name:(field_name Raw_contract.Fields.expiry)
+        ++ value (optional Price.val_type ~none_on_default:"0.0")
+          ~name:(field_name Raw_contract.Fields.strike)
+        ++ value (optional Raw_contract.Option_right.val_type)
+          ~name:(field_name Raw_contract.Fields.option_right)
+        ++ value (optional string)
+          ~name:(field_name Raw_contract.Fields.multiplier)
+        ++ value (required Exchange.val_type)
+          ~name:(field_name Raw_contract.Fields.exchange)
+        ++ value (required Currency.val_type)
+          ~name:(field_name Raw_contract.Fields.currency)
+        ++ value (optional Symbol.val_type)
+          ~name:(field_name Raw_contract.Fields.local_symbol)
+      )
+    in
+    Unpickler.create ~name:"Portfolio_update"
+      Unpickler.Spec.(
+        Fields.fold
+          ~init:(empty ())
+          ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
+          ~position:(fields_value (required int))
+          ~market_price:(fields_value (required Price.val_type))
+          ~market_value:(fields_value (required Price.val_type))
+          ~average_cost:(fields_value (required Price.val_type))
+          ~unrealized_pnl:(fields_value (required Price.val_type))
+          ~realized_pnl:(fields_value (required Price.val_type))
+          ~account_code:(fields_value (required Account_code.val_type)))
+      (fun contract position market_price market_value average_cost
+        unrealized_pnl realized_pnl account_code ->
+          { contract;
+            position;
+            market_price;
+            market_value;
+            average_cost;
+            unrealized_pnl;
+            realized_pnl;
+            account_code;
+          })
+
+  let pickler = Only_in_test.of_thunk (fun () ->
+    let contract_spec =
+      Pickler.Spec.(
+        Raw_contract.Fields.fold
+          ~init:(empty ())
+          ~contract_id:(fields_value (optional Raw_contract.Id.val_type))
+          ~symbol:(fields_value (required Symbol.val_type))
+          ~contract_type:(fields_value (required string))
+          ~expiry:(fields_value (optional date))
+          ~strike:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
+          ~option_right:(fields_value (optional Raw_contract.Option_right.val_type))
+          ~multiplier:(fields_value (optional string))
+          ~exchange:(fields_value (required Exchange.val_type))
+          ~listing_exchange:(fields_value skipped)
+          ~currency:(fields_value (required Currency.val_type))
+          ~local_symbol:(fields_value (optional Symbol.val_type))
+          ~include_expired:(fields_value skipped)
+          ~security_id_type:(fields_value skipped)
+          ~security_id:(fields_value skipped)
+          ~combo_legs:(fields_value skipped))
+      |> wrap_contract_spec
+    in
+    Pickler.create ~name:"Portfolio_value"
+      Pickler.Spec.(
+        wrap (
+          Fields.fold
+            ~init:(empty ())
+            ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
+            ~position:(fields_value (required int))
+            ~market_price:(fields_value (required Price.val_type))
+            ~market_value:(fields_value (required Price.val_type))
+            ~average_cost:(fields_value (required Price.val_type))
+            ~unrealized_pnl:(fields_value (required Price.val_type))
+            ~realized_pnl:(fields_value (required Price.val_type))
+            ~account_code:(fields_value (required Account_code.val_type)))
+          (fun t ->
+            `Args
+              $ (Contract.to_raw t.contract)
+              $ t.position
+              $ t.market_price
+              $ t.market_value
+              $ t.average_cost
+              $ t.unrealized_pnl
+              $ t.realized_pnl
+              $ t.account_code)))
+end
+
 (* +-----------------------------------------------------------------------+
    | Contract specs                                                        |
    +-----------------------------------------------------------------------+ *)
