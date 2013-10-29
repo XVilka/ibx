@@ -147,3 +147,497 @@ let ( = ) t1 t2 : bool =
     ~security_id_type:(use (=))
     ~security_id:(use (=))
     ~combo_legs:(use (=))
+
+
+module Pickler_specs = struct
+
+  let wrap_contract_spec contract_spec =
+    Pickler.Spec.(
+      wrap contract_spec
+        (fun t ->
+          `Args
+            $ t.contract_id
+            $ t.symbol
+            $ t.contract_type
+            $ t.expiry
+            $ t.strike
+            $ t.option_right
+            $ t.multiplier
+            $ t.exchange
+            $ t.listing_exchange
+            $ t.currency
+            $ t.local_symbol
+            $ t.include_expired
+            $ t.security_id_type
+            $ t.security_id
+            $ t.combo_legs))
+
+  let market_data_query () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value (optional Id.val_type))
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value (optional string))
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value (optional Exchange.val_type))
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value skipped)
+        ~security_id_type:(fields_value skipped)
+        ~security_id:(fields_value skipped)
+        ~combo_legs:(fields_value (required int)))
+    |> wrap_contract_spec
+
+  let common_option_calc () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value (optional Id.val_type))
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value (optional string))
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value (optional Exchange.val_type))
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value skipped)
+        ~security_id_type:(fields_value skipped)
+        ~security_id:(fields_value skipped)
+        ~combo_legs:(fields_value skipped))
+    |> wrap_contract_spec
+
+  let contract_specs_query () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value (optional Id.val_type))
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value (optional string))
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value skipped)
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value (required bool))
+        ~security_id_type:(fields_value (optional Security_id.Type.val_type))
+        ~security_id:(fields_value (optional Security_id.val_type))
+        ~combo_legs:(fields_value skipped))
+    |> wrap_contract_spec
+
+  let market_depth_query () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value skipped)
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value (optional string))
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value skipped)
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value skipped)
+        ~security_id_type:(fields_value skipped)
+        ~security_id:(fields_value skipped)
+        ~combo_legs:(fields_value skipped))
+    |> wrap_contract_spec
+
+  let historical_data_query () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value skipped)
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value (optional string))
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value (optional Exchange.val_type))
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value (required bool))
+        ~security_id_type:(fields_value skipped)
+        ~security_id:(fields_value skipped)
+        ~combo_legs:(fields_value skipped))
+    |> wrap_contract_spec
+
+  let realtime_bars_query () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value skipped)
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value (optional string))
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value (optional Exchange.val_type))
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value skipped)
+        ~security_id_type:(fields_value skipped)
+        ~security_id:(fields_value skipped)
+        ~combo_legs:(fields_value skipped))
+    |> wrap_contract_spec
+
+  let portfolio_update_response () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value (optional Id.val_type))
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value (optional string))
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value skipped)
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value skipped)
+        ~security_id_type:(fields_value skipped)
+        ~security_id:(fields_value skipped)
+        ~combo_legs:(fields_value skipped))
+    |> wrap_contract_spec
+
+  let execution_report_response () =
+    Pickler.Spec.(
+      Fields.fold
+        ~init:(empty ())
+        ~contract_id:(fields_value (optional Id.val_type))
+        ~symbol:(fields_value (required Symbol.val_type))
+        ~contract_type:(fields_value (required string))
+        ~expiry:(fields_value (optional date))
+        ~strike:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
+        ~option_right:(fields_value (optional Option_right.val_type))
+        ~multiplier:(fields_value skipped)
+        ~exchange:(fields_value (required Exchange.val_type))
+        ~listing_exchange:(fields_value skipped)
+        ~currency:(fields_value (required Currency.val_type))
+        ~local_symbol:(fields_value (optional Symbol.val_type))
+        ~include_expired:(fields_value skipped)
+        ~security_id_type:(fields_value skipped)
+        ~security_id:(fields_value skipped)
+        ~combo_legs:(fields_value skipped))
+    |> wrap_contract_spec
+end
+
+module Unpickler_specs = struct
+
+  let field_name field = Fieldslib.Field.name field
+
+  let market_data_query () =
+    Unpickler.Spec.(
+      step (fun conv id symbol contract_type expiry strike option_right
+        multiplier exchange listing_exchange currency local_symbol
+        _combo_legs ->
+          let contract = create
+            ?id ~contract_type ?expiry ?strike ?option_right ?multiplier
+            ~exchange ?listing_exchange ~currency ?local_symbol symbol
+          in
+          conv contract
+      )
+      ++ value (optional Id.val_type)
+        ~name:(field_name Fields.contract_id)
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (optional date)
+        ~name:(field_name Fields.expiry)
+      ++ value (optional Price.val_type)
+        ~name:(field_name Fields.strike)
+      ++ value (optional Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (optional Exchange.val_type)
+        ~name:(field_name Fields.listing_exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol)
+      ++ value (required int)
+        ~name:(field_name Fields.combo_legs))
+
+  let option_price_query () =
+    Unpickler.Spec.(
+      step (fun conv id symbol contract_type expiry strike option_right
+        multiplier exchange listing_exchange currency local_symbol ->
+          let contract = create
+            ?id ~expiry ~strike ~option_right ?multiplier ~exchange
+            ?listing_exchange ~currency ?local_symbol ~contract_type
+            symbol
+          in
+          conv contract
+      )
+      ++ value (optional Id.val_type)
+        ~name:(field_name Fields.contract_id)
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (required date)
+        ~name:(field_name Fields.expiry)
+      ++ value (required Price.val_type)
+        ~name:(field_name Fields.strike)
+      ++ value (required Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (optional Exchange.val_type)
+        ~name:(field_name Fields.listing_exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol))
+
+  let implied_volatility_query () =
+    Unpickler.Spec.(
+      step (fun conv id symbol contract_type expiry strike option_right
+        multiplier exchange listing_exchange currency local_symbol ->
+          let contract = create
+            ?id ~expiry ~strike ~option_right ?multiplier ~exchange
+            ?listing_exchange ~currency ?local_symbol ~contract_type
+            symbol
+          in
+          conv contract
+      )
+      ++ value (optional Id.val_type)
+        ~name:(field_name Fields.contract_id)
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (required date)
+        ~name:(field_name Fields.expiry)
+      ++ value (required Price.val_type)
+        ~name:(field_name Fields.strike)
+      ++ value (required Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (optional Exchange.val_type)
+        ~name:(field_name Fields.listing_exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol))
+
+  let contract_specs_query () =
+    Unpickler.Spec.(
+      step (fun conv id symbol contract_type expiry strike option_right
+        multiplier exchange currency local_symbol include_expired
+        security_id_type security_id ->
+          let contract = create
+            ?id ~contract_type ?expiry ?strike ?option_right ?multiplier
+            ~exchange ~currency ?local_symbol ~include_expired
+            ?security_id_type ?security_id symbol
+          in
+          conv contract
+      )
+      ++ value (optional Id.val_type)
+        ~name:(field_name Fields.contract_id)
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (optional date)
+        ~name:(field_name Fields.expiry)
+      ++ value (optional Price.val_type)
+        ~name:(field_name Fields.strike)
+      ++ value (optional Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol)
+      ++ value (required bool)
+        ~name:(field_name Fields.include_expired)
+      ++ value (optional Security_id.Type.val_type)
+        ~name:(field_name Fields.security_id_type)
+      ++ value (optional Security_id.val_type)
+        ~name:(field_name Fields.security_id))
+
+  let market_depth_query () =
+    Unpickler.Spec.(
+      step (fun conv symbol contract_type expiry strike option_right
+        multiplier exchange currency local_symbol ->
+          let contract = create
+            ~contract_type ?expiry ?strike ?option_right ?multiplier
+            ~exchange ~currency ?local_symbol symbol
+          in
+          conv contract
+      )
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (optional date)
+        ~name:(field_name Fields.expiry)
+      ++ value (optional Price.val_type)
+        ~name:(field_name Fields.strike)
+      ++ value (optional Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol))
+
+  let historical_data_query () =
+    Unpickler.Spec.(
+      step (fun conv symbol contract_type expiry strike option_right multiplier
+        exchange listing_exchange currency local_symbol include_expired ->
+          let contract = create
+            ~contract_type ?expiry ?strike ?option_right ?multiplier ~exchange
+            ?listing_exchange ~currency ?local_symbol ~include_expired symbol
+          in
+          conv contract
+      )
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (optional date)
+        ~name:(field_name Fields.expiry)
+      ++ value (optional Price.val_type)
+        ~name:(field_name Fields.strike)
+      ++ value (optional Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (optional Exchange.val_type)
+        ~name:(field_name Fields.listing_exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol)
+      ++ value (required bool)
+        ~name:(field_name Fields.include_expired))
+
+  let realtime_bars_query () =
+    Unpickler.Spec.(
+      step (fun conv symbol contract_type expiry strike option_right
+        multiplier exchange listing_exchange currency local_symbol ->
+          let contract = create
+            ~contract_type ?expiry ?strike ?option_right ?multiplier ~exchange
+            ?listing_exchange ~currency ?local_symbol symbol
+          in
+          conv contract
+      )
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (optional date)
+        ~name:(field_name Fields.expiry)
+      ++ value (optional Price.val_type)
+        ~name:(field_name Fields.strike)
+      ++ value (optional Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (optional Exchange.val_type)
+        ~name:(field_name Fields.listing_exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol))
+
+  let portfolio_update_response () =
+    Unpickler.Spec.(
+      step (fun conv id symbol contract_type expiry strike option_right
+        multiplier exchange currency local_symbol ->
+          let contract = create
+            ?id ~contract_type ?expiry ?strike ?option_right ?multiplier
+            ~exchange ~currency ?local_symbol symbol
+          in
+          conv contract
+      )
+      ++ value (optional Id.val_type)
+        ~name:(field_name Fields.contract_id)
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (optional date)
+        ~name:(field_name Fields.expiry)
+      ++ value (optional Price.val_type ~none_on_default:"0.0")
+        ~name:(field_name Fields.strike)
+      ++ value (optional Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (optional string)
+        ~name:(field_name Fields.multiplier)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol))
+
+  let execution_report_response () =
+    Unpickler.Spec.(
+      step (fun conv id symbol contract_type expiry strike option_right
+        exchange currency local_symbol ->
+          let contract = create
+            ?id ~contract_type ?expiry ?strike ?option_right ~exchange
+            ~currency ?local_symbol symbol
+          in
+          conv contract
+      )
+      ++ value (optional Id.val_type)
+        ~name:(field_name Fields.contract_id)
+      ++ value (required Symbol.val_type)
+        ~name:(field_name Fields.symbol)
+      ++ value (required string)
+        ~name:(field_name Fields.contract_type)
+      ++ value (optional date)
+        ~name:(field_name Fields.expiry)
+      ++ value (optional Price.val_type ~none_on_default:"0.0")
+        ~name:(field_name Fields.strike)
+      ++ value (optional Option_right.val_type)
+        ~name:(field_name Fields.option_right)
+      ++ value (required Exchange.val_type)
+        ~name:(field_name Fields.exchange)
+      ++ value (required Currency.val_type)
+        ~name:(field_name Fields.currency)
+      ++ value (optional Symbol.val_type)
+        ~name:(field_name Fields.local_symbol))
+end
