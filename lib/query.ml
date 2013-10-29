@@ -514,14 +514,20 @@ module Historical_data = struct
   end
 
   module Duration = struct
-    type t = [ `S of int | `D of int | `W of int | `M of int | `Y ] with sexp
+    type t =
+    [ `Sec of int
+    | `Day of int
+    | `Week of int
+    | `Month of int
+    | `Year
+    ] with sexp
 
     let tws_of_t = function
-      | `S x -> sprintf "%d S" x
-      | `D x -> sprintf "%d D" x
-      | `W x -> sprintf "%d W" x
-      | `M x -> sprintf "%d M" x
-      | `Y   -> sprintf "1 Y"
+      | `Sec   x -> sprintf "%d S" x
+      | `Day   x -> sprintf "%d D" x
+      | `Week  x -> sprintf "%d W" x
+      | `Month x -> sprintf "%d M" x
+      | `Year    -> sprintf "1 Y"
 
     let t_of_tws s =
       let extract_int s ~time_unit =
@@ -532,11 +538,11 @@ module Historical_data = struct
         else invalid_argf "Duration.t_of_tws: %S" s ()
       in
       match String.nget s (String.length s - 1) with
-      | 'S' -> `S (extract_int s ~time_unit:'S')
-      | 'D' -> `D (extract_int s ~time_unit:'D')
-      | 'W' -> `W (extract_int s ~time_unit:'W')
-      | 'M' -> `M (extract_int s ~time_unit:'M')
-      | 'Y' -> `Y
+      | 'S' -> `Sec   (extract_int s ~time_unit:'S')
+      | 'D' -> `Day   (extract_int s ~time_unit:'D')
+      | 'W' -> `Week  (extract_int s ~time_unit:'W')
+      | 'M' -> `Month (extract_int s ~time_unit:'M')
+      | 'Y' -> `Year
       | _ -> invalid_argf "Duration.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws

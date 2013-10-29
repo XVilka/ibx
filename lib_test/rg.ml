@@ -612,11 +612,11 @@ end = struct
     ] ()
     in
     let duration_g () = oneof [
-      always (`S (1 + nng ()));
-      always (`D (1 + nng ()));
-      always (`W (1 + nng ()));
-      always (`M (1 + nng ()));
-      always (`Y);
+      always (`Sec (1 + nng ()));
+      always (`Day (1 + nng ()));
+      always (`Week (1 + nng ()));
+      always (`Month (1 + nng ()));
+      always (`Year);
     ] ()
     in
     let show_g () = oneof [

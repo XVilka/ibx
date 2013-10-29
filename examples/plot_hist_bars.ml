@@ -28,7 +28,7 @@ let plot_hist_bars ~currency ~symbol =
     Tws.historical_data_exn tws
       ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
       ~bar_size:`Five_mins
-      ~duration:(`D 1)
+      ~duration:(`Day 1)
     >>| fun hist_data ->
     let module Columns = Historical_data.Columns in
     let hist_data = Historical_data.to_columns hist_data in

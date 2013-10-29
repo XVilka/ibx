@@ -154,7 +154,13 @@ module Historical_data : sig
   end
 
   module Duration : sig
-    type t = [ `S of int | `D of int | `W of int | `M of int | `Y ] with sexp
+    type t =
+    [ `Sec of int
+    | `Day of int
+    | `Week of int
+    | `Month of int
+    | `Year
+    ] with sexp
   end
 
   module Show : sig

@@ -205,7 +205,13 @@ val historical_data
   | `One_hour
   | `One_day
   ]
-  -> ?duration:[ `S of int | `D of int | `W of int | `M of int | `Y ]
+  -> ?duration:[
+  | `Sec of int
+  | `Day of int
+  | `Week of int
+  | `Month of int
+  | `Year
+  ]
   -> ?use_rth:bool
   -> ?show:[
   | `Trades
@@ -229,7 +235,13 @@ val historical_data_exn
   | `One_hour
   | `One_day
   ]
-  -> ?duration:[ `S of int | `D of int | `W of int | `M of int | `Y ]
+  -> ?duration:[
+  | `Sec of int
+  | `Day of int
+  | `Week of int
+  | `Month of int
+  | `Year
+  ]
   -> ?use_rth:bool
   -> ?show:[
   | `Trades
@@ -251,7 +263,7 @@ val historical_data_exn
 (******************************************************************************)
 
 val realtime_bars
-  :  ?bar_size:[ `Five_secs ]         (* TWS API supports only 5 second bars. *)
+  :  ?bar_size:[ `Five_secs ] (* TWS API supports only 5 second bars. *)
   -> ?show:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_rth:bool
   -> t

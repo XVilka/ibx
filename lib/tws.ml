@@ -182,7 +182,7 @@ let cancel_market_depth t id = cancel_streaming_request t Tws_reqs.req_market_de
 
 let historical_data
     ?(bar_size = `One_hour)
-    ?(duration = `M 1)
+    ?(duration = `Month 1)
     ?(use_rth = true)
     ?(show = `Trades)
     ?(until = Time.now ())
