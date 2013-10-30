@@ -69,11 +69,11 @@ module Server_log_level = struct
   let ( = ) t1 t2 = (t1 = t2)
 
   let pickler =
-    Pickler.create ~name:"Server_log_level"
+    Pickler.create ~name:"Query.Server_log_level"
       Pickler.Spec.(value (required Level.val_type))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Server_log_level"
+    Unpickler.create ~name:"Query.Server_log_level"
       Unpickler.Spec.(value (required Level.val_type) ~name:"log_level")
       Fn.id)
 end
@@ -161,7 +161,7 @@ module Market_data = struct
     let contract_spec =
       Raw_contract.Pickler_specs.market_data_query ()
     in
-    Pickler.create ~name:"Market_data"
+    Pickler.create ~name:"Query.Market_data"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -179,7 +179,7 @@ module Market_data = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.market_data_query ()
     in
-    Unpickler.create ~name:"Market_data"
+    Unpickler.create ~name:"Query.Market_data"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -220,7 +220,7 @@ module Option_price = struct
     let contract_spec =
       Raw_contract.Pickler_specs.common_option_calc ()
     in
-    Pickler.create ~name:"Option_price"
+    Pickler.create ~name:"Query.Option_price"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -235,7 +235,7 @@ module Option_price = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.option_price_query ()
     in
-    Unpickler.create ~name:"Option_price"
+    Unpickler.create ~name:"Query.Option_price"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -272,7 +272,7 @@ module Implied_volatility = struct
     let contract_spec =
       Raw_contract.Pickler_specs.common_option_calc ()
     in
-    Pickler.create ~name:"Implied_volatility"
+    Pickler.create ~name:"Query.Implied_volatility"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -287,7 +287,7 @@ module Implied_volatility = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.implied_volatility_query ()
     in
-    Unpickler.create ~name:"Implied_volatility"
+    Unpickler.create ~name:"Query.Implied_volatility"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -326,7 +326,7 @@ module Account_and_portfolio_updates = struct
       ~account_code:(use Account_code.(=))
 
   let pickler =
-    Pickler.create ~name:"Account_and_portfolio_updates"
+    Pickler.create ~name:"Query.Account_and_portfolio_updates"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -336,7 +336,7 @@ module Account_and_portfolio_updates = struct
       (fun t -> `Args $ t.subscribe $ t.account_code))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Account_and_portfolio_updates"
+    Unpickler.create ~name:"Query.Account_and_portfolio_updates"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -392,7 +392,7 @@ module Execution_reports = struct
       ~order_action:(use (=))
 
   let pickler =
-    Pickler.create ~name:"Execution_data"
+    Pickler.create ~name:"Query.Execution_reports"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -415,7 +415,7 @@ module Execution_reports = struct
               $ t.order_action))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Execution_data"
+    Unpickler.create ~name:"Query.Execution_reports"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -448,11 +448,11 @@ module Contract_specs = struct
   let ( = ) t1 t2 = Raw_contract.(=) t1 t2
 
   let pickler =
-    Pickler.create ~name:"Contract_specs"
+    Pickler.create ~name:"Query.Contract_specs"
       (Raw_contract.Pickler_specs.contract_specs_query ())
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Contract_specs"
+    Unpickler.create ~name:"Query.Contract_specs"
       (Raw_contract.Unpickler_specs.contract_specs_query ())
       Fn.id)
 end
@@ -484,7 +484,7 @@ module Market_depth = struct
     let contract_spec =
       Raw_contract.Pickler_specs.market_depth_query ()
     in
-    Pickler.create ~name:"Market_depth"
+    Pickler.create ~name:"Query.Market_depth"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -497,7 +497,7 @@ module Market_depth = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.market_depth_query ()
     in
-    Unpickler.create ~name:"Market_depth"
+    Unpickler.create ~name:"Query.Market_depth"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -660,7 +660,7 @@ module Historical_data = struct
     let contract_spec =
       Raw_contract.Pickler_specs.historical_data_query ()
     in
-    Pickler.create ~name:"Historical_data"
+    Pickler.create ~name:"Query.Historical_data"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -686,7 +686,7 @@ module Historical_data = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.historical_data_query ()
     in
-    Unpickler.create ~name:"Historical_data"
+    Unpickler.create ~name:"Query.Historical_data"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -773,7 +773,7 @@ module Realtime_bars = struct
     let contract_spec =
       Raw_contract.Pickler_specs.realtime_bars_query ()
     in
-    Pickler.create ~name:"Realtime_bars"
+    Pickler.create ~name:"Query.Realtime_bars"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -789,7 +789,7 @@ module Realtime_bars = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.realtime_bars_query ()
     in
-    Unpickler.create ~name:"Realtime_bars"
+    Unpickler.create ~name:"Query.Realtime_bars"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
