@@ -124,6 +124,14 @@ Executable "plot-taq-data"
   BuildDepends:   ibx
   CompiledObject: best
 
+Executable "print_account_updates"
+  Build$:         flag(examples)
+  Path:           examples
+  MainIs:         print_account_updates.ml
+  Install:        false
+  BuildDepends:   ibx
+  CompiledObject: best
+
 Executable "print-market-depth"
   Build$:         flag(examples)
   Path:           examples

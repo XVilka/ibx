@@ -1,0 +1,29 @@
+open Core.Std
+open Async.Std
+open Ibx.Std
+
+let print_account_updates () =
+  Common.with_tws_client (fun tws ->
+    Tws.account_updates_exn tws
+    >>= fun account_updates ->
+    Pipe.iter_without_pushback account_updates ~f:(fun t ->
+      print_endline (Response.Account_update.sexp_of_t t |> Sexp.to_string_hum)
+    )
+  )
+
+let command =
+  Command.async_basic ~summary:"print account updates"
+    Command.Spec.(
+      empty
+      +> Common.logging_flag ()
+      +> Common.host_arg ()
+      +> Common.port_arg ()
+    )
+    (fun enable_logging host port () ->
+      print_account_updates ~enable_logging ~host ~port ()
+      >>= function
+      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
+      | Ok () -> return ()
+    )
+
+let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)

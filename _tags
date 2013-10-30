@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: a3ffef327577c68bd398a02936ee3fb8)
+# DO NOT EDIT (digest: f7e0fa3745b77bb85419cce1328b0644)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -111,6 +111,14 @@
 <examples/plot_taq_data.{native,byte}>: pkg_fieldslib.syntax
 <examples/plot_taq_data.{native,byte}>: pkg_threads
 <examples/plot_taq_data.{native,byte}>: pkg_str
+# Executable print_account_updates
+<examples/print_account_updates.{native,byte}>: use_ibx
+<examples/print_account_updates.{native,byte}>: pkg_core
+<examples/print_account_updates.{native,byte}>: pkg_async
+<examples/print_account_updates.{native,byte}>: pkg_sexplib.syntax
+<examples/print_account_updates.{native,byte}>: pkg_fieldslib.syntax
+<examples/print_account_updates.{native,byte}>: pkg_threads
+<examples/print_account_updates.{native,byte}>: pkg_str
 # Executable print-market-depth
 <examples/print_market_depth.{native,byte}>: use_ibx
 <examples/print_market_depth.{native,byte}>: pkg_core
