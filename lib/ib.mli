@@ -98,7 +98,8 @@ module Streaming_request : sig
   module Id : Unique_id
 
   val create
-    :  ?canc_header:Send_tag.t Header.t
+    :  ?use_default_id:bool (* default: false *)
+    -> ?canc_header:Send_tag.t Header.t
     -> ?skip_header:Recv_tag.t Header.t list
     -> send_header:Send_tag.t Header.t
     -> recv_header:Recv_tag.t Header.t list

@@ -270,14 +270,17 @@ module type Connection_internal = sig
     -> Query.t
     -> (unit, [ `Closed ]) Result.t
 
-  val cancel_streaming :
-    ?query:Query.t
+  val cancel_streaming
+    :  ?query:Query.t
     -> t
     -> recv_header:Recv_tag.t Header.t list
     -> query_id:Query_id.t
     -> (unit, [ `Closed ]) Result.t
 
-  val next_query_id : t -> Query_id.t Deferred.t
+  val next_query_id
+    :  ?use_default_id:bool
+    -> t
+    -> Query_id.t Deferred.t
 end
 
 module Connection : Connection_internal = struct
@@ -381,10 +384,14 @@ module Connection : Connection_internal = struct
       ~f:extend_commission_report;
     return t
 
-  let next_query_id t =
-    let new_id = Query_id.create () in
-    Ivar.read t.next_order_id
-    >>| fun oid -> Query_id.increase new_id (Raw_order.Id.to_int_exn oid)
+  let next_query_id ?(use_default_id=false) t =
+    if use_default_id then
+      return Query_id.default
+    else begin
+      let new_id = Query_id.create () in
+      Ivar.read t.next_order_id
+      >>| fun oid -> Query_id.increase new_id (Raw_order.Id.to_int_exn oid)
+    end
 
   let is_closed t = Ivar.is_full t.stop
   let closed t = Ivar.read t.stop
@@ -762,7 +769,8 @@ end
 
 module Streaming_request = struct
   type ('query, 'response) t =
-    { send_header  : Send_tag.t Header.t;
+    { use_default_id : bool;
+      send_header  : Send_tag.t Header.t;
       canc_header  : Send_tag.t Header.t option;
       recv_header  : Recv_tag.t Header.t list;
       skip_header  : Recv_tag.t Header.t list option;
@@ -772,9 +780,10 @@ module Streaming_request = struct
 
   module Id = Query_id
 
-  let create ?canc_header ?skip_header
+  let create ?(use_default_id=false) ?canc_header ?skip_header
       ~send_header ~recv_header ~tws_query ~tws_response () =
-    { send_header;
+    { use_default_id;
+      send_header;
       canc_header;
       recv_header;
       skip_header;
@@ -783,7 +792,7 @@ module Streaming_request = struct
     }
 
   let dispatch t con query =
-    Connection.next_query_id con
+    Connection.next_query_id con ~use_default_id:t.use_default_id
     >>= fun query_id ->
     let ivar = Ivar.create () in
     let pipe_r, pipe_w = Pipe.create () in
