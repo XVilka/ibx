@@ -758,8 +758,6 @@ module Request = struct
       | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
     end;
     Ivar.read ivar >>| Ibx_result.or_error
-
-  let dispatch_exn t con query = dispatch t con query >>| Or_error.ok_exn
 end
 
 module Streaming_request = struct
@@ -895,8 +893,6 @@ module Streaming_request = struct
         | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
     end;
     Ivar.read ivar >>| Ibx_result.or_error
-
-  let dispatch_exn t con query = dispatch t con query >>| Or_error.ok_exn
 
   let cancel t con query_id =
     let recv_header = Header.tws_error :: t.recv_header in

@@ -90,12 +90,6 @@ module Request : sig
     -> Connection.t
     -> 'query
     -> 'response Or_error.t Deferred.t
-
-  val dispatch_exn
-    :  ('query, 'response) t
-    -> Connection.t
-    -> 'query
-    -> 'response Deferred.t
 end
 
 module Streaming_request : sig
@@ -118,12 +112,6 @@ module Streaming_request : sig
     -> Connection.t
     -> 'query
     -> ('response Pipe.Reader.t * Id.t) Or_error.t Deferred.t
-
-  val dispatch_exn
-    :  ('query, 'response) t
-    -> Connection.t
-    -> 'query
-    -> ('response Pipe.Reader.t * Id.t) Deferred.t
 
   (** [cancel req con id] cancels the TWS data stream from the request
       associated with the unique identifier [id], which was returned
