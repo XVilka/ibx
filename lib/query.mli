@@ -105,6 +105,21 @@ module Submit_order : sig
     -> t
 end
 
+(** {1 Account and portfolio} *)
+(*****************************************************************************)
+
+module Account_and_portfolio_updates : sig
+  type t with sexp
+  include Query_intf.S with type t := t
+  val create :
+    subscribe:bool
+    -> account_code:Account_code.t
+    -> t
+end
+
+(** {1 Executions} *)
+(*****************************************************************************)
+
 module Execution_reports : sig
   type t with sexp
   include Query_intf.S with type t := t

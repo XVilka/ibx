@@ -305,6 +305,45 @@ end
 
 module Submit_order = Submit_order
 
+(* +-----------------------------------------------------------------------+
+   | Account and portfolio                                                 |
+   +-----------------------------------------------------------------------+ *)
+
+module Account_and_portfolio_updates = struct
+  type t =
+    { subscribe : bool;
+      account_code : Account_code.t;
+    } with sexp, fields
+
+  let create = Fields.create
+
+  let ( = ) t1 t2 =
+    let use op = fun field ->
+      op (Field.get field t1) (Field.get field t2)
+    in
+    Fields.for_all
+      ~subscribe:(use (=))
+      ~account_code:(use Account_code.(=))
+
+  let pickler =
+    Pickler.create ~name:"Account_and_portfolio_updates"
+      Pickler.Spec.(
+        wrap (
+          Fields.fold
+            ~init:(empty ())
+            ~subscribe:(fields_value (required bool))
+            ~account_code:(fields_value (required Account_code.val_type)))
+      (fun t -> `Args $ t.subscribe $ t.account_code))
+
+  let unpickler = Only_in_test.of_thunk (fun () ->
+    Unpickler.create ~name:"Account_and_portfolio_updates"
+      Unpickler.Spec.(
+        Fields.fold
+          ~init:(empty ())
+          ~subscribe:(fields_value (required bool))
+          ~account_code:(fields_value (required Account_code.val_type)))
+      (fun subscribe account_code -> { subscribe; account_code }))
+end
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |

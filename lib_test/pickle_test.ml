@@ -74,6 +74,13 @@ module Query = struct
       let module Q = Query.Submit_order in
       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.submit_order_g);
 
+    (* ====================== Account and portfolio ======================== *)
+
+    (fun () ->
+      let module Q = Query.Account_and_portfolio_updates in
+      gen_test (module Q : Query_intf.S with type t = Q.t)
+        Rg.Q.account_and_portfolio_updates);
+
     (* ======================== Execution reports ========================== *)
 
     (fun () ->

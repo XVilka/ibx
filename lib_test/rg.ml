@@ -300,7 +300,7 @@ include Rg_common
 
 module Q : sig
 
-  (* Connection and Server *)
+  (* Connection and server *)
 
   val server_log_level_g : Query.Server_log_level.t gen
   val server_time_g : Query.Server_time.t gen
@@ -315,7 +315,9 @@ module Q : sig
 
   val submit_order_g : Query.Submit_order.t gen
 
-  (* Account and Portfolio *)
+  (* Account and portfolio *)
+
+  val account_and_portfolio_updates : Query.Account_and_portfolio_updates.t gen
 
   (* Executions *)
 
@@ -499,6 +501,15 @@ end = struct
       ~contract:(contract_g ())
       ~order:(order_g ())
       ~account_code:(account_code_g ())
+
+  (* =================== Account and portfolio updates ===================== *)
+
+  let account_and_portfolio_updates () =
+    Query.Account_and_portfolio_updates.create
+      ~subscribe:(bg ())
+      ~account_code:(account_code_g ())
+
+  (* ========================= Execution reports =========================== *)
 
   let execution_reports_g () =
     Query.Execution_reports.create
