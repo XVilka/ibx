@@ -246,7 +246,7 @@ module Account_update : sig
   type t = private
     { key : string;
       value : string;
-      currency : Currency.t;
+      currency : string option;
       account_code : Account_code.t;
     }
   with sexp, fields
@@ -255,7 +255,7 @@ module Account_update : sig
   val create :
     key:string
     -> value:string
-    -> currency:Currency.t
+    -> currency:string option
     -> account_code:Account_code.t
     -> t
 end

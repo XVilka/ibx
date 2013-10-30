@@ -144,6 +144,16 @@ val submit_order_exn
 
 val cancel_order_status : t -> Order_id.t -> unit
 
+(** {1 Account and portfolio} *)
+(******************************************************************************)
+
+val account_updates
+  :  t
+  -> (Account_update.t Pipe.Reader.t) Or_error.t Deferred.t
+
+val account_updates_exn
+  :  t
+  -> (Account_update.t Pipe.Reader.t) Deferred.t
 
 (** {1 Execution reports} *)
 (******************************************************************************)

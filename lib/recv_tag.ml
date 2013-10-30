@@ -163,7 +163,7 @@ let corresponding_response_has_query_id = function
   | Fundamental_data -> false
   | Contract_data_end -> true
   | Open_order_end -> true
-  | Account_download_end -> true
+  | Account_download_end -> false
   | Execution_report_end -> true
   | Delta_neutral_validation -> true
   | Snapshot_end -> true

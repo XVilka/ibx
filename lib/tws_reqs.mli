@@ -56,6 +56,15 @@ val req_contract_specs :
 val req_submit_order :
   (Query.Submit_order.t, Response.Order_status.t) Ib.Streaming_request.t
 
+(** {1 Account and portfolio} *)
+(*****************************************************************************)
+
+val req_account_updates :
+  (Query.Account_and_portfolio_updates.t,
+   [ `Account_update of Response.Account_update.t
+   | `Account_update_end of Account_code.t
+   ]) Ib.Streaming_request.t
+
 (** {1 Execution data} *)
 (*****************************************************************************)
 

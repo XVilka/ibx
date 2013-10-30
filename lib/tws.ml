@@ -131,6 +131,27 @@ let cancel_order_status t oid =
   let id = Query_id.of_int_exn (Order_id.to_int_exn oid) in
   cancel_streaming_request t Tws_reqs.req_submit_order id
 
+(* Account and portfolio *)
+
+let account_updates t =
+  let account_code = Option.value_exn (account_code t) in
+  let create_query = Query.Account_and_portfolio_updates.create ~account_code in
+  let subscribe = create_query ~subscribe:true in
+  dispatch_streaming_request t Tws_reqs.req_account_updates subscribe >>| function
+  | Error _ as e -> e
+  | Ok (pipe_r, id) ->
+    let pipe_r = Pipe.filter_map pipe_r ~f:(function
+      | `Account_update data -> Some data
+      | `Account_update_end code ->
+        if Account_code.(=) account_code code then begin
+          cancel_streaming_request t Tws_reqs.req_account_updates id
+        end;
+        None)
+    in
+    Ok pipe_r
+
+let account_updates_exn t = account_updates t >>| Or_error.ok_exn
+
 (* Executions *)
 
 let filter_executions ?time t ~contract ~order_action =
@@ -155,8 +176,6 @@ let filter_executions ?time t ~contract ~order_action =
 
 let filter_executions_exn ?time t ~contract ~order_action =
   filter_executions ?time t ~contract ~order_action >>| Or_error.ok_exn
-
-(* Portfolio *)
 
 (* Contract specs *)
 

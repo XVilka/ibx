@@ -930,7 +930,7 @@ end = struct
     Response.Account_update.create
       ~key:(sg ())
       ~value:(sg ())
-      ~currency:(currency_g ())
+      ~currency:(og sg ())
       ~account_code:(account_code_g ())
 
   let portfolio_update_g () =

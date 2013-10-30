@@ -462,9 +462,9 @@ module Connection : Connection_internal = struct
       | R.Order_status -> read ~len:9
       | R.Tws_error -> read ~len:2
       | R.Open_order -> read ~len:93
-      | R.Account_update -> read ~len:1
-      | R.Portfolio_update -> unimplemented R.Portfolio_update
-      | R.Account_update_time -> unimplemented R.Account_update_time
+      | R.Account_update -> read ~len:4
+      | R.Portfolio_update -> read ~len:17
+      | R.Account_update_time -> read ~len:1
       | R.Next_order_id -> read ~len:1
       | R.Contract_data -> read ~len:26
       | R.Execution_report -> read ~len:23
@@ -499,7 +499,7 @@ module Connection : Connection_internal = struct
       | R.Fundamental_data -> unimplemented R.Fundamental_data
       | R.Contract_data_end -> empty_read
       | R.Open_order_end -> empty_read
-      | R.Account_download_end -> unimplemented R.Account_download_end
+      | R.Account_download_end -> read ~len:1
       | R.Execution_report_end -> empty_read
       | R.Delta_neutral_validation -> unimplemented R.Delta_neutral_validation
       | R.Snapshot_end -> empty_read
@@ -800,7 +800,7 @@ module Streaming_request = struct
       { Query.
         tag     = t.send_header.Header.tag;
         version = t.send_header.Header.version;
-        id      = Some query_id;
+        id      = Option.some_if (not t.use_default_id) query_id;
         data    = to_tws t.tws_query query;
       }
     in

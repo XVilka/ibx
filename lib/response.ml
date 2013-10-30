@@ -719,7 +719,7 @@ module Account_update = struct
   type t = {
     key : string;
     value : string;
-    currency : Currency.t;
+    currency : string option;
     account_code : Account_code.t;
   } with sexp, fields
 
@@ -742,7 +742,7 @@ module Account_update = struct
           ~init:(empty ())
           ~key:(fields_value (required string))
           ~value:(fields_value (required string))
-          ~currency:(fields_value (required Currency.val_type))
+          ~currency:(fields_value (optional string))
           ~account_code:(fields_value (required Account_code.val_type)))
       (fun key value currency account_code ->
         { key; value; currency; account_code })
@@ -755,7 +755,7 @@ module Account_update = struct
             ~init:(empty ())
             ~key:(fields_value (required string))
             ~value:(fields_value (required string))
-            ~currency:(fields_value (required Currency.val_type))
+            ~currency:(fields_value (optional string))
             ~account_code:(fields_value (required Account_code.val_type)))
           (fun t -> `Args $ t.key $ t.value $ t.currency $ t.account_code)))
 end
