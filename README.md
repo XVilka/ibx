@@ -108,7 +108,16 @@ distribution. You can build the examples by typing
     $ ./configure --enable-examples
     $ make
 
-in the top-level directory of this distribution.
+in the top-level directory of this distribution. If the compilation of the
+examples was successful, you can type, for instance,
+
+    $ ./plot_hist_bars.native AAPL
+
+in order to plot a candle stick chart of the Apple stock price with simple
+moving averages. Your plot should look similar to this image:
+
+![AAPL SMA](http://ogu.bitbucket.org/aapl_sma.png)
+
 
 Contact Information
 -------------------
