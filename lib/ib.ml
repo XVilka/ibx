@@ -896,7 +896,14 @@ module Streaming_request = struct
         let err = Ibx_error.Unpickler_mismatch (Exn.sexp_of_t exn, t.recv_header) in
         Ivar.fill ivar (Error err)
       | Ok data_handlers ->
-        let handlers = error_handler :: (skip_handlers @ data_handlers) in
+        let handlers =
+          if Query_id.(default = query_id) then
+            (* We do not replace the initial error handler
+               that is registered under the default query id. *)
+            skip_handlers @ data_handlers
+          else
+            error_handler :: skip_handlers @ data_handlers
+        in
         match Connection.dispatch con ~handlers query with
         | Ok () -> ()
         | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
@@ -904,7 +911,14 @@ module Streaming_request = struct
     Ivar.read ivar >>| Ibx_result.or_error
 
   let cancel t con query_id =
-    let recv_header = Header.tws_error :: t.recv_header in
+    let recv_header =
+      if Query_id.(default = query_id) then
+        (* We do not cancel the initial error handler
+           that is registered under the default query id. *)
+        t.recv_header
+      else
+        Header.tws_error :: t.recv_header
+    in
     let result =
       match t.canc_header with
       | None -> Connection.cancel_streaming con ~recv_header ~query_id
