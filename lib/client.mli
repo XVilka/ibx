@@ -66,3 +66,14 @@ val dispatch_and_cancel
   -> ('query, 'response) Ib.Streaming_request.t
   -> 'query
   -> 'response Or_error.t Deferred.t
+
+val dispatch_streaming_request'
+  :  t
+  -> ('query, 'response) Ib.Streaming_request_without_id.t
+  -> 'query
+  -> ('response Pipe.Reader.t) Or_error.t Deferred.t
+
+val cancel_streaming_request'
+  :  t
+  -> (_, _) Ib.Streaming_request_without_id.t
+  -> unit

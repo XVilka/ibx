@@ -277,10 +277,7 @@ module type Connection_internal = sig
     -> query_id:Query_id.t
     -> (unit, [ `Closed ]) Result.t
 
-  val next_query_id
-    :  ?use_default_id:bool
-    -> t
-    -> Query_id.t Deferred.t
+  val next_query_id : t -> Query_id.t Deferred.t
 end
 
 module Connection : Connection_internal = struct
@@ -384,14 +381,10 @@ module Connection : Connection_internal = struct
       ~f:extend_commission_report;
     return t
 
-  let next_query_id ?(use_default_id=false) t =
-    if use_default_id then
-      return Query_id.default
-    else begin
-      let new_id = Query_id.create () in
-      Ivar.read t.next_order_id
-      >>| fun oid -> Query_id.increase new_id (Raw_order.Id.to_int_exn oid)
-    end
+  let next_query_id t =
+    let new_id = Query_id.create () in
+    Ivar.read t.next_order_id
+    >>| fun oid -> Query_id.increase new_id (Raw_order.Id.to_int_exn oid)
 
   let is_closed t = Ivar.is_full t.stop
   let closed t = Ivar.read t.stop
@@ -769,8 +762,7 @@ end
 
 module Streaming_request = struct
   type ('query, 'response) t =
-    { use_default_id : bool;
-      send_header  : Send_tag.t Header.t;
+    { send_header  : Send_tag.t Header.t;
       canc_header  : Send_tag.t Header.t option;
       recv_header  : Recv_tag.t Header.t list;
       skip_header  : Recv_tag.t Header.t list option;
@@ -780,10 +772,9 @@ module Streaming_request = struct
 
   module Id = Query_id
 
-  let create ?(use_default_id=false) ?canc_header ?skip_header
-      ~send_header ~recv_header ~tws_query ~tws_response () =
-    { use_default_id;
-      send_header;
+  let create ?canc_header ?skip_header ~send_header ~recv_header
+      ~tws_query ~tws_response () =
+    { send_header;
       canc_header;
       recv_header;
       skip_header;
@@ -792,15 +783,14 @@ module Streaming_request = struct
     }
 
   let dispatch t con query =
-    Connection.next_query_id con ~use_default_id:t.use_default_id
-    >>= fun query_id ->
+    Connection.next_query_id con >>= fun query_id ->
     let ivar = Ivar.create () in
     let pipe_r, pipe_w = Pipe.create () in
     let query =
       { Query.
         tag     = t.send_header.Header.tag;
         version = t.send_header.Header.version;
-        id      = Option.some_if (not t.use_default_id) query_id;
+        id      = Some query_id;
         data    = to_tws t.tws_query query;
       }
     in
@@ -896,14 +886,7 @@ module Streaming_request = struct
         let err = Ibx_error.Unpickler_mismatch (Exn.sexp_of_t exn, t.recv_header) in
         Ivar.fill ivar (Error err)
       | Ok data_handlers ->
-        let handlers =
-          if Query_id.(default = query_id) then
-            (* We do not replace the initial error handler
-               that is registered under the default query id. *)
-            skip_handlers @ data_handlers
-          else
-            error_handler :: skip_handlers @ data_handlers
-        in
+        let handlers = error_handler :: skip_handlers @ data_handlers in
         match Connection.dispatch con ~handlers query with
         | Ok () -> ()
         | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
@@ -911,14 +894,7 @@ module Streaming_request = struct
     Ivar.read ivar >>| Ibx_result.or_error
 
   let cancel t con query_id =
-    let recv_header =
-      if Query_id.(default = query_id) then
-        (* We do not cancel the initial error handler
-           that is registered under the default query id. *)
-        t.recv_header
-      else
-        Header.tws_error :: t.recv_header
-    in
+    let recv_header = Header.tws_error :: t.recv_header in
     let result =
       match t.canc_header with
       | None -> Connection.cancel_streaming con ~recv_header ~query_id
@@ -932,6 +908,118 @@ module Streaming_request = struct
           }
         in
         Connection.cancel_streaming con ~recv_header ~query_id ~query
+    in
+    ignore (result : (unit, [ `Closed ]) Result.t)
+end
+
+module Streaming_request_without_id = struct
+  type ('query, 'response) t =
+    { send_header  : Send_tag.t Header.t;
+      recv_header  : Recv_tag.t Header.t list;
+      skip_header  : Recv_tag.t Header.t list option;
+      tws_query    : 'query    Tws_prot.Pickler.t;
+      tws_response : 'response Tws_prot.Unpickler.t list;
+    }
+
+  let create ?skip_header ~send_header ~recv_header
+      ~tws_query ~tws_response () =
+    { send_header;
+      recv_header;
+      skip_header;
+      tws_query;
+      tws_response;
+    }
+
+  let dispatch t con query =
+    let ivar = Ivar.create () in
+    let pipe_r, pipe_w = Pipe.create () in
+    let query =
+      { Query.
+        tag     = t.send_header.Header.tag;
+        version = t.send_header.Header.version;
+        id      = None;
+        data    = to_tws t.tws_query query;
+      }
+    in
+    let skip_handlers =
+      match t.skip_header with
+      | None -> []
+      | Some skip_headers ->
+        List.map skip_headers ~f:(fun header ->
+          Response_handler.create ~header ~run:(fun response ->
+            match response.Response.data with
+            | Error err -> return (`Die err)
+            | Ok `Cancel -> return `Remove
+            | Ok (`Response _) -> return `Keep))
+    in
+    let data_handler_result = Result.try_with (fun () ->
+      List.map2_exn t.recv_header t.tws_response ~f:(fun header unpickler ->
+        Response_handler.create ~header ~run:(fun response ->
+          let update pipe_w response =
+            match response.Response.data with
+            | Error err ->
+              Pipe.close pipe_w;
+              return (`Die err)
+            | Ok `Cancel ->
+              Pipe.close pipe_w;
+              return `Remove
+            | Ok (`Response data) ->
+              begin
+                match of_tws unpickler data with
+                | Error err ->
+                  Pipe.close pipe_w;
+                  return (`Die err)
+                | Ok response ->
+                  if not (Pipe.is_closed pipe_w) then begin
+                    (* We guard this write call to protect us against
+                       incoming messages after a cancelation, causing
+                       a write call to a closed pipe. *)
+                    don't_wait_for (Pipe.write pipe_w response)
+                  end;
+                  return `Keep
+              end
+          in
+          match response.Response.data with
+          | Error err as x ->
+            Pipe.close pipe_w;
+            Ivar.fill_if_empty ivar x;
+            return (`Die err)
+          | Ok `Cancel ->
+            Pipe.close pipe_w;
+            return `Remove
+          | Ok (`Response data) ->
+            begin
+              match of_tws unpickler data with
+              | Error err as x ->
+                Pipe.close pipe_w;
+                Ivar.fill_if_empty ivar x;
+                return (`Die err)
+              | Ok response ->
+                don't_wait_for (Pipe.write pipe_w response);
+                (* We fill the ivar only in the first iteration. *)
+                Ivar.fill_if_empty ivar (Ok pipe_r);
+                return (`Replace (update pipe_w))
+            end)))
+    in
+    begin
+      match data_handler_result with
+      | Error exn ->
+        don't_wait_for (Connection.close con);
+        let err = Ibx_error.Unpickler_mismatch (Exn.sexp_of_t exn, t.recv_header) in
+        Ivar.fill ivar (Error err)
+      | Ok data_handlers ->
+        let handlers = skip_handlers @ data_handlers in
+        match Connection.dispatch con ~handlers query with
+        | Ok () -> ()
+        | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
+    end;
+    Ivar.read ivar >>| Ibx_result.or_error
+
+  let cancel t con =
+    let result =
+      Connection.cancel_streaming con
+        ~recv_header:t.recv_header
+        ~query_id:Query_id.default
     in
     ignore (result : (unit, [ `Closed ]) Result.t)
 end

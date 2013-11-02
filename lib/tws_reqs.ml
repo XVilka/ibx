@@ -96,8 +96,7 @@ let req_submit_order = Ib.Streaming_request.create
 
 (* ================== Account and portfolio ======================= *)
 
-let req_account_updates = Ib.Streaming_request.create
-  ~use_default_id:true
+let req_account_updates = Ib.Streaming_request_without_id.create
   ~send_header:(Ib.Header.create ~tag:S.Portfolio_data ~version:2)
   ~recv_header:[
     Ib.Header.create ~tag:R.Account_update ~version:2;

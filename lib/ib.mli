@@ -98,8 +98,7 @@ module Streaming_request : sig
   module Id : Unique_id
 
   val create
-    :  ?use_default_id:bool (* default: false *)
-    -> ?canc_header:Send_tag.t Header.t
+    :  ?canc_header:Send_tag.t Header.t
     -> ?skip_header:Recv_tag.t Header.t list
     -> send_header:Send_tag.t Header.t
     -> recv_header:Recv_tag.t Header.t list
@@ -118,4 +117,25 @@ module Streaming_request : sig
       associated with the unique identifier [id], which was returned
       as part of a call to [dispatch]. *)
   val cancel : (_, _) t -> Connection.t -> Id.t -> unit
+end
+
+module Streaming_request_without_id : sig
+  type ('query, 'response) t
+
+  val create
+    :  ?skip_header:Recv_tag.t Header.t list
+    -> send_header:Send_tag.t Header.t
+    -> recv_header:Recv_tag.t Header.t list
+    -> tws_query    : 'query    Tws_prot.Pickler.t
+    -> tws_response : 'response Tws_prot.Unpickler.t list
+    -> unit
+    -> ('query, 'response) t
+
+  val dispatch
+    :  ('query, 'response) t
+    -> Connection.t
+    -> 'query
+    -> ('response Pipe.Reader.t) Or_error.t Deferred.t
+
+  val cancel : (_, _) t -> Connection.t -> unit
 end

@@ -247,20 +247,17 @@ let with_client
       disconnect t)
   | _ -> return ()
 
-let dispatch_request t req query =
-  match t.con with
+let dispatch_request t req query = match t.con with
   | `Disconnected
   | `Connecting _  -> return (Or_error.of_exn Not_connected_yet)
   | `Connected con -> Ib.Request.dispatch req con query
 
-let dispatch_streaming_request t req query =
-  match t.con with
+let dispatch_streaming_request t req query = match t.con with
   | `Disconnected
   | `Connecting _  -> return (Or_error.of_exn Not_connected_yet)
   | `Connected con -> Ib.Streaming_request.dispatch req con query
 
-let cancel_streaming_request t req id =
-  match t.con with
+let cancel_streaming_request t req id = match t.con with
   | `Disconnected
   | `Connecting _  -> ()
   | `Connected con -> Ib.Streaming_request.cancel req con id
@@ -276,3 +273,13 @@ let dispatch_and_cancel t req query =
     | `Eof -> Or_error.of_exn Eof_from_client
     | `Ok result -> Ok (Queue.dequeue_exn result)
     ) ~finally:(fun _ -> cancel_streaming_request t req id)
+
+let dispatch_streaming_request' t req query = match t.con with
+  | `Disconnected
+  | `Connecting _  -> return (Or_error.of_exn Not_connected_yet)
+  | `Connected con -> Ib.Streaming_request_without_id.dispatch req con query
+
+let cancel_streaming_request' t req = match t.con with
+  | `Disconnected
+  | `Connecting _  -> ()
+  | `Connected con -> Ib.Streaming_request_without_id.cancel req con
