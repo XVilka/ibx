@@ -58,8 +58,8 @@ val combo_legs : 'a t -> int
 
 val ( = ) : 'a t -> 'a t -> bool
 
-val stock :
-  ?id:Id.t
+val stock
+  :  ?id:Id.t
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:[ `ISIN  of string
@@ -71,8 +71,8 @@ val stock :
   -> Symbol.t
   -> [> `Stock ] t
 
-val futures :
-  ?id:Id.t
+val futures
+  :  ?id:Id.t
   -> ?multiplier:string
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
@@ -87,8 +87,8 @@ val futures :
   -> Symbol.t
   -> [> `Futures ] t
 
-val option :
-  ?id:Id.t
+val option
+  :  ?id:Id.t
   -> ?multiplier:string
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
@@ -104,8 +104,8 @@ val option :
   -> Symbol.t
   -> [> `Option ] t
 
-val forex :
-  ?id:Id.t
+val forex
+  :  ?id:Id.t
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:[ `ISIN  of string

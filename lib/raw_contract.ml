@@ -39,8 +39,8 @@ module Type = struct
 
   let t_of_tws = function
   	| "STK"  -> `Stock
-	  | "FUT"  -> `Futures
-	  | "OPT"  -> `Option
+	| "FUT"  -> `Futures
+	| "OPT"  -> `Option
     | "CASH" -> `Forex
     | s -> invalid_argf "Type.t_of_tws: %S" s ()
 

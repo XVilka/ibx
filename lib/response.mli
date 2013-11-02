@@ -226,8 +226,8 @@ module Order_status : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    state:State.t
+  val create
+    :  state:State.t
     -> filled:int
     -> remaining:int
     -> average_fill_price:Price.t
@@ -252,8 +252,8 @@ module Account_update : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    key:string
+  val create
+    :  key:string
     -> value:string
     -> currency:string option
     -> account_code:Account_code.t
@@ -274,8 +274,8 @@ module Portfolio_update : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    contract:Contract.Type.t Contract.t
+  val create
+    :  contract:Contract.Type.t Contract.t
     -> position:int
     -> market_price:Price.t
     -> market_value:Price.t
@@ -320,8 +320,8 @@ module Contract_specs : sig
     } with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    symbol:Symbol.t
+  val create
+    :  symbol:Symbol.t
     -> contract_type:Contract.Type.t
     -> expiry:Date.t option
     -> strike:Price.t option
@@ -381,8 +381,8 @@ module Execution_report : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    order_id:Order_id.t
+  val create
+    :  order_id:Order_id.t
     -> contract:Contract.Type.t Contract.t
     -> exec_id:Execution_id.t
     -> time:Time.t
@@ -441,8 +441,8 @@ module Book_update : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    position:int
+  val create
+    :  position:int
     -> operation:Operation.t
     -> side:Side.t
     -> price:Price.t
@@ -469,8 +469,8 @@ module Historical_data : sig
     with sexp, fields
     include Response_intf.S with type t := t
 
-    val create :
-      timestamp:Time.t
+    val create
+      :  timestamp:Time.t
       -> open_:Price.t
       -> high:Price.t
       -> low:Price.t
@@ -491,8 +491,8 @@ module Historical_data : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    start_time:Time.t
+  val create
+    :  start_time:Time.t
     -> end_time:Time.t
     -> bars:Bar.t list
     -> t
@@ -527,8 +527,8 @@ module Realtime_bar : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create :
-    timestamp:Time.t
+  val create
+    :  timestamp:Time.t
     -> open_:Price.t
     -> high:Price.t
     -> low:Price.t

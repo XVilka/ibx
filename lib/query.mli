@@ -65,8 +65,8 @@ module Market_data : sig
   end
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    contract:[< Contract.Type.t ] Contract.t
+  val create
+    :  contract:[< Contract.Type.t ] Contract.t
     -> tick_generics:Tick_kind.t list
     -> snapshot:bool
     -> t
@@ -75,8 +75,8 @@ end
 module Option_price : sig
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    contract:[ `Option ] Contract.t
+  val create
+    :  contract:[ `Option ] Contract.t
     -> volatility:float
     -> underlying_price:Price.t
     -> t
@@ -85,8 +85,8 @@ end
 module Implied_volatility : sig
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    contract:[ `Option ] Contract.t
+  val create
+    :  contract:[ `Option ] Contract.t
     -> option_price:Price.t
     -> underlying_price:Price.t
     -> t
@@ -98,8 +98,8 @@ end
 module Submit_order : sig
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    contract:[< Contract.Type.t ] Contract.t
+  val create
+    :  contract:[< Contract.Type.t ] Contract.t
     -> order:([< Order.Action.t ], [< Order.Type.t ]) Order.t
     -> account_code:Account_code.t
     -> t
@@ -111,8 +111,8 @@ end
 module Account_and_portfolio_updates : sig
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    subscribe:bool
+  val create
+    :  subscribe:bool
     -> account_code:Account_code.t
     -> t
 end
@@ -124,8 +124,8 @@ module Execution_reports : sig
   type t with sexp
   include Query_intf.S with type t := t
 
-  val create :
-    contract:[< Contract.Type.t] Contract.t
+  val create
+    :  contract:[< Contract.Type.t] Contract.t
     -> client_id:Client_id.t
     -> account_code:Account_code.t
     -> time:Time.t
@@ -148,8 +148,8 @@ end
 module Market_depth : sig
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    contract:[< Contract.Type.t ] Contract.t
+  val create
+    :  contract:[< Contract.Type.t ] Contract.t
     -> num_rows:int
     -> t
 end
@@ -193,8 +193,8 @@ module Historical_data : sig
 
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    contract:[< Contract.Type.t ] Contract.t
+  val create
+    :  contract:[< Contract.Type.t ] Contract.t
     -> end_date_time:Time.t
     -> bar_size:Bar_size.t
     -> duration:Duration.t
@@ -217,8 +217,8 @@ module Realtime_bars : sig
 
   type t with sexp
   include Query_intf.S with type t := t
-  val create :
-    contract:[< Contract.Type.t ] Contract.t
+  val create
+    :  contract:[< Contract.Type.t ] Contract.t
     -> bar_size:Bar_size.t
     -> show:Show.t
     -> use_rth:bool
