@@ -59,9 +59,10 @@ val req_submit_order :
 (** {1 Account and portfolio} *)
 (*****************************************************************************)
 
-val req_account_updates :
+val req_account_and_portfolio_updates :
   (Query.Account_and_portfolio_updates.t,
    [ `Account_update of Response.Account_update.t
+   | `Portfolio_update of Response.Portfolio_update.t
    | `Account_update_end of Account_code.t
    ]) Ib.Streaming_request_without_id.t
 

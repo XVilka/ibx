@@ -133,24 +133,30 @@ let cancel_order_status t oid =
 
 (* Account and portfolio *)
 
-let account_updates t =
+let account_and_portfolio_updates t =
   let account_code = Option.value_exn (account_code t) in
   let create_query = Query.Account_and_portfolio_updates.create ~account_code in
   let subscribe = create_query ~subscribe:true in
-  dispatch_streaming_request' t Tws_reqs.req_account_updates subscribe >>| function
+  dispatch_streaming_request' t
+    Tws_reqs.req_account_and_portfolio_updates
+    subscribe >>| function
   | Error _ as e -> e
   | Ok pipe_r ->
     let pipe_r = Pipe.filter_map pipe_r ~f:(function
-      | `Account_update data -> Some data
+      | `Account_update _
+      | `Portfolio_update _ as x -> Some x
       | `Account_update_end code ->
         if Account_code.(=) account_code code then begin
-          cancel_streaming_request' t Tws_reqs.req_account_updates
+          cancel_streaming_request' t
+            Tws_reqs.req_account_and_portfolio_updates
         end;
         None)
     in
     Ok pipe_r
 
-let account_updates_exn t = account_updates t >>| Or_error.ok_exn
+let account_and_portfolio_updates_exn t =
+  account_and_portfolio_updates t
+  >>| Or_error.ok_exn
 
 (* Executions *)
 
