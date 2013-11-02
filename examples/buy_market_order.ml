@@ -28,7 +28,15 @@ let run () =
         | `Filled ->
           after (sec 0.5) >>> (fun () -> Tws.cancel_order_status tws oid)
         | _ -> ()
-      end))
+      end)
+    >>= fun () ->
+    Tws.account_and_portfolio_updates_exn tws
+    >>= fun updates ->
+    Pipe.iter_without_pushback updates ~f:(function
+      | `Portfolio_update x ->
+        print_endline (Sexp.to_string_hum (Portfolio_update.sexp_of_t x));
+      | _ -> ())
+  )
 
 let command =
   Command.async_basic ~summary:"submit market buy order for AAPL"
