@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: f7e0fa3745b77bb85419cce1328b0644)
+# DO NOT EDIT (digest: 75495b8e46134d3e8d58f8608761c299)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -51,23 +51,24 @@
 <lib/*.ml{,i}>: pkg_async
 <lib/*.ml{,i}>: pkg_sexplib.syntax
 <lib/*.ml{,i}>: pkg_fieldslib.syntax
+<lib/*.ml{,i}>: pkg_textutils
 <lib/*.ml{,i}>: pkg_threads
 <lib/*.ml{,i}>: pkg_str
 # Executable test_runner
 <lib_test/test_runner.{native,byte}>: use_ibx
-<lib_test/test_runner.{native,byte}>: pkg_textutils
 <lib_test/test_runner.{native,byte}>: pkg_core
 <lib_test/test_runner.{native,byte}>: pkg_async
 <lib_test/test_runner.{native,byte}>: pkg_sexplib.syntax
 <lib_test/test_runner.{native,byte}>: pkg_fieldslib.syntax
+<lib_test/test_runner.{native,byte}>: pkg_textutils
 <lib_test/test_runner.{native,byte}>: pkg_threads
 <lib_test/test_runner.{native,byte}>: pkg_str
 <lib_test/*.ml{,i}>: use_ibx
-<lib_test/*.ml{,i}>: pkg_textutils
 <lib_test/*.ml{,i}>: pkg_core
 <lib_test/*.ml{,i}>: pkg_async
 <lib_test/*.ml{,i}>: pkg_sexplib.syntax
 <lib_test/*.ml{,i}>: pkg_fieldslib.syntax
+<lib_test/*.ml{,i}>: pkg_textutils
 <lib_test/*.ml{,i}>: pkg_threads
 <lib_test/*.ml{,i}>: pkg_str
 # Executable buy-market-order
@@ -76,15 +77,16 @@
 <examples/buy_market_order.{native,byte}>: pkg_async
 <examples/buy_market_order.{native,byte}>: pkg_sexplib.syntax
 <examples/buy_market_order.{native,byte}>: pkg_fieldslib.syntax
+<examples/buy_market_order.{native,byte}>: pkg_textutils
 <examples/buy_market_order.{native,byte}>: pkg_threads
 <examples/buy_market_order.{native,byte}>: pkg_str
 # Executable demultiplex
 <examples/demultiplex.{native,byte}>: use_ibx
-<examples/demultiplex.{native,byte}>: pkg_textutils
 <examples/demultiplex.{native,byte}>: pkg_core
 <examples/demultiplex.{native,byte}>: pkg_async
 <examples/demultiplex.{native,byte}>: pkg_sexplib.syntax
 <examples/demultiplex.{native,byte}>: pkg_fieldslib.syntax
+<examples/demultiplex.{native,byte}>: pkg_textutils
 <examples/demultiplex.{native,byte}>: pkg_threads
 <examples/demultiplex.{native,byte}>: pkg_str
 # Executable last-price
@@ -93,6 +95,7 @@
 <examples/last_price.{native,byte}>: pkg_async
 <examples/last_price.{native,byte}>: pkg_sexplib.syntax
 <examples/last_price.{native,byte}>: pkg_fieldslib.syntax
+<examples/last_price.{native,byte}>: pkg_textutils
 <examples/last_price.{native,byte}>: pkg_threads
 <examples/last_price.{native,byte}>: pkg_str
 # Executable plot-hist-bars
@@ -101,6 +104,7 @@
 <examples/plot_hist_bars.{native,byte}>: pkg_async
 <examples/plot_hist_bars.{native,byte}>: pkg_sexplib.syntax
 <examples/plot_hist_bars.{native,byte}>: pkg_fieldslib.syntax
+<examples/plot_hist_bars.{native,byte}>: pkg_textutils
 <examples/plot_hist_bars.{native,byte}>: pkg_threads
 <examples/plot_hist_bars.{native,byte}>: pkg_str
 # Executable plot-taq-data
@@ -109,6 +113,7 @@
 <examples/plot_taq_data.{native,byte}>: pkg_async
 <examples/plot_taq_data.{native,byte}>: pkg_sexplib.syntax
 <examples/plot_taq_data.{native,byte}>: pkg_fieldslib.syntax
+<examples/plot_taq_data.{native,byte}>: pkg_textutils
 <examples/plot_taq_data.{native,byte}>: pkg_threads
 <examples/plot_taq_data.{native,byte}>: pkg_str
 # Executable print_account_updates
@@ -117,6 +122,7 @@
 <examples/print_account_updates.{native,byte}>: pkg_async
 <examples/print_account_updates.{native,byte}>: pkg_sexplib.syntax
 <examples/print_account_updates.{native,byte}>: pkg_fieldslib.syntax
+<examples/print_account_updates.{native,byte}>: pkg_textutils
 <examples/print_account_updates.{native,byte}>: pkg_threads
 <examples/print_account_updates.{native,byte}>: pkg_str
 # Executable print-market-depth
@@ -125,6 +131,7 @@
 <examples/print_market_depth.{native,byte}>: pkg_async
 <examples/print_market_depth.{native,byte}>: pkg_sexplib.syntax
 <examples/print_market_depth.{native,byte}>: pkg_fieldslib.syntax
+<examples/print_market_depth.{native,byte}>: pkg_textutils
 <examples/print_market_depth.{native,byte}>: pkg_threads
 <examples/print_market_depth.{native,byte}>: pkg_str
 # Executable print-option-data
@@ -133,24 +140,25 @@
 <examples/print_option_data.{native,byte}>: pkg_async
 <examples/print_option_data.{native,byte}>: pkg_sexplib.syntax
 <examples/print_option_data.{native,byte}>: pkg_fieldslib.syntax
+<examples/print_option_data.{native,byte}>: pkg_textutils
 <examples/print_option_data.{native,byte}>: pkg_threads
 <examples/print_option_data.{native,byte}>: pkg_str
 # Executable quote-table
 <examples/quote_table.{native,byte}>: use_ibx
-<examples/quote_table.{native,byte}>: pkg_textutils
 <examples/quote_table.{native,byte}>: pkg_core
 <examples/quote_table.{native,byte}>: pkg_async
 <examples/quote_table.{native,byte}>: pkg_sexplib.syntax
 <examples/quote_table.{native,byte}>: pkg_fieldslib.syntax
+<examples/quote_table.{native,byte}>: pkg_textutils
 <examples/quote_table.{native,byte}>: pkg_threads
 <examples/quote_table.{native,byte}>: pkg_str
-<examples/*.ml{,i}>: pkg_textutils
 # Executable server-time
 <examples/server_time.{native,byte}>: use_ibx
 <examples/server_time.{native,byte}>: pkg_core
 <examples/server_time.{native,byte}>: pkg_async
 <examples/server_time.{native,byte}>: pkg_sexplib.syntax
 <examples/server_time.{native,byte}>: pkg_fieldslib.syntax
+<examples/server_time.{native,byte}>: pkg_textutils
 <examples/server_time.{native,byte}>: pkg_threads
 <examples/server_time.{native,byte}>: pkg_str
 # Executable show-contract-specs
@@ -159,6 +167,7 @@
 <examples/show_contract_specs.{native,byte}>: pkg_async
 <examples/show_contract_specs.{native,byte}>: pkg_sexplib.syntax
 <examples/show_contract_specs.{native,byte}>: pkg_fieldslib.syntax
+<examples/show_contract_specs.{native,byte}>: pkg_textutils
 <examples/show_contract_specs.{native,byte}>: pkg_threads
 <examples/show_contract_specs.{native,byte}>: pkg_str
 # Executable submit-orders
@@ -167,6 +176,7 @@
 <examples/submit_orders.{native,byte}>: pkg_async
 <examples/submit_orders.{native,byte}>: pkg_sexplib.syntax
 <examples/submit_orders.{native,byte}>: pkg_fieldslib.syntax
+<examples/submit_orders.{native,byte}>: pkg_textutils
 <examples/submit_orders.{native,byte}>: pkg_threads
 <examples/submit_orders.{native,byte}>: pkg_str
 <examples/*.ml{,i}>: use_ibx
@@ -174,6 +184,7 @@
 <examples/*.ml{,i}>: pkg_async
 <examples/*.ml{,i}>: pkg_sexplib.syntax
 <examples/*.ml{,i}>: pkg_fieldslib.syntax
+<examples/*.ml{,i}>: pkg_textutils
 <examples/*.ml{,i}>: pkg_threads
 <examples/*.ml{,i}>: pkg_str
 # OASIS_STOP

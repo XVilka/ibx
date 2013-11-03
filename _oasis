@@ -60,10 +60,11 @@ Library ibx
                   Client_id,
                   Client_intf,
                   Std
-  BuildDepends:   core (>= 109.10.00),
+  BuildDepends:   core  (>= 109.10.00),
                   async (>= 109.35.00),
                   sexplib.syntax,
                   fieldslib.syntax,
+                  textutils,
                   threads,
                   str
   CompiledObject: best
@@ -74,7 +75,7 @@ Executable test_runner
   Path:           lib_test
   MainIs:         test_runner.ml
   Install:        false
-  BuildDepends:   ibx, textutils
+  BuildDepends:   ibx
   CompiledObject: best
 
 Test test_runner
@@ -97,7 +98,7 @@ Executable "demultiplex"
   Path:           examples
   MainIs:         demultiplex.ml
   Install:        false
-  BuildDepends:   ibx, textutils
+  BuildDepends:   ibx
   CompiledObject: best
 
 Executable "last-price"
@@ -153,7 +154,7 @@ Executable "quote-table"
   Path:           examples
   MainIs:         quote_table.ml
   Install:        false
-  BuildDepends:   ibx, textutils
+  BuildDepends:   ibx
   CompiledObject: best
 
 Executable "server-time"
