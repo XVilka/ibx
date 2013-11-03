@@ -1,6 +1,4 @@
 * write a better README file
 * write more documentation
 * handle 'open order' messages on connection
-* implement account updates
 * implement more order types
-* implement further examples, e.g. a customized client for option data

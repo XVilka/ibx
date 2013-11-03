@@ -1,3 +1,5 @@
+2013-11-02: TWS clients can receive account and portfolio updates.
+
 2013-08-13: Fixed compatibility issues with Async 109.35.00.
 
 2013-06-25: Fixed build problem by using textutils instead of core_extended.
