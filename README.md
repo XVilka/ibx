@@ -128,7 +128,7 @@ and generates a plot which should look similar to this image:
 ![GOOG TAQ](http://ogu.bitbucket.org/goog_taq.png)
 
 However, please note that these TAQ data plots do not reflect the true market
-history, since Interactive Brokers accumulates market data in time incrementes
+history, since Interactive Brokers accumulates market data in time increments
 of 300 milliseconds; see
 [here](http://support.marketdelta.com/entries/117533-interactive-brokers-ib-data-snapshot-data)
 for more information.
