@@ -24,7 +24,7 @@
 
 open Core.Std
 
-(* {1 Connection and server} *)
+(** {1 Connection and server} *)
 (*****************************************************************************)
 
 module Server_log_level : sig
@@ -42,7 +42,7 @@ module Server_time : sig
   val create : unit -> t
 end
 
-(* {1 Market data} *)
+(** {1 Market data} *)
 (*****************************************************************************)
 
 module Market_data : sig
