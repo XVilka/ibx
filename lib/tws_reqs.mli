@@ -22,13 +22,13 @@
 
 (** TWS requests *)
 
-(* {1 Connection and server} *)
+(** {1 Connection and server} *)
 (*****************************************************************************)
 
 val req_server_time :
   (Query.Server_time.t, Response.Server_time.t) Ib.Request.t
 
-(* {1 Market data} *)
+(** {1 Market data} *)
 (*****************************************************************************)
 
 val req_market_data :
@@ -39,10 +39,10 @@ val req_market_data :
                         ]) Ib.Streaming_request.t
 
 val req_option_price :
-  (Query.Option_price.t, Response.Tick_option.t) Ib.Streaming_request.t
+  (Query.Option_price.t, Price.t option) Ib.Streaming_request.t
 
 val req_implied_volatility :
-  (Query.Implied_volatility.t, Response.Tick_option.t) Ib.Streaming_request.t
+  (Query.Implied_volatility.t, float option) Ib.Streaming_request.t
 
 (** {1 Contract specs} *)
 (*****************************************************************************)

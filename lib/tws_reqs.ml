@@ -62,16 +62,18 @@ let req_option_price = Ib.Streaming_request.create
   ~canc_header:(Ib.Header.create ~tag:S.Cancel_option_price ~version:1)
   ~recv_header:[Ib.Header.create ~tag:R.Tick_option ~version:6]
   ~tws_query:Query.Option_price.pickler
-  ~tws_response:[Response.Tick_option.unpickler]
-  ()
+  ~tws_response:[
+    U.map Response.Tick_option.unpickler ~f:Response.Tick_option.option_price;
+  ] ()
 
 let req_implied_volatility = Ib.Streaming_request.create
   ~send_header:(Ib.Header.create ~tag:S.Implied_volatility ~version:1)
   ~canc_header:(Ib.Header.create ~tag:S.Cancel_implied_volatility ~version:1)
   ~recv_header:[Ib.Header.create ~tag:R.Tick_option ~version:6]
   ~tws_query:Query.Implied_volatility.pickler
-  ~tws_response:[Response.Tick_option.unpickler]
-  ()
+  ~tws_response:[
+    U.map Response.Tick_option.unpickler ~f:Response.Tick_option.implied_volatility;
+  ] ()
 
 (* ===================== Contract specs ========================= *)
 

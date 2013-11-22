@@ -72,14 +72,8 @@ let option_price t ~contract ~volatility ~underlying_price =
   let q = Query.Option_price.create ~contract ~volatility ~underlying_price in
   dispatch_and_cancel t Tws_reqs.req_option_price q >>| function
   | Error _ as x -> x
-  | Ok tick ->
-    begin
-      match Tick_option.option_price tick with
-      | None -> Error (
-        Error.create "option price not found"
-          tick <:sexp_of< Response.Tick_option.t >>)
-      | Some opt_price -> Ok opt_price
-    end
+  | Ok None -> Error (Error.of_string "missing option price")
+  | Ok (Some opt_price) -> Ok opt_price
 
 let option_price_exn t ~contract ~volatility ~underlying_price =
   option_price t ~contract ~volatility ~underlying_price >>| Or_error.ok_exn
@@ -88,14 +82,8 @@ let implied_volatility t ~contract ~option_price ~underlying_price =
   let q = Query.Implied_volatility.create ~contract ~option_price ~underlying_price in
   dispatch_and_cancel t Tws_reqs.req_implied_volatility q >>| function
   | Error _ as x -> x
-  | Ok tick ->
-    begin
-      match Tick_option.implied_volatility tick with
-      | None -> Error (
-        Error.create "implied volatility not found"
-          tick <:sexp_of< Response.Tick_option.t >>)
-      | Some implied_vol -> Ok implied_vol
-    end
+  | Ok None -> Error (Error.of_string "missing implied volatility")
+  | Ok (Some implied_vol) -> Ok implied_vol
 
 let implied_volatility_exn t ~contract ~option_price ~underlying_price =
   implied_volatility t ~contract ~option_price ~underlying_price
