@@ -79,7 +79,7 @@ module Server_log_level = struct
 end
 
 module Server_time = Unit (struct
-  let name = "Server_time"
+  let name = "Query.Server_time"
 end)
 
 (* +-----------------------------------------------------------------------+

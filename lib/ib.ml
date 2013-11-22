@@ -113,7 +113,7 @@ module Client_header = struct
     } with fields, sexp
 
   let pickler =
-    Pickler.create
+    Pickler.create ~name:"Ib.Client_header"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -131,7 +131,7 @@ module Server_header = struct
     } with fields, sexp
 
   let unpickler =
-    Unpickler.create ~name:"Server_header"
+    Unpickler.create ~name:"Ib.Server_header"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -150,7 +150,7 @@ module Query = struct
     } with fields, sexp
 
   let pickler =
-    Pickler.create
+    Pickler.create ~name:"Ib.Query"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -168,15 +168,15 @@ module Response_data = struct
 end
 
 module Response = struct
-  type t = {
-    tag      : Recv_tag.t;
-    version  : int;
-    query_id : Query_id.t option;
-    data     : Response_data.t;
-  } with fields, sexp
+  type t =
+    { tag      : Recv_tag.t;
+      version  : int;
+      query_id : Query_id.t option;
+      data     : Response_data.t;
+    } with fields, sexp
 
   let pickler = lazy (
-    Pickler.create ~name:"Response"
+    Pickler.create ~name:"Ib.Response"
       Pickler.Spec.(
         wrap (
           Fields.fold
