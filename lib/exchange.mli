@@ -38,6 +38,7 @@ type t =
 | `CBOE       (* Chicago Board Options Exchange *)
 | `CBOE2      (* CBOE C2 *)
 | `CHX        (* Chicago Stock Exchange *)
+| `CME        (* Chicago Mercantile Exchange *)
 | `GLOBEX     (* CME GLOBEX *)
 | `DRCTEDGE   (* Direct Edge *)
 | `EDGEA      (* Direct Edge *)

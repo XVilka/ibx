@@ -36,6 +36,7 @@ type t =
 | `CBOE
 | `CBOE2
 | `CHX
+| `CME
 | `GLOBEX
 | `DRCTEDGE
 | `EDGEA
@@ -131,6 +132,7 @@ let tws_of_t = function
   | `CBOE -> "CBOE"
   | `CBOE2 -> "CBOE2"
   | `CHX -> "CHX"
+  | `CME -> "CME"
   | `GLOBEX -> "GLOBEX"
   | `DRCTEDGE -> "DRCTEDGE"
   | `EDGEA -> "EDGEA"
@@ -225,6 +227,7 @@ let t_of_tws = function
   | "CBOE" -> `CBOE
   | "CBOE2" -> `CBOE2
   | "CHX" -> `CHX
+  | "CME" -> `CME
   | "GLOBEX" -> `GLOBEX
   | "DRCTEDGE" -> `DRCTEDGE
   | "EDGEA" -> `EDGEA
