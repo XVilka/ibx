@@ -1,8 +1,9 @@
-2013-11-23: Fixed parse error by adding CME as an exchange.
-            More flexible error handling: We include Tws_error messages into
-            the values of a pipe of a streaming request. This allows us to
-            do pattern matching on Tws_error's in order to better control the
-            progrm flow in case of an error.
+2013-11-23: Fixed parse error by extending the Exchange type with a new
+            variant for the Chicago Mercantile Exchange (CME).
+
+            More flexible error handling: The inclusion of Tws_error messages
+            into the values of a pipe of a streaming request enables pattern
+            matching on Tws_error's.
 
 2013-11-02: TWS clients can receive account and portfolio updates.
 
@@ -11,6 +12,7 @@
 2013-06-25: Fixed build problem by using textutils instead of core_extended.
 
 2013-05-11: Changed string representation of error messages in Ib module.
+
             Moved client module in ib.ml into separate file.
 
 2013-05-06: Fixed small bug in error message of handshake version failure.
