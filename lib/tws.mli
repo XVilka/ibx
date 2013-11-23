@@ -38,7 +38,7 @@ val server_time : t -> Time.t Or_error.t Deferred.t
 val server_time_exn : t -> Time.t Deferred.t
 
 
-(* {1 Market data} *)
+(** {1 Market data} *)
 (******************************************************************************)
 
 module Market_data : sig

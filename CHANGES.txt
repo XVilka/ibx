@@ -1,3 +1,9 @@
+2013-11-23: Fixed parse error by adding CME as an exchange.
+            More flexible error handling: We include Tws_error messages into
+            the values of a pipe of a streaming request. This allows us to
+            do pattern matching on Tws_error's in order to better control the
+            progrm flow in case of an error.
+
 2013-11-02: TWS clients can receive account and portfolio updates.
 
 2013-08-13: Fixed compatibility issues with Async 109.35.00.
