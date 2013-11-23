@@ -111,7 +111,7 @@ module Streaming_request : sig
     :  ('query, 'response) t
     -> Connection.t
     -> 'query
-    -> ('response Pipe.Reader.t * Id.t) Or_error.t Deferred.t
+    -> ('response Tws_result.t Pipe.Reader.t * Id.t) Or_error.t Deferred.t
 
   (** [cancel req con id] cancels the TWS data stream from the request
       associated with the unique identifier [id], which was returned

@@ -67,12 +67,14 @@ module Tws_error = struct
           (fun { error_code; error_msg } ->
             `Args $ error_code $ error_msg)))
 
-  let pp ppf t = Format.fprintf ppf "%i - %s" t.error_code t.error_msg
-
   let to_string_hum t =
     let module F = Format in
+    let pp ppf t = F.fprintf ppf "%i - %s" t.error_code t.error_msg in
     F.fprintf F.str_formatter "@[%a@]" pp t;
     F.flush_str_formatter ()
+
+  let to_error t = Error.of_string (to_string_hum t)
+  let to_exn t = Error.to_exn (to_error t)
 end
 
 module Server_time = struct

@@ -38,6 +38,9 @@ module Tws_error : sig
 
   val create : error_code:int -> error_msg:string -> t
   val to_string_hum : t -> string
+
+  val to_error : t -> Error.t
+  val to_exn : t -> exn
 end
 
 module Server_time : sig

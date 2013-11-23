@@ -53,6 +53,7 @@ module Book_update       = Response.Book_update
 module Historical_data   = Response.Historical_data
 module Realtime_bar      = Response.Realtime_bar
 module Ib                = Ib
+module Tws_result        = Tws_result
 module Tws_reqs          = Tws_reqs
 module Tws               = Tws
 module Query_id          = Tws.Query_id

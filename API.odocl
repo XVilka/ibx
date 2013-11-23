@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 91cca155509b16e1f7503e7a907583ad)
+# DO NOT EDIT (digest: cf5964847d2881cdd46dbb69f0de93ba)
 lib/Config
 lib/Std_internal
 lib/Send_tag
@@ -28,6 +28,7 @@ lib/Order
 lib/Ib
 lib/Client
 lib/Tws_reqs
+lib/Tws_result
 lib/Tws
 lib/Client_id
 lib/Client_intf

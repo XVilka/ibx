@@ -34,7 +34,7 @@ module Option_client : sig
   val option_data
     :  t
     -> option:[ `Option ] Contract.t
-    -> (Tick_option.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+    -> (Tick_option.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
   val option_data_exn
     :  t
@@ -55,7 +55,9 @@ end = struct
     dispatch_streaming_request t Tws_req.req_option_data q
 
   let option_data_exn t ~option =
-    option_data t ~option >>| Or_error.ok_exn
+    option_data t ~option >>| function
+    | Error e -> raise (Error.to_exn e)
+    | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
 
   let cancel_option_data t id =
     cancel_streaming_request t Tws_req.req_option_data id

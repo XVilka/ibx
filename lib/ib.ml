@@ -810,13 +810,9 @@ module Streaming_request = struct
               Pipe.close pipe_w;
               return (`Die err)
             | Ok tws_error ->
-              let err_string = Tws_error.to_string_hum tws_error in
-              let err = Ibx_error.Tws_error err_string in
-              if Ivar.is_empty ivar then begin
-                Ivar.fill ivar (Error err);
-                return `Remove
-              end else
-                return (`Die err)
+              don't_wait_for (Pipe.write pipe_w (Error tws_error));
+              Ivar.fill_if_empty ivar (Ok (pipe_r, query_id));
+              return `Keep
           end)
     in
     let skip_handlers =
@@ -852,7 +848,7 @@ module Streaming_request = struct
                     (* We guard this write call to protect us against
                        incoming messages after a cancelation, causing
                        a write call to a closed pipe. *)
-                    don't_wait_for (Pipe.write pipe_w response)
+                    don't_wait_for (Pipe.write pipe_w (Ok response))
                   end;
                   return `Keep
               end
@@ -873,7 +869,7 @@ module Streaming_request = struct
                 Ivar.fill_if_empty ivar x;
                 return (`Die err)
               | Ok response ->
-                don't_wait_for (Pipe.write pipe_w response);
+                don't_wait_for (Pipe.write pipe_w (Ok response));
                 (* We fill the ivar only in the first iteration. *)
                 Ivar.fill_if_empty ivar (Ok (pipe_r, query_id));
                 return (`Replace (update pipe_w))

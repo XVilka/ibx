@@ -191,13 +191,25 @@ let suite = "Client" >::: [
     with_tws_client (fun tws ->
       let module R = Response.Historical_data in
       let gen_historical_data = Lazy.force Gen.historical_data in
-      Tws.historical_data_exn tws ~contract:(Rg.contract_g ())
-      >>| fun historical_data ->
-      assert_response_equal
-        (module R : Response_intf.S with type t = R.t)
-        ~expected:gen_historical_data
-        ~actual:historical_data;
-      Log.Global.sexp ~level:`Debug historical_data R.sexp_of_t
+      Tws.historical_data tws ~contract:(Rg.contract_g ())
+      >>= function
+      | Error e -> Error.raise e
+      | Ok (reader, id) ->
+        Pipe.read_exactly reader ~num_values:1
+        >>| fun read_result ->
+        Exn.protectx read_result ~f:(function
+        | `Eof
+        | `Fewer _ -> assert false
+        | `Exactly result ->
+          match Queue.dequeue_exn result with
+          | Error _ -> assert false
+          | Ok historical_data ->
+            assert_response_equal
+              (module R : Response_intf.S with type t = R.t)
+              ~expected:gen_historical_data
+              ~actual:historical_data;
+            Log.Global.sexp ~level:`Debug historical_data R.sexp_of_t
+        ) ~finally:(fun _ -> Tws.cancel_realtime_bars tws id)
     )
   );
 

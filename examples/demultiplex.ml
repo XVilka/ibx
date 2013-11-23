@@ -22,14 +22,10 @@ let make_tick_printer ~id ~symbol ~color = stage (fun tick ->
 let print_market_data ~duration =
   Common.with_tws_client (fun tws ->
     let print_ticks symbol color =
-      Tws.market_data tws ~contract:(Contract.stock ~currency:`USD symbol)
-      >>= function
-      | Error e ->
-        print_endline (Error.to_string_hum e);
-        return ()
-      | Ok (ticks, id) ->
-        upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id);
-        Pipe.iter ticks ~f:(unstage (make_tick_printer ~id ~symbol ~color))
+      Tws.market_data_exn tws ~contract:(Contract.stock ~currency:`USD symbol)
+      >>= fun (ticks, id) ->
+      upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id);
+      Pipe.iter ticks ~f:(unstage (make_tick_printer ~id ~symbol ~color))
     in
     let symbols = ["AAPL"; "MSFT"; "GOOG"] in
     let colors  = [`Red; `Green; `Blue] in

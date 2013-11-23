@@ -53,7 +53,7 @@ val dispatch_streaming_request
   :  t
   -> ('query, 'response) Ib.Streaming_request.t
   -> 'query
-  -> ('response Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> ('response Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val cancel_streaming_request
   :  t
@@ -65,7 +65,7 @@ val dispatch_and_cancel
   :  t
   -> ('query, 'response) Ib.Streaming_request.t
   -> 'query
-  -> 'response Or_error.t Deferred.t
+  -> 'response Tws_result.t Or_error.t Deferred.t
 
 val dispatch_streaming_request'
   :  t

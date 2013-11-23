@@ -71,7 +71,7 @@ val market_data
   ] list
   -> t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> (Market_data.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Market_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val market_data_exn
   :  ?snapshot:bool
@@ -133,7 +133,7 @@ val submit_order
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
   -> order:([< `Buy | `Sell | `Sell_short ],
             [< Order.Type.t ]) Order.t
-  -> (Order_status.t Pipe.Reader.t * Order_id.t) Or_error.t Deferred.t
+  -> (Order_status.t Tws_result.t Pipe.Reader.t * Order_id.t) Or_error.t Deferred.t
 
 val submit_order_exn
   :  t
@@ -167,7 +167,7 @@ val filter_executions
   -> t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
   -> order_action:[ `Buy | `Sell | `Sell_short ]
-  -> (Execution_report.t Pipe.Reader.t) Or_error.t Deferred.t
+  -> (Execution_report.t Tws_result.t Pipe.Reader.t) Or_error.t Deferred.t
 
 val filter_executions_exn
   :  ?time:Time.t
@@ -183,7 +183,7 @@ val filter_executions_exn
 val contract_specs
   :  t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> Contract_specs.t Or_error.t Deferred.t
+  -> Contract_specs.t Tws_result.t Or_error.t Deferred.t
 
 val contract_specs_exn
   :  t
@@ -198,7 +198,7 @@ val market_depth
   :  ?num_rows:int
   -> t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> (Book_update.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Book_update.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val market_depth_exn
   :  ?num_rows:int
@@ -240,38 +240,9 @@ val historical_data
   -> ?until:Time.t
   -> t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> Historical_data.t Or_error.t Deferred.t
+  -> (Historical_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
-val historical_data_exn
-  :  ?bar_size:[
-  | `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
-  | `One_min | `Two_mins | `Three_mins | `Five_mins | `Fifteen_mins | `Thirty_mins
-  | `One_hour
-  | `One_day
-  ]
-  -> ?duration:[
-  | `Sec of int
-  | `Day of int
-  | `Week of int
-  | `Month of int
-  | `Year
-  ]
-  -> ?use_rth:bool
-  -> ?show:[
-  | `Trades
-  | `Midpoint
-  | `Bid
-  | `Ask
-  | `Bid_ask
-  | `Historical_volatility
-  | `Implied_volatility
-  | `Option_volume
-  ]
-  -> ?until:Time.t
-  -> t
-  -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> Historical_data.t Deferred.t
-
+val cancel_historical_data : t -> Query_id.t -> unit
 
 (** {1 Realtime bars} *)
 (******************************************************************************)
@@ -282,7 +253,7 @@ val realtime_bars
   -> ?use_rth:bool
   -> t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> (Realtime_bar.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Realtime_bar.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val realtime_bars_exn
   :  ?bar_size:[ `Five_secs ]
@@ -312,7 +283,7 @@ end
 val trades
   : t
   -> contract:[< `Stock | `Futures | `Option ] Contract.t
-  -> (Trade.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Trade.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val trades_exn
   : t
@@ -349,7 +320,7 @@ end
 val quotes
   :  t
   -> contract:[< `Stock | `Futures | `Option ] Contract.t
-  -> (Quote.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Quote.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val quotes_exn
   :  t
@@ -370,7 +341,7 @@ end
 val taq_data
   :  t
   -> contract:[< `Stock | `Futures | `Option ] Contract.t
-  -> (TAQ.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (TAQ.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val taq_data_exn
   :  t
