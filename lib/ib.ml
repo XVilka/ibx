@@ -44,15 +44,12 @@ module Query_id = struct
 end
 
 module Header = struct
-  type 'a t = {
-    tag : 'a;
-    version : int;
-  } with sexp
+  type 'a t =
+    { tag : 'a;
+      version : int;
+    } with sexp
 
-  let create ~tag ~version =
-    { tag;
-      version;
-    }
+  let create ~tag ~version = { tag; version }
 
   module R = Recv_tag
   let managed_accounts  = { tag = R.Managed_accounts  ; version = 1 }
@@ -186,7 +183,8 @@ module Response = struct
             ~query_id:(fields_value (skipped_if_none Query_id.val_type))
             ~data:(fields_value tws_data))
           (fun { tag; version; query_id; data } ->
-            let tws_data = match data with
+            let tws_data =
+              match data with
               | Error _
               | Ok `Cancel -> assert false
               | Ok (`Response data) ->
@@ -248,11 +246,11 @@ module Response_handler = struct
        | `Replace of handler
        | `Die of Ibx_error.t ] Deferred.t
 
-  type t = {
-    tag     : Recv_tag.t;
-    version : int;
-    run     : handler;
-  }
+  type t =
+    { tag     : Recv_tag.t;
+      version : int;
+      run     : handler;
+    }
 
   let create ~header ~run =
     { tag = header.Header.tag;
@@ -400,9 +398,10 @@ module Connection : Connection_internal = struct
   let send_tws writer pickler msg = Writer.write writer (to_tws pickler msg)
 
   let send_query ?logfun writer query =
-    begin match logfun with
-    | None -> ()
-    | Some f -> f (`Send query)
+    begin
+      match logfun with
+      | None -> ()
+      | Some f -> f (`Send query)
     end;
     send_tws writer Query.pickler query
 
@@ -468,8 +467,7 @@ module Connection : Connection_internal = struct
       | R.Financial_advisor -> unimplemented R.Financial_advisor
       | R.Historical_data ->
         begin
-          read ~len:3
-          >>= function
+          read ~len:3 >>= function
           | `Eof -> return `Eof
           | `Ok raw_msg ->
             let array = Queue.to_array raw_msg in
