@@ -424,7 +424,7 @@ module Connection : Connection_internal = struct
   let read_version_and_optional_id reader tag =
     if Recv_tag.corresponding_response_has_query_id tag then
       let unpickler =
-        Unpickler.create ~name:"Version_id"
+        Unpickler.create ~name:"Ib.Version_and_id"
           Unpickler.Spec.(
             value (required int) ~name:"version"
             ++ value (required Query_id.val_type) ~name:"id"
@@ -434,7 +434,7 @@ module Connection : Connection_internal = struct
       read_tws reader unpickler ~len:2
     else
       let unpickler =
-        Unpickler.create ~name:"Version"
+        Unpickler.create ~name:"Ib.Version"
           Unpickler.Spec.(
             value (required int) ~name:"version"
           )
