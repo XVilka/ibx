@@ -24,5 +24,5 @@ open Tws_prot
 
 module type S = sig
   type t
-  val pickler : t Pickler.t
+  val pickler : t Pickler.t Lazy.t
 end

@@ -25,8 +25,14 @@ open Async.Std
 open Ibx.Std
 open Test_lib
 
-let to_tws = Tws_prot.Pickler.run
-let of_tws = Tws_prot.Unpickler.run_exn
+module P = Tws_prot.Pickler
+module U = Tws_prot.Unpickler
+
+let to_tws  p x = P.run (Lazy.force p) x
+let of_tws  u x = U.run_exn (Lazy.force u) x
+
+let to_tws' p x = P.run (Only_in_test.force p) x
+let of_tws' u x = U.run_exn (Only_in_test.force u) x
 
 let input_of_output output =
   let truncate_null s = String.sub s ~pos:0 ~len:(String.length s - 1) in
@@ -38,7 +44,7 @@ module Query = struct
     let expected = query_g () in
     let module Q = (val query : Query_intf.S with type t = s) in
     let output = to_tws Q.pickler expected in
-    let actual = of_tws (Only_in_test.force Q.unpickler) (input_of_output output) in
+    let actual = of_tws' Q.unpickler (input_of_output output) in
     assert_query_equal query ~expected ~actual;
     Deferred.unit
 
@@ -118,8 +124,8 @@ module Response = struct
   let gen_test (type s) response response_g =
     let expected = response_g () in
     let module R = (val response : Response_intf.S with type t = s) in
-    let output = to_tws (Only_in_test.force R.pickler) expected in
-    let actual = of_tws R.unpickler (input_of_output output) in
+    let output = to_tws' R.pickler expected in
+    let actual = of_tws  R.unpickler (input_of_output output) in
     assert_response_equal response ~expected ~actual;
     Deferred.unit
 

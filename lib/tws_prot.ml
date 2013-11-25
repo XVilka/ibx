@@ -124,8 +124,6 @@ module Pickler = struct
         serialize_opt default_on_none val_type.Val_type.tws_of_a a buf);
     }
 
-
-
     let skipped_if_none val_type = {
       value = (fun a_opt buf ->
         match a_opt with

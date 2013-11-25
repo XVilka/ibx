@@ -424,6 +424,7 @@ module Streaming_request = struct
 
     "unpickler-mismatch" >:: (fun () ->
       let module U = Tws_prot.Unpickler in
+      let map_u u ~f = lazy (U.map (Lazy.force u) ~f) in
       let buggy_req =
         Ib.Streaming_request.create
           ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
@@ -433,8 +434,8 @@ module Streaming_request = struct
           ]
           ~tws_query:Query.Market_data.pickler
           ~tws_response:[
-            U.map Response.Tick_price.unpickler ~f:(fun x -> `Tick_price x);
-            U.map Response.Tick_size.unpickler  ~f:(fun x -> `Tick_size  x);
+            map_u Response.Tick_price.unpickler ~f:(fun x -> `Tick_price x);
+            map_u Response.Tick_size.unpickler  ~f:(fun x -> `Tick_size  x);
           ] ()
       in
       unix_pipe ()

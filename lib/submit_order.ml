@@ -276,7 +276,7 @@ let ( = ) t1 t2 : bool =
     ~algo_strategy:(use (=))
     ~request_pre_trade_information:(use (=))
 
-let pickler =
+let pickler = lazy (
   Pickler.create ~name:"Submit-Order"
     Pickler.Spec.(
       wrap (
@@ -439,7 +439,7 @@ let pickler =
             $ t.not_held
             $ t.underlying_combo
             $ t.algo_strategy
-            $ t.request_pre_trade_information))
+            $ t.request_pre_trade_information)))
 
 let unpickler = Only_in_test.of_thunk (fun () ->
   Unpickler.create ~name:"Submit-order"

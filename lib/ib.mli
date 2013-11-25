@@ -81,8 +81,8 @@ module Request : sig
   val create
     :  send_header:Send_tag.t Header.t
     -> recv_header:Recv_tag.t Header.t
-    -> tws_query    : 'query    Tws_prot.Pickler.t
-    -> tws_response : 'response Tws_prot.Unpickler.t
+    -> tws_query    : 'query    Tws_prot.Pickler.t Lazy.t
+    -> tws_response : 'response Tws_prot.Unpickler.t Lazy.t
     -> ('query, 'response) t
 
   val dispatch
@@ -102,8 +102,8 @@ module Streaming_request : sig
     -> ?skip_header:Recv_tag.t Header.t list
     -> send_header:Send_tag.t Header.t
     -> recv_header:Recv_tag.t Header.t list
-    -> tws_query    : 'query    Tws_prot.Pickler.t
-    -> tws_response : 'response Tws_prot.Unpickler.t list
+    -> tws_query    : 'query    Tws_prot.Pickler.t Lazy.t
+    -> tws_response : 'response Tws_prot.Unpickler.t Lazy.t list
     -> unit
     -> ('query, 'response) t
 
@@ -126,8 +126,8 @@ module Streaming_request_without_id : sig
     :  ?skip_header:Recv_tag.t Header.t list
     -> send_header:Send_tag.t Header.t
     -> recv_header:Recv_tag.t Header.t list
-    -> tws_query    : 'query    Tws_prot.Pickler.t
-    -> tws_response : 'response Tws_prot.Unpickler.t list
+    -> tws_query    : 'query    Tws_prot.Pickler.t Lazy.t
+    -> tws_response : 'response Tws_prot.Unpickler.t Lazy.t list
     -> unit
     -> ('query, 'response) t
 
