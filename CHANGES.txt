@@ -1,3 +1,5 @@
+2013-11-25: Delayed pickler/unpickler construction.
+
 2013-11-23: Fixed parse error by extending the Exchange type with a new
             variant for the Chicago Mercantile Exchange (CME).
 

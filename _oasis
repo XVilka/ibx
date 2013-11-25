@@ -1,6 +1,6 @@
 OASISFormat:      0.3
 Name:             ibx
-Version:          0.6.1
+Version:          0.6.2
 Synopsis:         OCaml implementation of the Interactive Brokers TWS API
 Description:      IBX is a pure OCaml implementation of the Interactive Brokers
                   Trader Workstation API (TWS API) built on top of
