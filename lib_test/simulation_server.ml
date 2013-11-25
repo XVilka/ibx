@@ -110,8 +110,8 @@ module Protocol = struct
           data     : string;
         } with fields, sexp
 
-      let pickler =
-        Pickler.create ~name:"Response"
+      let pickler = lazy (
+        Pickler.create ~name:"Simulation_server.Server_message"
           Pickler.Spec.(
             wrap (
               Fields.fold
@@ -121,7 +121,13 @@ module Protocol = struct
                 ~query_id:(fields_value (skipped_if_none Query_id.val_type))
                 ~data:(fields_value tws_data))
               (fun { tag; version; query_id; data } ->
-                `Args $ tag $ version $ query_id $ data))
+                `Args $ tag $ version $ query_id $ data)))
+    end
+
+    module Server_header = struct
+      let pickler = lazy (
+        Pickler.create ~name:"Simulation_server.Server_header"
+          Pickler.Spec.(value (required int) ++ value (required time)))
     end
 
     type t =
@@ -130,15 +136,10 @@ module Protocol = struct
     with sexp
 
     let to_tws = function
-      | Server_header (server_version, connection_time) ->
-        let pickler = Pickler.create ~name:"Server_header"
-          Pickler.Spec.(
-            wrap (empty () ++ value (required int) ++ value (required time))
-              (fun (version, time) -> `Args $ version $ time))
-        in
-        Pickler.run pickler (server_version, connection_time)
+      | Server_header (version, conn_time) ->
+        Pickler.run (Lazy.force Server_header.pickler) (version, conn_time)
       | Server_response response ->
-        Pickler.run Response.pickler response
+        Pickler.run (Lazy.force Response.pickler) response
   end
 
   module Transport = struct
@@ -232,7 +233,7 @@ module Protocol = struct
     let (>>|~) = Deferred_read_result.(>>|)
 
     let read t =
-      Monitor.try_with ~name:"Transport reader" (fun () ->
+      Monitor.try_with ~name:"Simulation_server.read" (fun () ->
         really_read t.reader ~len:1 >>=~ function
         | [] -> failwith "missing send tag"
         | raw_tag :: _ ->
