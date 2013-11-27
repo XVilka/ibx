@@ -32,7 +32,11 @@ let run () =
         ~currency:`USD
         (Symbol.of_string symbol)
       in
-      Tws.quote_snapshot_exn tws ~contract:stock)
+      Tws.contract_specs_exn tws ~contract:stock
+      >>= fun specs ->
+      (* extract unambigious contract description *)
+      let contract = Contract_specs.to_contract specs in
+      Tws.quote_snapshot_exn tws ~contract)
     >>| fun quotes -> print_quote_table quotes)
 
 let command =
