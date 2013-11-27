@@ -47,14 +47,14 @@ module Tws_error = struct
 
   let ( = ) t1 t2 = (t1 = t2)
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Tws_error"
       Unpickler.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~error_code:(fields_value (required int))
           ~error_msg:(fields_value (required string)))
-      (fun error_code error_msg  -> { error_code; error_msg }))
+      (fun error_code error_msg  -> { error_code; error_msg })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tws_error"
@@ -83,10 +83,10 @@ module Server_time = struct
   let create ~time = time
   let ( = ) t1 t2 = (t1 = t2)
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Server_time"
       Unpickler.Spec.(value (required int64) ~name:"time")
-      (fun long_int -> Time.of_float (Int64.to_float long_int)))
+      (fun long_int -> Time.of_float (Int64.to_float long_int))
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Server_time"
@@ -141,7 +141,7 @@ module Tick_price = struct
       ~size:(use (=))
       ~can_auto_execute:(use (Option.equal (=)))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Tick_price"
       Unpickler.Spec.(
         Fields.fold
@@ -151,7 +151,7 @@ module Tick_price = struct
           ~size:(fields_value (required int))
           ~can_auto_execute:(fields_value (optional bool ~none_on_default:"-1")))
       (fun tick_type price size can_auto_execute ->
-        { tick_type; price; size; can_auto_execute }))
+        { tick_type; price; size; can_auto_execute })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_price"
@@ -204,14 +204,14 @@ module Tick_size = struct
 
   let ( = ) t1 t2 = (t1 = t2)
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Tick_size"
       Unpickler.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
           ~size:(fields_value (required int)))
-      (fun tick_type size -> { tick_type; size }))
+      (fun tick_type size -> { tick_type; size })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_size"
@@ -280,7 +280,7 @@ module Tick_option = struct
       ~theta:(use (Option.equal Float.(=.)))
       ~underlying_price:(use (Option.equal Price.(=.)))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Tick_option"
       Unpickler.Spec.(
         Fields.fold
@@ -309,7 +309,7 @@ module Tick_option = struct
             theta = if abs theta > 1. then None else Some theta;
             underlying_price = if Price.to_float underlying_price < 0. then None
               else Some underlying_price;
-          }))
+          })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_option"
@@ -545,14 +545,14 @@ module Tick_string = struct
       ~tick_type:(use (=))
       ~value:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Tick_string"
       Unpickler.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
           ~value:(fields_value (required string)))
-      (fun tick_type value -> { tick_type; value }))
+      (fun tick_type value -> { tick_type; value })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_string"
@@ -582,12 +582,12 @@ module Next_order_id = struct
   type t = Raw_order.Id.t with sexp
   let create ~order_id = order_id
   let ( = ) t1 t2 = (t1 = t2)
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Next_order_id"
       Unpickler.Spec.(
         value (required Raw_order.Id.val_type)
           ~name:(Fieldslib.Field.name (Raw_order.Fields.order_id))
-      ) Fn.id)
+      ) Fn.id
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Next_order_id"
@@ -658,7 +658,7 @@ module Order_status = struct
       ~client_id:(use Client_id.(=))
       ~why_held:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Order_status"
       Unpickler.Spec.(
         Fields.fold
@@ -683,7 +683,7 @@ module Order_status = struct
             last_fill_price;
             client_id;
             why_held;
-          }))
+          })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Order_status"
@@ -737,7 +737,7 @@ module Account_update = struct
       ~currency:(use (=))
       ~account_code:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Account_update"
       Unpickler.Spec.(
         Fields.fold
@@ -747,7 +747,7 @@ module Account_update = struct
           ~currency:(fields_value (optional string))
           ~account_code:(fields_value (required Account_code.val_type)))
       (fun key value currency account_code ->
-        { key; value; currency; account_code }))
+        { key; value; currency; account_code })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Account_update"
@@ -790,7 +790,7 @@ module Portfolio_update = struct
       ~realized_pnl:(use Price.(=.))
       ~account_code:(use Account_code.(=))
 
-  let unpickler = lazy (
+  let unpickler =
     let contract_spec =
       Raw_contract.Unpickler_specs.portfolio_update_response ()
     in
@@ -816,7 +816,7 @@ module Portfolio_update = struct
             unrealized_pnl;
             realized_pnl;
             account_code;
-          }))
+          })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -915,7 +915,7 @@ module Contract_specs = struct
       ~trading_hours:(use (=))
       ~liquid_hours:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Contract_specs"
       Unpickler.Spec.(
         Fields.fold
@@ -984,7 +984,7 @@ module Contract_specs = struct
             timezone_id;
             trading_hours;
             liquid_hours;
-          }))
+          })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Contract_specs"
@@ -1139,7 +1139,7 @@ module Execution_report = struct
       ~average_price:(use Price.(=.))
       ~order_ref:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     let contract_spec =
       Raw_contract.Unpickler_specs.execution_report_response ()
     in
@@ -1180,7 +1180,7 @@ module Execution_report = struct
             cumulative_quantity;
             average_price;
             order_ref;
-          }))
+          })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -1249,7 +1249,7 @@ module Commission_report = struct
       ~yield:(use Float.(=.))
       ~yield_redemption_date:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Commission_report"
       Unpickler.Spec.(
         Fields.fold
@@ -1268,7 +1268,7 @@ module Commission_report = struct
             realized_pnl;
             yield;
             yield_redemption_date;
-          }))
+          })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Commission_report"
@@ -1350,7 +1350,7 @@ module Book_update = struct
       ~price:(use Price.(=.))
       ~size:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Book_update"
       Unpickler.Spec.(
         Fields.fold
@@ -1361,7 +1361,7 @@ module Book_update = struct
           ~price:(fields_value (required Price.val_type))
           ~size:(fields_value (required int)))
       (fun position operation side price size ->
-        { position; operation; side; price; size }))
+        { position; operation; side; price; size })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Book_update"
@@ -1413,7 +1413,7 @@ module Historical_data = struct
         ~has_gaps:(use (=))
         ~count:(use (=))
 
-    let unpickler = lazy (
+    let unpickler =
       Unpickler.create ~name:"Response.Historical_data.Bar"
         Unpickler.Spec.(
           Fields.fold
@@ -1437,7 +1437,7 @@ module Historical_data = struct
             wap;
             has_gaps = Bool.of_string has_gaps;
             count;
-          }))
+          })
 
     let pickler = Only_in_test.of_thunk (fun () ->
       Pickler.create ~name:"Response.Historical_data.Bar"
@@ -1491,7 +1491,7 @@ module Historical_data = struct
       ~num_bars:(use (=))
       ~bars:(use (List.for_all2_exn ~f:Bar.(=)))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Historical_data"
       Unpickler.Spec.(
         Fields.fold
@@ -1508,13 +1508,13 @@ module Historical_data = struct
             Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
             |> Queue.of_array
           in
-          Unpickler.run_exn (Lazy.force Bar.unpickler) bar_msg)
+          Unpickler.run_exn Bar.unpickler bar_msg)
         in
         { start_time;
           end_time;
           num_bars;
           bars
-        }))
+        })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Historical_data"
@@ -1605,7 +1605,7 @@ module Realtime_bar = struct
       ~wap:(use Price.(=.))
       ~count:(use (=))
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Response.Realtime_bar"
       Unpickler.Spec.(
         Fields.fold
@@ -1627,7 +1627,7 @@ module Realtime_bar = struct
             volume;
             wap;
             count;
-          }))
+          })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Realtime_bar"

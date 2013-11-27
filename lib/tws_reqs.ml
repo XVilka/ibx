@@ -26,8 +26,6 @@ module U = Unpickler
 module S = Send_tag
 module R = Recv_tag
 
-let map_u u ~f = lazy (U.map (Lazy.force u) ~f)
-
 (* ==================== Connection and server ===================== *)
 
 let req_server_time = Ib.Request.create
@@ -53,10 +51,10 @@ let req_market_data = Ib.Streaming_request.create
   ]
   ~tws_query:Query.Market_data.pickler
   ~tws_response:[
-    map_u Response.Tick_price.unpickler  ~f:(fun x -> `Tick_price  x);
-    map_u Response.Tick_size.unpickler   ~f:(fun x -> `Tick_size   x);
-    map_u Response.Tick_option.unpickler ~f:(fun x -> `Tick_option x);
-    map_u Response.Tick_string.unpickler ~f:(fun x -> `Tick_string x);
+    U.map Response.Tick_price.unpickler  ~f:(fun x -> `Tick_price  x);
+    U.map Response.Tick_size.unpickler   ~f:(fun x -> `Tick_size   x);
+    U.map Response.Tick_option.unpickler ~f:(fun x -> `Tick_option x);
+    U.map Response.Tick_string.unpickler ~f:(fun x -> `Tick_string x);
   ] ()
 
 let req_option_price = Ib.Streaming_request.create
@@ -65,7 +63,7 @@ let req_option_price = Ib.Streaming_request.create
   ~recv_header:[Ib.Header.create ~tag:R.Tick_option ~version:6]
   ~tws_query:Query.Option_price.pickler
   ~tws_response:[
-    map_u Response.Tick_option.unpickler ~f:Response.Tick_option.option_price;
+    U.map Response.Tick_option.unpickler ~f:Response.Tick_option.option_price;
   ] ()
 
 let req_implied_volatility = Ib.Streaming_request.create
@@ -74,7 +72,7 @@ let req_implied_volatility = Ib.Streaming_request.create
   ~recv_header:[Ib.Header.create ~tag:R.Tick_option ~version:6]
   ~tws_query:Query.Implied_volatility.pickler
   ~tws_response:[
-    map_u Response.Tick_option.unpickler ~f:Response.Tick_option.implied_volatility;
+    U.map Response.Tick_option.unpickler ~f:Response.Tick_option.implied_volatility;
   ] ()
 
 (* ===================== Contract specs ========================= *)
@@ -110,9 +108,9 @@ let req_account_and_portfolio_updates = Ib.Streaming_request_without_id.create
   ~skip_header:[Ib.Header.create ~tag:R.Account_update_time ~version:1]
   ~tws_query:Query.Account_and_portfolio_updates.pickler
   ~tws_response:[
-    map_u Response.Account_update.unpickler ~f:(fun x -> `Account_update x);
-    map_u Response.Portfolio_update.unpickler ~f:(fun x -> `Portfolio_update x);
-    map_u Account_code.unpickler ~f:(fun x -> `Account_update_end x);
+    U.map Response.Account_update.unpickler ~f:(fun x -> `Account_update x);
+    U.map Response.Portfolio_update.unpickler ~f:(fun x -> `Portfolio_update x);
+    U.map Account_code.unpickler ~f:(fun x -> `Account_update_end x);
   ] ()
 
 (* ===================== Execution reports ======================== *)
@@ -125,8 +123,8 @@ let req_execution_reports = Ib.Streaming_request.create
   ]
   ~tws_query:Query.Execution_reports.pickler
   ~tws_response:[
-    map_u Response.Execution_report.unpickler ~f:(fun x -> `Execution_report x);
-    lazy (U.const `Execution_report_end);
+    U.map Response.Execution_report.unpickler ~f:(fun x -> `Execution_report x);
+    U.const `Execution_report_end;
   ] ()
 
 (* ======================== Market depth ========================== *)
@@ -175,8 +173,8 @@ let req_taq_data = Ib.Streaming_request.create
   ]
   ~tws_query:Query.Market_data.pickler
   ~tws_response:[
-    map_u Response.Tick_price.unpickler ~f:(fun x -> `Tick_price x);
-    map_u Response.Tick_size.unpickler  ~f:(fun x -> `Tick_size  x);
+    U.map Response.Tick_price.unpickler ~f:(fun x -> `Tick_price x);
+    U.map Response.Tick_size.unpickler  ~f:(fun x -> `Tick_size  x);
   ] ()
 
 let req_taq_snapshot = Ib.Streaming_request.create

@@ -100,9 +100,8 @@ module Ibx_result = struct
     | Error err -> Error (Ibx_error.to_error err)
 end
 
-let to_tws p x = Pickler.run (Lazy.force p) x
-let of_tws u x = Ibx_result.try_with_unpickle (fun () ->
-  Unpickler.run_exn (Lazy.force u) x)
+let to_tws p x = Pickler.run p x
+let of_tws u x = Ibx_result.try_with_unpickle (fun () -> Unpickler.run_exn u x)
 
 module Client_header = struct
   type t =
@@ -110,7 +109,7 @@ module Client_header = struct
       client_id      : Client_id.t;
     } with fields, sexp
 
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:"Ib.Client_header"
       Pickler.Spec.(
         wrap (
@@ -119,7 +118,7 @@ module Client_header = struct
             ~client_version:(fields_value (required int))
             ~client_id:(fields_value (required Client_id.val_type)))
           (fun { client_version; client_id } ->
-            `Args $ client_version $ client_id)))
+            `Args $ client_version $ client_id))
 end
 
 module Server_header = struct
@@ -128,7 +127,7 @@ module Server_header = struct
       connection_time : Time.t;
     } with fields, sexp
 
-  let unpickler = lazy (
+  let unpickler =
     Unpickler.create ~name:"Ib.Server_header"
       Unpickler.Spec.(
         Fields.fold
@@ -136,7 +135,7 @@ module Server_header = struct
           ~server_version:(fields_value (required int))
           ~connection_time:(fields_value (required time)))
       (fun server_version connection_time ->
-        { server_version; connection_time }))
+        { server_version; connection_time })
 end
 
 module Query = struct
@@ -147,7 +146,7 @@ module Query = struct
       data    : string;
     } with fields, sexp
 
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:"Ib.Query"
       Pickler.Spec.(
         wrap (
@@ -158,7 +157,7 @@ module Query = struct
             ~id:(fields_value (skipped_if_none Query_id.val_type))
             ~data:(fields_value tws_data))
           (fun { tag; version; id; data } ->
-            `Args $ tag $ version $ id $ data)))
+            `Args $ tag $ version $ id $ data))
 end
 
 module Response_data = struct
@@ -173,7 +172,7 @@ module Response = struct
       data     : Response_data.t;
     } with fields, sexp
 
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:"Ib.Response"
       Pickler.Spec.(
         wrap (
@@ -193,7 +192,7 @@ module Response = struct
                 |> String.concat ~sep:"\000"
                 |> Fn.flip (^) "\000"
             in
-            `Args $ tag $ version $ query_id $ tws_data)))
+            `Args $ tag $ version $ query_id $ tws_data))
 end
 
 module type Connection = sig
@@ -423,22 +422,22 @@ module Connection : Connection_internal = struct
       end
 
   module Version_id = struct
-    let unpickler = lazy (
+    let unpickler =
       Unpickler.create ~name:"Ib.Version_id"
         Unpickler.Spec.(
           value (required int) ~name:"version"
           ++ value (required Query_id.val_type) ~name:"id"
         )
-        (fun version id -> (version, Some id)))
+        (fun version id -> (version, Some id))
   end
 
   module Version = struct
-    let unpickler = lazy (
+    let unpickler =
       Unpickler.create ~name:"Ib.Version"
         Unpickler.Spec.(
           value (required int) ~name:"version"
         )
-        (fun version -> (version, None)))
+        (fun version -> (version, None))
   end
 
   let read_version_and_optional_id reader tag =
@@ -713,8 +712,8 @@ module Request = struct
   type ('query, 'response) t =
     { send_header  : Send_tag.t Header.t;
       recv_header  : Recv_tag.t Header.t;
-      tws_query    : 'query    Tws_prot.Pickler.t Lazy.t;
-      tws_response : 'response Tws_prot.Unpickler.t Lazy.t;
+      tws_query    : 'query    Tws_prot.Pickler.t;
+      tws_response : 'response Tws_prot.Unpickler.t;
     }
 
   let create ~send_header ~recv_header ~tws_query ~tws_response =
@@ -768,8 +767,8 @@ module Streaming_request = struct
       canc_header  : Send_tag.t Header.t option;
       recv_header  : Recv_tag.t Header.t list;
       skip_header  : Recv_tag.t Header.t list option;
-      tws_query    : 'query    Tws_prot.Pickler.t Lazy.t;
-      tws_response : 'response Tws_prot.Unpickler.t Lazy.t list;
+      tws_query    : 'query    Tws_prot.Pickler.t;
+      tws_response : 'response Tws_prot.Unpickler.t list;
     }
 
   module Id = Query_id
@@ -915,8 +914,8 @@ module Streaming_request_without_id = struct
     { send_header  : Send_tag.t Header.t;
       recv_header  : Recv_tag.t Header.t list;
       skip_header  : Recv_tag.t Header.t list option;
-      tws_query    : 'query    Tws_prot.Pickler.t Lazy.t;
-      tws_response : 'response Tws_prot.Unpickler.t Lazy.t list;
+      tws_query    : 'query    Tws_prot.Pickler.t;
+      tws_response : 'response Tws_prot.Unpickler.t list;
     }
 
   let create ?skip_header ~send_header ~recv_header

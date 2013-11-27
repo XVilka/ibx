@@ -27,9 +27,9 @@ module Unit (Arg : sig val name:string end) = struct
   type t = unit with sexp
   let create () = ()
   let ( = ) t1 t2 = (t1 = t2)
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:Arg.name
-      Pickler.Spec.(value (required unit)))
+      Pickler.Spec.(value (required unit))
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:Arg.name
       Unpickler.Spec.(value (required unit) ~name:"unit")
@@ -68,9 +68,9 @@ module Server_log_level = struct
 
   let ( = ) t1 t2 = (t1 = t2)
 
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:"Query.Server_log_level"
-      Pickler.Spec.(value (required Level.val_type)))
+      Pickler.Spec.(value (required Level.val_type))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:"Query.Server_log_level"
@@ -157,7 +157,7 @@ module Market_data = struct
       ~tick_generics:(use (=))
       ~snapshot:(use (=))
 
-  let pickler = lazy (
+  let pickler =
     let contract_spec =
       Raw_contract.Pickler_specs.market_data_query ()
     in
@@ -173,7 +173,7 @@ module Market_data = struct
             let tick_generics =
               String.concat (List.map tick_generics ~f:Tick_kind.tws_of_t) ~sep:","
             in
-            `Args $ contract $ tick_generics $ snapshot)))
+            `Args $ contract $ tick_generics $ snapshot))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -216,7 +216,7 @@ module Option_price = struct
       ~volatility:(use Float.(=.))
       ~underlying_price:(use Price.(=.))
 
-  let pickler = lazy (
+  let pickler =
     let contract_spec =
       Raw_contract.Pickler_specs.common_option_calc ()
     in
@@ -229,7 +229,7 @@ module Option_price = struct
             ~volatility:(fields_value (required float))
             ~underlying_price:(fields_value (required Price.val_type)))
           (fun { contract; volatility; underlying_price } ->
-            `Args $ contract $ volatility $ underlying_price)))
+            `Args $ contract $ volatility $ underlying_price))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -268,7 +268,7 @@ module Implied_volatility = struct
       ~option_price:(use Price.(=.))
       ~underlying_price:(use Price.(=.))
 
-  let pickler = lazy (
+  let pickler =
     let contract_spec =
       Raw_contract.Pickler_specs.common_option_calc ()
     in
@@ -281,7 +281,7 @@ module Implied_volatility = struct
             ~option_price:(fields_value (required Price.val_type))
             ~underlying_price:(fields_value (required Price.val_type)))
           (fun { contract; option_price; underlying_price } ->
-            `Args $ contract $ option_price $ underlying_price)))
+            `Args $ contract $ option_price $ underlying_price))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -325,7 +325,7 @@ module Account_and_portfolio_updates = struct
       ~subscribe:(use (=))
       ~account_code:(use Account_code.(=))
 
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:"Query.Account_and_portfolio_updates"
       Pickler.Spec.(
         wrap (
@@ -333,7 +333,7 @@ module Account_and_portfolio_updates = struct
             ~init:(empty ())
             ~subscribe:(fields_value (required bool))
             ~account_code:(fields_value (required Account_code.val_type)))
-      (fun t -> `Args $ t.subscribe $ t.account_code)))
+      (fun t -> `Args $ t.subscribe $ t.account_code))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:"Query.Account_and_portfolio_updates"
@@ -391,7 +391,7 @@ module Execution_reports = struct
       ~exchange:(use (=))
       ~order_action:(use (=))
 
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:"Query.Execution_reports"
       Pickler.Spec.(
         wrap (
@@ -412,7 +412,7 @@ module Execution_reports = struct
               $ t.symbol
               $ t.contract_type
               $ t.exchange
-              $ t.order_action)))
+              $ t.order_action))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:"Query.Execution_reports"
@@ -447,9 +447,9 @@ module Contract_specs = struct
   let create ~contract = Contract.to_raw contract
   let ( = ) t1 t2 = Raw_contract.(=) t1 t2
 
-  let pickler = lazy (
+  let pickler =
     Pickler.create ~name:"Query.Contract_specs"
-      (Raw_contract.Pickler_specs.contract_specs_query ()))
+      (Raw_contract.Pickler_specs.contract_specs_query ())
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:"Query.Contract_specs"
@@ -480,7 +480,7 @@ module Market_depth = struct
       ~contract:(use Raw_contract.(=))
       ~num_rows:(use (=))
 
-  let pickler = lazy (
+  let pickler =
     let contract_spec =
       Raw_contract.Pickler_specs.market_depth_query ()
     in
@@ -491,7 +491,7 @@ module Market_depth = struct
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~num_rows:(fields_value (required int)))
-          (fun { contract; num_rows } -> `Args $ contract $ num_rows )))
+          (fun { contract; num_rows } -> `Args $ contract $ num_rows ))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -656,7 +656,7 @@ module Historical_data = struct
       ~show:(use (=))
       ~date_format:(use (=))
 
-  let pickler = lazy (
+  let pickler =
     let contract_spec =
       Raw_contract.Pickler_specs.historical_data_query ()
     in
@@ -680,7 +680,7 @@ module Historical_data = struct
               $ t.duration
               $ t.use_rth
               $ t.show
-              $ t.date_format)))
+              $ t.date_format))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -769,7 +769,7 @@ module Realtime_bars = struct
       ~show:(use (=))
       ~use_rth:(use (=))
 
-  let pickler = lazy (
+  let pickler =
     let contract_spec =
       Raw_contract.Pickler_specs.realtime_bars_query ()
     in
@@ -783,7 +783,7 @@ module Realtime_bars = struct
             ~show:(fields_value (required Show.val_type))
             ~use_rth:(fields_value (required bool)))
           (fun { contract; bar_size; show; use_rth } ->
-            `Args $ contract $ bar_size $ show $ use_rth )))
+            `Args $ contract $ bar_size $ show $ use_rth ))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =

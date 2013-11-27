@@ -171,7 +171,7 @@ let corresponding_response_has_query_id = function
 
 let val_type = Val_type.create tws_of_t t_of_tws
 
-let unpickler = lazy (
+let unpickler =
   Unpickler.create ~name:"Recv_tag"
     Unpickler.Spec.(value (required val_type) ~name:"recv_tag")
-    Fn.id)
+    Fn.id
