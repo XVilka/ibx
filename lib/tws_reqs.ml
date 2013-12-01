@@ -75,14 +75,14 @@ let req_implied_volatility = Ib.Streaming_request.create
     U.map Response.Tick_option.unpickler ~f:Response.Tick_option.implied_volatility;
   ] ()
 
-(* ===================== Contract specs ========================= *)
+(* ===================== Contract details ========================= *)
 
-let req_contract_specs = Ib.Streaming_request.create
+let req_contract_details = Ib.Streaming_request.create
   ~send_header:(Ib.Header.create ~tag:S.Contract_data ~version:6)
   ~recv_header:[Ib.Header.create ~tag:R.Contract_data ~version:8]
   ~skip_header:[Ib.Header.create ~tag:R.Contract_data_end ~version:1]
-  ~tws_query:Query.Contract_specs.pickler
-  ~tws_response:[Response.Contract_specs.unpickler]
+  ~tws_query:Query.Contract_details.pickler
+  ~tws_response:[Response.Contract_details.unpickler]
   ()
 
 (* ========================== Orders ============================== *)

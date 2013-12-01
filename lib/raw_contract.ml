@@ -214,7 +214,7 @@ module Pickler_specs = struct
         ~combo_legs:(fields_value skipped))
     |> wrap_contract_spec
 
-  let contract_specs_query () =
+  let contract_details_query () =
     Pickler.Spec.(
       Fields.fold
         ~init:(empty ())
@@ -450,7 +450,7 @@ module Unpickler_specs = struct
       ++ value (optional Symbol.val_type)
         ~name:(field_name Fields.local_symbol))
 
-  let contract_specs_query () =
+  let contract_details_query () =
     Unpickler.Spec.(
       step (fun conv id symbol contract_type expiry strike option_right
         multiplier exchange currency local_symbol include_expired

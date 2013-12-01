@@ -88,11 +88,11 @@ module Query = struct
       let module Q = Query.Execution_reports in
       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.execution_reports_g);
 
-    (* ========================== Contract specs =========================== *)
+    (* ========================= Contract details ========================== *)
 
     (fun () ->
-      let module Q = Query.Contract_specs in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.contract_specs_g);
+      let module Q = Query.Contract_details in
+      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.contract_details_g);
 
     (* =========================== Market depth ============================ *)
 
@@ -170,11 +170,11 @@ module Response = struct
       let module R = Response.Portfolio_update in
       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.portfolio_update_g);
 
-    (* ========================== Contract specs =========================== *)
+    (* ========================= Contract details ========================== *)
 
     (fun () ->
-      let module R = Response.Contract_specs in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.contract_specs_g);
+      let module R = Response.Contract_details in
+      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.contract_details_g);
 
     (* =========================== Executions ============================== *)
 

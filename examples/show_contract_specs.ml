@@ -40,17 +40,17 @@ let run () =
         print_endline s;
         print_newline ()
       in
-      Tws.contract_specs tws ~contract >>| function
+      Tws.contract_details tws ~contract >>| function
       | Error e ->
         message (Error.to_string_hum e)
       | Ok (Error tws_error) ->
         message (Tws_error.to_string_hum tws_error)
-      | Ok (Ok con_specs) ->
-        message (Contract_specs.sexp_of_t con_specs |> Sexp.to_string_hum))
+      | Ok (Ok details) ->
+        message (Contract_details.sexp_of_t details |> Sexp.to_string_hum))
   )
 
 let command =
-  Command.async_basic ~summary:"show contract specifications"
+  Command.async_basic ~summary:"show contract details"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

@@ -133,10 +133,10 @@ module Execution_reports : sig
     -> t
 end
 
-(** {1 Contract specs} *)
+(** {1 Contract details} *)
 (*****************************************************************************)
 
-module Contract_specs : sig
+module Contract_details : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create : contract:[< Contract.Type.t ] Contract.t -> t

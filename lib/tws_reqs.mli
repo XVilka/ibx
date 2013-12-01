@@ -44,11 +44,11 @@ val req_option_price :
 val req_implied_volatility :
   (Query.Implied_volatility.t, float option) Ib.Streaming_request.t
 
-(** {1 Contract specs} *)
+(** {1 Contract details} *)
 (*****************************************************************************)
 
-val req_contract_specs :
-  (Query.Contract_specs.t, Response.Contract_specs.t) Ib.Streaming_request.t
+val req_contract_details :
+  (Query.Contract_details.t, Response.Contract_details.t) Ib.Streaming_request.t
 
 (** {1 Orders} *)
 (*****************************************************************************)

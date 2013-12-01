@@ -289,10 +289,10 @@ module Portfolio_update : sig
     -> t
 end
 
-(** {1 Contract specs} *)
+(** {1 Contract details} *)
 (*****************************************************************************)
 
-module Contract_specs : sig
+module Contract_details : sig
   type t = private
     { symbol : Symbol.t;
       contract_type : Contract.Type.t;

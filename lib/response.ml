@@ -848,10 +848,10 @@ module Portfolio_update = struct
 end
 
 (* +-----------------------------------------------------------------------+
-   | Contract specs                                                        |
+   | Contract details                                                      |
    +-----------------------------------------------------------------------+ *)
 
-module Contract_specs = struct
+module Contract_details = struct
   type t =
     { symbol : Symbol.t;
       contract_type : Contract.Type.t;
@@ -916,7 +916,7 @@ module Contract_specs = struct
       ~liquid_hours:(use (=))
 
   let unpickler =
-    Unpickler.create ~name:"Response.Contract_specs"
+    Unpickler.create ~name:"Response.Contract_details"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -987,7 +987,7 @@ module Contract_specs = struct
           })
 
   let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Contract_specs"
+    Pickler.create ~name:"Response.Contract_details"
       Pickler.Spec.(
         wrap (
           Fields.fold

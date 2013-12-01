@@ -438,22 +438,22 @@ module Execution_reports = struct
 end
 
 (* +-----------------------------------------------------------------------+
-   | Contract specs                                                        |
+   | Contract details                                                      |
    +-----------------------------------------------------------------------+ *)
 
-module Contract_specs = struct
+module Contract_details = struct
   type t = Raw_contract.t with sexp
 
   let create ~contract = Contract.to_raw contract
   let ( = ) t1 t2 = Raw_contract.(=) t1 t2
 
   let pickler =
-    Pickler.create ~name:"Query.Contract_specs"
-      (Raw_contract.Pickler_specs.contract_specs_query ())
+    Pickler.create ~name:"Query.Contract_details"
+      (Raw_contract.Pickler_specs.contract_details_query ())
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Query.Contract_specs"
-      (Raw_contract.Unpickler_specs.contract_specs_query ())
+    Unpickler.create ~name:"Query.Contract_details"
+      (Raw_contract.Unpickler_specs.contract_details_query ())
       Fn.id)
 end
 

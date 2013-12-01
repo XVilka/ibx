@@ -471,17 +471,17 @@ let filter_executions_exn ?time t ~contract ~order_action =
   | Ok pipe_r -> Pipe.map pipe_r ~f:Tws_result.ok_exn
 
 (* +-----------------------------------------------------------------------+
-   | Contract specs                                                        |
+   | Contract details                                                      |
    +-----------------------------------------------------------------------+ *)
 
-let contract_specs t ~contract =
+let contract_details t ~contract =
   with_connection t ~f:(fun con ->
-    let q = Query.Contract_specs.create ~contract in
-    dispatch_and_cancel Tws_reqs.req_contract_specs con q
+    let q = Query.Contract_details.create ~contract in
+    dispatch_and_cancel Tws_reqs.req_contract_details con q
   )
 
-let contract_specs_exn t ~contract =
-  contract_specs t ~contract >>| function
+let contract_details_exn t ~contract =
+  contract_details t ~contract >>| function
   | Error e -> raise (Error.to_exn e)
   | Ok result -> Tws_result.ok_exn result
 

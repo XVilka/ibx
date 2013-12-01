@@ -226,18 +226,18 @@ val filter_executions_exn
   -> (Execution_report.t Pipe.Reader.t) Deferred.t
 
 
-(** {1 Contract specifications} *)
+(** {1 Contract details} *)
 (******************************************************************************)
 
-val contract_specs
+val contract_details
   :  t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> Contract_specs.t Tws_result.t Or_error.t Deferred.t
+  -> Contract_details.t Tws_result.t Or_error.t Deferred.t
 
-val contract_specs_exn
+val contract_details_exn
   :  t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
-  -> Contract_specs.t Deferred.t
+  -> Contract_details.t Deferred.t
 
 
 (** {1 Market depth} *)

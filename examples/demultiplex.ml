@@ -23,9 +23,9 @@ let print_market_data ~duration =
   Common.with_tws_client (fun tws ->
     let print_ticks symbol color =
       let stock = Contract.stock ~currency:`USD symbol in
-      Tws.contract_specs_exn tws ~contract:stock
-      >>= fun specs ->
-      Tws.market_data_exn tws ~contract:(Contract_specs.to_contract specs)
+      Tws.contract_details_exn tws ~contract:stock
+      >>= fun details ->
+      Tws.market_data_exn tws ~contract:(Contract_details.to_contract details)
       >>= fun (ticks, id) ->
       upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id);
       Pipe.iter ticks ~f:(unstage (make_tick_printer ~id ~symbol ~color))

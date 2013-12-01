@@ -422,16 +422,16 @@ module Message_generator = struct
               data     = "";
             }]
 
-        (* ======================= Contract specs ======================== *)
+        (* ====================== Contract details ======================= *)
 
         | S.Contract_data ->
-          let pickler = Only_in_test.force R.Contract_specs.pickler in
+          let pickler = Only_in_test.force R.Contract_details.pickler in
           [ E.Server_response {
             Response.
             tag      = V.Contract_data;
             version  = 8;
             query_id = query.Query.id;
-            data     = to_tws pickler (Lazy.force Gen.contract_specs) }
+            data     = to_tws pickler (Lazy.force Gen.contract_details) }
           ; E.Server_response {
             Response.
             tag      = V.Contract_data_end;

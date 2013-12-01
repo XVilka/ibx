@@ -323,9 +323,9 @@ module Q : sig
 
   val execution_reports_g : Query.Execution_reports.t gen
 
-  (* Contract data *)
+  (* Contract details *)
 
-  val contract_specs_g : Query.Contract_specs.t gen
+  val contract_details_g : Query.Contract_details.t gen
 
   (* Market depth *)
 
@@ -519,9 +519,9 @@ end = struct
       ~time:(tmg ())
       ~order_action:(order_action_g ())
 
-  (* =========================== Contract specs ============================ *)
+  (* ========================== Contract details =========================== *)
 
-  let contract_specs_g () =
+  let contract_details_g () =
     let contract_g () =
       Contract.futures
         ~multiplier:(sg ())
@@ -531,7 +531,7 @@ end = struct
         ~expiry:(expiry_g ())
         (symbol_g ())
     in
-    Query.Contract_specs.create ~contract:(contract_g ())
+    Query.Contract_details.create ~contract:(contract_g ())
 
   (* ============================ Market depth ============================= *)
 
@@ -730,9 +730,9 @@ module R : sig
   val account_update_g   : Response.Account_update.t gen
   val portfolio_update_g : Response.Portfolio_update.t gen
 
-  (* Contract specs *)
+  (* Contract details *)
 
-  val contract_specs_g : Response.Contract_specs.t gen
+  val contract_details_g : Response.Contract_details.t gen
 
   (* Executions *)
 
@@ -983,14 +983,14 @@ end = struct
 
   (* ============================ Contract specs =========================== *)
 
-  let contract_specs_g () =
+  let contract_details_g () =
     let contract_type_g () = oneof [
       always (`Stock);
       always (`Option);
       always (`Futures);
     ] ()
     in
-    Response.Contract_specs.create
+    Response.Contract_details.create
       ~symbol:(symbol_g ())
       ~contract_type:(contract_type_g ())
       ~expiry:(og expiry_g ())
