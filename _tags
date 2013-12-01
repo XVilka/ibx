@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 47edbb26a464e27295966367d7ab00d2)
+# DO NOT EDIT (digest: b9841ba622f93363f0645f700e533358)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -151,15 +151,15 @@
 <examples/server_time.{native,byte}>: pkg_textutils
 <examples/server_time.{native,byte}>: pkg_threads
 <examples/server_time.{native,byte}>: pkg_str
-# Executable show-contract-specs
-<examples/show_contract_specs.{native,byte}>: use_ibx
-<examples/show_contract_specs.{native,byte}>: pkg_core
-<examples/show_contract_specs.{native,byte}>: pkg_async
-<examples/show_contract_specs.{native,byte}>: pkg_sexplib.syntax
-<examples/show_contract_specs.{native,byte}>: pkg_fieldslib.syntax
-<examples/show_contract_specs.{native,byte}>: pkg_textutils
-<examples/show_contract_specs.{native,byte}>: pkg_threads
-<examples/show_contract_specs.{native,byte}>: pkg_str
+# Executable show-contract-details
+<examples/show_contract_details.{native,byte}>: use_ibx
+<examples/show_contract_details.{native,byte}>: pkg_core
+<examples/show_contract_details.{native,byte}>: pkg_async
+<examples/show_contract_details.{native,byte}>: pkg_sexplib.syntax
+<examples/show_contract_details.{native,byte}>: pkg_fieldslib.syntax
+<examples/show_contract_details.{native,byte}>: pkg_textutils
+<examples/show_contract_details.{native,byte}>: pkg_threads
+<examples/show_contract_details.{native,byte}>: pkg_str
 # Executable submit-orders
 <examples/submit_orders.{native,byte}>: use_ibx
 <examples/submit_orders.{native,byte}>: pkg_core
