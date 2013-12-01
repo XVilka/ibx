@@ -64,4 +64,3 @@ module Trade_snapshot    = Tws.Trade_snapshot
 module Trade             = Tws.Trade
 module TAQ               = Tws.TAQ
 module Client_id         = Client_id
-module Client_intf       = Client_intf

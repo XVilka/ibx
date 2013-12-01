@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 47a84d34708367cf9b8c29a8764d48f4)
+# DO NOT EDIT (digest: 47edbb26a464e27295966367d7ab00d2)
 # Ignore VCS directories, you can use the same kind of rule outside 
 # OASIS_START/STOP if you want to exclude directories that contains 
 # useless stuff for the build process
@@ -41,12 +41,10 @@
 "lib/raw_order.cmx": for-pack(Ibx)
 "lib/order.cmx": for-pack(Ibx)
 "lib/ib.cmx": for-pack(Ibx)
-"lib/client.cmx": for-pack(Ibx)
 "lib/tws_reqs.cmx": for-pack(Ibx)
 "lib/tws_result.cmx": for-pack(Ibx)
 "lib/tws.cmx": for-pack(Ibx)
 "lib/client_id.cmx": for-pack(Ibx)
-"lib/client_intf.cmx": for-pack(Ibx)
 "lib/std.cmx": for-pack(Ibx)
 <lib/*.ml{,i}>: pkg_core
 <lib/*.ml{,i}>: pkg_async
@@ -135,15 +133,6 @@
 <examples/print_market_depth.{native,byte}>: pkg_textutils
 <examples/print_market_depth.{native,byte}>: pkg_threads
 <examples/print_market_depth.{native,byte}>: pkg_str
-# Executable print-option-data
-<examples/print_option_data.{native,byte}>: use_ibx
-<examples/print_option_data.{native,byte}>: pkg_core
-<examples/print_option_data.{native,byte}>: pkg_async
-<examples/print_option_data.{native,byte}>: pkg_sexplib.syntax
-<examples/print_option_data.{native,byte}>: pkg_fieldslib.syntax
-<examples/print_option_data.{native,byte}>: pkg_textutils
-<examples/print_option_data.{native,byte}>: pkg_threads
-<examples/print_option_data.{native,byte}>: pkg_str
 # Executable quote-table
 <examples/quote_table.{native,byte}>: use_ibx
 <examples/quote_table.{native,byte}>: pkg_core

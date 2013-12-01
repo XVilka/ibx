@@ -20,22 +20,65 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-(** A TWS client *)
-
 open Core.Std
 open Async.Std
 open Std_internal
 open Response
 
-type t
-include Client_intf.S with type t := t
+module Query_id : Unique_id
+
+type t (** A TWS client *)
 
 (** {1 Connection and server} *)
 (******************************************************************************)
 
+(** [with_client ~host ~port ~on_handler_error handler] connects to the
+    IB connectivity software on ([host], [port]) and runs the [handler]
+    until an exception is thrown or the returned Deferred is determined.
+
+    [on_handler_error] determines what happens if the [handler] throws an
+    exception.
+
+    The standard port for TWS is 7496 and for the IB Gateway it is 4001.
+*)
+val with_client
+  :  ?enable_logging:bool
+  -> ?client_id:Client_id.t
+  -> host:string
+  -> port:int
+  -> on_handler_error:[
+  | `Raise
+  | `Ignore
+  | `Call of (Error.t -> unit)
+  ]
+  -> (t -> unit Deferred.t)
+  -> unit Deferred.t
+
+val is_connected : t -> bool
+
+(** [state t] returns the state of the connection. *)
+val state : t -> [ `Disconnected | `Connecting | `Connected ]
+
+(** [set_server_log_level level] sets the log entry detail [level] of TWS
+    when processing API requests. *)
+val set_server_log_level
+  :  t
+  -> level:[
+  | `System
+  | `Error
+  | `Warning
+  | `Information
+  | `Detail
+  ]
+  -> unit
+
 val server_time : t -> Time.t Or_error.t Deferred.t
 
 val server_time_exn : t -> Time.t Deferred.t
+
+val server_version : t -> int option
+
+val connection_time : t -> Time.t option
 
 
 (** {1 Market data} *)
@@ -144,6 +187,7 @@ val submit_order_exn
 
 val cancel_order_status : t -> Order_id.t -> unit
 
+
 (** {1 Account and portfolio} *)
 (******************************************************************************)
 
@@ -159,8 +203,13 @@ val account_and_portfolio_updates_exn
       | `Portfolio_update of Portfolio_update.t
       ] Pipe.Reader.t) Deferred.t
 
+val commission_reports : t -> Commission_report.t Stream.t
+
+
 (** {1 Execution reports} *)
 (******************************************************************************)
+
+val execution_reports : t -> Execution_report.t Stream.t
 
 val filter_executions
   :  ?time:Time.t

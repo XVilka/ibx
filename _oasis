@@ -54,12 +54,10 @@ Library ibx
                   Raw_order,
                   Order,
                   Ib,
-                  Client,
                   Tws_reqs,
                   Tws_result,
                   Tws,
                   Client_id,
-                  Client_intf,
                   Std
   BuildDepends:   core  (>= 109.10.00),
                   async (>= 109.35.00),
@@ -138,14 +136,6 @@ Executable "print-market-depth"
   Build$:         flag(examples)
   Path:           examples
   MainIs:         print_market_depth.ml
-  Install:        false
-  BuildDepends:   ibx
-  CompiledObject: best
-
-Executable "print-option-data"
-  Build$:         flag(examples)
-  Path:           examples
-  MainIs:         print_option_data.ml
   Install:        false
   BuildDepends:   ibx
   CompiledObject: best

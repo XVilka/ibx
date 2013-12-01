@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: de1094d85c42871344047a22f26fdf6b)
+# DO NOT EDIT (digest: 0f0249607659760c819d4fcc9d589eb4)
 Config
 Std_internal
 Send_tag
@@ -26,11 +26,9 @@ Raw_order_intf
 Raw_order
 Order
 Ib
-Client
 Tws_reqs
 Tws_result
 Tws
 Client_id
-Client_intf
 Std
 # OASIS_STOP
