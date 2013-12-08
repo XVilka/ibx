@@ -578,22 +578,6 @@ end
    | Orders                                                                |
    +-----------------------------------------------------------------------+ *)
 
-module Next_order_id = struct
-  type t = Raw_order.Id.t with sexp
-  let create ~order_id = order_id
-  let ( = ) t1 t2 = (t1 = t2)
-  let unpickler =
-    Unpickler.create ~name:"Response.Next_order_id"
-      Unpickler.Spec.(
-        value (required Raw_order.Id.val_type)
-          ~name:(Fieldslib.Field.name (Raw_order.Fields.order_id))
-      ) Fn.id
-
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Next_order_id"
-      Pickler.Spec.(value (required Raw_order.Id.val_type)))
-end
-
 module Order_status = struct
   module State = struct
     type t =

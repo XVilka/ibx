@@ -27,13 +27,9 @@ open Async.Std
 open Std_internal
 open Tws_prot
 
-include struct
-  open Response
-  module Tws_error     = Tws_error
-  module Next_order_id = Next_order_id
-  module Execution     = Execution
-  module Commission    = Commission
-end
+module Tws_error = Response.Tws_error
+module Execution = Response.Execution
+module Commission = Response.Commission
 module Server_log_level = Query.Server_log_level
 
 module Query_id = struct
@@ -52,11 +48,11 @@ module Header = struct
   let create ~tag ~version = { tag; version }
 
   module R = Recv_tag
-  let managed_accounts = { tag = R.Managed_accounts ; version = 1 }
-  let next_order_id    = { tag = R.Next_order_id    ; version = 1 }
-  let tws_error        = { tag = R.Tws_error        ; version = 2 }
-  let execution        = { tag = R.Execution        ; version = 9 }
-  let commission       = { tag = R.Commission       ; version = 1 }
+  let account_code = { tag = R.Managed_accounts ; version = 1 }
+  let order_id     = { tag = R.Next_order_id    ; version = 1 }
+  let tws_error    = { tag = R.Tws_error        ; version = 2 }
+  let execution    = { tag = R.Execution        ; version = 9 }
+  let commission   = { tag = R.Commission       ; version = 1 }
 end
 
 module Ibx_error = struct
@@ -353,13 +349,13 @@ module Connection : Connection_internal = struct
       }
     in
     init_handler t
-      ~header:Header.managed_accounts
+      ~header:Header.account_code
       ~unpickler:Account_code.unpickler
       ~action:`Remove
       ~f:(Ivar.fill t.account_code);
     init_handler t
-      ~header:Header.next_order_id
-      ~unpickler:Next_order_id.unpickler
+      ~header:Header.order_id
+      ~unpickler:Order_id.unpickler
       ~action:`Remove
       ~f:(Ivar.fill t.next_order_id);
     init_handler t

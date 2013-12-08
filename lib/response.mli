@@ -197,12 +197,6 @@ end
 (** {1 Orders} *)
 (*****************************************************************************)
 
-module Next_order_id : sig
-  type t = Order_id.t with sexp
-  include Response_intf.S with type t := t
-  val create : order_id:Order_id.t -> t
-end
-
 module Order_status : sig
   module State : sig
     type t =
