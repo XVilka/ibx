@@ -9,12 +9,14 @@ let run () =
     (Symbol.of_string "AAPL")
   in
   Common.with_tws_client (fun tws ->
-    Stream.iter (Tws.executions tws) ~f:(fun execution ->
-      printf "%s\n\n%!"
-        (Sexp.to_string_hum (Execution.sexp_of_t execution)));
-    Stream.iter (Tws.commissions tws) ~f:(fun commission ->
-      printf "%s\n\n%!"
-        (Sexp.to_string_hum (Commission.sexp_of_t commission)));
+    don't_wait_for (
+      Pipe.iter_without_pushback (Tws.executions tws) ~f:(fun exec ->
+        printf "%s\n\n%!" (Sexp.to_string_hum (Execution.sexp_of_t exec)))
+    );
+    don't_wait_for (
+      Pipe.iter_without_pushback (Tws.commissions tws) ~f:(fun comm ->
+        printf "%s\n\n%!" (Sexp.to_string_hum (Commission.sexp_of_t comm)))
+    );
     let buy_market = Order.buy_market ~quantity:100 in
     Tws.submit_order_exn tws
       ~contract:aapl
