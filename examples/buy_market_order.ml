@@ -12,9 +12,9 @@ let run () =
     Stream.iter (Tws.executions tws) ~f:(fun execution ->
       printf "%s\n\n%!"
         (Sexp.to_string_hum (Execution.sexp_of_t execution)));
-    Stream.iter (Tws.commission_reports tws) ~f:(fun comm_report ->
+    Stream.iter (Tws.commissions tws) ~f:(fun commission ->
       printf "%s\n\n%!"
-        (Sexp.to_string_hum (Commission_report.sexp_of_t comm_report)));
+        (Sexp.to_string_hum (Commission.sexp_of_t commission)));
     let buy_market = Order.buy_market ~quantity:100 in
     Tws.submit_order_exn tws
       ~contract:aapl

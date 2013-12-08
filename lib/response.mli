@@ -381,7 +381,7 @@ module Execution : sig
     -> t
 end
 
-module Commission_report : sig
+module Commission : sig
   type t = private
     { exec_id : Execution_id.t;
       commission : Price.t;

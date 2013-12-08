@@ -29,10 +29,10 @@ open Tws_prot
 
 include struct
   open Response
-  module Next_order_id     = Next_order_id
-  module Tws_error         = Tws_error
-  module Execution         = Execution
-  module Commission_report = Commission_report
+  module Tws_error     = Tws_error
+  module Next_order_id = Next_order_id
+  module Execution     = Execution
+  module Commission    = Commission
 end
 module Server_log_level = Query.Server_log_level
 
@@ -52,11 +52,11 @@ module Header = struct
   let create ~tag ~version = { tag; version }
 
   module R = Recv_tag
-  let managed_accounts  = { tag = R.Managed_accounts  ; version = 1 }
-  let next_order_id     = { tag = R.Next_order_id     ; version = 1 }
-  let tws_error         = { tag = R.Tws_error         ; version = 2 }
-  let execution         = { tag = R.Execution         ; version = 9 }
-  let commission_report = { tag = R.Commission_report ; version = 1 }
+  let managed_accounts = { tag = R.Managed_accounts ; version = 1 }
+  let next_order_id    = { tag = R.Next_order_id    ; version = 1 }
+  let tws_error        = { tag = R.Tws_error        ; version = 2 }
+  let execution        = { tag = R.Execution        ; version = 9 }
+  let commission       = { tag = R.Commission       ; version = 1 }
 end
 
 module Ibx_error = struct
@@ -203,7 +203,7 @@ module type Connection = sig
     -> extend_error:(Error.t -> unit)
     -> extend_status:(string -> unit)
     -> extend_execution:(Execution.t -> unit)
-    -> extend_commission_report:(Commission_report.t -> unit)
+    -> extend_commission:(Commission.t -> unit)
     -> Reader.t
     -> Writer.t
     -> t Deferred.t
@@ -318,7 +318,7 @@ module Connection : Connection_internal = struct
       ~extend_error
       ~extend_status
       ~extend_execution
-      ~extend_commission_report
+      ~extend_commission
       reader
       writer =
     let null_delim_pred = `Char '\000' in
@@ -373,10 +373,10 @@ module Connection : Connection_internal = struct
       ~action:`Keep
       ~f:extend_execution;
     init_handler t
-      ~header:Header.commission_report
-      ~unpickler:Commission_report.unpickler
+      ~header:Header.commission
+      ~unpickler:Commission.unpickler
       ~action:`Keep
-      ~f:extend_commission_report;
+      ~f:extend_commission;
     return t
 
   let next_query_id t =
@@ -497,7 +497,7 @@ module Connection : Connection_internal = struct
       | R.Executions_end -> empty_read
       | R.Delta_neutral_validation -> unimplemented R.Delta_neutral_validation
       | R.Snapshot_end -> empty_read
-      | R.Commission_report -> read ~len:6
+      | R.Commission -> read ~len:6
     )
 
   module Deferred_read_result : sig

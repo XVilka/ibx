@@ -34,7 +34,7 @@ module type Connection = sig
     -> extend_error:(Error.t -> unit)
     -> extend_status:(string -> unit)
     -> extend_execution:(Execution.t -> unit)
-    -> extend_commission_report:(Commission_report.t -> unit)
+    -> extend_commission:(Commission.t -> unit)
     -> Reader.t
     -> Writer.t
     -> t Deferred.t

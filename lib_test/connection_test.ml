@@ -43,7 +43,7 @@ let with_tws_conn reader ~f =
     ~extend_error:(fun e -> Log.Global.error "%s" (Error.to_string_hum e))
     ~extend_status:(fun _ -> assert false)
     ~extend_execution:(fun _ -> assert false)
-    ~extend_commission_report:(fun _ -> assert false)
+    ~extend_commission:(fun _ -> assert false)
     reader
     writer
   >>= fun con -> f con

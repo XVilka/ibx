@@ -1242,7 +1242,7 @@ module Execution = struct
               $ t.order_ref)))
 end
 
-module Commission_report = struct
+module Commission = struct
   type t =
     { exec_id : Execution_id.t;
       commission : Price.t;

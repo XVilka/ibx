@@ -56,9 +56,9 @@ type t =
     mutable server_version  : int option;
     mutable connection_time : Time.t option;
     mutable account_code    : Account_code.t option;
-    messages           : Client_msg.t Tail.t;
-    executions         : Execution.t Tail.t;
-    commission_reports : Commission_report.t Tail.t;
+    messages    : Client_msg.t Tail.t;
+    executions  : Execution.t Tail.t;
+    commissions : Commission.t Tail.t;
   }
 
 let create
@@ -70,16 +70,16 @@ let create
   return
     { client_id;
       enable_logging;
-      remote_host        = host;
-      remote_port        = port;
-      client_version     = Config.client_version;
-      con                = `Disconnected;
-      server_version     = None;
-      connection_time    = None;
-      account_code       = None;
-      messages           = Tail.create ();
-      executions         = Tail.create ();
-      commission_reports = Tail.create ();
+      remote_host     = host;
+      remote_port     = port;
+      client_version  = Config.client_version;
+      con             = `Disconnected;
+      server_version  = None;
+      connection_time = None;
+      account_code    = None;
+      messages        = Tail.create ();
+      executions      = Tail.create ();
+      commissions     = Tail.create ();
     }
 
 exception Not_connected_yet with sexp
@@ -128,8 +128,8 @@ let connect t =
           Tail.extend t.messages (C.Status s))
         ~extend_execution:(fun x ->
           Tail.extend t.executions x)
-        ~extend_commission_report:(fun x ->
-          Tail.extend t.commission_reports x)
+        ~extend_commission:(fun x ->
+          Tail.extend t.commissions x)
         (Reader.create fd)
         (Writer.create fd)
       >>= fun con ->
@@ -163,9 +163,9 @@ let connect t =
       | Error exn -> close_connection (Monitor.extract_exn exn)
       | Ok () -> return ()
 
-let messages t = Tail.collect t.messages
-let executions t = Tail.collect t.executions
-let commission_reports t = Tail.collect t.commission_reports
+let messages    t = Tail.collect t.messages
+let executions  t = Tail.collect t.executions
+let commissions t = Tail.collect t.commissions
 
 let client_id       t = t.client_id
 let server_version  t = t.server_version

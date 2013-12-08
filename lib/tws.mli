@@ -203,7 +203,7 @@ val account_and_portfolio_updates_exn
       | `Portfolio_update of Portfolio_update.t
       ] Pipe.Reader.t) Deferred.t
 
-val commission_reports : t -> Commission_report.t Stream.t
+val commissions : t -> Commission.t Stream.t
 
 
 (** {1 Execution reports} *)

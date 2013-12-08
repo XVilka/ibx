@@ -57,7 +57,7 @@ type t =
 | Executions_end
 | Delta_neutral_validation
 | Snapshot_end
-| Commission_report
+| Commission
 with sexp
 
 let tws_of_t = function
@@ -94,7 +94,7 @@ let tws_of_t = function
   | Executions_end -> "55"
   | Delta_neutral_validation -> "56"
   | Snapshot_end -> "57"
-  | Commission_report -> "59"
+  | Commission -> "59"
 
 let t_of_tws = function
   | "1" -> Tick_price
@@ -130,7 +130,7 @@ let t_of_tws = function
   | "55" -> Executions_end
   | "56" -> Delta_neutral_validation
   | "57" -> Snapshot_end
-  | "59" -> Commission_report
+  | "59" -> Commission
   | s -> failwithf "Recv_tag.of_string: %S" s ()
 
 let corresponding_response_has_query_id = function
@@ -167,7 +167,7 @@ let corresponding_response_has_query_id = function
   | Executions_end -> true
   | Delta_neutral_validation -> true
   | Snapshot_end -> true
-  | Commission_report -> false
+  | Commission -> false
 
 let val_type = Val_type.create tws_of_t t_of_tws
 
