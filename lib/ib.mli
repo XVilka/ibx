@@ -33,7 +33,7 @@ module type Connection = sig
     :  ?enable_logging:bool
     -> extend_error:(Error.t -> unit)
     -> extend_status:(string -> unit)
-    -> extend_execution_report:(Execution_report.t -> unit)
+    -> extend_execution:(Execution.t -> unit)
     -> extend_commission_report:(Commission_report.t -> unit)
     -> Reader.t
     -> Writer.t

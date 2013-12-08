@@ -133,20 +133,20 @@ let suite = "Client" >::: [
 
   "filter-executions" >:: (fun () ->
     with_tws_client (fun tws ->
-      let module R = Response.Execution_report in
-      let gen_execution_reports = Lazy.force Gen.execution_reports in
+      let module R = Response.Execution in
+      let gen_executions = Lazy.force Gen.executions in
       Tws.filter_executions_exn tws ~contract:(Rg.contract_g ())
         ~order_action:(Rg.order_action_g ())
       >>= fun reader ->
       Pipe.read_all reader
       >>| fun result ->
-      List.iter2_exn gen_execution_reports (Queue.to_list result)
-        ~f:(fun gen_execution_report execution_report ->
+      List.iter2_exn gen_executions (Queue.to_list result)
+        ~f:(fun gen_execution execution ->
           assert_response_equal
             (module R : Response_intf.S with type t = R.t)
-            ~expected:gen_execution_report
-            ~actual:execution_report;
-        Log.Global.sexp ~level:`Debug execution_report R.sexp_of_t)
+            ~expected:gen_execution
+            ~actual:execution;
+        Log.Global.sexp ~level:`Debug execution R.sexp_of_t)
     )
   );
 

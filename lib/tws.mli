@@ -209,21 +209,21 @@ val commission_reports : t -> Commission_report.t Stream.t
 (** {1 Execution reports} *)
 (******************************************************************************)
 
-val execution_reports : t -> Execution_report.t Stream.t
+val executions : t -> Execution.t Stream.t
 
 val filter_executions
   :  ?time:Time.t
   -> t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
   -> order_action:[ `Buy | `Sell | `Sell_short ]
-  -> (Execution_report.t Tws_result.t Pipe.Reader.t) Or_error.t Deferred.t
+  -> (Execution.t Tws_result.t Pipe.Reader.t) Or_error.t Deferred.t
 
 val filter_executions_exn
   :  ?time:Time.t
   -> t
   -> contract:[< `Stock | `Futures | `Option | `Forex ] Contract.t
   -> order_action:[ `Buy | `Sell | `Sell_short ]
-  -> (Execution_report.t Pipe.Reader.t) Deferred.t
+  -> (Execution.t Pipe.Reader.t) Deferred.t
 
 
 (** {1 Contract details} *)

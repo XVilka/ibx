@@ -57,7 +57,7 @@ type t =
     mutable connection_time : Time.t option;
     mutable account_code    : Account_code.t option;
     messages           : Client_msg.t Tail.t;
-    execution_reports  : Execution_report.t Tail.t;
+    executions         : Execution.t Tail.t;
     commission_reports : Commission_report.t Tail.t;
   }
 
@@ -78,7 +78,7 @@ let create
       connection_time    = None;
       account_code       = None;
       messages           = Tail.create ();
-      execution_reports  = Tail.create ();
+      executions         = Tail.create ();
       commission_reports = Tail.create ();
     }
 
@@ -126,8 +126,8 @@ let connect t =
           Tail.extend t.messages (C.Error e))
         ~extend_status:(fun s ->
           Tail.extend t.messages (C.Status s))
-        ~extend_execution_report:(fun x ->
-          Tail.extend t.execution_reports x)
+        ~extend_execution:(fun x ->
+          Tail.extend t.executions x)
         ~extend_commission_report:(fun x ->
           Tail.extend t.commission_reports x)
         (Reader.create fd)
@@ -164,7 +164,7 @@ let connect t =
       | Ok () -> return ()
 
 let messages t = Tail.collect t.messages
-let execution_reports  t = Tail.collect t.execution_reports
+let executions t = Tail.collect t.executions
 let commission_reports t = Tail.collect t.commission_reports
 
 let client_id       t = t.client_id
@@ -440,7 +440,7 @@ let account_and_portfolio_updates_exn t =
 
 let filter_executions ?time t ~contract ~order_action =
   with_connection t ~f:(fun con ->
-    let q = Query.Execution_reports.create
+    let q = Query.Executions.create
       ~contract
       ~client_id:(client_id t)
       (* Note: [account_code t] won't return [None] since we
@@ -449,17 +449,16 @@ let filter_executions ?time t ~contract ~order_action =
       ~time:(Option.value time ~default:(Time.sub (Time.now ()) Time.Span.day))
       ~order_action
     in
-    Ib.Streaming_request.dispatch Tws_reqs.req_execution_reports con q
-    >>| function
+    Ib.Streaming_request.dispatch Tws_reqs.req_executions con q >>| function
     | Error _ as e -> e
     | Ok (pipe_r, id) ->
       let pipe_r = Pipe.filter_map pipe_r ~f:(function
         | Error _ as x ->
           Some x
-        | Ok `Execution_report data ->
-          Some (Ok data)
-        | Ok `Execution_report_end  ->
-          Ib.Streaming_request.cancel Tws_reqs.req_execution_reports con id;
+        | Ok `Execution exec ->
+          Some (Ok exec)
+        | Ok `Executions_end  ->
+          Ib.Streaming_request.cancel Tws_reqs.req_executions con id;
           None)
       in
       Ok pipe_r

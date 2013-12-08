@@ -30,7 +30,7 @@ type t =
 | Cancel_order
 | Open_orders
 | Portfolio_data
-| Execution_reports
+| Executions
 | Contract_data
 | Market_depth
 | Cancel_market_depth
@@ -66,7 +66,7 @@ let tws_of_t = function
   | Cancel_order -> "4"
   | Open_orders -> "5"
   | Portfolio_data -> "6"
-  | Execution_reports -> "7"
+  | Executions -> "7"
   | Contract_data -> "9"
   | Market_depth -> "10"
   | Cancel_market_depth -> "11"
@@ -101,7 +101,7 @@ let t_of_tws = function
   | "4" -> Cancel_order
   | "5" -> Open_orders
   | "6" -> Portfolio_data
-  | "7" -> Execution_reports
+  | "7" -> Executions
   | "9" -> Contract_data
   | "10" -> Market_depth
   | "11" -> Cancel_market_depth
@@ -137,7 +137,7 @@ let corresponding_query_has_id = function
   | Cancel_order -> true
   | Open_orders -> false
   | Portfolio_data -> false
-  | Execution_reports -> true
+  | Executions -> true
   | Contract_data -> true
   | Market_depth -> true
   | Cancel_market_depth -> true

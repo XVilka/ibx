@@ -9,9 +9,9 @@ let run () =
     (Symbol.of_string "AAPL")
   in
   Common.with_tws_client (fun tws ->
-    Stream.iter (Tws.execution_reports tws) ~f:(fun exec_report ->
+    Stream.iter (Tws.executions tws) ~f:(fun execution ->
       printf "%s\n\n%!"
-        (Sexp.to_string_hum (Execution_report.sexp_of_t exec_report)));
+        (Sexp.to_string_hum (Execution.sexp_of_t execution)));
     Stream.iter (Tws.commission_reports tws) ~f:(fun comm_report ->
       printf "%s\n\n%!"
         (Sexp.to_string_hum (Commission_report.sexp_of_t comm_report)));
@@ -33,9 +33,9 @@ let run () =
     Tws.account_and_portfolio_updates_exn tws
     >>= fun updates ->
     Pipe.iter_without_pushback updates ~f:(function
-      | `Portfolio_update x ->
-        print_endline (Sexp.to_string_hum (Portfolio_update.sexp_of_t x));
-      | _ -> ())
+    | `Portfolio_update x ->
+      print_endline (Sexp.to_string_hum (Portfolio_update.sexp_of_t x));
+    | _ -> ())
   )
 
 let command =

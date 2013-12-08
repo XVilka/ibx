@@ -120,7 +120,7 @@ end
 (** {1 Executions} *)
 (*****************************************************************************)
 
-module Execution_reports : sig
+module Executions : sig
   type t with sexp
   include Query_intf.S with type t := t
 

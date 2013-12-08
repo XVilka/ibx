@@ -31,7 +31,7 @@ include struct
   open Response
   module Next_order_id     = Next_order_id
   module Tws_error         = Tws_error
-  module Execution_report  = Execution_report
+  module Execution         = Execution
   module Commission_report = Commission_report
 end
 module Server_log_level = Query.Server_log_level
@@ -55,7 +55,7 @@ module Header = struct
   let managed_accounts  = { tag = R.Managed_accounts  ; version = 1 }
   let next_order_id     = { tag = R.Next_order_id     ; version = 1 }
   let tws_error         = { tag = R.Tws_error         ; version = 2 }
-  let execution_report  = { tag = R.Execution_report  ; version = 9 }
+  let execution         = { tag = R.Execution         ; version = 9 }
   let commission_report = { tag = R.Commission_report ; version = 1 }
 end
 
@@ -202,7 +202,7 @@ module type Connection = sig
     :  ?enable_logging:bool
     -> extend_error:(Error.t -> unit)
     -> extend_status:(string -> unit)
-    -> extend_execution_report:(Execution_report.t -> unit)
+    -> extend_execution:(Execution.t -> unit)
     -> extend_commission_report:(Commission_report.t -> unit)
     -> Reader.t
     -> Writer.t
@@ -317,7 +317,7 @@ module Connection : Connection_internal = struct
       ?(enable_logging = false)
       ~extend_error
       ~extend_status
-      ~extend_execution_report
+      ~extend_execution
       ~extend_commission_report
       reader
       writer =
@@ -368,10 +368,10 @@ module Connection : Connection_internal = struct
       ~action:`Keep
       ~f:(fun e -> extend_status (Tws_error.to_string_hum e));
     init_handler t
-      ~header:Header.execution_report
-      ~unpickler:Execution_report.unpickler
+      ~header:Header.execution
+      ~unpickler:Execution.unpickler
       ~action:`Keep
-      ~f:extend_execution_report;
+      ~f:extend_execution;
     init_handler t
       ~header:Header.commission_report
       ~unpickler:Commission_report.unpickler
@@ -462,7 +462,7 @@ module Connection : Connection_internal = struct
       | R.Account_update_time -> read ~len:1
       | R.Next_order_id -> read ~len:1
       | R.Contract_data -> read ~len:26
-      | R.Execution_report -> read ~len:23
+      | R.Execution -> read ~len:23
       | R.Book_update -> read ~len:5
       | R.Book_update_L2 -> read ~len:6
       | R.News_bulletins -> unimplemented R.News_bulletins
@@ -494,7 +494,7 @@ module Connection : Connection_internal = struct
       | R.Contract_data_end -> empty_read
       | R.Open_order_end -> empty_read
       | R.Account_download_end -> read ~len:1
-      | R.Execution_report_end -> empty_read
+      | R.Executions_end -> empty_read
       | R.Delta_neutral_validation -> unimplemented R.Delta_neutral_validation
       | R.Snapshot_end -> empty_read
       | R.Commission_report -> read ~len:6

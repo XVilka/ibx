@@ -185,7 +185,7 @@ module Protocol = struct
       | S.Cancel_order -> return (`Ok no_data)
       | S.Open_orders -> unimplemented S.Open_orders
       | S.Portfolio_data -> unimplemented S.Portfolio_data
-      | S.Execution_reports -> read ~len:7
+      | S.Executions -> read ~len:7
       | S.Contract_data -> read ~len:13
       | S.Market_depth -> read ~len:10
       | S.Cancel_market_depth -> return (`Ok no_data)
@@ -404,19 +404,19 @@ module Message_generator = struct
 
         (* ======================== Executions =========================== *)
 
-        | S.Execution_reports ->
-          List.map (Lazy.force Gen.execution_reports) ~f:(fun x ->
-            let pickler = Only_in_test.force R.Execution_report.pickler in
+        | S.Executions ->
+          List.map (Lazy.force Gen.executions) ~f:(fun x ->
+            let pickler = Only_in_test.force R.Execution.pickler in
             E.Server_response {
               Response.
-              tag      = V.Execution_report;
+              tag      = V.Execution;
               version  = 9;
               query_id = query.Query.id;
               data     = to_tws pickler x;
             }) @
             [ E.Server_response {
               Response.
-              tag      = V.Execution_report_end;
+              tag      = V.Executions_end;
               version  = 1;
               query_id = query.Query.id;
               data     = "";

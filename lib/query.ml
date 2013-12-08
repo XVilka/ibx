@@ -349,7 +349,7 @@ end
    | Executions                                                            |
    +-----------------------------------------------------------------------+ *)
 
-module Execution_reports = struct
+module Executions = struct
   module Time = struct
     include Time
     let tws_of_t tm = Time.format tm "%Y%m%d-%H:%M:%S"
@@ -392,7 +392,7 @@ module Execution_reports = struct
       ~order_action:(use (=))
 
   let pickler =
-    Pickler.create ~name:"Query.Execution_reports"
+    Pickler.create ~name:"Query.Executions"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -415,7 +415,7 @@ module Execution_reports = struct
               $ t.order_action))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Query.Execution_reports"
+    Unpickler.create ~name:"Query.Executions"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())

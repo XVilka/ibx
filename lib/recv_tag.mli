@@ -31,7 +31,7 @@ type t =
 | Account_update_time
 | Next_order_id
 | Contract_data
-| Execution_report
+| Execution
 | Book_update
 | Book_update_L2
 | News_bulletins
@@ -51,7 +51,7 @@ type t =
 | Contract_data_end
 | Open_order_end
 | Account_download_end
-| Execution_report_end
+| Executions_end
 | Delta_neutral_validation
 | Snapshot_end
 | Commission_report

@@ -69,10 +69,10 @@ val req_account_and_portfolio_updates :
 (** {1 Execution data} *)
 (*****************************************************************************)
 
-val req_execution_reports :
-  (Query.Execution_reports.t, [ `Execution_report of Response.Execution_report.t
-                              | `Execution_report_end
-                              ]) Ib.Streaming_request.t
+val req_executions :
+  (Query.Executions.t, [ `Execution of Response.Execution.t
+                       | `Executions_end
+                       ]) Ib.Streaming_request.t
 
 (** {1 Market depth} *)
 (*****************************************************************************)

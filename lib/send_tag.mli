@@ -27,7 +27,7 @@ type t =
 | Cancel_order
 | Open_orders
 | Portfolio_data
-| Execution_reports
+| Executions
 | Contract_data
 | Market_depth
 | Cancel_market_depth

@@ -34,7 +34,7 @@ type t =
 | Account_update_time
 | Next_order_id
 | Contract_data
-| Execution_report
+| Execution
 | Book_update
 | Book_update_L2
 | News_bulletins
@@ -54,7 +54,7 @@ type t =
 | Contract_data_end
 | Open_order_end
 | Account_download_end
-| Execution_report_end
+| Executions_end
 | Delta_neutral_validation
 | Snapshot_end
 | Commission_report
@@ -71,7 +71,7 @@ let tws_of_t = function
   | Account_update_time -> "8"
   | Next_order_id -> "9"
   | Contract_data -> "10"
-  | Execution_report -> "11"
+  | Execution -> "11"
   | Book_update -> "12"
   | Book_update_L2 -> "13"
   | News_bulletins -> "14"
@@ -91,7 +91,7 @@ let tws_of_t = function
   | Contract_data_end -> "52"
   | Open_order_end -> "53"
   | Account_download_end -> "54"
-  | Execution_report_end -> "55"
+  | Executions_end -> "55"
   | Delta_neutral_validation -> "56"
   | Snapshot_end -> "57"
   | Commission_report -> "59"
@@ -107,7 +107,7 @@ let t_of_tws = function
   | "8" -> Account_update_time
   | "9" -> Next_order_id
   | "10" -> Contract_data
-  | "11" -> Execution_report
+  | "11" -> Execution
   | "12" -> Book_update
   | "13" -> Book_update_L2
   | "14" -> News_bulletins
@@ -127,7 +127,7 @@ let t_of_tws = function
   | "52" -> Contract_data_end
   | "53" -> Open_order_end
   | "54" -> Account_download_end
-  | "55" -> Execution_report_end
+  | "55" -> Executions_end
   | "56" -> Delta_neutral_validation
   | "57" -> Snapshot_end
   | "59" -> Commission_report
@@ -144,7 +144,7 @@ let corresponding_response_has_query_id = function
   | Account_update_time -> false
   | Next_order_id -> false
   | Contract_data -> true
-  | Execution_report -> true
+  | Execution -> true
   | Book_update -> true
   | Book_update_L2 -> true
   | News_bulletins -> false
@@ -164,7 +164,7 @@ let corresponding_response_has_query_id = function
   | Contract_data_end -> true
   | Open_order_end -> true
   | Account_download_end -> false
-  | Execution_report_end -> true
+  | Executions_end -> true
   | Delta_neutral_validation -> true
   | Snapshot_end -> true
   | Commission_report -> false

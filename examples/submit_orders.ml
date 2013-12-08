@@ -49,16 +49,16 @@ let run ~timeout =
     ] ~f:(fun order -> submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order)
     >>= fun () ->
     Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
-    >>= fun exec_reports ->
-    Pipe.iter_without_pushback exec_reports ~f:(fun exec_report ->
+    >>= fun executions ->
+    Pipe.iter_without_pushback executions ~f:(fun exec ->
       printf "Execution: \
           exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
-        (Execution_report.exec_id exec_report |> Execution_id.to_string)
-        (Execution_report.time exec_report |> Time.to_string_trimmed)
-        (Execution_report.exchange exec_report |> Exchange.to_string)
-        (Execution_report.side exec_report |> Execution_report.Side.to_string)
-        (Execution_report.quantity exec_report)
-        (Execution_report.price exec_report |> Price.to_float))
+        (Execution.exec_id exec |> Execution_id.to_string)
+        (Execution.time exec |> Time.to_string_trimmed)
+        (Execution.exchange exec |> Exchange.to_string)
+        (Execution.side exec |> Execution.Side.to_string)
+        (Execution.quantity exec)
+        (Execution.price exec |> Price.to_float))
     )
 
 let timeout_arg () =

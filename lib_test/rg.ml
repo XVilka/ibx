@@ -321,7 +321,7 @@ module Q : sig
 
   (* Executions *)
 
-  val execution_reports_g : Query.Execution_reports.t gen
+  val executions_g : Query.Executions.t gen
 
   (* Contract details *)
 
@@ -509,10 +509,10 @@ end = struct
       ~subscribe:(bg ())
       ~account_code:(account_code_g ())
 
-  (* ========================= Execution reports =========================== *)
+  (* ============================= Executions ============================== *)
 
-  let execution_reports_g () =
-    Query.Execution_reports.create
+  let executions_g () =
+    Query.Executions.create
       ~contract:(contract_g ())
       ~client_id:(client_id_g ())
       ~account_code:(account_code_g ())
@@ -736,8 +736,8 @@ module R : sig
 
   (* Executions *)
 
-  val execution_report_g  : Response.Execution_report.t gen
-  val execution_reports_g : Response.Execution_report.t list gen
+  val execution_g  : Response.Execution.t gen
+  val executions_g : Response.Execution.t list gen
 
   (* Market depth *)
 
@@ -1037,7 +1037,7 @@ end = struct
 
   (* ============================= Executions ============================== *)
 
-  let execution_report_g () =
+  let execution_g () =
     let contract_g () = oneof
       [ always (
         Contract.stock
@@ -1081,7 +1081,7 @@ end = struct
       always (`Sale);
     ] ()
     in
-    Response.Execution_report.create
+    Response.Execution.create
       ~order_id:(order_id_g ())
       ~contract:(contract_g ())
       ~exec_id:(exec_id_g ())
@@ -1099,9 +1099,9 @@ end = struct
       ~order_ref:(og sg ())
 
 
-  let execution_reports_g () =
+  let executions_g () =
     List.permute ~random_state:(Random.State.make_self_init ())
-      (List.init (1 + Random.int bound) ~f:(fun _ -> execution_report_g ()))
+      (List.init (1 + Random.int bound) ~f:(fun _ -> execution_g ()))
 
   (* ============================ Market depth ============================= *)
 

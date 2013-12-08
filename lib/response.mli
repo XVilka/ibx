@@ -336,7 +336,7 @@ end
 (** {1 Execution} *)
 (*****************************************************************************)
 
-module Execution_report : sig
+module Execution : sig
   module Side : sig
     type t = [ `Purchase | `Sale ] with sexp
     include Stringable.S with type t := t

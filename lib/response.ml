@@ -1090,7 +1090,7 @@ end
    | Executions                                                            |
    +-----------------------------------------------------------------------+ *)
 
-module Execution_report = struct
+module Execution = struct
   module Side = struct
     type t = [ `Purchase | `Sale ] with sexp
 
@@ -1160,7 +1160,7 @@ module Execution_report = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.execution_report_response ()
     in
-    Unpickler.create ~name:"Response.Execution_report"
+    Unpickler.create ~name:"Response.Execution"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -1203,7 +1203,7 @@ module Execution_report = struct
     let contract_spec =
       Raw_contract.Pickler_specs.execution_report_response ()
     in
-    Pickler.create ~name:"Response.Execution_report"
+    Pickler.create ~name:"Response.Execution"
       Pickler.Spec.(
         wrap (
           Fields.fold

@@ -113,18 +113,18 @@ let req_account_and_portfolio_updates = Ib.Streaming_request_without_id.create
     U.map Account_code.unpickler ~f:(fun x -> `Account_update_end x);
   ] ()
 
-(* ===================== Execution reports ======================== *)
+(* ========================= Executions =========================== *)
 
-let req_execution_reports = Ib.Streaming_request.create
-  ~send_header:(Ib.Header.create ~tag:Send_tag.Execution_reports ~version:3)
+let req_executions = Ib.Streaming_request.create
+  ~send_header:(Ib.Header.create ~tag:Send_tag.Executions ~version:3)
   ~recv_header:[
-    Ib.Header.create ~tag:R.Execution_report ~version:9;
-    Ib.Header.create ~tag:R.Execution_report_end ~version:1;
+    Ib.Header.create ~tag:R.Execution ~version:9;
+    Ib.Header.create ~tag:R.Executions_end ~version:1;
   ]
-  ~tws_query:Query.Execution_reports.pickler
+  ~tws_query:Query.Executions.pickler
   ~tws_response:[
-    U.map Response.Execution_report.unpickler ~f:(fun x -> `Execution_report x);
-    U.const `Execution_report_end;
+    U.map Response.Execution.unpickler ~f:(fun x -> `Execution x);
+    U.const `Executions_end;
   ] ()
 
 (* ======================== Market depth ========================== *)
