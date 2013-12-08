@@ -981,35 +981,52 @@ end = struct
       ~realized_pnl:(price_g ())
       ~account_code:(account_code_g ())
 
-  (* ============================ Contract specs =========================== *)
+  (* =========================== Contract details ========================== *)
 
   let contract_details_g () =
-    let contract_type_g () = oneof [
-      always (`Stock);
-      always (`Option);
-      always (`Futures);
-    ] ()
+    let contract_g () = oneof
+      [ always (
+        Contract.stock
+          ?id:(og contract_id_g ())
+          ?listing_exchange:(og exchange_g ())
+          ?local_symbol:(og symbol_g ())
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          (symbol_g ()))
+      ; always (
+        Contract.futures
+          ?id:(og contract_id_g ())
+          ?multiplier:(og sg ())
+          ?listing_exchange:(og exchange_g ())
+          ?local_symbol:(og symbol_g ())
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          ~expiry:(expiry_g ())
+          (symbol_g ()))
+      ; always (
+        Contract.option
+          ?id:(og contract_id_g ())
+          ?multiplier:(og sg ())
+          ?listing_exchange:(og exchange_g ())
+          ?local_symbol:(og symbol_g ())
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          ~option_right:(option_right_g ())
+          ~expiry:(expiry_g ())
+          ~strike:(price_g ())
+          (symbol_g ()))
+      ] ()
     in
     Response.Contract_details.create
-      ~symbol:(symbol_g ())
-      ~contract_type:(contract_type_g ())
-      ~expiry:(og expiry_g ())
-      ~strike:(og price_g ())
-      ~option_right:(og option_right_g ())
-      ~exchange:(exchange_g ())
-      ~currency:(currency_g ())
-      ~local_symbol:(og symbol_g ())
+      ~contract:(contract_g ())
       ~market_name:(sg ())
       ~trading_class:(sg ())
-      ~contract_id:(contract_id_g ())
       ~min_tick:(pfg ())
-      ~multiplier:(og sg ())
       ~order_types:(List.init (Random.int 10) ~f:(fun _ -> sg ()))
       ~valid_exchanges:(List.init (Random.int 10) ~f:(fun _ -> exchange_g ()))
       ~price_magnifier:(nng ())
       ~underlying_id:(nng ())
       ~long_name:(sg ())
-      ~listing_exchange:(og exchange_g ())
       ~contract_month:(sg ())
       ~industry:(sg ())
       ~category:(sg ())

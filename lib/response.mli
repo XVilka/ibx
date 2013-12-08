@@ -294,25 +294,15 @@ end
 
 module Contract_details : sig
   type t = private
-    { symbol : Symbol.t;
-      contract_type : Contract.Type.t;
-      expiry : Date.t option;
-      strike : Price.t option;
-      option_right : [ `Call | `Put ] option;
-      exchange : Exchange.t;
-      currency : Currency.t;
-      local_symbol : Symbol.t option;
+    { contract : Contract.Type.t Contract.t;
       market_name : string;
       trading_class : string;
-      contract_id : Contract_id.t;
       min_tick : float;
-      multiplier : string option;
       order_types : string list;
       valid_exchanges : Exchange.t list;
       price_magnifier : int;
       underlying_id : int;
       long_name : string;
-      listing_exchange : Exchange.t option;
       contract_month : string;
       industry : string;
       category : string;
@@ -324,25 +314,15 @@ module Contract_details : sig
   include Response_intf.S with type t := t
 
   val create
-    :  symbol:Symbol.t
-    -> contract_type:Contract.Type.t
-    -> expiry:Date.t option
-    -> strike:Price.t option
-    -> option_right:[ `Call | `Put ] option
-    -> exchange:Exchange.t
-    -> currency:Currency.t
-    -> local_symbol:Symbol.t option
+    :  contract:Contract.Type.t Contract.t
     -> market_name:string
     -> trading_class:string
-    -> contract_id:Contract_id.t
     -> min_tick:float
-    -> multiplier:string option
     -> order_types:string list
     -> valid_exchanges:Exchange.t list
     -> price_magnifier:int
     -> underlying_id:int
     -> long_name:string
-    -> listing_exchange:Exchange.t option
     -> contract_month:string
     -> industry:string
     -> category:string
@@ -351,8 +331,6 @@ module Contract_details : sig
     -> trading_hours:string
     -> liquid_hours:string
     -> t
-
-  val to_contract : t -> Contract.Type.t Contract.t
 end
 
 (** {1 Execution} *)

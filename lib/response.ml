@@ -718,12 +718,12 @@ end
    +-----------------------------------------------------------------------+ *)
 
 module Account_update = struct
-  type t = {
-    key : string;
-    value : string;
-    currency : string option;
-    account_code : Account_code.t;
-  } with sexp, fields
+  type t =
+    { key : string;
+      value : string;
+      currency : string option;
+      account_code : Account_code.t;
+    } with sexp, fields
 
   let create = Fields.create
 
@@ -763,16 +763,16 @@ module Account_update = struct
 end
 
 module Portfolio_update = struct
-  type t = {
-    contract : Contract.Type.t Contract.t;
-    position : int;
-    market_price : Price.t;
-    market_value : Price.t;
-    average_cost : Price.t;
-    unrealized_pnl : Price.t;
-    realized_pnl : Price.t;
-    account_code : Account_code.t;
-  } with sexp, fields
+  type t =
+    { contract : Contract.Type.t Contract.t;
+      position : int;
+      market_price : Price.t;
+      market_value : Price.t;
+      average_cost : Price.t;
+      unrealized_pnl : Price.t;
+      realized_pnl : Price.t;
+      account_code : Account_code.t;
+    } with sexp, fields
 
   let create = Fields.create
 
@@ -853,25 +853,15 @@ end
 
 module Contract_details = struct
   type t =
-    { symbol : Symbol.t;
-      contract_type : Contract.Type.t;
-      expiry : Date.t option;
-      strike : Price.t option;
-      option_right : [ `Call | `Put ] option;
-      exchange : Exchange.t;
-      currency : Currency.t;
-      local_symbol : Symbol.t option;
+    { contract : Contract.Type.t Contract.t;
       market_name : string;
       trading_class : string;
-      contract_id : Contract_id.t;
       min_tick : float;
-      multiplier : string option;
       order_types : string list;
       valid_exchanges : Exchange.t list;
       price_magnifier : int;
       underlying_id : int;
       long_name : string;
-      listing_exchange : Exchange.t option;
       contract_month : string;
       industry : string;
       category : string;
@@ -888,25 +878,15 @@ module Contract_details = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~symbol:(use Symbol.(=))
-      ~contract_type:(use (=))
-      ~expiry:(use (=))
-      ~strike:(use (Option.equal Price.(=.)))
-      ~option_right:(use (=))
-      ~exchange:(use (=))
-      ~currency:(use (=))
-      ~local_symbol:(use (Option.equal Symbol.(=)))
+      ~contract:(use Contract.(=))
       ~market_name:(use (=))
       ~trading_class:(use (=))
-      ~contract_id:(use Contract_id.(=))
       ~min_tick:(use Float.(=.))
-      ~multiplier:(use (=))
       ~order_types:(use List.equal ~equal:String.(=))
       ~valid_exchanges:(use (List.equal ~equal:(=)))
       ~price_magnifier:(use (=))
       ~underlying_id:(use (=))
       ~long_name:(use (=))
-      ~listing_exchange:(use (Option.equal (=)))
       ~contract_month:(use (=))
       ~industry:(use (=))
       ~category:(use (=))
@@ -916,54 +896,87 @@ module Contract_details = struct
       ~liquid_hours:(use (=))
 
   let unpickler =
+    let field_name field = Fieldslib.Field.name field in
     Unpickler.create ~name:"Response.Contract_details"
       Unpickler.Spec.(
-        Fields.fold
-          ~init:(empty ())
-          ~symbol:(fields_value (required Symbol.val_type))
-          ~contract_type:(fields_value (required Raw_contract.Type.val_type))
-          ~expiry:(fields_value (optional date))
-          ~strike:(fields_value (optional Price.val_type))
-          ~option_right:(fields_value (optional Raw_contract.Option_right.val_type))
-          ~exchange:(fields_value (required Exchange.val_type))
-          ~currency:(fields_value (required Currency.val_type))
-          ~local_symbol:(fields_value (optional Symbol.val_type))
-          ~market_name:(fields_value (required string))
-          ~trading_class:(fields_value (required string))
-          ~contract_id:(fields_value (required Raw_contract.Id.val_type))
-          ~min_tick:(fields_value (required float))
-          ~multiplier:(fields_value (optional string))
-          ~order_types:(fields_value (required string))
-          ~valid_exchanges:(fields_value (required string))
-          ~price_magnifier:(fields_value (required int))
-          ~underlying_id:(fields_value (required int))
-          ~long_name:(fields_value (required string))
-          ~listing_exchange:(fields_value (optional Exchange.val_type))
-          ~contract_month:(fields_value (required string))
-          ~industry:(fields_value (required string))
-          ~category:(fields_value (required string))
-          ~subcategory:(fields_value (required string))
-          ~timezone_id:(fields_value (required string))
-          ~trading_hours:(fields_value (required string))
-          ~liquid_hours:(fields_value (required string)))
+        value (required Symbol.val_type)
+          ~name:(field_name Raw_contract.Fields.symbol)
+        ++ value (required string)
+          ~name:(field_name Raw_contract.Fields.contract_type)
+        ++ value (optional date)
+          ~name:(field_name Raw_contract.Fields.expiry)
+        ++ value (optional Price.val_type)
+          ~name:(field_name Raw_contract.Fields.strike)
+        ++ value (optional Raw_contract.Option_right.val_type)
+          ~name:(field_name Raw_contract.Fields.option_right)
+        ++ value (required Exchange.val_type)
+          ~name:(field_name Raw_contract.Fields.exchange)
+        ++ value (required Currency.val_type)
+          ~name:(field_name Raw_contract.Fields.currency)
+        ++ value (optional Symbol.val_type)
+          ~name:(field_name Raw_contract.Fields.local_symbol)
+        ++ value (required string)
+          ~name:(field_name Fields.market_name)
+        ++ value (required string)
+          ~name:(field_name Fields.trading_class)
+        ++ value (optional Raw_contract.Id.val_type)
+          ~name:(field_name Raw_contract.Fields.contract_id)
+        ++ value (required float)
+          ~name:(field_name Fields.min_tick)
+        ++ value (optional string)
+          ~name:(field_name Raw_contract.Fields.multiplier)
+        ++ value (required string)
+          ~name:(field_name Fields.order_types)
+        ++ value (required string)
+          ~name:(field_name Fields.valid_exchanges)
+        ++ value (required int)
+          ~name:(field_name Fields.price_magnifier)
+        ++ value (required int)
+          ~name:(field_name Fields.underlying_id)
+        ++ value (required string)
+          ~name:(field_name Fields.long_name)
+        ++ value (optional Exchange.val_type)
+          ~name:(field_name Raw_contract.Fields.listing_exchange)
+        ++ value (required string)
+          ~name:(field_name Fields.contract_month)
+        ++ value (required string)
+          ~name:(field_name Fields.industry)
+        ++ value (required string)
+          ~name:(field_name Fields.category)
+        ++ value (required string)
+          ~name:(field_name Fields.subcategory)
+        ++ value (required string)
+          ~name:(field_name Fields.timezone_id)
+        ++ value (required string)
+          ~name:(field_name Fields.trading_hours)
+        ++ value (required string)
+          ~name:(field_name Fields.liquid_hours))
       (fun symbol contract_type expiry strike option_right exchange currency
         local_symbol market_name trading_class contract_id min_tick multiplier
         order_types valid_exchanges price_magnifier underlying_id long_name
         listing_exchange contract_month industry category subcategory
         timezone_id trading_hours liquid_hours ->
-          { symbol;
-            contract_type;
-            expiry;
-            strike;
-            option_right;
-            exchange;
-            currency;
-            local_symbol;
+          { contract = Contract.of_raw (
+            { Raw_contract.
+              contract_id;
+              symbol;
+              contract_type;
+              expiry;
+              strike;
+              option_right;
+              multiplier;
+              exchange;
+              listing_exchange;
+              currency;
+              local_symbol;
+              include_expired = false;
+              security_id_type = None;
+              security_id = None;
+              combo_legs = 0;
+            });
             market_name;
             trading_class;
-            contract_id;
             min_tick;
-            multiplier;
             order_types =
               if String.is_empty order_types then []
               else String.split order_types ~on:',';
@@ -976,7 +989,6 @@ module Contract_details = struct
             price_magnifier;
             underlying_id;
             long_name;
-            listing_exchange;
             contract_month;
             industry;
             category;
@@ -989,57 +1001,82 @@ module Contract_details = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Contract_details"
       Pickler.Spec.(
-        wrap (
-          Fields.fold
-            ~init:(empty ())
-            ~symbol:(fields_value (required Symbol.val_type))
-            ~contract_type:(fields_value (required Raw_contract.Type.val_type))
-            ~expiry:(fields_value (optional date))
-            ~strike:(fields_value (optional Price.val_type))
-            ~option_right:(fields_value (optional Raw_contract.Option_right.val_type))
-            ~exchange:(fields_value (required Exchange.val_type))
-            ~currency:(fields_value (required Currency.val_type))
-            ~local_symbol:(fields_value (optional Symbol.val_type))
-            ~market_name:(fields_value (required string))
-            ~trading_class:(fields_value (required string))
-            ~contract_id:(fields_value (required Raw_contract.Id.val_type))
-            ~min_tick:(fields_value (required float))
-            ~multiplier:(fields_value (optional string))
-            ~order_types:(fields_value (required string))
-            ~valid_exchanges:(fields_value (required string))
-            ~price_magnifier:(fields_value (required int))
-            ~underlying_id:(fields_value (required int))
-            ~long_name:(fields_value (required string))
-            ~listing_exchange:(fields_value (optional Exchange.val_type))
-            ~contract_month:(fields_value (required string))
-            ~industry:(fields_value (required string))
-            ~category:(fields_value (required string))
-            ~subcategory:(fields_value (required string))
-            ~timezone_id:(fields_value (required string))
-            ~trading_hours:(fields_value (required string))
-            ~liquid_hours:(fields_value (required string)))
+        wrap (empty ()
+              (* symbol *)
+              ++ value (required Symbol.val_type)
+              (* contract type *)
+              ++ value (required string)
+              (* expiry *)
+              ++ value (optional date)
+              (* strike *)
+              ++ value (optional Price.val_type)
+              (* option right *)
+              ++ value (optional Raw_contract.Option_right.val_type)
+              (* exchange *)
+              ++ value (required Exchange.val_type)
+              (* currency *)
+              ++ value (required Currency.val_type)
+              (* local symbol *)
+              ++ value (optional Symbol.val_type)
+              (* market name *)
+              ++ value (required string)
+              (* trading class *)
+              ++ value (required string)
+              (* contract id *)
+              ++ value (optional Raw_contract.Id.val_type)
+              (* min tick *)
+              ++ value (required float)
+              (* multiplier *)
+              ++ value (optional string)
+              (* order types *)
+              ++ value (required string)
+              (* valid exchanges *)
+              ++ value (required string)
+              (* price magnifier *)
+              ++ value (required int)
+              (* underlying id *)
+              ++ value (required int)
+              (* long name *)
+              ++ value (required string)
+              (* listing exchange *)
+              ++ value (optional Exchange.val_type)
+              (* contract month *)
+              ++ value (required string)
+              (* industry *)
+              ++ value (required string)
+              (* category *)
+              ++ value (required string)
+              (* subcategory *)
+              ++ value (required string)
+              (* timezone id *)
+              ++ value (required string)
+              (* trading hours *)
+              ++ value (required string)
+              (* liquid hour *)
+              ++ value (required string))
           (fun t ->
+            let contract = Contract.to_raw t.contract in
             `Args
-              $ t.symbol
-              $ t.contract_type
-              $ t.expiry
-              $ t.strike
-              $ t.option_right
-              $ t.exchange
-              $ t.currency
-              $ t.local_symbol
+              $ contract.Raw_contract.symbol
+              $ contract.Raw_contract.contract_type
+              $ contract.Raw_contract.expiry
+              $ contract.Raw_contract.strike
+              $ contract.Raw_contract.option_right
+              $ contract.Raw_contract.exchange
+              $ contract.Raw_contract.currency
+              $ contract.Raw_contract.local_symbol
               $ t.market_name
               $ t.trading_class
-              $ t.contract_id
+              $ contract.Raw_contract.contract_id
               $ t.min_tick
-              $ t.multiplier
+              $ contract.Raw_contract.multiplier
               $ (String.concat t.order_types ~sep:",")
               $ (List.map t.valid_exchanges ~f:Exchange.tws_of_t
-                 |> String.concat ~sep:",")
+                    |> String.concat ~sep:",")
               $ t.price_magnifier
               $ t.underlying_id
               $ t.long_name
-              $ t.listing_exchange
+              $ contract.Raw_contract.listing_exchange
               $ t.contract_month
               $ t.industry
               $ t.category
@@ -1047,26 +1084,6 @@ module Contract_details = struct
               $ t.timezone_id
               $ t.trading_hours
               $ t.liquid_hours)))
-
-  let to_contract t =
-    Contract.of_raw ({
-      Raw_contract.
-      contract_id = Some t.contract_id;
-      symbol = t.symbol;
-      contract_type = Raw_contract.Type.tws_of_t t.contract_type;
-      expiry = t.expiry;
-      strike = t.strike;
-      option_right = t.option_right;
-      multiplier = t.multiplier;
-      exchange = t.exchange;
-      listing_exchange = t.listing_exchange;
-      currency = t.currency;
-      local_symbol = t.local_symbol;
-      include_expired = true;
-      security_id_type = None;
-      security_id = None;
-      combo_legs = 0;
-    })
 end
 
 (* +-----------------------------------------------------------------------+

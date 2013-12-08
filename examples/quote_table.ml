@@ -35,7 +35,7 @@ let run () =
       Tws.contract_details_exn tws ~contract:stock
       >>= fun details ->
       (* extract unambiguous contract description *)
-      let contract = Contract_details.to_contract details in
+      let contract = Contract_details.contract details in
       Tws.quote_snapshot_exn tws ~contract)
     >>| fun quotes -> print_quote_table quotes)
 
