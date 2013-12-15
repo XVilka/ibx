@@ -1,3 +1,21 @@
+2013-12-15: Separated calls for requesting account and portfolio updates.
+
+2013-12-08: Simplified the record of a 'Contract_details' response.
+
+            Module renamings:
+            * Commission_report -> Commission
+            * Execution_report  -> Execution
+
+2013-12-01: Removed the client module and its corresponding interface.
+
+            Module renaming: Contract_specs -> Contract_details
+
+2013-11-27: Fixed problem with ambiguous contract description.
+
+            Removed delay of pickler/unpickler construction, because of
+            * simpler interfaces
+            * no significant reduction in memory footprint
+
 2013-11-25: Delayed pickler/unpickler construction.
 
 2013-11-23: Fixed parse error by extending the Exchange type with a new
