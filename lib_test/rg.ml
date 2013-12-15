@@ -317,7 +317,8 @@ module Q : sig
 
   (* Account and portfolio *)
 
-  val account_and_portfolio_updates : Query.Account_and_portfolio_updates.t gen
+  val account_updates : Query.Account_updates.t gen
+  val portfolio_updates : Query.Portfolio_updates.t gen
 
   (* Executions *)
 
@@ -504,8 +505,13 @@ end = struct
 
   (* =================== Account and portfolio updates ===================== *)
 
-  let account_and_portfolio_updates () =
-    Query.Account_and_portfolio_updates.create
+  let account_updates () =
+    Query.Account_updates.create
+      ~subscribe:(bg ())
+      ~account_code:(account_code_g ())
+
+  let portfolio_updates () =
+    Query.Portfolio_updates.create
       ~subscribe:(bg ())
       ~account_code:(account_code_g ())
 
@@ -727,8 +733,11 @@ module R : sig
 
   (* Account and Portfolio *)
 
-  val account_update_g   : Response.Account_update.t gen
-  val portfolio_update_g : Response.Portfolio_update.t gen
+  val account_update_g  : Response.Account_update.t gen
+  val account_updates_g : Response.Account_update.t list gen
+
+  val portfolio_update_g  : Response.Portfolio_update.t gen
+  val portfolio_updates_g : Response.Portfolio_update.t list gen
 
   (* Contract details *)
 
@@ -933,6 +942,10 @@ end = struct
       ~currency:(og sg ())
       ~account_code:(account_code_g ())
 
+  let account_updates_g () =
+    List.permute ~random_state:(Random.State.make_self_init ())
+      (List.init (1 + Random.int bound) ~f:(fun _ -> account_update_g ()))
+
   let portfolio_update_g () =
     let contract_g () = oneof
       [ always (
@@ -980,6 +993,10 @@ end = struct
       ~unrealized_pnl:(price_g ())
       ~realized_pnl:(price_g ())
       ~account_code:(account_code_g ())
+
+  let portfolio_updates_g () =
+    List.permute ~random_state:(Random.State.make_self_init ())
+      (List.init (1 + Random.int bound) ~f:(fun _ -> portfolio_update_g ()))
 
   (* =========================== Contract details ========================== *)
 

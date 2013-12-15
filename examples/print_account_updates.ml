@@ -4,12 +4,10 @@ open Ibx.Std
 
 let print_account_updates () =
   Common.with_tws_client (fun tws ->
-    Tws.account_and_portfolio_updates_exn tws
+    Tws.account_updates_exn tws
     >>= fun updates ->
-    Pipe.iter_without_pushback updates ~f:(function
-      | `Account_update x ->
-        print_endline (Sexp.to_string_hum (Account_update.sexp_of_t x));
-      | _ -> ()
+    Pipe.iter_without_pushback updates ~f:(fun update ->
+      print_endline (Sexp.to_string_hum (Account_update.sexp_of_t update));
     )
   )
 

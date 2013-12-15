@@ -31,6 +31,7 @@ module Protocol = struct
      client header from client queries, because the TWS protocol does not
      specify an extra message tag for the client header. *)
   let client_header_tag = Int.to_string Ibx.Std.Config.client_version
+  let account_code = Account_code.of_string "DU15133";
 
   module Query_id = struct
     include Unique_id.Int63 (struct end)
@@ -184,7 +185,7 @@ module Protocol = struct
       | S.Submit_order -> read ~len:78
       | S.Cancel_order -> return (`Ok no_data)
       | S.Open_orders -> unimplemented S.Open_orders
-      | S.Portfolio_data -> unimplemented S.Portfolio_data
+      | S.Account_data -> read ~len:2
       | S.Executions -> read ~len:7
       | S.Contract_data -> read ~len:13
       | S.Market_depth -> read ~len:10
@@ -280,7 +281,7 @@ module Message_generator = struct
         tag      = V.Managed_accounts;
         version  = 1;
         query_id = None;
-        data     = "DU15111" ^@ "" }
+        data     = (Account_code.to_string account_code) ^@ "" }
       ; E.Server_response {
         Response.
         tag      = V.Next_order_id;
@@ -398,9 +399,35 @@ module Message_generator = struct
 
         | S.Exercise_options -> []
 
-        (* ========================== Account ============================ *)
+        (* =================== Account and Portfolio ===================== *)
 
-        | S.Portfolio_data -> []
+        | S.Account_data ->
+          List.append
+            (List.map (Lazy.force Gen.account_updates) ~f:(fun x ->
+              let pickler = Only_in_test.force R.Account_update.pickler in
+              E.Server_response {
+                Response.
+                tag      = V.Account_update;
+                version  = 2;
+                query_id = None;
+                data     = to_tws pickler x;
+              }))
+            (List.map (Lazy.force Gen.portfolio_updates) ~f:(fun x ->
+              let pickler = Only_in_test.force R.Portfolio_update.pickler in
+              E.Server_response {
+                Response.
+                tag      = V.Portfolio_update;
+                version  = 7;
+                query_id = None;
+                data     = to_tws pickler x;
+              })) @
+            [ E.Server_response {
+              Response.
+              tag      = V.Account_download_end;
+              version  = 1;
+              query_id = query.Query.id;
+              data     = (Account_code.to_string account_code) ^@ "";
+            }]
 
         (* ======================== Executions =========================== *)
 

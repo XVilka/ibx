@@ -108,7 +108,16 @@ end
 (** {1 Account and portfolio} *)
 (*****************************************************************************)
 
-module Account_and_portfolio_updates : sig
+module Account_updates : sig
+  type t with sexp
+  include Query_intf.S with type t := t
+  val create
+    :  subscribe:bool
+    -> account_code:Account_code.t
+    -> t
+end
+
+module Portfolio_updates : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create

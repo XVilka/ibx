@@ -309,7 +309,7 @@ module Submit_order = Submit_order
    | Account and portfolio                                                 |
    +-----------------------------------------------------------------------+ *)
 
-module Account_and_portfolio_updates = struct
+module Updates (Arg : sig val name:string end) = struct
   type t =
     { subscribe : bool;
       account_code : Account_code.t;
@@ -326,7 +326,7 @@ module Account_and_portfolio_updates = struct
       ~account_code:(use Account_code.(=))
 
   let pickler =
-    Pickler.create ~name:"Query.Account_and_portfolio_updates"
+    Pickler.create ~name:Arg.name
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -336,7 +336,7 @@ module Account_and_portfolio_updates = struct
       (fun t -> `Args $ t.subscribe $ t.account_code))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Query.Account_and_portfolio_updates"
+    Unpickler.create ~name:Arg.name
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -344,6 +344,14 @@ module Account_and_portfolio_updates = struct
           ~account_code:(fields_value (required Account_code.val_type)))
       (fun subscribe account_code -> { subscribe; account_code }))
 end
+
+module Account_updates = Updates (struct
+  let name = "Query.Account_updates"
+end)
+
+module Portfolio_updates = Updates (struct
+  let name = "Query.Portfolio_updates"
+end)
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |

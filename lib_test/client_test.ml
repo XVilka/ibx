@@ -131,6 +131,42 @@ let suite = "Client" >::: [
     )
   );
 
+  "account-updates" >:: (fun () ->
+    with_tws_client (fun tws ->
+      let module R = Response.Account_update in
+      let gen_account_updates = Lazy.force Gen.account_updates in
+      Tws.account_updates_exn tws
+      >>= fun reader ->
+      Pipe.read_all reader
+      >>| fun result ->
+      List.iter2_exn gen_account_updates (Queue.to_list result)
+        ~f:(fun gen_account_update account_update ->
+          assert_response_equal
+            (module R : Response_intf.S with type t = R.t)
+            ~expected:gen_account_update
+            ~actual:account_update;
+          Log.Global.sexp ~level:`Debug account_update R.sexp_of_t)
+    )
+  );
+
+  "portfolio-updates" >:: (fun () ->
+    with_tws_client (fun tws ->
+      let module R = Response.Portfolio_update in
+      let gen_portfolio_updates = Lazy.force Gen.portfolio_updates in
+      Tws.portfolio_updates_exn tws
+      >>= fun reader ->
+      Pipe.read_all reader
+      >>| fun result ->
+      List.iter2_exn gen_portfolio_updates (Queue.to_list result)
+        ~f:(fun gen_portfolio_update portfolio_update ->
+          assert_response_equal
+            (module R : Response_intf.S with type t = R.t)
+            ~expected:gen_portfolio_update
+            ~actual:portfolio_update;
+          Log.Global.sexp ~level:`Debug portfolio_update R.sexp_of_t)
+    )
+  );
+
   "filter-executions" >:: (fun () ->
     with_tws_client (fun tws ->
       let module R = Response.Execution in

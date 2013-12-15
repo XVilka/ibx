@@ -415,33 +415,37 @@ let cancel_order_status t oid =
    | Account and portfolio                                                 |
    +-----------------------------------------------------------------------+ *)
 
-let account_and_portfolio_updates t =
+let updates_gen t req create_query =
   with_connection t ~f:(fun con ->
     let account_code = Option.value_exn (account_code t) in
-    let create_query = Query.Account_and_portfolio_updates.create ~account_code in
-    let subscribe = create_query ~subscribe:true in
-    Ib.Streaming_request_without_id.dispatch
-      Tws_reqs.req_account_and_portfolio_updates con subscribe
-    >>| function
+    let q = create_query ~subscribe:true ~account_code  in
+    Ib.Streaming_request_without_id.dispatch req con q >>| function
     | Error _ as e -> e
     | Ok pipe_r ->
-      let pipe_r = Pipe.filter_map pipe_r ~f:(function
-        | `Account_update _
-        | `Portfolio_update _ as x -> Some x
-        | `Account_update_end code ->
-          if Account_code.(=) account_code code then begin
-            Ib.Streaming_request_without_id.cancel
-              Tws_reqs.req_account_and_portfolio_updates
-              con
-          end;
+      let pipe_r =
+        Pipe.filter_map pipe_r ~f:(function
+        | `Update x -> Some x
+        | `Update_end code ->
+          if Account_code.(=) account_code code then
+            Ib.Streaming_request_without_id.cancel req con;
           None)
       in
       Ok pipe_r
   )
 
-let account_and_portfolio_updates_exn t =
-  account_and_portfolio_updates t
-  >>| Or_error.ok_exn
+let account_updates t =
+  updates_gen t
+    Tws_reqs.req_account_updates
+    Query.Account_updates.create
+
+let account_updates_exn t = account_updates t >>| Or_error.ok_exn
+
+let portfolio_updates t =
+  updates_gen t
+    Tws_reqs.req_portfolio_updates
+    Query.Portfolio_updates.create
+
+let portfolio_updates_exn t = portfolio_updates t >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |

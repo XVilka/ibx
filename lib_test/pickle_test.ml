@@ -78,9 +78,12 @@ module Query = struct
     (* ====================== Account and portfolio ======================== *)
 
     (fun () ->
-      let module Q = Query.Account_and_portfolio_updates in
-      gen_test (module Q : Query_intf.S with type t = Q.t)
-        Rg.Q.account_and_portfolio_updates);
+      let module Q = Query.Account_updates in
+      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.account_updates);
+
+    (fun () ->
+      let module Q = Query.Portfolio_updates in
+      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.portfolio_updates);
 
     (* ============================ Executions ============================= *)
 

@@ -32,12 +32,11 @@ let run () =
         | _ -> ()
       end)
     >>= fun () ->
-    Tws.account_and_portfolio_updates_exn tws
+    Tws.portfolio_updates_exn tws
     >>= fun updates ->
-    Pipe.iter_without_pushback updates ~f:(function
-    | `Portfolio_update x ->
-      print_endline (Sexp.to_string_hum (Portfolio_update.sexp_of_t x));
-    | _ -> ())
+    Pipe.iter_without_pushback updates ~f:(fun update ->
+      print_endline (Sexp.to_string_hum (Portfolio_update.sexp_of_t update));
+    )
   )
 
 let command =
