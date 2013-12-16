@@ -1,14 +1,17 @@
+2013-12-16: Fixed compatibility issue with `core_kernel` version 109.53.00
+            or higher.
+
 2013-12-15: Separated calls for requesting account and portfolio updates.
 
-2013-12-08: Simplified the record of a 'Contract_details' response.
+2013-12-08: Simplified the record of a `Contract_details` response.
 
             Module renamings:
-            * Commission_report -> Commission
-            * Execution_report  -> Execution
+            * `Commission_report` -> `Commission`
+            * `Execution_report`  -> `Execution`
 
-2013-12-01: Removed the client module and its corresponding interface.
+2013-12-01: Removed the `Client` module and its corresponding interface.
 
-            Module renaming: Contract_specs -> Contract_details
+            Module renaming: `Contract_specs` -> `Contract_details`
 
 2013-11-27: Fixed problem with ambiguous contract description.
 
@@ -18,22 +21,22 @@
 
 2013-11-25: Delayed pickler/unpickler construction.
 
-2013-11-23: Fixed parse error by extending the Exchange type with a new
+2013-11-23: Fixed parse error by extending the `Exchange` type with a new
             variant for the Chicago Mercantile Exchange (CME).
 
-            More flexible error handling: The inclusion of Tws_error messages
-            into the values of a pipe of a streaming request enables pattern
-            matching on Tws_error's.
+            More flexible error handling: The inclusion of `Tws_error`
+            messages into the values of a pipe of a streaming request
+            enables pattern matching on Tws_error's.
 
 2013-11-02: TWS clients can receive account and portfolio updates.
 
-2013-08-13: Fixed compatibility issues with Async 109.35.00.
+2013-08-13: Fixed compatibility issues with `async` 109.35.00.
 
-2013-06-25: Fixed build problem by using textutils instead of core_extended.
+2013-06-25: Fixed build problem by using `textutils` instead of `core_extended`.
 
-2013-05-11: Changed string representation of error messages in Ib module.
+2013-05-11: Changed string representation of error messages in `Ib` module.
 
-            Moved client module in ib.ml into separate file.
+            Moved `Client` module from `ib.ml` into separate file.
 
 2013-05-06: Fixed small bug in error message of handshake version failure.
 
@@ -42,7 +45,7 @@
 2013-04-30: Fixed occasional parse errors caused by empty price fields
             in TWS messages.
 
-2013-04-21: Fixed response pickler bug in the Ib module that caused a
+2013-04-21: Fixed response pickler bug in the `Ib` module that caused a
             missing terminating null byte.
 
 2013-04-19: Improved unpickler performance by removing the construction
@@ -50,8 +53,8 @@
 
 2013-04-18: Port number for TWS clients is no longer optional.
 
-2013-04-16: Added a new interface Twsable.
-            A type is 'Twsable' if it provides functions to convert between
+2013-04-16: Added a new interface `Twsable`.
+            A type is `Twsable` if it provides functions to convert between
             values of that type and raw messages of the TWS protocol.
 
 2013-04-04: Fixed version mismatch in option price and implied volatility
