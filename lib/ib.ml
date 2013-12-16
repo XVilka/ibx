@@ -504,9 +504,14 @@ module Connection : Connection_internal = struct
       type 'a t = [ `Eof | `Ok of 'a ] Ibx_result.t Deferred.t
 
       let bind t f = t >>= function
-        | Error _ as x -> Deferred.return x
+        | Error _ as e -> Deferred.return e
         | Ok `Eof as x -> Deferred.return x
-        | Ok (`Ok x) -> f x
+        | Ok (`Ok a)   -> f a
+
+      let map t ~f =  t >>= function
+        | Error _ as e -> Deferred.return e
+        | Ok `Eof as x -> Deferred.return x
+        | Ok (`Ok a)   -> Deferred.return (Ok (`Ok (f a)))
 
       let return x = Deferred.return (Ok (`Ok x))
     end

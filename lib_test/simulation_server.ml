@@ -222,8 +222,12 @@ module Protocol = struct
         type 'a t = [ `Eof | `Ok of 'a ] Deferred.t
 
         let bind t f = t >>= function
-          | `Eof -> Deferred.return `Eof
-          | `Ok x -> f x
+          | `Eof  -> Deferred.return `Eof
+          | `Ok a -> f a
+
+        let map t ~f = t >>= function
+          | `Eof  -> Deferred.return `Eof
+          | `Ok a -> Deferred.return (`Ok (f a))
 
         let return x = Deferred.return (`Ok x)
       end
