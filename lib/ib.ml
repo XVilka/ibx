@@ -475,7 +475,9 @@ module Connection : Connection_internal = struct
             let num_fields = 9 in
             read ~len:(num_bars * num_fields) >>| function
             | `Eof -> `Eof
-            | `Ok bars -> Queue.transfer ~src:bars ~dst:raw_msg; `Ok raw_msg
+            | `Ok bars ->
+              Queue.blit_transfer ~src:bars ~dst:raw_msg ();
+              `Ok raw_msg
         end
       | R.Bond_contract_data -> unimplemented R.Bond_contract_data
       | R.Scanner_parameters -> unimplemented R.Scanner_parameters

@@ -235,7 +235,7 @@ module Unpickler = struct
     let capture_remaining_message = {
       f = (fun (k, msg) ->
         let captured_msg = Queue.create () in
-        Queue.transfer ~src:msg ~dst:captured_msg;
+        Queue.blit_transfer ~src:msg ~dst:captured_msg ();
         (k captured_msg, msg));
     }
 
