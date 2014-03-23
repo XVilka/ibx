@@ -1,3 +1,5 @@
+2014-03-23: Fixed compatibility issue with latest `core` version.
+
 2013-12-16: Fixed compatibility issue with `core_kernel` version 109.53.00
             or higher.
 
