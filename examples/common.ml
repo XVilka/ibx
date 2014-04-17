@@ -2,7 +2,7 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-let with_tws_client f ~enable_logging ~host ~port =
+let with_tws_client ~enable_logging ~host ~port ~client_id f =
   if enable_logging then begin
     let basedir = Core.Std.Unix.getcwd () in
     let logfile = basedir ^/ "ibx.log" in
@@ -11,6 +11,7 @@ let with_tws_client f ~enable_logging ~host ~port =
   end;
   Monitor.try_with (fun () ->
     Tws.with_client
+      ~client_id:(Client_id.of_int_exn client_id)
       ~enable_logging
       ~host
       ~port
@@ -25,6 +26,12 @@ let with_tws_client f ~enable_logging ~host ~port =
 let logging_flag () =
   Command.Spec.(
     flag "-enable-logging" no_arg ~doc:" enable logging"
+  )
+
+let client_id_arg () =
+  Command.Spec.(
+    flag "-client-id" (optional_with_default 0 int)
+      ~doc:" client id of TWS or Gateway (default 0)"
   )
 
 let host_arg () =

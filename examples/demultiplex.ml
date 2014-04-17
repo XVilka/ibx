@@ -44,9 +44,10 @@ let command =
       +> Common.host_arg ()
       +> Common.port_arg ()
       +> Common.duration_arg ()
+      +> Common.client_id_arg ()
     )
-    (fun enable_logging host port duration () ->
-      print_market_data ~enable_logging ~host ~port ~duration
+    (fun enable_logging host port duration client_id () ->
+      print_market_data ~enable_logging ~host ~port ~client_id ~duration
       >>= function
       | Error e -> prerr_endline (Error.to_string_hum e); exit 1
       | Ok () -> return ()

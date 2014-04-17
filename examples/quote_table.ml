@@ -46,9 +46,10 @@ let command =
       +> Common.logging_flag ()
       +> Common.host_arg ()
       +> Common.port_arg ()
+      +> Common.client_id_arg ()
     )
-    (fun enable_logging host port () ->
-      run ~enable_logging ~host ~port ()
+    (fun enable_logging host port client_id () ->
+      run ~enable_logging ~host ~port ~client_id ()
       >>= function
       | Error e -> prerr_endline (Error.to_string_hum e); exit 1
       | Ok () -> return ()

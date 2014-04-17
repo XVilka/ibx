@@ -47,17 +47,19 @@ let command =
       +> flag "-quiet" no_arg ~doc:" quiet mode"
       +> Common.host_arg ()
       +> Common.port_arg ()
+      +> Common.client_id_arg ()
       +> Common.duration_arg ()
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun enable_logging quiet host port duration currency symbol () ->
+    (fun enable_logging quiet host port client_id duration currency symbol () ->
       verbose := not quiet;
       if Time.Span.(duration > minute) then begin
         prerr_endline "Maximum duration is 1 minute";
         exit 1;
       end else
-        plot_taq_data ~enable_logging ~host ~port ~duration ~currency ~symbol
+        plot_taq_data ~enable_logging ~host ~port ~client_id
+          ~duration ~currency ~symbol
         >>= function
         | Error e -> prerr_endline (Error.to_string_hum e); exit 1
         | Ok () -> return ()

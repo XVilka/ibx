@@ -75,10 +75,11 @@ let command =
       +> Common.logging_flag ()
       +> Common.host_arg ()
       +> Common.port_arg ()
+      +> Common.client_id_arg ()
       +> timeout_arg ()
     )
-    (fun enable_logging host port timeout () ->
-      run ~enable_logging ~host ~port ~timeout
+    (fun enable_logging host port client_id timeout () ->
+      run ~enable_logging ~host ~port ~client_id ~timeout
       >>= function
       | Error e -> prerr_endline (Error.to_string_hum e); exit 1
       | Ok () -> return ()

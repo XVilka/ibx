@@ -72,11 +72,12 @@ let command =
       +> Common.logging_flag ()
       +> Common.host_arg ()
       +> Common.port_arg ()
+      +> Common.client_id_arg ()
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun enable_logging host port currency symbol () ->
-      plot_hist_bars ~enable_logging ~host ~port ~currency ~symbol
+    (fun enable_logging host port client_id currency symbol () ->
+      plot_hist_bars ~enable_logging ~host ~port ~client_id ~currency ~symbol
       >>= function
       | Error e -> prerr_endline (Error.to_string_hum e); exit 1
       | Ok () -> return ()
