@@ -225,9 +225,10 @@ module Protocol = struct
           | `Eof  -> Deferred.return `Eof
           | `Ok a -> f a
 
-        let map t ~f = t >>= function
+        let map = `Custom (fun t ~f ->
+          t >>= function
           | `Eof  -> Deferred.return `Eof
-          | `Ok a -> Deferred.return (`Ok (f a))
+          | `Ok a -> Deferred.return (`Ok (f a)))
 
         let return x = Deferred.return (`Ok x)
       end
@@ -550,13 +551,13 @@ module Server = Typed_tcp.Make (Protocol)
 let start_on_port port =
   let server_is_ready = Ivar.create () in
   let monitor = Monitor.create ~name:"Simulation server" () in
-  Stream.iter (Monitor.errors monitor) ~f:(fun exn ->
+  Stream.iter (Monitor.detach_and_get_error_stream monitor) ~f:(fun exn ->
     Log.Global.error "Simulation_server: %s" (Exn.to_string (Monitor.extract_exn exn)));
   Scheduler.within ~monitor (fun () ->
     Server.create
       ~verbose:false
       ~log_disconnects:false
-      ~auth:(fun _ _ -> return `Allow)
+      ~auth:(fun _ _ _ -> return `Allow)
       ~port
       ()
     >>> fun server ->

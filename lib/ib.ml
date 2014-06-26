@@ -510,10 +510,11 @@ module Connection : Connection_internal = struct
         | Ok `Eof as x -> Deferred.return x
         | Ok (`Ok a)   -> f a
 
-      let map t ~f =  t >>= function
+      let map = `Custom (fun t ~f ->
+        t >>= function
         | Error _ as e -> Deferred.return e
         | Ok `Eof as x -> Deferred.return x
-        | Ok (`Ok a)   -> Deferred.return (Ok (`Ok (f a)))
+        | Ok (`Ok a)   -> Deferred.return (Ok (`Ok (f a))))
 
       let return x = Deferred.return (Ok (`Ok x))
     end
@@ -645,8 +646,8 @@ module Connection : Connection_internal = struct
     let monitor = Monitor.create ~name:"Connection loop" () in
     Stream.iter
       (Stream.interleave (Stream.of_list (
-        [ Monitor.errors (Writer.monitor t.writer)
-        ; Monitor.errors monitor
+        [ Monitor.detach_and_get_error_stream (Writer.monitor t.writer)
+        ; Monitor.detach_and_get_error_stream monitor
         ])))
       ~f:(fun exn ->
         don't_wait_for (close t);
