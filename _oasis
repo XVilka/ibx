@@ -59,8 +59,8 @@ Library ibx
                   Tws,
                   Client_id,
                   Std
-  BuildDepends:   core  (>= 111.06.00),
-                  async (>= 111.03.00),
+  BuildDepends:   core  (>= 111.17.00),
+                  async (>= 111.17.00),
                   sexplib.syntax,
                   fieldslib.syntax,
                   textutils,
