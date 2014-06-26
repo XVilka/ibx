@@ -21,7 +21,6 @@
 *)
 
 open Core.Std
-open Tws_prot
 
 type t =
 [ `USD    (* United States dollar *)
