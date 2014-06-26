@@ -181,4 +181,4 @@
 <lib/*.ml{,i}>: syntax_camlp4o
 <lib_test/*.ml{,i}>: syntax_camlp4o
 <examples/client/*.ml{,i}>: syntax_camlp4o
-<**/*.ml{,i}>: annot, warn_A, warn_e, warn_r
+<**/*.ml{,i}>: annot, warn_e, warn_r
