@@ -1,3 +1,5 @@
+2014-08-10: Removed `Quickcheck` dependency since the module is deprecated.
+
 2014-06-26: Fixed compatibility issues with latest `core` and `async` package.
 
 2014-03-23: Fixed compatibility issue with latest `core` version.
