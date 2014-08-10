@@ -21,10 +21,11 @@
 *)
 
 open Core.Std
-open Quickcheck
 open Ibx.Std
 
 module Rg_common : sig
+
+  type 'a gen = unit -> 'a
 
   val bg : bool gen
   val nng : int gen
@@ -32,6 +33,7 @@ module Rg_common : sig
   val pfg : float gen
   val tmg : Time.t gen
 
+  val always : 'a -> 'a gen
   val og : 'a gen -> 'a option gen
   val oneof : 'a gen list -> 'a gen
 
@@ -62,6 +64,8 @@ module Rg_common : sig
 
 end = struct
 
+  type 'a gen = unit -> 'a
+
   let bg = Random.bool
 
   let nng () =
@@ -70,10 +74,14 @@ end = struct
     else if p < 0.95 then Random.int 100
     else Random.int 1_000
 
-  let sg =
+  let sg () =
     let cg () = Char.of_int_exn (97 + Random.int 26) in
-    let nng () = 1 + nng () in
-    Quickcheck.sg ~char_gen:cg ~size_gen:nng
+    let size = 1 + nng () in
+    let s = String.create size in
+    for i = 0 to String.length s - 1 do
+      s.[i] <- cg ()
+    done;
+    s
 
   let pfg () = Random.float 100. +. 20.
 
@@ -83,6 +91,8 @@ end = struct
     |> Float.modf
     |> Float.Parts.integral
     |> Time.of_float
+
+  let always x () = x
 
   let og g () =
     if bg () then Some (g ()) else None
