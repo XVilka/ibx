@@ -1,8 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: 8eae4d12afc939f38aa77ab73e5cc29d)
+# DO NOT EDIT (digest: 3308cbf4799456cc4709973f196ba200)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
+true: annot, bin_annot
 <**/.svn>: -traverse
 <**/.svn>: not_hygienic
 ".bzr": -traverse
@@ -46,13 +47,13 @@
 "lib/tws.cmx": for-pack(Ibx)
 "lib/client_id.cmx": for-pack(Ibx)
 "lib/std.cmx": for-pack(Ibx)
-<lib/*.ml{,i}>: package(async)
-<lib/*.ml{,i}>: package(core)
-<lib/*.ml{,i}>: package(fieldslib.syntax)
-<lib/*.ml{,i}>: package(sexplib.syntax)
-<lib/*.ml{,i}>: package(str)
-<lib/*.ml{,i}>: package(textutils)
-<lib/*.ml{,i}>: package(threads)
+<lib/*.ml{,i,y}>: package(async)
+<lib/*.ml{,i,y}>: package(core)
+<lib/*.ml{,i,y}>: package(fieldslib.syntax)
+<lib/*.ml{,i,y}>: package(sexplib.syntax)
+<lib/*.ml{,i,y}>: package(str)
+<lib/*.ml{,i,y}>: package(textutils)
+<lib/*.ml{,i,y}>: package(threads)
 # Executable test_runner
 <lib_test/test_runner.{native,byte}>: package(async)
 <lib_test/test_runner.{native,byte}>: package(core)
@@ -62,14 +63,14 @@
 <lib_test/test_runner.{native,byte}>: package(textutils)
 <lib_test/test_runner.{native,byte}>: package(threads)
 <lib_test/test_runner.{native,byte}>: use_ibx
-<lib_test/*.ml{,i}>: package(async)
-<lib_test/*.ml{,i}>: package(core)
-<lib_test/*.ml{,i}>: package(fieldslib.syntax)
-<lib_test/*.ml{,i}>: package(sexplib.syntax)
-<lib_test/*.ml{,i}>: package(str)
-<lib_test/*.ml{,i}>: package(textutils)
-<lib_test/*.ml{,i}>: package(threads)
-<lib_test/*.ml{,i}>: use_ibx
+<lib_test/*.ml{,i,y}>: package(async)
+<lib_test/*.ml{,i,y}>: package(core)
+<lib_test/*.ml{,i,y}>: package(fieldslib.syntax)
+<lib_test/*.ml{,i,y}>: package(sexplib.syntax)
+<lib_test/*.ml{,i,y}>: package(str)
+<lib_test/*.ml{,i,y}>: package(textutils)
+<lib_test/*.ml{,i,y}>: package(threads)
+<lib_test/*.ml{,i,y}>: use_ibx
 # Executable buy-market-order
 <examples/buy_market_order.{native,byte}>: package(async)
 <examples/buy_market_order.{native,byte}>: package(core)
@@ -169,14 +170,14 @@
 <examples/submit_orders.{native,byte}>: package(textutils)
 <examples/submit_orders.{native,byte}>: package(threads)
 <examples/submit_orders.{native,byte}>: use_ibx
-<examples/*.ml{,i}>: package(async)
-<examples/*.ml{,i}>: package(core)
-<examples/*.ml{,i}>: package(fieldslib.syntax)
-<examples/*.ml{,i}>: package(sexplib.syntax)
-<examples/*.ml{,i}>: package(str)
-<examples/*.ml{,i}>: package(textutils)
-<examples/*.ml{,i}>: package(threads)
-<examples/*.ml{,i}>: use_ibx
+<examples/*.ml{,i,y}>: package(async)
+<examples/*.ml{,i,y}>: package(core)
+<examples/*.ml{,i,y}>: package(fieldslib.syntax)
+<examples/*.ml{,i,y}>: package(sexplib.syntax)
+<examples/*.ml{,i,y}>: package(str)
+<examples/*.ml{,i,y}>: package(textutils)
+<examples/*.ml{,i,y}>: package(threads)
+<examples/*.ml{,i,y}>: use_ibx
 # OASIS_STOP
 <lib/*.ml{,i}>: syntax_camlp4o
 <lib_test/*.ml{,i}>: syntax_camlp4o
