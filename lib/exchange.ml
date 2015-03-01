@@ -24,308 +24,308 @@ open Core.Std
 open Tws_prot
 
 type t =
-[ `SMART
+[ `AEB
+| `ALPHA
+| `AMEX
+| `ARCA
 | `ARCAEDGE
-| `BYX
+| `ASX
+| `BATECH
+| `BATEDE
+| `BATEEN
+| `BATEUK
 | `BATS
-| `BTRADE
+| `BEX
+| `BM
 | `BOX
-| `CFE
-| `CBSX
-| `ECBOT
+| `BTRADE
+| `BVME
+| `BYX
 | `CBOE
 | `CBOE2
+| `CBSX
+| `CDE
+| `CFE
+| `CHIXCH
+| `CHIXDE
+| `CHIXEN
+| `CHIXJ
+| `CHIXUK
 | `CHX
 | `CME
-| `GLOBEX
+| `CSFBALGO
 | `DRCTEDGE
+| `DTB
+| `ECBOT
 | `EDGEA
 | `ELX
+| `FTA
+| `FWB
+| `GLOBEX
+| `HKFE
+| `HKMEX
+| `IBCFD
+| `IBIS
+| `IBSX
 | `ICEUS
-| `ISLAND
+| `IDEAL
+| `IDEALPRO
+| `IDEM
+| `IEX
 | `ISE
+| `ISLAND
+| `JEFFALGO
+| `KSE
 | `LAVA
+| `LIFFE
+| `LSE
+| `MATIF
+| `MEFF
+| `MEXDER
+| `MEXI
+| `MIBSX
+| `MONEP
 | `NASDAQ
-| `NFX
 | `NASDAQOM
-| `BEX
-| `PSX
+| `NFX
 | `NSX
 | `NYBOT
 | `NYMEX
 | `NYSE
-| `AMEX
-| `ARCA
-| `LIFFE
+| `OMEGA
+| `OMS
 | `ONE
-| `PSE
 | `PHLX
 | `PINK
-| `ALPHA
-| `CDE
-| `OMEGA
+| `PSE
+| `PSX
 | `PURE
-| `SELECT
-| `TSE
-| `VENTURE
-| `MEXDER
-| `MEXI
-| `VSE
-| `BATEEN
-| `CHIXEN
-| `SBVM
-| `TRQXEN
-| `MATIF
-| `MONEP
 | `SBF
-| `BATEDE
-| `CHIXDE
-| `DTB
-| `FWB
-| `SWB
-| `TRADEGATE
-| `TRQXDE
-| `IBIS
-| `BVME
-| `IDEM
-| `IBCFD
-| `FTA
-| `AEB
-| `BM
-| `MEFF
-| `OMS
-| `SFB
-| `BATECH
-| `CHIXCH
-| `SOFFEX
-| `SWX
-| `TRQXCH
-| `VIRTX
-| `BATEUK
-| `CHIXUK
-| `LSE
-| `ASX
-| `SNFE
-| `HKFE
-| `HKMEX
+| `SBVM
 | `SEHK
-| `IBSX
-| `CHIXJ
-| `TSEJ
+| `SELECT
+| `SFB
 | `SGX
-| `KSE
-| `IDEAL
-| `IDEALPRO
-| `MIBSX
-| `VWAP
-| `CSFBALGO
-| `JEFFALGO
-| `IEX
-| `TPLUS2
+| `SMART
+| `SNFE
+| `SOFFEX
+| `SWB
+| `SWX
 | `TGATE
+| `TPLUS2
+| `TRADEGATE
+| `TRQXCH
+| `TRQXDE
+| `TRQXEN
+| `TSE
+| `TSEJ
+| `VENTURE
+| `VIRTX
+| `VSE
+| `VWAP
 ] with sexp
 
 let tws_of_t = function
-  | `SMART -> "SMART"
+  | `AEB -> "AEB"
+  | `ALPHA -> "ALPHA"
+  | `AMEX -> "AMEX"
+  | `ARCA -> "ARCA"
   | `ARCAEDGE -> "ARCAEDGE"
-  | `BYX -> "BYX"
+  | `ASX -> "ASX"
+  | `BATECH -> "BATECH"
+  | `BATEDE -> "BATEDE"
+  | `BATEEN -> "BATEEN"
+  | `BATEUK -> "BATEUK"
   | `BATS -> "BATS"
-  | `BTRADE -> "BTRADE"
+  | `BEX -> "BEX"
+  | `BM -> "BM"
   | `BOX -> "BOX"
-  | `CFE -> "CFE"
-  | `CBSX -> "CBSX"
-  | `ECBOT -> "ECBOT"
+  | `BTRADE -> "BTRADE"
+  | `BVME -> "BVME"
+  | `BYX -> "BYX"
   | `CBOE -> "CBOE"
   | `CBOE2 -> "CBOE2"
+  | `CBSX -> "CBSX"
+  | `CDE -> "CDE"
+  | `CFE -> "CFE"
+  | `CHIXCH -> "CHIXCH"
+  | `CHIXDE -> "CHIXDE"
+  | `CHIXEN -> "CHIXEN"
+  | `CHIXJ -> "CHIXJ"
+  | `CHIXUK -> "CHIXUK"
   | `CHX -> "CHX"
   | `CME -> "CME"
-  | `GLOBEX -> "GLOBEX"
+  | `CSFBALGO -> "CSFBALGO"
   | `DRCTEDGE -> "DRCTEDGE"
+  | `DTB -> "DTB"
+  | `ECBOT -> "ECBOT"
   | `EDGEA -> "EDGEA"
   | `ELX -> "ELX"
+  | `FTA -> "FTA"
+  | `FWB -> "FWB"
+  | `GLOBEX -> "GLOBEX"
+  | `HKFE -> "HKFE"
+  | `HKMEX -> "HKMEX"
+  | `IBCFD -> "IBCFD"
+  | `IBIS -> "IBIS"
+  | `IBSX -> "IBSX"
   | `ICEUS -> "ICEUS"
-  | `ISLAND -> "ISLAND"
+  | `IDEAL -> "IDEAL"
+  | `IDEALPRO -> "IDEALPRO"
+  | `IDEM -> "IDEM"
+  | `IEX -> "IEX"
   | `ISE -> "ISE"
+  | `ISLAND -> "ISLAND"
+  | `JEFFALGO -> "JEFFALGO"
+  | `KSE -> "KSE"
   | `LAVA -> "LAVA"
+  | `LIFFE -> "LIFFE"
+  | `LSE -> "LSE"
+  | `MATIF -> "MATIF"
+  | `MEFF -> "MEFF"
+  | `MEXDER -> "MEXDER"
+  | `MEXI -> "MEXI"
+  | `MIBSX -> "MIBSX"
+  | `MONEP -> "MONEP"
   | `NASDAQ -> "NASDAQ"
-  | `NFX -> "NFX"
   | `NASDAQOM -> "NASDAQOM"
-  | `BEX -> "BEX"
-  | `PSX -> "PSX"
+  | `NFX -> "NFX"
   | `NSX -> "NSX"
   | `NYBOT -> "NYBOT"
   | `NYMEX -> "NYMEX"
   | `NYSE -> "NYSE"
-  | `AMEX -> "AMEX"
-  | `ARCA -> "ARCA"
-  | `LIFFE -> "LIFFE"
+  | `OMEGA -> "OMEGA"
+  | `OMS -> "OMS"
   | `ONE -> "ONE"
-  | `PSE -> "PSE"
   | `PHLX -> "PHLX"
   | `PINK -> "PINK"
-  | `ALPHA -> "ALPHA"
-  | `CDE -> "CDE"
-  | `OMEGA -> "OMEGA"
+  | `PSE -> "PSE"
+  | `PSX -> "PSX"
   | `PURE -> "PURE"
-  | `SELECT -> "SELECT"
-  | `TSE -> "TSE"
-  | `VENTURE -> "VENTURE"
-  | `MEXDER -> "MEXDER"
-  | `MEXI -> "MEXI"
-  | `VSE -> "VSE"
-  | `BATEEN -> "BATEEN"
-  | `CHIXEN -> "CHIXEN"
-  | `SBVM -> "SBVM"
-  | `TRQXEN -> "TRQXEN"
-  | `MATIF -> "MATIF"
-  | `MONEP -> "MONEP"
   | `SBF -> "SBF"
-  | `BATEDE -> "BATEDE"
-  | `CHIXDE -> "CHIXDE"
-  | `DTB -> "DTB"
-  | `FWB -> "FWB"
-  | `SWB -> "SWB"
-  | `TRADEGATE -> "TRADEGATE"
-  | `TRQXDE -> "TRQXDE"
-  | `IBIS -> "IBIS"
-  | `BVME -> "BVME"
-  | `IDEM -> "IDEM"
-  | `IBCFD -> "IBCFD"
-  | `FTA -> "FTA"
-  | `AEB -> "AEB"
-  | `BM -> "BM"
-  | `MEFF -> "MEFF"
-  | `OMS -> "OMS"
-  | `SFB -> "SFB"
-  | `BATECH -> "BATECH"
-  | `CHIXCH -> "CHIXCH"
-  | `SOFFEX -> "SOFFEX"
-  | `SWX -> "SWX"
-  | `TRQXCH -> "TRQXCH"
-  | `VIRTX -> "VIRTX"
-  | `BATEUK -> "BATEUK"
-  | `CHIXUK -> "CHIXUK"
-  | `LSE -> "LSE"
-  | `ASX -> "ASX"
-  | `SNFE -> "SNFE"
-  | `HKFE -> "HKFE"
-  | `HKMEX -> "HKMEX"
+  | `SBVM -> "SBVM"
   | `SEHK -> "SEHK"
-  | `IBSX -> "IBSX"
-  | `CHIXJ -> "CHIXJ"
-  | `TSEJ -> "TSEJ"
+  | `SELECT -> "SELECT"
+  | `SFB -> "SFB"
   | `SGX -> "SGX"
-  | `KSE -> "KSE"
-  | `IDEAL -> "IDEAL"
-  | `IDEALPRO -> "IDEALPRO"
-  | `MIBSX -> "MIBSX"
-  | `VWAP -> "VWAP"
-  | `CSFBALGO -> "CSFBALGO"
-  | `JEFFALGO -> "JEFFALGO"
-  | `IEX -> "IEX"
-  | `TPLUS2 -> "TPLUS2"
+  | `SMART -> "SMART"
+  | `SNFE -> "SNFE"
+  | `SOFFEX -> "SOFFEX"
+  | `SWB -> "SWB"
+  | `SWX -> "SWX"
   | `TGATE -> "TGATE"
+  | `TPLUS2 -> "TPLUS2"
+  | `TRADEGATE -> "TRADEGATE"
+  | `TRQXCH -> "TRQXCH"
+  | `TRQXDE -> "TRQXDE"
+  | `TRQXEN -> "TRQXEN"
+  | `TSE -> "TSE"
+  | `TSEJ -> "TSEJ"
+  | `VENTURE -> "VENTURE"
+  | `VIRTX -> "VIRTX"
+  | `VSE -> "VSE"
+  | `VWAP -> "VWAP"
 
 let t_of_tws = function
-  | "SMART" -> `SMART
+  | "AEB" -> `AEB
+  | "ALPHA" -> `ALPHA
+  | "AMEX" -> `AMEX
+  | "ARCA" -> `ARCA
   | "ARCAEDGE" -> `ARCAEDGE
-  | "BYX" -> `BYX
+  | "ASX" -> `ASX
+  | "BATECH" -> `BATECH
+  | "BATEDE" -> `BATEDE
+  | "BATEEN" -> `BATEEN
+  | "BATEUK" -> `BATEUK
   | "BATS" -> `BATS
-  | "BTRADE" -> `BTRADE
+  | "BEX" -> `BEX
+  | "BM" -> `BM
   | "BOX" -> `BOX
-  | "CFE" -> `CFE
-  | "CBSX" -> `CBSX
-  | "ECBOT" -> `ECBOT
+  | "BTRADE" -> `BTRADE
+  | "BVME" -> `BVME
+  | "BYX" -> `BYX
   | "CBOE" -> `CBOE
   | "CBOE2" -> `CBOE2
+  | "CBSX" -> `CBSX
+  | "CDE" -> `CDE
+  | "CFE" -> `CFE
+  | "CHIXCH" -> `CHIXCH
+  | "CHIXDE" -> `CHIXDE
+  | "CHIXEN" -> `CHIXEN
+  | "CHIXJ" -> `CHIXJ
+  | "CHIXUK" -> `CHIXUK
   | "CHX" -> `CHX
   | "CME" -> `CME
-  | "GLOBEX" -> `GLOBEX
+  | "CSFBALGO" -> `CSFBALGO
   | "DRCTEDGE" -> `DRCTEDGE
+  | "DTB" -> `DTB
+  | "ECBOT" -> `ECBOT
   | "EDGEA" -> `EDGEA
   | "ELX" -> `ELX
+  | "FTA" -> `FTA
+  | "FWB" -> `FWB
+  | "GLOBEX" -> `GLOBEX
+  | "HKFE" -> `HKFE
+  | "HKMEX" -> `HKMEX
+  | "IBCFD" -> `IBCFD
+  | "IBIS" -> `IBIS
+  | "IBSX" -> `IBSX
   | "ICEUS" -> `ICEUS
-  | "ISLAND" -> `ISLAND
+  | "IDEAL" -> `IDEAL
+  | "IDEALPRO" -> `IDEALPRO
+  | "IDEM" -> `IDEM
+  | "IEX" -> `IEX
   | "ISE" -> `ISE
+  | "ISLAND" -> `ISLAND
+  | "JEFFALGO" -> `JEFFALGO
+  | "KSE" -> `KSE
   | "LAVA" -> `LAVA
+  | "LIFFE" -> `LIFFE
+  | "LSE" -> `LSE
+  | "MATIF" -> `MATIF
+  | "MEFF" -> `MEFF
+  | "MEXDER" -> `MEXDER
+  | "MEXI" -> `MEXI
+  | "MIBSX" -> `MIBSX
+  | "MONEP" -> `MONEP
   | "NASDAQ" -> `NASDAQ
-  | "NFX" -> `NFX
   | "NASDAQOM" -> `NASDAQOM
-  | "BEX" -> `BEX
-  | "PSX" -> `PSX
+  | "NFX" -> `NFX
   | "NSX" -> `NSX
   | "NYBOT" -> `NYBOT
   | "NYMEX" -> `NYMEX
   | "NYSE" -> `NYSE
-  | "AMEX" -> `AMEX
-  | "ARCA" -> `ARCA
-  | "LIFFE" -> `LIFFE
+  | "OMEGA" -> `OMEGA
+  | "OMS" -> `OMS
   | "ONE" -> `ONE
-  | "PSE" -> `PSE
   | "PHLX" -> `PHLX
   | "PINK" -> `PINK
-  | "ALPHA" -> `ALPHA
-  | "CDE" -> `CDE
-  | "OMEGA" -> `OMEGA
+  | "PSE" -> `PSE
+  | "PSX" -> `PSX
   | "PURE" -> `PURE
-  | "SELECT" -> `SELECT
-  | "TSE" -> `TSE
-  | "VENTURE" -> `VENTURE
-  | "MEXDER" -> `MEXDER
-  | "MEXI" -> `MEXI
-  | "VSE" -> `VSE
-  | "BATEEN" -> `BATEEN
-  | "CHIXEN" -> `CHIXEN
-  | "SBVM" -> `SBVM
-  | "TRQXEN" -> `TRQXEN
-  | "MATIF" -> `MATIF
-  | "MONEP" -> `MONEP
   | "SBF" -> `SBF
-  | "BATEDE" -> `BATEDE
-  | "CHIXDE" -> `CHIXDE
-  | "DTB" -> `DTB
-  | "FWB" -> `FWB
-  | "SWB" -> `SWB
-  | "TRADEGATE" -> `TRADEGATE
-  | "TRQXDE" -> `TRQXDE
-  | "IBIS" -> `IBIS
-  | "BVME" -> `BVME
-  | "IDEM" -> `IDEM
-  | "IBCFD" -> `IBCFD
-  | "FTA" -> `FTA
-  | "AEB" -> `AEB
-  | "BM" -> `BM
-  | "MEFF" -> `MEFF
-  | "OMS" -> `OMS
-  | "SFB" -> `SFB
-  | "BATECH" -> `BATECH
-  | "CHIXCH" -> `CHIXCH
-  | "SOFFEX" -> `SOFFEX
-  | "SWX" -> `SWX
-  | "TRQXCH" -> `TRQXCH
-  | "VIRTX" -> `VIRTX
-  | "BATEUK" -> `BATEUK
-  | "CHIXUK" -> `CHIXUK
-  | "LSE" -> `LSE
-  | "ASX" -> `ASX
-  | "SNFE" -> `SNFE
-  | "HKFE" -> `HKFE
-  | "HKMEX" -> `HKMEX
+  | "SBVM" -> `SBVM
   | "SEHK" -> `SEHK
-  | "IBSX" -> `IBSX
-  | "CHIXJ" -> `CHIXJ
-  | "TSEJ" -> `TSEJ
+  | "SELECT" -> `SELECT
+  | "SFB" -> `SFB
   | "SGX" -> `SGX
-  | "KSE" -> `KSE
-  | "IDEAL" -> `IDEAL
-  | "IDEALPRO" -> `IDEALPRO
-  | "MIBSX" -> `MIBSX
-  | "VWAP" -> `VWAP
-  | "CSFBALGO" -> `CSFBALGO
-  | "JEFFALGO" -> `JEFFALGO
-  | "IEX" -> `IEX
-  | "TPLUS2" -> `TPLUS2
+  | "SMART" -> `SMART
+  | "SNFE" -> `SNFE
+  | "SOFFEX" -> `SOFFEX
+  | "SWB" -> `SWB
+  | "SWX" -> `SWX
   | "TGATE" -> `TGATE
+  | "TPLUS2" -> `TPLUS2
+  | "TRADEGATE" -> `TRADEGATE
+  | "TRQXCH" -> `TRQXCH
+  | "TRQXDE" -> `TRQXDE
+  | "TRQXEN" -> `TRQXEN
+  | "TSE" -> `TSE
+  | "TSEJ" -> `TSEJ
+  | "VENTURE" -> `VENTURE
+  | "VIRTX" -> `VIRTX
+  | "VSE" -> `VSE
+  | "VWAP" -> `VWAP
   | s -> failwithf "Exchange.to_string: %S" s ()
 
 let to_string = tws_of_t
