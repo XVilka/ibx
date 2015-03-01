@@ -122,6 +122,12 @@ type t =
 | `IDEAL
 | `IDEALPRO
 | `MIBSX
+| `VWAP       (* IB VWAP Dealing Network (VWAP) *)
+| `CSFBALGO   (* CSFB Algos *)
+| `JEFFALGO   (* Jefferies Auto-Trading Strategies *)
+| `IEX        (* IEX New *)
+| `TPLUS2     (* T+2 Early Stock Settlement *)
+| `TGATE      (* Tradegate Exchange *)
 ] with sexp
 include Stringable.S with type t := t
 include Twsable.S with type t := t

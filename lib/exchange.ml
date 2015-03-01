@@ -117,6 +117,12 @@ type t =
 | `IDEAL
 | `IDEALPRO
 | `MIBSX
+| `VWAP
+| `CSFBALGO
+| `JEFFALGO
+| `IEX
+| `TPLUS2
+| `TGATE
 ] with sexp
 
 let tws_of_t = function
@@ -213,6 +219,12 @@ let tws_of_t = function
   | `IDEAL -> "IDEAL"
   | `IDEALPRO -> "IDEALPRO"
   | `MIBSX -> "MIBSX"
+  | `VWAP -> "VWAP"
+  | `CSFBALGO -> "CSFBALGO"
+  | `JEFFALGO -> "JEFFALGO"
+  | `IEX -> "IEX"
+  | `TPLUS2 -> "TPLUS2"
+  | `TGATE -> "TGATE"
 
 let t_of_tws = function
   | "SMART" -> `SMART
@@ -308,6 +320,12 @@ let t_of_tws = function
   | "IDEAL" -> `IDEAL
   | "IDEALPRO" -> `IDEALPRO
   | "MIBSX" -> `MIBSX
+  | "VWAP" -> `VWAP
+  | "CSFBALGO" -> `CSFBALGO
+  | "JEFFALGO" -> `JEFFALGO
+  | "IEX" -> `IEX
+  | "TPLUS2" -> `TPLUS2
+  | "TGATE" -> `TGATE
   | s -> failwithf "Exchange.to_string: %S" s ()
 
 let to_string = tws_of_t
