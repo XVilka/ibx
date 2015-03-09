@@ -55,7 +55,7 @@ end
 
 module Tick_price : sig
   module Type : sig
-    type t = Bid | Ask | Last | High | Low | Close with sexp
+    type t = Bid | Ask | Last | High | Low | Close | Open with sexp
   end
   type t = private
     { tick_type : Type.t;

@@ -101,7 +101,7 @@ end
 
 module Tick_price = struct
   module Type = struct
-    type t = Bid | Ask | Last | High | Low | Close with sexp
+    type t = Bid | Ask | Last | High | Low | Close | Open with sexp
 
     let tws_of_t = function
       | Bid -> "1"
@@ -110,6 +110,7 @@ module Tick_price = struct
       | High -> "6"
       | Low -> "7"
       | Close -> "9"
+      | Open -> "14"
 
     let t_of_tws = function
       | "1" -> Bid
@@ -118,6 +119,7 @@ module Tick_price = struct
       | "6" -> High
       | "7" -> Low
       | "9" -> Close
+      | "14" -> Open
       | s -> invalid_argf "Type.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws

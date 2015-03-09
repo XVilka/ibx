@@ -601,7 +601,8 @@ module Trade = struct
         | Tick_price.Type.Ask
         | Tick_price.Type.High
         | Tick_price.Type.Low
-        | Tick_price.Type.Close -> None
+        | Tick_price.Type.Close
+        | Tick_price.Type.Open -> None
         end
       | `Tick_size _tick -> None)
 
@@ -738,7 +739,8 @@ module Quote = struct
         | Tick_price.Type.Last
         | Tick_price.Type.High
         | Tick_price.Type.Low
-        | Tick_price.Type.Close -> None
+        | Tick_price.Type.Close
+        | Tick_price.Type.Open -> None
         end
       | `Tick_size tick ->
         begin match Tick_size.tick_type tick with
@@ -914,7 +916,8 @@ let quote_snapshot t ~contract =
                 quote.Quote_snapshot.bid_size  <- Tick_price.size tick;
                 quote.Quote_snapshot.bid_price <- Tick_price.price tick;
                 counter + 1
-              | Type.Last | Type.Low | Type.High | Type.Close -> counter
+              | Type.Last
+              | Type.Low | Type.High | Type.Close | Type.Open -> counter
             in
             if counter = num_ticks then begin
               Ib.Streaming_request.cancel Tws_reqs.req_taq_snapshot con id;
@@ -971,7 +974,8 @@ let trade_snapshot t ~contract =
                 trade.Trade_snapshot.last_size  <- Tick_price.size  tick;
                 trade.Trade_snapshot.last_price <- Tick_price.price tick;
                 counter + 1
-              | Type.Ask | Type.Bid | Type.Low | Type.High | Type.Close -> counter
+              | Type.Ask | Type.Bid
+              | Type.Low | Type.High | Type.Close | Type.Open -> counter
             in
             if counter = num_ticks then begin
               Ib.Streaming_request.cancel Tws_reqs.req_taq_snapshot con id;
