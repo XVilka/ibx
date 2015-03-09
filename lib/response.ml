@@ -29,7 +29,8 @@ module Timestamp = struct
   let tws_of_t tm = Time.format tm "%Y%m%d  %H:%M:%S"
   let t_of_tws s =
     let unescape = unstage (String.Escaping.unescape ~escape_char:' ') in
-    Time.of_string (unescape s)
+    let s = if Int.(String.length s > 8) then unescape s else s^" 00:00:00" in
+    Time.of_string s
   let val_type = Val_type.create tws_of_t t_of_tws
 end
 
