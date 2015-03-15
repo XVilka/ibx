@@ -29,6 +29,7 @@ end
 
 module Security_type : sig
   type t = [ `Stock | `Futures | `Option | `Forex ] with sexp
+  include Stringable.S with type t := t
 end
 
 module Option_right : sig

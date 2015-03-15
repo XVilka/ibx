@@ -44,6 +44,19 @@ module Security_type = struct
     | "CASH" -> `Forex
     | s -> invalid_argf "Security_type.t_of_tws: %S" s ()
 
+  let to_string = function
+    | `Stock   -> "Stock"
+    | `Futures -> "Futures"
+    | `Option  -> "Option"
+    | `Forex   -> "Forex"
+
+  let of_string = function
+    | "Stock"   -> `Stock
+    | "Futures" -> `Futures
+    | "Option"  -> `Option
+    | "Forex"   -> `Forex
+    | s -> invalid_argf "Security_type.of_string: %S" s ()
+
   let val_type = Val_type.create tws_of_t t_of_tws
 end
 
