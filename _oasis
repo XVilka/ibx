@@ -164,6 +164,14 @@ Executable "show-contract-details"
   BuildDepends:   ibx
   CompiledObject: best
 
+Executable "show-portfolio"
+  Build$:         flag(examples)
+  Path:           examples
+  MainIs:         show_portfolio.ml
+  Install:        false
+  BuildDepends:   ibx
+  CompiledObject: best
+
 Executable "submit-orders"
   Build$:         flag(examples)
   Path:           examples
