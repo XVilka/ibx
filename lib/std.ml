@@ -36,6 +36,7 @@ module Execution         = Response.Execution
 module Historical_data   = Response.Historical_data
 module Ib                = Ib
 module Market_data       = Tws.Market_data
+module Option_right      = Contract.Option_right
 module Order             = Order
 module Order_status      = Response.Order_status
 module Portfolio_update  = Response.Portfolio_update

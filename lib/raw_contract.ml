@@ -85,6 +85,15 @@ module Option_right = struct
     | "P" -> `Put
     | s -> invalid_argf "Option_right.t_of_tws: %S" s ()
 
+  let to_string = function
+    | `Call -> "Call"
+    | `Put -> "Put"
+
+  let of_string = function
+    | "Call" -> `Call
+    | "Put" -> `Put
+    | s -> invalid_argf "Option_right.of_string: %S" s ()
+
   let val_type = Val_type.create tws_of_t t_of_tws
 end
 

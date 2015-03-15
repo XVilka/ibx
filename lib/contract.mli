@@ -31,6 +31,11 @@ module Security_type : sig
   type t = [ `Stock | `Futures | `Option | `Forex ] with sexp
 end
 
+module Option_right : sig
+  type t = [ `Call | `Put ] with sexp
+  include Stringable.S with type t := t
+end
+
 type 'a t
 constraint 'a = [< Security_type.t ] with sexp
 
@@ -51,7 +56,7 @@ val security_id   : 'a t -> [ `ISIN  of string
                             | `SEDOL of string ] option
 
 val strike       : [ `Option ] t -> Price.t
-val option_right : [ `Option ] t -> [ `Call | `Put ]
+val option_right : [ `Option ] t -> Option_right.t
 val expiry       : [ `Option | `Futures ] t -> Date.t
 val multiplier   : [ `Option | `Futures ] t -> string
 val include_expired : [ `Futures ] t -> bool
