@@ -42,7 +42,7 @@ module Security_type = struct
 	| "FUT"  -> `Futures
 	| "OPT"  -> `Option
     | "CASH" -> `Forex
-    | s -> invalid_argf "Type.t_of_tws: %S" s ()
+    | s -> invalid_argf "Security_type.t_of_tws: %S" s ()
 
   let val_type = Val_type.create tws_of_t t_of_tws
 end
