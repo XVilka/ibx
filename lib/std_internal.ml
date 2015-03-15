@@ -21,5 +21,5 @@
 *)
 
 module Contract_id  = Raw_contract.Id
-module Order_id     = Raw_order.Id
 module Execution_id = Execution_id
+module Order_id     = Raw_order.Id
