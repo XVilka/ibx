@@ -27,12 +27,12 @@ module Id : sig
   include Unique_id.Id with type t := t
 end
 
-module Type : sig
+module Security_type : sig
   type t = [ `Stock | `Futures | `Option | `Forex ] with sexp
 end
 
 type 'a t
-constraint 'a = [< Type.t ] with sexp
+constraint 'a = [< Security_type.t ] with sexp
 
 include Raw_contract_intf.S
   with type raw := Raw_contract.t

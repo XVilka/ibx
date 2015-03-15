@@ -25,10 +25,10 @@ open Core.Std
 include struct
   open Raw_contract
   module Id   = Id
-  module Type = Type
+  module Security_type = Security_type
 end
 
-type 'a t = Raw_contract.t constraint 'a = [< Type.t] with sexp
+type 'a t = Raw_contract.t constraint 'a = [< Security_type.t] with sexp
 
 let to_raw = Fn.id
 let of_raw = Fn.id

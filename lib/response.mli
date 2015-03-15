@@ -259,7 +259,7 @@ end
 
 module Portfolio_update : sig
   type t = private
-    { contract : Contract.Type.t Contract.t;
+    { contract : Contract.Security_type.t Contract.t;
       position : int;
       market_price : Price.t;
       market_value : Price.t;
@@ -272,7 +272,7 @@ module Portfolio_update : sig
   include Response_intf.S with type t := t
 
   val create
-    :  contract:Contract.Type.t Contract.t
+    :  contract:Contract.Security_type.t Contract.t
     -> position:int
     -> market_price:Price.t
     -> market_value:Price.t
@@ -288,7 +288,7 @@ end
 
 module Contract_details : sig
   type t = private
-    { contract : Contract.Type.t Contract.t;
+    { contract : Contract.Security_type.t Contract.t;
       market_name : string;
       trading_class : string;
       min_tick : float;
@@ -308,7 +308,7 @@ module Contract_details : sig
   include Response_intf.S with type t := t
 
   val create
-    :  contract:Contract.Type.t Contract.t
+    :  contract:Contract.Security_type.t Contract.t
     -> market_name:string
     -> trading_class:string
     -> min_tick:float
@@ -338,7 +338,7 @@ module Execution : sig
 
   type t = private
     { order_id : Order_id.t;
-      contract : Contract.Type.t Contract.t;
+      contract : Contract.Security_type.t Contract.t;
       exec_id : Execution_id.t;
       time : Time.t;
       account_code : Account_code.t;
@@ -358,7 +358,7 @@ module Execution : sig
 
   val create
     :  order_id:Order_id.t
-    -> contract:Contract.Type.t Contract.t
+    -> contract:Contract.Security_type.t Contract.t
     -> exec_id:Execution_id.t
     -> time:Time.t
     -> account_code:Account_code.t

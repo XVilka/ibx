@@ -28,7 +28,7 @@ module Id = struct
   let val_type = Val_type.create to_string of_string
 end
 
-module Type = struct
+module Security_type = struct
   type t = [ `Stock | `Futures | `Option | `Forex ] with sexp
 
   let tws_of_t = function

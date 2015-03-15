@@ -57,7 +57,7 @@ module Rg_common : sig
                        | `SEDOL of string ] gen
 
   val option_g : [ `Option ] Contract.t gen
-  val contract_g : Contract.Type.t Contract.t gen
+  val contract_g : Contract.Security_type.t Contract.t gen
 
   val order_action_g : Order.Action.t gen
   val order_g : (Order.Action.t, Order.Type.t) Order.t gen
