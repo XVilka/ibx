@@ -77,7 +77,7 @@ let stock ?id ?listing_exchange ?local_symbol ?security_id
       ?security_id
       ?exchange
       ~currency
-      ~contract_type:"STK"
+      ~security_type:"STK"
       symbol
   )
 
@@ -95,7 +95,7 @@ let futures ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
       ?include_expired
       ?exchange
       ~currency
-      ~contract_type:"FUT"
+      ~security_type:"FUT"
       ~expiry
       symbol
   )
@@ -113,7 +113,7 @@ let option ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
       ?security_id
       ?exchange
       ~currency
-      ~contract_type:"OPT"
+      ~security_type:"OPT"
       ~expiry
       ~strike
       ~option_right
@@ -132,6 +132,6 @@ let forex ?id ?listing_exchange ?local_symbol ?security_id
       ?security_id
       ~exchange
       ~currency
-      ~contract_type:"CASH"
+      ~security_type:"CASH"
       symbol
   )

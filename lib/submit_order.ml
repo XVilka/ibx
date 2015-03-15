@@ -27,7 +27,7 @@ type t =
   { (* ===================== contract fields ==================== *)
     contract_id : Raw_contract.Id.t option;
     symbol : Symbol.t;
-    contract_type : string;
+    security_type : string;
     expiry : Date.t option;
     strike : Price.t option;
     option_right : Raw_contract.Option_right.t option;
@@ -113,7 +113,7 @@ let create ~contract ~order ~account_code =
   { (* ========================== contract fields =========================== *)
     contract_id                     = contract.Raw_contract.contract_id;
     symbol                          = contract.Raw_contract.symbol;
-    contract_type                   = contract.Raw_contract.contract_type;
+    security_type                   = contract.Raw_contract.security_type;
     expiry                          = contract.Raw_contract.expiry;
     strike                          = contract.Raw_contract.strike;
     option_right                    = contract.Raw_contract.option_right;
@@ -199,7 +199,7 @@ let ( = ) t1 t2 : bool =
   Fields.for_all
     ~contract_id:(use (Option.equal Raw_contract.Id.(=)))
     ~symbol:(use Symbol.(=))
-    ~contract_type:(use (=))
+    ~security_type:(use (=))
     ~expiry:(use (=))
     ~strike:(use (Option.equal Price.(=.)))
     ~option_right:(use (=))
@@ -284,7 +284,7 @@ let pickler =
           ~init:(empty ())
           ~contract_id:(fields_value (optional Raw_contract.Id.val_type ~default_on_none:"0"))
           ~symbol:(fields_value (required Symbol.val_type))
-          ~contract_type:(fields_value (required string))
+          ~security_type:(fields_value (required string))
           ~expiry:(fields_value (optional date))
           ~strike:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
           ~option_right:(fields_value (optional Raw_contract.Option_right.val_type))
@@ -364,7 +364,7 @@ let pickler =
           `Args
             $ t.contract_id
             $ t.symbol
-            $ t.contract_type
+            $ t.security_type
             $ t.expiry
             $ t.strike
             $ t.option_right
@@ -448,7 +448,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~init:(empty ())
         ~contract_id:(fields_value (optional Raw_contract.Id.val_type ~none_on_default:"0"))
         ~symbol:(fields_value (required Symbol.val_type))
-        ~contract_type:(fields_value (required string))
+        ~security_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type ~none_on_default:"0.0"))
         ~option_right:(fields_value (optional Raw_contract.Option_right.val_type))
@@ -527,7 +527,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
     (fun
       contract_id
       symbol
-      contract_type
+      security_type
       expiry
       strike
       option_right
@@ -605,7 +605,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
       request_pre_trade_information ->
         { contract_id;
           symbol;
-          contract_type;
+          security_type;
           expiry;
           strike;
           option_right;

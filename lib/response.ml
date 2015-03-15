@@ -889,7 +889,7 @@ module Contract_details = struct
         value (required Symbol.val_type)
           ~name:(field_name Raw_contract.Fields.symbol)
         ++ value (required string)
-          ~name:(field_name Raw_contract.Fields.contract_type)
+          ~name:(field_name Raw_contract.Fields.security_type)
         ++ value (optional date)
           ~name:(field_name Raw_contract.Fields.expiry)
         ++ value (optional Price.val_type)
@@ -938,7 +938,7 @@ module Contract_details = struct
           ~name:(field_name Fields.trading_hours)
         ++ value (required string)
           ~name:(field_name Fields.liquid_hours))
-      (fun symbol contract_type expiry strike option_right exchange currency
+      (fun symbol security_type expiry strike option_right exchange currency
         local_symbol market_name trading_class contract_id min_tick multiplier
         order_types valid_exchanges price_magnifier underlying_id long_name
         listing_exchange contract_month industry category subcategory
@@ -947,7 +947,7 @@ module Contract_details = struct
             { Raw_contract.
               contract_id;
               symbol;
-              contract_type;
+              security_type;
               expiry;
               strike;
               option_right;
@@ -1045,7 +1045,7 @@ module Contract_details = struct
             let contract = Contract.to_raw t.contract in
             `Args
               $ contract.Raw_contract.symbol
-              $ contract.Raw_contract.contract_type
+              $ contract.Raw_contract.security_type
               $ contract.Raw_contract.expiry
               $ contract.Raw_contract.strike
               $ contract.Raw_contract.option_right

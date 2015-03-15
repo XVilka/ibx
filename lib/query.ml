@@ -370,7 +370,7 @@ module Executions = struct
       account_code : Account_code.t;
       time : Time.t;
       symbol : Symbol.t;
-      contract_type : string;
+      security_type : string;
       exchange : Exchange.t;
       order_action : Order.Action.t;
     } with sexp, fields
@@ -381,7 +381,7 @@ module Executions = struct
       account_code;
       time;
       symbol = Raw_contract.symbol contract;
-      contract_type = Raw_contract.contract_type contract;
+      security_type = Raw_contract.security_type contract;
       exchange = Raw_contract.exchange contract;
       order_action;
     }
@@ -395,7 +395,7 @@ module Executions = struct
       ~account_code:(use Account_code.(=))
       ~time:(use Time.(=))
       ~symbol:(use Symbol.(=))
-      ~contract_type:(use (=))
+      ~security_type:(use (=))
       ~exchange:(use (=))
       ~order_action:(use (=))
 
@@ -409,7 +409,7 @@ module Executions = struct
             ~account_code:(fields_value (required Account_code.val_type))
             ~time:(fields_value (required Time.val_type))
             ~symbol:(fields_value (required Symbol.val_type))
-            ~contract_type:(fields_value (required string))
+            ~security_type:(fields_value (required string))
             ~exchange:(fields_value (required Exchange.val_type))
             ~order_action:(fields_value (required Raw_order.Action.val_type)))
           (fun t ->
@@ -418,7 +418,7 @@ module Executions = struct
               $ t.account_code
               $ t.time
               $ t.symbol
-              $ t.contract_type
+              $ t.security_type
               $ t.exchange
               $ t.order_action))
 
@@ -431,15 +431,15 @@ module Executions = struct
           ~account_code:(fields_value (required Account_code.val_type))
           ~time:(fields_value (required Time.val_type))
           ~symbol:(fields_value (required Symbol.val_type))
-          ~contract_type:(fields_value (required string))
+          ~security_type:(fields_value (required string))
           ~exchange:(fields_value (required Exchange.val_type))
           ~order_action:(fields_value (required Raw_order.Action.val_type)))
-      (fun client_id account_code time symbol contract_type exchange order_action ->
+      (fun client_id account_code time symbol security_type exchange order_action ->
         { client_id;
           account_code;
           time;
           symbol;
-          contract_type;
+          security_type;
           exchange;
           order_action;
         }))
