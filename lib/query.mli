@@ -23,6 +23,7 @@
 (** TWS queries *)
 
 open Core.Std
+open Std_internal
 
 (** {1 Connection and server} *)
 (*****************************************************************************)
@@ -66,7 +67,7 @@ module Market_data : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create
-    :  contract:[< Contract.Security_type.t ] Contract.t
+    :  contract:[< Security_type.t ] Contract.t
     -> tick_generics:Tick_kind.t list
     -> snapshot:bool
     -> t
@@ -99,7 +100,7 @@ module Submit_order : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create
-    :  contract:[< Contract.Security_type.t ] Contract.t
+    :  contract:[< Security_type.t ] Contract.t
     -> order:([< Order.Action.t ], [< Order.Type.t ]) Order.t
     -> account_code:Account_code.t
     -> t
@@ -134,7 +135,7 @@ module Executions : sig
   include Query_intf.S with type t := t
 
   val create
-    :  contract:[< Contract.Security_type.t] Contract.t
+    :  contract:[< Security_type.t] Contract.t
     -> client_id:Client_id.t
     -> account_code:Account_code.t
     -> time:Time.t
@@ -148,7 +149,7 @@ end
 module Contract_details : sig
   type t with sexp
   include Query_intf.S with type t := t
-  val create : contract:[< Contract.Security_type.t ] Contract.t -> t
+  val create : contract:[< Security_type.t ] Contract.t -> t
 end
 
 (** {1 Market depth} *)
@@ -158,7 +159,7 @@ module Market_depth : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create
-    :  contract:[< Contract.Security_type.t ] Contract.t
+    :  contract:[< Security_type.t ] Contract.t
     -> num_rows:int
     -> t
 end
@@ -203,7 +204,7 @@ module Historical_data : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create
-    :  contract:[< Contract.Security_type.t ] Contract.t
+    :  contract:[< Security_type.t ] Contract.t
     -> end_date_time:Time.t
     -> bar_size:Bar_size.t
     -> duration:Duration.t
@@ -227,7 +228,7 @@ module Realtime_bars : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create
-    :  contract:[< Contract.Security_type.t ] Contract.t
+    :  contract:[< Security_type.t ] Contract.t
     -> bar_size:Bar_size.t
     -> show:Show.t
     -> use_rth:bool

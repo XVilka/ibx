@@ -2,7 +2,7 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-let contracts : Contract.Security_type.t Contract.t list = [
+let contracts : Security_type.t Contract.t list = [
   Contract.stock ~currency:`USD (Symbol.of_string "AAPL");
   Contract.stock ~currency:`EUR (Symbol.of_string "BMW");
 

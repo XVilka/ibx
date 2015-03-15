@@ -20,6 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-module Contract_id  = Raw_contract.Id
-module Execution_id = Execution_id
-module Order_id     = Raw_order.Id
+module Contract_id   = Raw_contract.Id
+module Execution_id  = Execution_id
+module Order_id      = Raw_order.Id
+module Security_type = Contract.Security_type

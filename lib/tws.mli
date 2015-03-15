@@ -113,7 +113,7 @@ val market_data
   | `Turn_off_market_data
   ] list
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Market_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val market_data_exn
@@ -134,7 +134,7 @@ val market_data_exn
   | `Turn_off_market_data
   ] list
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Market_data.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_market_data : t -> Query_id.t -> unit
@@ -173,13 +173,13 @@ val implied_volatility_exn
 
 val submit_order
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> order:([< Order.Action.t ], [< Order.Type.t ]) Order.t
   -> (Order_status.t Tws_result.t Pipe.Reader.t * Order_id.t) Or_error.t Deferred.t
 
 val submit_order_exn
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> order:([< Order.Action.t ], [< Order.Type.t ]) Order.t
   -> (Order_status.t Pipe.Reader.t * Order_id.t) Deferred.t
 
@@ -208,14 +208,14 @@ val executions : t -> Execution.t Pipe.Reader.t
 val filter_executions
   :  ?time:Time.t
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> order_action:Order.Action.t
   -> Execution.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
 val filter_executions_exn
   :  ?time:Time.t
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> order_action:Order.Action.t
   -> Execution.t Pipe.Reader.t Deferred.t
 
@@ -225,12 +225,12 @@ val filter_executions_exn
 
 val contract_details
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> Contract_details.t Tws_result.t Or_error.t Deferred.t
 
 val contract_details_exn
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> Contract_details.t Deferred.t
 
 
@@ -240,13 +240,13 @@ val contract_details_exn
 val market_depth
   :  ?num_rows:int
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Book_update.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val market_depth_exn
   :  ?num_rows:int
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Book_update.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_market_depth : t -> Query_id.t -> unit
@@ -282,7 +282,7 @@ val historical_data
   ]
   -> ?until:Time.t
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Historical_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val cancel_historical_data : t -> Query_id.t -> unit
@@ -295,7 +295,7 @@ val realtime_bars
   -> ?show:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_rth:bool
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Realtime_bar.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val realtime_bars_exn
@@ -303,7 +303,7 @@ val realtime_bars_exn
   -> ?show:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_rth:bool
   -> t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Realtime_bar.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_realtime_bars : t -> Query_id.t -> unit
@@ -325,12 +325,12 @@ end
 
 val trades
   : t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Trade.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val trades_exn
   : t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Trade.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_trades : t -> Query_id.t -> unit
@@ -362,12 +362,12 @@ end
 
 val quotes
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Quote.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val quotes_exn
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (Quote.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_quotes : t -> Query_id.t -> unit
@@ -383,12 +383,12 @@ end
 
 val taq_data
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (TAQ.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val taq_data_exn
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> (TAQ.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_taq_data : t -> Query_id.t -> unit
@@ -408,12 +408,12 @@ end
 
 val quote_snapshot
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> Quote_snapshot.t Or_error.t Deferred.t
 
 val quote_snapshot_exn
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> Quote_snapshot.t Deferred.t
 
 module Trade_snapshot : sig
@@ -425,10 +425,10 @@ end
 
 val trade_snapshot
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> Trade_snapshot.t Or_error.t Deferred.t
 
 val trade_snapshot_exn
   :  t
-  -> contract:[< Contract.Security_type.t ] Contract.t
+  -> contract:[< Security_type.t ] Contract.t
   -> Trade_snapshot.t Deferred.t

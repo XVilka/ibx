@@ -751,7 +751,7 @@ end
 
 module Portfolio_update = struct
   type t =
-    { contract : Contract.Security_type.t Contract.t;
+    { contract : Security_type.t Contract.t;
       position : int;
       market_price : Price.t;
       market_value : Price.t;
@@ -840,7 +840,7 @@ end
 
 module Contract_details = struct
   type t =
-    { contract : Contract.Security_type.t Contract.t;
+    { contract : Security_type.t Contract.t;
       market_name : string;
       trading_class : string;
       min_tick : float;
@@ -1104,7 +1104,7 @@ module Execution = struct
 
   type t =
     { order_id : Raw_order.Id.t;
-      contract : Contract.Security_type.t Contract.t;
+      contract : Security_type.t Contract.t;
       exec_id : Execution_id.t;
       time : Time.t;
       account_code : Account_code.t;
