@@ -58,6 +58,27 @@ let multiplier t = Option.value_exn t.Raw_contract.multiplier
 let include_expired t = t.Raw_contract.include_expired
 let combo_legs t = t.Raw_contract.combo_legs
 
+let to_string t =
+  let expiry_to_string d =
+    sprintf "%s%d'%d"
+      (Date.month d |> Month.to_string)
+      (Date.day d)
+      (Date.year d mod 100);
+  in
+  match security_type t with
+  | `Stock | `Forex ->
+    Symbol.to_string t.Raw_contract.symbol
+  | `Futures ->
+    sprintf "%s %s"
+      (Symbol.to_string t.Raw_contract.symbol)
+      (Option.value_exn t.Raw_contract.expiry |> expiry_to_string)
+  | `Option ->
+    sprintf "%s %s %d %s"
+      (Symbol.to_string t.Raw_contract.symbol)
+      (Option.value_exn t.Raw_contract.expiry |> expiry_to_string)
+      (Option.value_exn t.Raw_contract.strike |> Price.to_float |> Float.to_int)
+      (Option.value_exn t.Raw_contract.option_right |> Option_right.to_string)
+
 let split_security_id = function
   | None -> None, None
   | Some sec_id ->

@@ -63,6 +63,8 @@ val multiplier   : [ `Option | `Futures ] t -> string
 val include_expired : [ `Futures ] t -> bool
 val combo_legs : 'a t -> int
 
+val to_string : 'a t -> string
+
 val ( = ) : 'a t -> 'a t -> bool
 
 val stock
