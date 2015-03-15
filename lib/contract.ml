@@ -35,6 +35,7 @@ let of_raw = Fn.id
 
 let ( = ) t1 t2 = Raw_contract.(=) (to_raw t1) (to_raw t2)
 
+let security_type t = Security_type.t_of_tws t.Raw_contract.security_type
 let id t = t.Raw_contract.contract_id
 let symbol t = t.Raw_contract.symbol
 let exchange t = t.Raw_contract.exchange

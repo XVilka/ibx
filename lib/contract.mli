@@ -38,16 +38,17 @@ include Raw_contract_intf.S
   with type raw := Raw_contract.t
   with type 'a t := 'a t
 
-val id           : 'a t -> Id.t option
-val symbol       : 'a t -> Symbol.t
-val exchange     : 'a t -> Exchange.t
+val security_type : 'a t -> [> Security_type.t ]
+val id            : 'a t -> Id.t option
+val symbol        : 'a t -> Symbol.t
+val exchange      : 'a t -> Exchange.t
 val listing_exchange : 'a t -> Exchange.t option
-val currency     : 'a t -> Currency.t
-val local_symbol : 'a t -> Symbol.t option
-val security_id  : 'a t -> [ `ISIN  of string
-                           | `RIC   of string
-                           | `CUSIP of string
-                           | `SEDOL of string ] option
+val currency      : 'a t -> Currency.t
+val local_symbol  : 'a t -> Symbol.t option
+val security_id   : 'a t -> [ `ISIN  of string
+                            | `RIC   of string
+                            | `CUSIP of string
+                            | `SEDOL of string ] option
 
 val strike       : [ `Option ] t -> Price.t
 val option_right : [ `Option ] t -> [ `Call | `Put ]
