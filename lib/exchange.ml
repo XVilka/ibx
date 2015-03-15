@@ -61,6 +61,7 @@ type t =
 | `ELX
 | `FTA
 | `FWB
+| `GEMINI
 | `GLOBEX
 | `HKFE
 | `HKMEX
@@ -83,9 +84,11 @@ type t =
 | `MEFF
 | `MEXDER
 | `MEXI
+| `MIAX
 | `MIBSX
 | `MONEP
 | `NASDAQ
+| `NASDAQBX
 | `NASDAQOM
 | `NFX
 | `NSX
@@ -163,6 +166,7 @@ let tws_of_t = function
   | `ELX -> "ELX"
   | `FTA -> "FTA"
   | `FWB -> "FWB"
+  | `GEMINI -> "GEMINI"
   | `GLOBEX -> "GLOBEX"
   | `HKFE -> "HKFE"
   | `HKMEX -> "HKMEX"
@@ -185,9 +189,11 @@ let tws_of_t = function
   | `MEFF -> "MEFF"
   | `MEXDER -> "MEXDER"
   | `MEXI -> "MEXI"
+  | `MIAX -> "MIAX"
   | `MIBSX -> "MIBSX"
   | `MONEP -> "MONEP"
   | `NASDAQ -> "NASDAQ"
+  | `NASDAQBX -> "NASDAQBX"
   | `NASDAQOM -> "NASDAQOM"
   | `NFX -> "NFX"
   | `NSX -> "NSX"
@@ -264,6 +270,7 @@ let t_of_tws = function
   | "ELX" -> `ELX
   | "FTA" -> `FTA
   | "FWB" -> `FWB
+  | "GEMINI" -> `GEMINI
   | "GLOBEX" -> `GLOBEX
   | "HKFE" -> `HKFE
   | "HKMEX" -> `HKMEX
@@ -286,9 +293,11 @@ let t_of_tws = function
   | "MEFF" -> `MEFF
   | "MEXDER" -> `MEXDER
   | "MEXI" -> `MEXI
+  | "MIAX" -> `MIAX
   | "MIBSX" -> `MIBSX
   | "MONEP" -> `MONEP
   | "NASDAQ" -> `NASDAQ
+  | "NASDAQBX" -> `NASDAQBX
   | "NASDAQOM" -> `NASDAQOM
   | "NFX" -> `NFX
   | "NSX" -> `NSX
