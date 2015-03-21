@@ -24,6 +24,7 @@ include Std_internal
 
 module Account_code      = Account_code
 module Account_update    = Response.Account_update
+module Bar               = Response.Historical_data.Bar
 module Book_update       = Response.Book_update
 module Client_id         = Client_id
 module Commission        = Response.Commission
