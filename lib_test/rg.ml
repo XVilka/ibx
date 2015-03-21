@@ -1161,7 +1161,7 @@ end = struct
   let historical_data_g () =
     let bar_g () =
       Response.Historical_data.Bar.create
-        ~timestamp:(tmg ())
+        ~stamp:(tmg ())
         ~open_:(price_g ())
         ~high:(price_g ())
         ~low:(price_g ())
@@ -1180,7 +1180,7 @@ end = struct
 
   let realtime_bar_g () =
     Response.Realtime_bar.create
-      ~timestamp:(tmg ())
+      ~stamp:(tmg ())
       ~open_:(price_g ())
       ~high:(price_g ())
       ~low:(price_g ())

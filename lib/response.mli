@@ -431,7 +431,7 @@ end
 module Historical_data : sig
   module Bar : sig
     type t =
-      { timestamp : Time.t;
+      { stamp : Time.t;
         open_ : Price.t;
         high : Price.t;
         low : Price.t;
@@ -445,7 +445,7 @@ module Historical_data : sig
     include Response_intf.S with type t := t
 
     val create
-      :  timestamp:Time.t
+      :  stamp:Time.t
       -> open_:Price.t
       -> high:Price.t
       -> low:Price.t
@@ -490,7 +490,7 @@ end
 
 module Realtime_bar : sig
   type t =
-    { timestamp : Time.t;
+    { stamp : Time.t;
       open_ : Price.t;
       high : Price.t;
       low : Price.t;
@@ -503,7 +503,7 @@ module Realtime_bar : sig
   include Response_intf.S with type t := t
 
   val create
-    :  timestamp:Time.t
+    :  stamp:Time.t
     -> open_:Price.t
     -> high:Price.t
     -> low:Price.t

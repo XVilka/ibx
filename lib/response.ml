@@ -1389,7 +1389,7 @@ end
 module Historical_data = struct
   module Bar = struct
     type t =
-      { timestamp : Time.t;
+      { stamp : Time.t;
         open_ : Price.t;
         high : Price.t;
         low : Price.t;
@@ -1407,7 +1407,7 @@ module Historical_data = struct
         op (Field.get field t1) (Field.get field t2)
       in
       Fields.for_all
-        ~timestamp:(use Time.(=))
+        ~stamp:(use Time.(=))
         ~open_:(use Price.(=.))
         ~high:(use Price.(=.))
         ~low:(use Price.(=.))
@@ -1422,7 +1422,7 @@ module Historical_data = struct
         Unpickler.Spec.(
           Fields.fold
             ~init:(empty ())
-            ~timestamp:(fields_value (required Timestamp.val_type))
+            ~stamp:(fields_value (required Timestamp.val_type))
             ~open_:(fields_value (required Price.val_type))
             ~high:(fields_value (required Price.val_type))
             ~low:(fields_value (required Price.val_type))
@@ -1431,8 +1431,8 @@ module Historical_data = struct
             ~wap:(fields_value (required Price.val_type))
             ~has_gaps:(fields_value (required string))
             ~count:(fields_value (required int)))
-        (fun timestamp open_ high low close volume wap has_gaps count ->
-          { timestamp;
+        (fun stamp open_ high low close volume wap has_gaps count ->
+          { stamp;
             open_;
             high;
             low;
@@ -1449,7 +1449,7 @@ module Historical_data = struct
           wrap (
             Fields.fold
               ~init:(empty ())
-              ~timestamp:(fields_value (required Timestamp.val_type))
+              ~stamp:(fields_value (required Timestamp.val_type))
               ~open_:(fields_value (required Price.val_type))
               ~high:(fields_value (required Price.val_type))
               ~low:(fields_value (required Price.val_type))
@@ -1460,7 +1460,7 @@ module Historical_data = struct
               ~count:(fields_value (required int)))
             (fun t ->
               `Args
-                $ t.timestamp
+                $ t.stamp
                 $ t.open_
                 $ t.high
                 $ t.low
@@ -1561,7 +1561,7 @@ module Historical_data = struct
     let close_prices = Array.create ~len:t.num_bars Float.nan in
     let volume       = Array.create ~len:t.num_bars 0 in
     List.iteri t.bars ~f:(fun i bar ->
-      Array.set timestamps   i bar.Bar.timestamp;
+      Array.set timestamps   i bar.Bar.stamp;
       Array.set open_prices  i (Price.to_float bar.Bar.open_);
       Array.set high_prices  i (Price.to_float bar.Bar.high);
       Array.set low_prices   i (Price.to_float bar.Bar.low);
@@ -1583,7 +1583,7 @@ end
 
 module Realtime_bar = struct
   type t =
-    { timestamp : Time.t;
+    { stamp : Time.t;
       open_ : Price.t;
       high : Price.t;
       low : Price.t;
@@ -1600,7 +1600,7 @@ module Realtime_bar = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~timestamp:(use Time.(=))
+      ~stamp:(use Time.(=))
       ~open_:(use Price.(=.))
       ~high:(use Price.(=.))
       ~low:(use Price.(=.))
@@ -1614,7 +1614,7 @@ module Realtime_bar = struct
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
-          ~timestamp:(fields_value (required Timestamp.val_type))
+          ~stamp:(fields_value (required Timestamp.val_type))
           ~open_:(fields_value (required Price.val_type))
           ~high:(fields_value (required Price.val_type))
           ~low:(fields_value (required Price.val_type))
@@ -1622,8 +1622,8 @@ module Realtime_bar = struct
           ~volume:(fields_value (required int))
           ~wap:(fields_value (required Price.val_type))
           ~count:(fields_value (required int)))
-      (fun timestamp open_ high low close volume wap count ->
-          { timestamp;
+      (fun stamp open_ high low close volume wap count ->
+          { stamp;
             open_;
             high;
             low;
@@ -1639,7 +1639,7 @@ module Realtime_bar = struct
         wrap (
           Fields.fold
             ~init:(empty ())
-            ~timestamp:(fields_value (required Timestamp.val_type))
+            ~stamp:(fields_value (required Timestamp.val_type))
             ~open_:(fields_value (required Price.val_type))
             ~high:(fields_value (required Price.val_type))
             ~low:(fields_value (required Price.val_type))
@@ -1649,7 +1649,7 @@ module Realtime_bar = struct
             ~count:(fields_value (required int)))
           (fun t ->
             `Args
-              $ t.timestamp
+              $ t.stamp
               $ t.open_
               $ t.high
               $ t.low
