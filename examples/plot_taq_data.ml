@@ -1,6 +1,7 @@
 open Core.Std
 open Async.Std
 open Ibx.Std
+open Gnuplot
 
 let verbose = ref true
 
@@ -24,20 +25,18 @@ let plot_taq_data ~duration ~currency ~symbol =
           Quote.ask_price quote :: asks,
           Quote.bid_price quote :: bids))
     >>| fun (ttms, tpxs, qtms, asks, bids) ->
-    let ttms = Array.of_list_rev (ttms : Time.t  list :> float list) in
-    let tpxs = Array.of_list_rev (tpxs : Price.t list :> float list) in
-    let qtms = Array.of_list_rev (qtms : Time.t  list :> float list) in
-    let asks = Array.of_list_rev (asks : Price.t list :> float list) in
-    let bids = Array.of_list_rev (bids : Price.t list :> float list) in
-    let g = Gnuplot.create () in
-    Gnuplot.send g (sprintf "set title \"%s\"" symbol);
-    Gnuplot.send g "unset xtics";
-    Gnuplot.plot g [
-      [ttms; tpxs], "with points lc rgb 'blue'  title \"trades\"";
-      [qtms; asks], "with steps  lc rgb 'red'   title \"ask\"";
-      [qtms; bids], "with steps  lc rgb 'green' title \"bid\"";
-    ];
-    Gnuplot.close g)
+    let ttms = List.rev ttms in
+    let qtms = List.rev qtms in
+    let tpxs = List.rev (tpxs : Price.t list :> float list) in
+    let asks = List.rev (asks : Price.t list :> float list) in
+    let bids = List.rev (bids : Price.t list :> float list) in
+    let gp = Gp.create () in
+    Gp.set gp ~output:(Output.create ~font:"arial" `Wxt);
+    Gp.plot_many gp
+      [ Series.steps_timey  (List.zip_exn qtms bids) ~color:`Green ~title:"bid"
+      ; Series.steps_timey  (List.zip_exn qtms asks) ~color:`Red   ~title:"ask"
+      ; Series.points_timey (List.zip_exn ttms tpxs) ~color:`Blue  ~title:"trades" ];
+    Gp.close gp)
 
 let command =
   Command.async_basic ~summary:"plot TAQ data"

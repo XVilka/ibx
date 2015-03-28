@@ -63,3 +63,25 @@ let currency_arg () =
     flag "-currency" (optional_with_default `USD Currency.arg_type)
       ~doc:" contract's currency"
   )
+
+module Bar_span = struct
+  let of_string x = Bar_span.t_of_sexp (Sexp.of_string x)
+  let arg_type = Command.Spec.Arg_type.create of_string
+end
+
+let bar_span_arg () =
+  Command.Spec.(
+    flag "-span" (optional_with_default `Year Bar_span.arg_type)
+      ~doc:" the time covered by the historical data request"
+  )
+
+module Bar_size = struct
+  let of_string x = Bar_size.t_of_sexp (Sexp.Atom x)
+  let arg_type = Command.Spec.Arg_type.create of_string
+end
+
+let bar_size_arg () =
+  Command.Spec.(
+    flag "-size" (optional_with_default `One_day Bar_size.arg_type)
+      ~doc:" the size of the bars that will be returned"
+  )

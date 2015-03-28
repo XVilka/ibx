@@ -1,6 +1,7 @@
 open Core.Std
 open Async.Std
 open Ibx.Std
+open Gnuplot
 
 module Filter = struct
   let sma ~period =
@@ -18,50 +19,41 @@ module Filter = struct
       !sum /. float (Queue.length q))
 end
 
-let sma xs ~period = Array.map xs ~f:(unstage (Filter.sma ~period))
-let sma10 xs = sma ~period:10 xs
-let sma20 xs = sma ~period:20 xs
-let sma50 xs = sma ~period:50 xs
-
-let plot_hist_bars ~currency ~symbol =
+let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
   Common.with_tws_client (fun tws ->
-    Tws.historical_data tws
+    Tws.historical_data tws ~bar_span ~bar_size
       ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
-      ~bar_size:`Five_mins
-      ~duration:(`Day 1)
     >>= function
     | Error e ->
       prerr_endline (Error.to_string_hum e);
       return ()
     | Ok (reader, id) ->
       Pipe.iter_without_pushback reader ~f:(function
-      | Error tws_error ->
-        begin match Tws_error.error_code tws_error with
+      | Error error ->
+        begin match Tws_error.error_code error with
         | 162 (* query returned no data *)
-        | 200 (* No security definition has been found for the request *) ->
+        | 200 (* No security definition has been found for the request *)
+        | 321 (* Error validaing request *) ->
           Tws.cancel_historical_data tws id
         | _   -> ()
         end;
-        prerr_endline (Tws_error.to_string_hum tws_error)
+        prerr_endline (Tws_error.to_string_hum error)
       | Ok hist_data ->
-        let module Columns = Historical_data.Columns in
-        let hist_data = Historical_data.to_columns hist_data in
-        let num_bars  = Array.length (Columns.timestamps hist_data) in
-        let indices = Array.init num_bars ~f:Int.to_float in
-        let prices = Columns.close_prices hist_data in
-        let g = Gnuplot.create () in
-        Gnuplot.plot g [
-          [ indices;
-            Columns.open_prices  hist_data;
-            Columns.high_prices  hist_data;
-            Columns.low_prices   hist_data;
-            Columns.close_prices hist_data; ],
-          sprintf "with candlesticks title \"%s\"" symbol;
-          [ indices; sma10 prices; ], "w l lc rgb   \"blue\" title \"sma10\"";
-          [ indices; sma20 prices; ], "w l lc rgb  \"green\" title \"sma20\"";
-          [ indices; sma50 prices; ], "w l lc rgb \"yellow\" title \"sma50\"";
+        let sma50 = List.map ~f:(unstage (Filter.sma ~period:50)) in
+        let gp = Gp.create () in
+        Gp.set gp ~output:(Output.create ~font:"arial" `Wxt);
+        Gp.plot_many gp [
+          Series.candlesticks ~title:symbol
+            (List.map hist_data.bars ~f:(fun bar ->
+              Historical_bar.(stamp bar, open_ bar, high bar, low bar, close bar))
+             :> (Time.t * float * float * float * float) list)
+          ; Series.lines_timey ~color:`Green ~title:"SMA 50"
+            (List.zip_exn
+               (List.map hist_data.bars ~f:Historical_bar.stamp)
+               (List.map hist_data.bars ~f:(fun bar ->
+                 bar |> Historical_bar.close |> Price.to_float) |> sma50))
         ];
-        Gnuplot.close g;
+        Gp.close gp;
         Tws.cancel_historical_data tws id))
 ;;
 
@@ -74,10 +66,13 @@ let command =
       +> Common.port_arg ()
       +> Common.client_id_arg ()
       +> Common.currency_arg ()
+      +> Common.bar_span_arg ()
+      +> Common.bar_size_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun enable_logging host port client_id currency symbol () ->
-      plot_hist_bars ~enable_logging ~host ~port ~client_id ~currency ~symbol
+    (fun enable_logging host port client_id currency bar_span bar_size symbol () ->
+      plot_hist_bars ~enable_logging ~host ~port ~client_id
+        ~currency ~bar_span ~bar_size ~symbol
       >>= function
       | Error e -> prerr_endline (Error.to_string_hum e); exit 1
       | Ok () -> return ()

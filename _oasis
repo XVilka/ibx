@@ -113,7 +113,7 @@ Executable "plot-hist-bars"
   Path:           examples
   MainIs:         plot_hist_bars.ml
   Install:        false
-  BuildDepends:   ibx
+  BuildDepends:   ibx, gnuplot
   CompiledObject: best
 
 Executable "plot-taq-data"
@@ -121,7 +121,7 @@ Executable "plot-taq-data"
   Path:           examples
   MainIs:         plot_taq_data.ml
   Install:        false
-  BuildDepends:   ibx
+  BuildDepends:   ibx, gnuplot
   CompiledObject: best
 
 Executable "print_account_updates"
