@@ -638,7 +638,7 @@ end = struct
       always (`One_day);
     ] ()
     in
-    let duration_g () = oneof [
+    let bar_span_g () = oneof [
       always (`Sec (1 + nng ()));
       always (`Day (1 + nng ()));
       always (`Week (1 + nng ()));
@@ -661,7 +661,7 @@ end = struct
       ~contract:(contract_g ())
       ~end_date_time:(tmg ())
       ~bar_size:(bar_size_g ())
-      ~duration:(duration_g ())
+      ~bar_span:(bar_span_g ())
       ~use_rth:(bg ())
       ~show:(show_g ())
 

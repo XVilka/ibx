@@ -522,15 +522,15 @@ let cancel_market_depth t id =
    +-----------------------------------------------------------------------+ *)
 
 let historical_data
-    ?(bar_size = `One_hour)
-    ?(duration = `Month 1)
+    ?(bar_size = `One_day)
+    ?(bar_span = `Year)
     ?(use_rth = true)
     ?(show = `Trades)
     ?(until = Time.now ())
     t ~contract =
   with_connection t ~f:(fun con ->
     let q = Query.Historical_data.create ~contract ~end_date_time:until
-      ~bar_size ~duration ~use_rth ~show in
+      ~bar_size ~bar_span ~use_rth ~show in
     Ib.Streaming_request.dispatch Tws_reqs.req_historical_data con q
   )
 

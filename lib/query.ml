@@ -560,7 +560,7 @@ module Historical_data = struct
     let val_type = Val_type.create tws_of_t t_of_tws
   end
 
-  module Duration = struct
+  module Bar_span = struct
     type t =
     [ `Sec of int
     | `Day of int
@@ -635,17 +635,17 @@ module Historical_data = struct
     { contract : Raw_contract.t;
       end_date_time : Time.t;
       bar_size : Bar_size.t;
-      duration : Duration.t;
+      bar_span : Bar_span.t;
       use_rth : bool;
       show : Show.t;
       date_format : string;
     } with sexp, fields
 
-  let create ~contract ~end_date_time ~bar_size ~duration ~use_rth ~show =
+  let create ~contract ~end_date_time ~bar_size ~bar_span ~use_rth ~show =
     { contract = Contract.to_raw contract;
       end_date_time;
       bar_size;
-      duration;
+      bar_span;
       use_rth;
       show;
       date_format = "1";
@@ -659,7 +659,7 @@ module Historical_data = struct
       ~contract:(use Raw_contract.(=))
       ~end_date_time:(use Time.(=))
       ~bar_size:(use (=))
-      ~duration:(use (=))
+      ~bar_span:(use (=))
       ~use_rth:(use (=))
       ~show:(use (=))
       ~date_format:(use (=))
@@ -676,7 +676,7 @@ module Historical_data = struct
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~end_date_time:(fields_value (required time))
             ~bar_size:(fields_value (required Bar_size.val_type))
-            ~duration:(fields_value (required Duration.val_type))
+            ~bar_span:(fields_value (required Bar_span.val_type))
             ~use_rth:(fields_value (required bool))
             ~show:(fields_value (required Show.val_type))
             ~date_format:(fields_value (required string)))
@@ -685,7 +685,7 @@ module Historical_data = struct
               $ t.contract
               $ t.end_date_time
               $ t.bar_size
-              $ t.duration
+              $ t.bar_span
               $ t.use_rth
               $ t.show
               $ t.date_format))
@@ -701,15 +701,15 @@ module Historical_data = struct
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~end_date_time:(fields_value (required time))
           ~bar_size:(fields_value (required Bar_size.val_type))
-          ~duration:(fields_value (required Duration.val_type))
+          ~bar_span:(fields_value (required Bar_span.val_type))
           ~use_rth:(fields_value (required bool))
           ~show:(fields_value (required Show.val_type))
           ~date_format:(fields_value (required string)))
-      (fun contract end_date_time bar_size duration use_rth show date_format ->
+      (fun contract end_date_time bar_size bar_span use_rth show date_format ->
         { contract;
           end_date_time;
           bar_size;
-          duration;
+          bar_span;
           use_rth;
           show;
           date_format;

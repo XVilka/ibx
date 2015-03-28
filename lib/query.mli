@@ -178,7 +178,7 @@ module Historical_data : sig
     ] with sexp
   end
 
-  module Duration : sig
+  module Bar_span : sig
     type t =
     [ `Sec of int
     | `Day of int
@@ -207,7 +207,7 @@ module Historical_data : sig
     :  contract:[< Security_type.t ] Contract.t
     -> end_date_time:Time.t
     -> bar_size:Bar_size.t
-    -> duration:Duration.t
+    -> bar_span:Bar_span.t
     -> use_rth:bool
     -> show:Show.t
     -> t

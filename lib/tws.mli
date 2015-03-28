@@ -261,14 +261,14 @@ val historical_data
   | `One_min | `Two_mins | `Three_mins | `Five_mins | `Fifteen_mins | `Thirty_mins
   | `One_hour
   | `One_day
-  ]
-  -> ?duration:[
+  ] (* defaults to One_day *)
+  -> ?bar_span:[
   | `Sec of int
   | `Day of int
   | `Week of int
   | `Month of int
   | `Year
-  ]
+  ] (* defaults to Year *)
   -> ?use_rth:bool
   -> ?show:[
   | `Trades
