@@ -11,7 +11,7 @@ let print_server_time ~port ~host ~client_id =
     (fun tws ->
       Tws.server_time_exn tws
       >>| fun time ->
-      print_endline (Time.to_string_trimmed time))
+      print_endline (Time.to_string_trimmed time ~zone:Time.Zone.local))
 
 let command =
   Command.async_basic ~summary:"print server time"

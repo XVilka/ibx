@@ -54,7 +54,7 @@ let run ~timeout =
       printf "Execution: \
           exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
         (Execution.exec_id exec |> Execution_id.to_string)
-        (Execution.time exec |> Time.to_string_trimmed)
+        (Execution.time exec |> Time.to_string_trimmed ~zone:Time.Zone.local)
         (Execution.exchange exec |> Exchange.to_string)
         (Execution.side exec |> Execution.Side.to_string)
         (Execution.quantity exec)

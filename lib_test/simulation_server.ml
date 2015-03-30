@@ -546,7 +546,7 @@ module Message_generator = struct
       end
 end
 
-module Server = Typed_tcp.Make (Protocol)
+module Server = Typed_tcp.Make (Protocol) ()
 
 let start_on_port port =
   let server_is_ready = Ivar.create () in
