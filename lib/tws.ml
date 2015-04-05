@@ -569,7 +569,7 @@ let cancel_realtime_bars t id =
 
 module Trade = struct
   type t =
-    { mutable time  : Time.t;
+    { mutable stamp : Time.t;
       mutable price : Price.t;
       mutable size  : int;
     } with sexp, fields
@@ -577,7 +577,7 @@ module Trade = struct
   let make_filter () =
     let t =
       {
-        time  = Time.epoch;
+        stamp = Time.epoch;
         price = Price.zero;
         size  = 0;
       }
@@ -594,7 +594,7 @@ module Trade = struct
           else begin
             t.price <- new_price;
             t.size  <- new_size;
-            t.time  <- Time.now ();
+            t.stamp <- Time.now ();
             Some t
           end
         | Tick_price.Type.Bid
@@ -608,7 +608,7 @@ module Trade = struct
 
   let pp ppf t =
     Format.fprintf ppf "T|%s|%4.2f|%4d"
-      (Time.to_string t.time)
+      (Time.to_string t.stamp)
       (Price.to_float t.price)
       t.size
 end
@@ -646,7 +646,7 @@ let cancel_trades t id =
 
 module Quote = struct
   type t =
-    { mutable time : Time.t;
+    { mutable stamp : Time.t;
       mutable ask_size : int;
       mutable bid_size : int;
       mutable ask_size_change : int;
@@ -668,7 +668,7 @@ module Quote = struct
   let make_filter () =
     let t =
       {
-        time             = Time.epoch;
+        stamp            = Time.epoch;
         ask_size         = 0;
         bid_size         = 0;
         ask_size_change  = 0;
@@ -707,7 +707,7 @@ module Quote = struct
           if t.bid_size = 0 then
             None (* We don't issue a quote without any bid information. *)
           else begin
-            t.time <- Time.now ();
+            t.stamp <- Time.now ();
             Some t
           end
         | Tick_price.Type.Bid ->
@@ -733,7 +733,7 @@ module Quote = struct
           if t.ask_size = 0 then
             None (* We don't issue a quote without any ask information. *)
           else begin
-            t.time <- Time.now ();
+            t.stamp <- Time.now ();
             Some t
           end
         | Tick_price.Type.Last
@@ -753,7 +753,7 @@ module Quote = struct
             t.ask_size_change <- new_ask_size - old_ask_size;
             t.ask_size <- new_ask_size;
             t.change <- `Ask_size_change;
-            t.time <- Time.now ();
+            t.stamp <- Time.now ();
             Some t
           end
         | Tick_size.Type.Bid ->
@@ -765,7 +765,7 @@ module Quote = struct
             t.bid_size_change <- new_bid_size - old_bid_size;
             t.bid_size <- new_bid_size;
             t.change <- `Bid_size_change;
-            t.time <- Time.now ();
+            t.stamp <- Time.now ();
             Some t
           end
         | Tick_size.Type.Last
@@ -774,7 +774,7 @@ module Quote = struct
 
   let pp ppf t =
     Format.fprintf ppf "Q|%s|%4.2f|%4.2f|%4d|%4d"
-      (Time.to_string t.time)
+      (Time.to_string t.stamp)
       (Price.to_float t.bid_price)
       (Price.to_float t.ask_price)
       t.bid_size t.ask_size

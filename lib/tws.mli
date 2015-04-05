@@ -316,7 +316,7 @@ module Trade : sig
   type t
   with sexp
 
-  val time  : t -> Time.t
+  val stamp : t -> Time.t
   val price : t -> Price.t
   val size  : t -> int
 
@@ -339,7 +339,7 @@ module Quote : sig
   type t
   with sexp
 
-  val time      : t -> Time.t
+  val stamp     : t -> Time.t
   val ask_size  : t -> int
   val bid_size  : t -> int
   val ask_price : t -> Price.t

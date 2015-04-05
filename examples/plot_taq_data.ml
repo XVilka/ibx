@@ -19,10 +19,10 @@ let plot_taq_data ~duration ~currency ~symbol =
         return (match taq_record with
         | TAQ.Trade trade ->
           bids, asks,
-          Trade.(time trade, price trade) :: trades
+          Trade.(stamp trade, price trade) :: trades
         | TAQ.Quote quote ->
-          Quote.(time quote, bid_price quote) :: bids,
-          Quote.(time quote, ask_price quote) :: asks,
+          Quote.(stamp quote, bid_price quote) :: bids,
+          Quote.(stamp quote, ask_price quote) :: asks,
           trades
         )
       )
