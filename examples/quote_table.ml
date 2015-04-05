@@ -24,21 +24,6 @@ let print_quote_table quotes =
 
 let symbols = ["AAPL";"AMZN";"CSCO";"FB";"GOOG";"IBM";"MSFT";"ORCL";"SAP";"YHOO"]
 
-let run () =
-  Common.with_tws_client (fun tws ->
-    Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
-      let stock = Contract.stock
-        ~exchange:`SMART
-        ~currency:`USD
-        (Symbol.of_string symbol)
-      in
-      Tws.contract_details_exn tws ~contract:stock
-      >>= fun details ->
-      (* extract unambiguous contract description *)
-      let contract = Contract_details.contract details in
-      Tws.quote_snapshot_exn tws ~contract)
-    >>| fun quotes -> print_quote_table quotes)
-
 let () =
   Command.async_basic ~summary:" print market data"
     Command.Spec.(
@@ -48,5 +33,18 @@ let () =
       +> Common.port_arg ()
       +> Common.client_id_arg ()
     )
-    (fun do_log host port client_id () -> run ~do_log ~host ~port ~client_id ())
+    (fun do_log host port client_id () ->
+      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+        Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
+          let stock = Contract.stock
+            ~exchange:`SMART
+            ~currency:`USD
+            (Symbol.of_string symbol)
+          in
+          Tws.contract_details_exn tws ~contract:stock
+          >>= fun details ->
+          (* Extract unambiguous contract description. *)
+          let contract = Contract_details.contract details in
+          Tws.quote_snapshot_exn tws ~contract)
+        >>| fun quotes -> print_quote_table quotes))
   |> Command.run

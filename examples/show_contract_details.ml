@@ -31,24 +31,6 @@ let contracts : Security_type.t Contract.t list = [
     (Symbol.of_string "USD");
 ]
 
-let run () =
-  Common.with_tws_client (fun tws ->
-    Deferred.List.iter contracts ~f:(fun contract ->
-      let symbol = Symbol.to_string (Contract.symbol contract) in
-      let message s =
-        printf "===== [ %s ] =====\n" symbol;
-        print_endline s;
-        print_newline ()
-      in
-      Tws.contract_details tws ~contract >>| function
-      | Error e ->
-        message (Error.to_string_hum e)
-      | Ok (Error tws_error) ->
-        message (Tws_error.to_string_hum tws_error)
-      | Ok (Ok details) ->
-        message (Contract_details.sexp_of_t details |> Sexp.to_string_hum))
-  )
-
 let () =
   Command.async_basic ~summary:"show contract details"
     Command.Spec.(
@@ -58,5 +40,22 @@ let () =
       +> Common.port_arg ()
       +> Common.client_id_arg ()
     )
-    (fun do_log host port client_id () -> run ~do_log ~host ~port ~client_id ())
+    (fun do_log host port client_id () ->
+      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+        Deferred.List.iter contracts ~f:(fun contract ->
+          let symbol = Symbol.to_string (Contract.symbol contract) in
+          let message s =
+            printf "===== [ %s ] =====\n" symbol;
+            print_endline s;
+            print_newline ()
+          in
+          Tws.contract_details tws ~contract >>| function
+          | Error e ->
+            message (Error.to_string_hum e)
+          | Ok (Error tws_error) ->
+            message (Tws_error.to_string_hum tws_error)
+          | Ok (Ok details) ->
+            message (Contract_details.sexp_of_t details |> Sexp.to_string_hum))
+      )
+    )
   |> Command.run

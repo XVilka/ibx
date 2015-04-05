@@ -42,17 +42,9 @@ let show_portfolio updates =
           (Price.to_float (P.realized_pnl update) +.
            Price.to_float (P.unrealized_pnl update)));
   ] updates
+;;
 
-let run () =
-  Common.with_tws_client (fun tws ->
-    Tws.portfolio_updates_exn tws
-    >>= fun result ->
-    Pipe.to_list result
-    >>| fun updates ->
-    show_portfolio updates
-  )
-
-let command =
+let () =
   Command.async_basic ~summary:"show portfolio"
     Command.Spec.(
       empty
@@ -61,5 +53,10 @@ let command =
       +> Common.port_arg ()
       +> Common.client_id_arg ()
     )
-    (fun do_log host port client_id () -> run ~do_log ~host ~port ~client_id ())
+    (fun do_log host port client_id () ->
+      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+        Tws.portfolio_updates_exn tws
+        >>= fun updates -> Pipe.to_list updates >>| show_portfolio
+      )
+    )
   |> Command.run
