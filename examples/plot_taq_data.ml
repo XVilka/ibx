@@ -31,7 +31,6 @@ let plot_taq_data ~duration ~currency ~symbol =
     let asks = List.rev (asks : Price.t list :> float list) in
     let bids = List.rev (bids : Price.t list :> float list) in
     let gp = Gp.create () in
-    Gp.set gp ~output:(Output.create ~font:"arial" `Wxt);
     Gp.plot_many gp
       [ Series.steps_timey  (List.zip_exn qtms bids) ~color:`Green ~title:"bid"
       ; Series.steps_timey  (List.zip_exn qtms asks) ~color:`Red   ~title:"ask"

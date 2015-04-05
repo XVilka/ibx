@@ -42,7 +42,6 @@ let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
         let bars = hist_data.bars in
         let sma50 = List.map ~f:(unstage (Filter.sma ~period:50)) in
         let gp = Gp.create () in
-        Gp.set gp ~output:(Output.create ~font:"arial" `Wxt);
         Gp.plot_many gp [
           (* Create a candlestick chart series. *)
           Series.candlesticks ~title:symbol
