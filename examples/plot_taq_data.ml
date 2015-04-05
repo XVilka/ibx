@@ -51,12 +51,11 @@ let () =
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun enable_logging quiet host port client_id duration currency symbol () ->
+    (fun do_log quiet host port client_id duration currency symbol () ->
       verbose := not quiet;
       if Time.Span.(duration > minute) then begin
         prerr_endline "Maximum duration is 1 minute";
         exit 1;
       end else
-        plot_taq_data ~enable_logging ~host ~port ~client_id
-          ~duration ~currency ~symbol)
+        plot_taq_data ~do_log ~host ~port ~client_id ~duration ~currency ~symbol)
   |> Command.run

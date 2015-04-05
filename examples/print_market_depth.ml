@@ -24,7 +24,7 @@ let () =
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun enable_logging host port client_id duration currency symbol () ->
-      print_market_depth ~enable_logging ~host ~port ~client_id
+    (fun do_log host port client_id duration currency symbol () ->
+      print_market_depth ~do_log ~host ~port ~client_id
         ~duration ~currency ~symbol)
   |> Command.run

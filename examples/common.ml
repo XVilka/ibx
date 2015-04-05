@@ -2,8 +2,8 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-let with_tws_client ~enable_logging ~host ~port ~client_id f =
-  if enable_logging then begin
+let with_tws_client ~do_log ~host ~port ~client_id f =
+  if do_log then begin
     let basedir = Core.Std.Unix.getcwd () in
     let logfile = basedir ^/ "ibx.log" in
     Log.Global.set_level `Debug;
@@ -12,7 +12,7 @@ let with_tws_client ~enable_logging ~host ~port ~client_id f =
   Monitor.try_with (fun () ->
     Tws.with_client
       ~client_id:(Client_id.of_int_exn client_id)
-      ~enable_logging
+      ~enable_logging:do_log
       ~host
       ~port
       ~on_handler_error:`Raise

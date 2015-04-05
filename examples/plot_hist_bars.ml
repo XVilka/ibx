@@ -71,7 +71,7 @@ let () =
       +> Common.bar_size_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun enable_logging host port client_id currency bar_span bar_size symbol () ->
-      plot_hist_bars ~enable_logging ~host ~port ~client_id
-        ~currency ~bar_span ~bar_size ~symbol)
+    (fun do_log host port client_id currency bar_span bar_size symbol () ->
+      plot_hist_bars ~do_log ~host ~port ~client_id ~currency
+        ~bar_span ~bar_size ~symbol)
   |> Command.run

@@ -78,6 +78,6 @@ let () =
       +> Common.client_id_arg ()
       +> timeout_arg ()
     )
-    (fun enable_logging host port client_id timeout () ->
-      run ~enable_logging ~host ~port ~client_id ~timeout)
+    (fun do_log host port client_id timeout () ->
+      run ~do_log ~host ~port ~client_id ~timeout)
   |> Command.run

@@ -58,6 +58,5 @@ let () =
       +> Common.port_arg ()
       +> Common.client_id_arg ()
     )
-    (fun enable_logging host port client_id () ->
-      run ~enable_logging ~host ~port ~client_id ())
+    (fun do_log host port client_id () -> run ~do_log ~host ~port ~client_id ())
   |> Command.run

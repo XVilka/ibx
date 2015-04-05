@@ -46,6 +46,6 @@ let () =
       +> Common.duration_arg ()
       +> Common.client_id_arg ()
     )
-    (fun enable_logging host port duration client_id () ->
-      print_market_data ~enable_logging ~host ~port ~client_id ~duration)
+    (fun do_log host port duration client_id () ->
+      print_market_data ~do_log ~host ~port ~client_id ~duration)
   |> Command.run
