@@ -59,7 +59,7 @@ let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
         Tws.cancel_historical_data tws id))
 ;;
 
-let command =
+let () =
   Command.async_basic ~summary:"plot historical bars"
     Command.Spec.(
       empty
@@ -74,10 +74,5 @@ let command =
     )
     (fun enable_logging host port client_id currency bar_span bar_size symbol () ->
       plot_hist_bars ~enable_logging ~host ~port ~client_id
-        ~currency ~bar_span ~bar_size ~symbol
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok () -> return ()
-    )
-
-let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)
+        ~currency ~bar_span ~bar_size ~symbol)
+  |> Command.run

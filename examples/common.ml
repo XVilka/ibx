@@ -18,10 +18,15 @@ let with_tws_client ~enable_logging ~host ~port ~client_id f =
       ~on_handler_error:`Raise
       (fun tws -> f tws)
   )
-  >>| fun result ->
+  >>= fun result ->
   match result with
-  | Ok _ as x -> x
-  | Error exn -> Error (Error.of_exn (Monitor.extract_exn exn))
+  | Ok () -> return ()
+  | Error exn ->
+    let error = Monitor.extract_exn exn |> Error.of_exn in
+    prerr_endline (Error.to_string_hum error);
+    exit 1
+;;
+
 
 let logging_flag () =
   Command.Spec.(

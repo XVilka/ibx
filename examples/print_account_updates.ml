@@ -11,7 +11,7 @@ let print_account_updates () =
     )
   )
 
-let command =
+let () =
   Command.async_basic ~summary:"print account updates"
     Command.Spec.(
       empty
@@ -21,10 +21,5 @@ let command =
       +> Common.client_id_arg ()
     )
     (fun enable_logging host port client_id () ->
-      print_account_updates ~enable_logging ~host ~port ~client_id ()
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok () -> return ()
-    )
-
-let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)
+      print_account_updates ~enable_logging ~host ~port ~client_id ())
+  |> Command.run

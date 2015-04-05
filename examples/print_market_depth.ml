@@ -12,7 +12,7 @@ let print_market_depth ~duration ~currency ~symbol =
       printf "%s\n%!" (Book_update.sexp_of_t book_update |> Sexp.to_string_hum))
   )
 
-let command =
+let () =
   Command.async_basic ~summary:"print market depth"
     Command.Spec.(
       empty
@@ -26,10 +26,5 @@ let command =
     )
     (fun enable_logging host port client_id duration currency symbol () ->
       print_market_depth ~enable_logging ~host ~port ~client_id
-        ~duration ~currency ~symbol
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok () -> return ()
-    )
-
-let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)
+        ~duration ~currency ~symbol)
+  |> Command.run

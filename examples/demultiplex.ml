@@ -36,7 +36,7 @@ let print_market_data ~duration =
       print_ticks (Symbol.of_string symbol) color))
   )
 
-let command =
+let () =
   Command.async_basic ~summary:" print market data"
     Command.Spec.(
       empty
@@ -47,10 +47,5 @@ let command =
       +> Common.client_id_arg ()
     )
     (fun enable_logging host port duration client_id () ->
-      print_market_data ~enable_logging ~host ~port ~client_id ~duration
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok () -> return ()
-    )
-
-let () = Command.run command
+      print_market_data ~enable_logging ~host ~port ~client_id ~duration)
+  |> Command.run

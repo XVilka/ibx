@@ -18,7 +18,7 @@ let print_last_price ~currency ~symbol =
       return ()
   )
 
-let command =
+let () =
   Command.async_basic ~summary:"Retrieve last stock price"
     Command.Spec.(
       empty
@@ -30,10 +30,5 @@ let command =
       +> anon ("STOCK-SYMBOL" %: string)
     )
     (fun enable_logging host port client_id currency symbol () ->
-      print_last_price ~enable_logging ~host ~port ~client_id ~currency ~symbol
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok () -> return ()
-    )
-
-let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)
+      print_last_price ~enable_logging ~host ~port ~client_id ~currency ~symbol)
+  |> Command.run

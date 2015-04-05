@@ -49,7 +49,7 @@ let run () =
         message (Contract_details.sexp_of_t details |> Sexp.to_string_hum))
   )
 
-let command =
+let () =
   Command.async_basic ~summary:"show contract details"
     Command.Spec.(
       empty
@@ -59,10 +59,5 @@ let command =
       +> Common.client_id_arg ()
     )
     (fun enable_logging host port client_id () ->
-      run ~enable_logging ~host ~port ~client_id ()
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok () -> return ()
-    )
-
-let () = Command.run command
+      run ~enable_logging ~host ~port ~client_id ())
+  |> Command.run

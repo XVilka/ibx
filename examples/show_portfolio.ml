@@ -62,10 +62,5 @@ let command =
       +> Common.client_id_arg ()
     )
     (fun enable_logging host port client_id () ->
-      run ~enable_logging ~host ~port ~client_id ()
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok ()   -> return ()
-    )
-
-let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)
+      run ~enable_logging ~host ~port ~client_id ())
+  |> Command.run

@@ -38,7 +38,7 @@ let plot_taq_data ~duration ~currency ~symbol =
       ; Series.points_timey (List.zip_exn ttms tpxs) ~color:`Blue  ~title:"trades" ];
     Gp.close gp)
 
-let command =
+let () =
   Command.async_basic ~summary:"plot TAQ data"
     Command.Spec.(
       empty
@@ -58,10 +58,5 @@ let command =
         exit 1;
       end else
         plot_taq_data ~enable_logging ~host ~port ~client_id
-          ~duration ~currency ~symbol
-        >>= function
-        | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-        | Ok () -> return ()
-    )
-
-let () = Exn.handle_uncaught ~exit:true (fun () -> Command.run command)
+          ~duration ~currency ~symbol)
+  |> Command.run

@@ -68,7 +68,7 @@ let timeout_arg () =
       ~doc:" timeout on fill (default 5s)"
   )
 
-let command =
+let () =
   Command.async_basic ~summary:"submit market buy order"
     Command.Spec.(
       empty
@@ -79,10 +79,5 @@ let command =
       +> timeout_arg ()
     )
     (fun enable_logging host port client_id timeout () ->
-      run ~enable_logging ~host ~port ~client_id ~timeout
-      >>= function
-      | Error e -> prerr_endline (Error.to_string_hum e); exit 1
-      | Ok () -> return ()
-    )
-
-let () = Command.run command
+      run ~enable_logging ~host ~port ~client_id ~timeout)
+  |> Command.run

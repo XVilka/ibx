@@ -13,7 +13,7 @@ let print_server_time ~port ~host ~client_id =
       >>| fun time ->
       print_endline (Time.to_string_trimmed time ~zone:Time.Zone.local))
 
-let command =
+let () =
   Command.async_basic ~summary:"print server time"
     Command.Spec.(
       empty
@@ -21,6 +21,6 @@ let command =
       +> Common.port_arg ()
       +> Common.client_id_arg ()
     )
-    (fun host port client_id () -> print_server_time ~host ~port ~client_id)
-
-let () = Command.run command
+    (fun host port client_id () ->
+      print_server_time ~host ~port ~client_id)
+  |> Command.run
