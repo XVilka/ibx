@@ -33,7 +33,7 @@ let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
         begin match Tws_error.error_code error with
         | 162 (* query returned no data *)
         | 200 (* No security definition has been found for the request *)
-        | 321 (* Error validaing request *) ->
+        | 321 (* Error validating request *) ->
           Tws.cancel_historical_data tws id
         | _   -> ()
         end;
