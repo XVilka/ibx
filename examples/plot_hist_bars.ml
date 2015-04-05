@@ -44,10 +44,12 @@ let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
         let gp = Gp.create () in
         Gp.set gp ~output:(Output.create ~font:"arial" `Wxt);
         Gp.plot_many gp [
+          (* Create a candlestick chart series. *)
           Series.candlesticks ~title:symbol
             (List.map bars ~f:(fun bar ->
               Historical_bar.(stamp bar, (open_ bar, high bar, low bar, close bar)))
              :> (Time.t * (float * float * float * float)) list);
+          (* Create a moving average time series of the closing prices. *)
           Series.lines_timey ~color:`Green ~title:"SMA 50"
             (List.zip_exn (List.map bars ~f:Historical_bar.stamp)
                (List.map bars ~f:(fun bar ->
