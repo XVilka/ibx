@@ -12,11 +12,6 @@ let () =
       +> Common.client_id_arg ()
     )
     (fun do_log host port client_id () ->
-      let aapl = Contract.stock
-        ~exchange:`BATS
-        ~currency:`USD
-        (Symbol.of_string "AAPL")
-      in
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         don't_wait_for (
           Pipe.iter_without_pushback (Tws.executions tws) ~f:(fun exec ->
@@ -26,10 +21,9 @@ let () =
           Pipe.iter_without_pushback (Tws.commissions tws) ~f:(fun comm ->
             printf "%s\n\n%!" (Sexp.to_string_hum (Commission.sexp_of_t comm)))
         );
-        let buy_market = Order.buy_market ~quantity:100 in
         Tws.submit_order_exn tws
-          ~contract:aapl
-          ~order:buy_market
+          ~order:(Order.buy_market ~quantity:100)
+          ~contract:(Contract.stock (Symbol.of_string "AAPL") ~currency:`USD)
         >>= fun (order_status, oid) ->
         Pipe.iter_without_pushback order_status ~f:(fun status ->
           printf "%s\n\n%!"
