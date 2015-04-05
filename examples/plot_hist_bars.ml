@@ -39,18 +39,18 @@ let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
         end;
         prerr_endline (Tws_error.to_string_hum error)
       | Ok hist_data ->
+        let bars = hist_data.bars in
         let sma50 = List.map ~f:(unstage (Filter.sma ~period:50)) in
         let gp = Gp.create () in
         Gp.set gp ~output:(Output.create ~font:"arial" `Wxt);
         Gp.plot_many gp [
           Series.candlesticks ~title:symbol
-            (List.map hist_data.bars ~f:(fun bar ->
-              Historical_bar.(stamp bar, open_ bar, high bar, low bar, close bar))
-             :> (Time.t * float * float * float * float) list)
-          ; Series.lines_timey ~color:`Green ~title:"SMA 50"
-            (List.zip_exn
-               (List.map hist_data.bars ~f:Historical_bar.stamp)
-               (List.map hist_data.bars ~f:(fun bar ->
+            (List.map bars ~f:(fun bar ->
+              Historical_bar.(stamp bar, (open_ bar, high bar, low bar, close bar)))
+             :> (Time.t * (float * float * float * float)) list);
+          Series.lines_timey ~color:`Green ~title:"SMA 50"
+            (List.zip_exn (List.map bars ~f:Historical_bar.stamp)
+               (List.map bars ~f:(fun bar ->
                  bar |> Historical_bar.close |> Price.to_float) |> sma50))
         ];
         Gp.close gp;
