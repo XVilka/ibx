@@ -432,10 +432,10 @@ module Historical_data : sig
   module Bar : sig
     type t =
       { stamp : Time.t;
-        open_ : Price.t;
-        high : Price.t;
-        low : Price.t;
-        close : Price.t;
+        op : Price.t;
+        hi : Price.t;
+        lo : Price.t;
+        cl : Price.t;
         volume : int;
         wap : Price.t;
         has_gaps : bool;
@@ -446,10 +446,10 @@ module Historical_data : sig
 
     val create
       :  stamp:Time.t
-      -> open_:Price.t
-      -> high:Price.t
-      -> low:Price.t
-      -> close:Price.t
+      -> op:Price.t
+      -> hi:Price.t
+      -> lo:Price.t
+      -> cl:Price.t
       -> volume:int
       -> wap:Price.t
       -> has_gaps:bool
@@ -474,12 +474,12 @@ module Historical_data : sig
 
   module Columns : sig
     type t with sexp
-    val timestamps   : t -> Time.t array
-    val open_prices  : t -> float array
-    val high_prices  : t -> float array
-    val low_prices   : t -> float array
-    val close_prices : t -> float array
-    val volume       : t -> int array
+    val stamps    : t -> Time.t array
+    val op_prices : t -> float array
+    val hi_prices : t -> float array
+    val lo_prices : t -> float array
+    val cl_prices : t -> float array
+    val volumes   : t -> int array
   end
 
   val to_columns : t -> Columns.t
@@ -491,10 +491,10 @@ end
 module Realtime_bar : sig
   type t =
     { stamp : Time.t;
-      open_ : Price.t;
-      high : Price.t;
-      low : Price.t;
-      close : Price.t;
+      op : Price.t;
+      hi : Price.t;
+      lo : Price.t;
+      cl : Price.t;
       volume : int;
       wap : Price.t;
       count : int;
@@ -504,10 +504,10 @@ module Realtime_bar : sig
 
   val create
     :  stamp:Time.t
-    -> open_:Price.t
-    -> high:Price.t
-    -> low:Price.t
-    -> close:Price.t
+    -> op:Price.t
+    -> hi:Price.t
+    -> lo:Price.t
+    -> cl:Price.t
     -> volume:int
     -> wap:Price.t
     -> count:int

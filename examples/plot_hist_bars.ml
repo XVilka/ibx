@@ -47,13 +47,13 @@ let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
           (* Create a candlestick chart series. *)
           Series.candlesticks ~title:symbol
             (List.map bars ~f:(fun bar ->
-              Historical_bar.(stamp bar, (open_ bar, high bar, low bar, close bar)))
+              Historical_bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
              :> (Time.t * (float * float * float * float)) list);
           (* Create a moving average time series of the closing prices. *)
           Series.lines_timey ~color:`Green ~title:"SMA 50"
             (List.zip_exn (List.map bars ~f:Historical_bar.stamp)
                (List.map bars ~f:(fun bar ->
-                 bar |> Historical_bar.close |> Price.to_float) |> sma50))
+                 bar |> Historical_bar.cl |> Price.to_float) |> sma50))
         ];
         Gp.close gp;
         Tws.cancel_historical_data tws id))

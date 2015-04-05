@@ -1391,10 +1391,10 @@ module Historical_data = struct
   module Bar = struct
     type t =
       { stamp : Time.t;
-        open_ : Price.t;
-        high : Price.t;
-        low : Price.t;
-        close : Price.t;
+        op : Price.t;
+        hi : Price.t;
+        lo : Price.t;
+        cl : Price.t;
         volume : int;
         wap : Price.t;
         has_gaps : bool;
@@ -1409,10 +1409,10 @@ module Historical_data = struct
       in
       Fields.for_all
         ~stamp:(use Time.(=))
-        ~open_:(use Price.(=.))
-        ~high:(use Price.(=.))
-        ~low:(use Price.(=.))
-        ~close:(use Price.(=.))
+        ~op:(use Price.(=.))
+        ~hi:(use Price.(=.))
+        ~lo:(use Price.(=.))
+        ~cl:(use Price.(=.))
         ~volume:(use (=))
         ~wap:(use Price.(=.))
         ~has_gaps:(use (=))
@@ -1424,20 +1424,20 @@ module Historical_data = struct
           Fields.fold
             ~init:(empty ())
             ~stamp:(fields_value (required Timestamp.val_type))
-            ~open_:(fields_value (required Price.val_type))
-            ~high:(fields_value (required Price.val_type))
-            ~low:(fields_value (required Price.val_type))
-            ~close:(fields_value (required Price.val_type))
+            ~op:(fields_value (required Price.val_type))
+            ~hi:(fields_value (required Price.val_type))
+            ~lo:(fields_value (required Price.val_type))
+            ~cl:(fields_value (required Price.val_type))
             ~volume:(fields_value (required int))
             ~wap:(fields_value (required Price.val_type))
             ~has_gaps:(fields_value (required string))
             ~count:(fields_value (required int)))
-        (fun stamp open_ high low close volume wap has_gaps count ->
+        (fun stamp op hi lo cl volume wap has_gaps count ->
           { stamp;
-            open_;
-            high;
-            low;
-            close;
+            op;
+            hi;
+            lo;
+            cl;
             volume;
             wap;
             has_gaps = Bool.of_string has_gaps;
@@ -1451,10 +1451,10 @@ module Historical_data = struct
             Fields.fold
               ~init:(empty ())
               ~stamp:(fields_value (required Timestamp.val_type))
-              ~open_:(fields_value (required Price.val_type))
-              ~high:(fields_value (required Price.val_type))
-              ~low:(fields_value (required Price.val_type))
-              ~close:(fields_value (required Price.val_type))
+              ~op:(fields_value (required Price.val_type))
+              ~hi:(fields_value (required Price.val_type))
+              ~lo:(fields_value (required Price.val_type))
+              ~cl:(fields_value (required Price.val_type))
               ~volume:(fields_value (required int))
               ~wap:(fields_value (required Price.val_type))
               ~has_gaps:(fields_value (required string))
@@ -1462,10 +1462,10 @@ module Historical_data = struct
             (fun t ->
               `Args
                 $ t.stamp
-                $ t.open_
-                $ t.high
-                $ t.low
-                $ t.close
+                $ t.op
+                $ t.hi
+                $ t.lo
+                $ t.cl
                 $ t.volume
                 $ t.wap
                 $ Bool.to_string t.has_gaps
@@ -1545,36 +1545,36 @@ module Historical_data = struct
 
   module Columns = struct
     type t =
-      { timestamps : Time.t array;
-        open_prices : float array;
-        high_prices : float array;
-        low_prices : float array;
-        close_prices : float array;
-        volume : int array;
+      { stamps : Time.t array;
+        op_prices : float array;
+        hi_prices : float array;
+        lo_prices : float array;
+        cl_prices : float array;
+        volumes : int array;
       } with sexp, fields
   end
 
   let to_columns t =
-    let timestamps   = Array.create ~len:t.num_bars Time.epoch in
-    let open_prices  = Array.create ~len:t.num_bars Float.nan in
-    let high_prices  = Array.create ~len:t.num_bars Float.nan in
-    let low_prices   = Array.create ~len:t.num_bars Float.nan in
-    let close_prices = Array.create ~len:t.num_bars Float.nan in
-    let volume       = Array.create ~len:t.num_bars 0 in
+    let stamps    = Array.create ~len:t.num_bars Time.epoch in
+    let op_prices = Array.create ~len:t.num_bars Float.nan in
+    let hi_prices = Array.create ~len:t.num_bars Float.nan in
+    let lo_prices = Array.create ~len:t.num_bars Float.nan in
+    let cl_prices = Array.create ~len:t.num_bars Float.nan in
+    let volumes   = Array.create ~len:t.num_bars 0 in
     List.iteri t.bars ~f:(fun i bar ->
-      Array.set timestamps   i bar.Bar.stamp;
-      Array.set open_prices  i (Price.to_float bar.Bar.open_);
-      Array.set high_prices  i (Price.to_float bar.Bar.high);
-      Array.set low_prices   i (Price.to_float bar.Bar.low);
-      Array.set close_prices i (Price.to_float bar.Bar.close);
-      Array.set volume       i bar.Bar.volume);
+      Array.set stamps    i bar.Bar.stamp;
+      Array.set op_prices i (Price.to_float bar.Bar.op);
+      Array.set hi_prices i (Price.to_float bar.Bar.hi);
+      Array.set lo_prices i (Price.to_float bar.Bar.lo);
+      Array.set cl_prices i (Price.to_float bar.Bar.cl);
+      Array.set volumes   i bar.Bar.volume);
     { Columns.
-      timestamps;
-      open_prices;
-      high_prices;
-      low_prices;
-      close_prices;
-      volume;
+      stamps;
+      op_prices;
+      hi_prices;
+      lo_prices;
+      cl_prices;
+      volumes;
     }
 end
 
@@ -1585,10 +1585,10 @@ end
 module Realtime_bar = struct
   type t =
     { stamp : Time.t;
-      open_ : Price.t;
-      high : Price.t;
-      low : Price.t;
-      close : Price.t;
+      op : Price.t;
+      hi : Price.t;
+      lo : Price.t;
+      cl : Price.t;
       volume : int;
       wap : Price.t;
       count : int;
@@ -1602,10 +1602,10 @@ module Realtime_bar = struct
     in
     Fields.for_all
       ~stamp:(use Time.(=))
-      ~open_:(use Price.(=.))
-      ~high:(use Price.(=.))
-      ~low:(use Price.(=.))
-      ~close:(use Price.(=.))
+      ~op:(use Price.(=.))
+      ~hi:(use Price.(=.))
+      ~lo:(use Price.(=.))
+      ~cl:(use Price.(=.))
       ~volume:(use (=))
       ~wap:(use Price.(=.))
       ~count:(use (=))
@@ -1616,19 +1616,19 @@ module Realtime_bar = struct
         Fields.fold
           ~init:(empty ())
           ~stamp:(fields_value (required Timestamp.val_type))
-          ~open_:(fields_value (required Price.val_type))
-          ~high:(fields_value (required Price.val_type))
-          ~low:(fields_value (required Price.val_type))
-          ~close:(fields_value (required Price.val_type))
+          ~op:(fields_value (required Price.val_type))
+          ~hi:(fields_value (required Price.val_type))
+          ~lo:(fields_value (required Price.val_type))
+          ~cl:(fields_value (required Price.val_type))
           ~volume:(fields_value (required int))
           ~wap:(fields_value (required Price.val_type))
           ~count:(fields_value (required int)))
-      (fun stamp open_ high low close volume wap count ->
+      (fun stamp op hi lo cl volume wap count ->
           { stamp;
-            open_;
-            high;
-            low;
-            close;
+            op;
+            hi;
+            lo;
+            cl;
             volume;
             wap;
             count;
@@ -1641,20 +1641,20 @@ module Realtime_bar = struct
           Fields.fold
             ~init:(empty ())
             ~stamp:(fields_value (required Timestamp.val_type))
-            ~open_:(fields_value (required Price.val_type))
-            ~high:(fields_value (required Price.val_type))
-            ~low:(fields_value (required Price.val_type))
-            ~close:(fields_value (required Price.val_type))
+            ~op:(fields_value (required Price.val_type))
+            ~hi:(fields_value (required Price.val_type))
+            ~lo:(fields_value (required Price.val_type))
+            ~cl:(fields_value (required Price.val_type))
             ~volume:(fields_value (required int))
             ~wap:(fields_value (required Price.val_type))
             ~count:(fields_value (required int)))
           (fun t ->
             `Args
               $ t.stamp
-              $ t.open_
-              $ t.high
-              $ t.low
-              $ t.close
+              $ t.op
+              $ t.hi
+              $ t.lo
+              $ t.cl
               $ t.volume
               $ t.wap
               $ t.count)))

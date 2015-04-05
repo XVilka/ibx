@@ -1162,10 +1162,10 @@ end = struct
     let bar_g () =
       Response.Historical_data.Bar.create
         ~stamp:(tmg ())
-        ~open_:(price_g ())
-        ~high:(price_g ())
-        ~low:(price_g ())
-        ~close:(price_g ())
+        ~op:(price_g ())
+        ~hi:(price_g ())
+        ~lo:(price_g ())
+        ~cl:(price_g ())
         ~volume:(nng ())
         ~wap:(price_g ())
         ~has_gaps:(bg ())
@@ -1181,10 +1181,10 @@ end = struct
   let realtime_bar_g () =
     Response.Realtime_bar.create
       ~stamp:(tmg ())
-      ~open_:(price_g ())
-      ~high:(price_g ())
-      ~low:(price_g ())
-      ~close:(price_g ())
+      ~op:(price_g ())
+      ~hi:(price_g ())
+      ~lo:(price_g ())
+      ~cl:(price_g ())
       ~volume:(nng ())
       ~wap:(price_g ())
       ~count:(nng ())
