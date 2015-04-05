@@ -10,31 +10,32 @@ let plot_taq_data ~duration ~currency ~symbol =
     let stock = Contract.stock ~currency (Symbol.of_string symbol) in
     Tws.taq_data_exn tws ~contract:stock
     >>= fun (taq_data, id) ->
-    upon (Clock.after duration) (fun () -> Tws.cancel_quotes tws id);
-    Pipe.fold taq_data ~init:([], [], [], [], [])
-      ~f:(fun (ttms, tpxs, qtms, asks, bids) taq_record ->
+    upon (Clock.after duration) (fun () ->
+      Tws.cancel_quotes tws id
+    );
+    Pipe.fold taq_data ~init:([], [], [])
+      ~f:(fun (bids, asks, trades) taq_record ->
         if !verbose then Format.printf "@[%a@]@\n%!" TAQ.pp taq_record;
         return (match taq_record with
         | TAQ.Trade trade ->
-          Trade.time  trade :: ttms,
-          Trade.price trade :: tpxs,
-          qtms, asks, bids
+          bids, asks,
+          Trade.(time trade, price trade) :: trades
         | TAQ.Quote quote ->
-          ttms, tpxs,
-          Quote.time      quote :: qtms,
-          Quote.ask_price quote :: asks,
-          Quote.bid_price quote :: bids))
-    >>| fun (ttms, tpxs, qtms, asks, bids) ->
-    let ttms = List.rev ttms in
-    let qtms = List.rev qtms in
-    let tpxs = List.rev (tpxs : Price.t list :> float list) in
-    let asks = List.rev (asks : Price.t list :> float list) in
-    let bids = List.rev (bids : Price.t list :> float list) in
+          Quote.(time quote, bid_price quote) :: bids,
+          Quote.(time quote, ask_price quote) :: asks,
+          trades
+        )
+      )
+    >>| fun (bids, asks, trades) ->
+    (* Reverse accumulated quotes and trades and use coercion on price types. *)
+    let bids = List.rev (bids : ('t * Price.t) list :> ('t * float) list) in
+    let asks = List.rev (asks : ('t * Price.t) list :> ('t * float) list) in
+    let trades = List.rev (trades : ('t * Price.t) list :> ('t * float) list) in
     let gp = Gp.create () in
     Gp.plot_many gp
-      [ Series.steps_timey  (List.zip_exn qtms bids) ~color:`Green ~title:"bid"
-      ; Series.steps_timey  (List.zip_exn qtms asks) ~color:`Red   ~title:"ask"
-      ; Series.points_timey (List.zip_exn ttms tpxs) ~color:`Blue  ~title:"trades" ];
+      [ Series.steps_timey bids ~title:"bid" ~color:`Green
+      ; Series.steps_timey asks ~title:"ask" ~color:`Red
+      ; Series.points_timey trades ~title:"trades" ~color:`Blue ];
     Gp.close gp)
 
 let () =
