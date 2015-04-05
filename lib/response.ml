@@ -1543,7 +1543,7 @@ module Historical_data = struct
               $ t.num_bars
               $ bars_msg)))
 
-  module Columns = struct
+  module Data_frame = struct
     type t =
       { stamps : Time.t array;
         op_prices : float array;
@@ -1554,7 +1554,7 @@ module Historical_data = struct
       } with sexp, fields
   end
 
-  let to_columns t =
+  let to_data_frame t =
     let stamps    = Array.create ~len:t.num_bars Time.epoch in
     let op_prices = Array.create ~len:t.num_bars Float.nan in
     let hi_prices = Array.create ~len:t.num_bars Float.nan in
@@ -1568,7 +1568,7 @@ module Historical_data = struct
       Array.set lo_prices i (bar.Bar.lo :> float);
       Array.set cl_prices i (bar.Bar.cl :> float);
       Array.set volumes   i bar.Bar.volume);
-    { Columns.
+    { Data_frame.
       stamps;
       op_prices;
       hi_prices;

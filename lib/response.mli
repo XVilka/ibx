@@ -472,7 +472,7 @@ module Historical_data : sig
     -> bars:Bar.t list
     -> t
 
-  module Columns : sig
+  module Data_frame : sig
     type t with sexp
     val stamps    : t -> Time.t array
     val op_prices : t -> float array
@@ -482,7 +482,7 @@ module Historical_data : sig
     val volumes   : t -> int array
   end
 
-  val to_columns : t -> Columns.t
+  val to_data_frame : t -> Data_frame.t
 end
 
 (** {1 Realtime bars} *)
