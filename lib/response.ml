@@ -1563,10 +1563,10 @@ module Historical_data = struct
     let volumes   = Array.create ~len:t.num_bars 0 in
     List.iteri t.bars ~f:(fun i bar ->
       Array.set stamps    i bar.Bar.stamp;
-      Array.set op_prices i (Price.to_float bar.Bar.op);
-      Array.set hi_prices i (Price.to_float bar.Bar.hi);
-      Array.set lo_prices i (Price.to_float bar.Bar.lo);
-      Array.set cl_prices i (Price.to_float bar.Bar.cl);
+      Array.set op_prices i (bar.Bar.op :> float);
+      Array.set hi_prices i (bar.Bar.hi :> float);
+      Array.set lo_prices i (bar.Bar.lo :> float);
+      Array.set cl_prices i (bar.Bar.cl :> float);
       Array.set volumes   i bar.Bar.volume);
     { Columns.
       stamps;
