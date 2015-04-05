@@ -6,7 +6,7 @@ open Gnuplot
 let verbose = ref true
 
 let plot_taq_data ~duration ~currency ~symbol =
-  Common.with_tws_client (fun tws ->
+  Common.with_tws (fun tws ->
     let stock = Contract.stock ~currency (Symbol.of_string symbol) in
     Tws.taq_data_exn tws ~contract:stock
     >>= fun (taq_data, id) ->

@@ -20,7 +20,7 @@ let make_tick_printer ~id ~symbol ~color = stage (fun tick ->
   return ())
 
 let print_market_data ~duration =
-  Common.with_tws_client (fun tws ->
+  Common.with_tws (fun tws ->
     let print_ticks symbol color =
       let stock = Contract.stock ~currency:`USD symbol in
       Tws.contract_details_exn tws ~contract:stock

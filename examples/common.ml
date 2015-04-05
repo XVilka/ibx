@@ -2,7 +2,7 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-let with_tws_client ~do_log ~host ~port ~client_id f =
+let with_tws ~do_log ~host ~port ~client_id f =
   if do_log then begin
     let basedir = Core.Std.Unix.getcwd () in
     let logfile = basedir ^/ "ibx.log" in

@@ -17,7 +17,7 @@ let () =
         ~currency:`USD
         (Symbol.of_string "AAPL")
       in
-      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         don't_wait_for (
           Pipe.iter_without_pushback (Tws.executions tws) ~f:(fun exec ->
             printf "%s\n\n%!" (Sexp.to_string_hum (Execution.sexp_of_t exec)))

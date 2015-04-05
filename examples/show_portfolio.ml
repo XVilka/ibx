@@ -54,7 +54,7 @@ let () =
       +> Common.client_id_arg ()
     )
     (fun do_log host port client_id () ->
-      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Tws.portfolio_updates_exn tws
         >>= fun updates -> Pipe.to_list updates >>| show_portfolio
       )

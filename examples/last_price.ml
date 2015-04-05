@@ -3,7 +3,7 @@ open Async.Std
 open Ibx.Std
 
 let print_last_price ~currency ~symbol =
-  Common.with_tws_client (fun tws ->
+  Common.with_tws (fun tws ->
     let stock = Contract.stock ~currency (Symbol.of_string symbol) in
     Tws.trade_snapshot tws ~contract:stock
     >>= function

@@ -38,7 +38,7 @@ let run ~timeout =
     (Symbol.of_string "IBM")
   in
   let num_shares = 100 in
-  Common.with_tws_client (fun tws ->
+  Common.with_tws (fun tws ->
     Tws.quote_snapshot_exn tws ~contract:ibm
     >>= fun snapshot ->
     let ask_price = Quote_snapshot.ask_price snapshot in

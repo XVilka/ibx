@@ -15,7 +15,7 @@ let () =
       +> anon ("STOCK-SYMBOL" %: string)
     )
     (fun do_log host port client_id duration currency symbol () ->
-      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         let stock = Contract.stock ~currency (Symbol.of_string symbol) in
         Tws.market_depth_exn tws ~contract:stock
         >>= fun (book_updates, id) ->

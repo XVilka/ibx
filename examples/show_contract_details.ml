@@ -41,7 +41,7 @@ let () =
       +> Common.client_id_arg ()
     )
     (fun do_log host port client_id () ->
-      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Deferred.List.iter contracts ~f:(fun contract ->
           let symbol = Symbol.to_string (Contract.symbol contract) in
           let message s =

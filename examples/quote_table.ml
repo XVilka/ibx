@@ -34,7 +34,7 @@ let () =
       +> Common.client_id_arg ()
     )
     (fun do_log host port client_id () ->
-      Common.with_tws_client ~do_log ~host ~port ~client_id (fun tws ->
+      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
           let stock = Contract.stock
             ~exchange:`SMART

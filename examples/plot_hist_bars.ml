@@ -20,7 +20,7 @@ module Filter = struct
 end
 
 let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
-  Common.with_tws_client (fun tws ->
+  Common.with_tws (fun tws ->
     Tws.historical_data tws ~bar_span ~bar_size
       ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
     >>= function
