@@ -26,21 +26,19 @@ let show_portfolio updates =
     Ascii_table.Column.create ~align:Ascii_table.Align.right
       "Market Price"
       (fun update ->
-        sprintf "%4.2f" (P.market_price update |> Price.to_float));
+        sprintf "%4.2f" (P.market_price update :> float));
     Ascii_table.Column.create ~align:Ascii_table.Align.right
       "Market Value"
       (fun update ->
-        sprintf "%4.2f" (P.market_value update |> Price.to_float));
+        sprintf "%4.2f" (P.market_value update :> float));
     Ascii_table.Column.create ~align:Ascii_table.Align.right
       "Avg Cost"
       (fun update ->
-        sprintf "%4.2f" (P.average_cost update |> Price.to_float));
+        sprintf "%4.2f" (P.average_cost update :> float));
     Ascii_table.Column.create ~align:Ascii_table.Align.right
       "Total P&L"
-      (fun update ->
-        sprintf "%4.2f"
-          (Price.to_float (P.realized_pnl update) +.
-           Price.to_float (P.unrealized_pnl update)));
+      (fun update -> sprintf "%4.2f"
+        ((P.realized_pnl update :> float) +. (P.unrealized_pnl update :> float)));
   ] updates
 ;;
 
