@@ -80,6 +80,7 @@ val server_version : t -> int option
 
 val connection_time : t -> Time.t option
 
+val account_code : t -> Account_code.t option
 
 (** {1 Market data} *)
 (******************************************************************************)
