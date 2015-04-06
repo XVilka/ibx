@@ -19,45 +19,6 @@ module Filter = struct
       !sum /. float (Queue.length q))
 end
 
-let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
-  Common.with_tws (fun tws ->
-    Tws.historical_data tws ~bar_span ~bar_size
-      ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
-    >>= function
-    | Error e ->
-      prerr_endline (Error.to_string_hum e);
-      return ()
-    | Ok (reader, id) ->
-      Pipe.iter_without_pushback reader ~f:(function
-      | Error error ->
-        begin match Tws_error.error_code error with
-        | 162 (* query returned no data *)
-        | 200 (* No security definition has been found for the request *)
-        | 321 (* Error validating request *) ->
-          Tws.cancel_historical_data tws id
-        | _   -> ()
-        end;
-        prerr_endline (Tws_error.to_string_hum error)
-      | Ok hist_data ->
-        let bars = hist_data.bars in
-        let sma50 = List.map ~f:(unstage (Filter.sma ~period:50)) in
-        let gp = Gp.create () in
-        Gp.plot_many gp [
-          (* Create a candlestick chart series. *)
-          Series.candlesticks ~title:symbol
-            (List.map bars ~f:(fun bar ->
-              Historical_bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
-             :> (Time.t * (float * float * float * float)) list);
-          (* Create a moving average time series of the closing prices. *)
-          Series.lines_timey ~color:`Green ~title:"SMA 50"
-            (List.zip_exn (List.map bars ~f:Historical_bar.stamp)
-               (List.map bars ~f:(fun bar ->
-                 bar |> Historical_bar.cl |> Price.to_float) |> sma50))
-        ];
-        Gp.close gp;
-        Tws.cancel_historical_data tws id))
-;;
-
 let () =
   Command.async_or_error ~summary:"plot historical bars"
     Command.Spec.(
@@ -72,6 +33,23 @@ let () =
       +> anon ("STOCK-SYMBOL" %: string)
     )
     (fun do_log host port client_id currency bar_span bar_size symbol () ->
-      plot_hist_bars ~do_log ~host ~port ~client_id ~currency
-        ~bar_span ~bar_size ~symbol)
+      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
+        Tws.historical_data_exn tws ~bar_span ~bar_size
+          ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
+        >>| fun hist_data ->
+        let sma50 = unstage (Filter.sma ~period:50) in
+        let gp = Gp.create () in
+        Gp.plot_many gp [
+          (* Create a candlestick chart series. *)
+          Series.candlesticks ~title:symbol
+            (List.map hist_data.bars ~f:(fun bar ->
+              Historical_bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
+             :> (Time.t * (float * float * float * float)) list);
+          (* Create a moving average time series of the closing prices. *)
+          Series.lines_timey ~color:`Green ~title:"SMA 50"
+            (List.map hist_data.bars ~f:(fun bar ->
+              Historical_bar.(stamp bar, sma50 (cl bar :> float)))) ];
+        Gp.close gp
+      )
+    )
   |> Command.run
