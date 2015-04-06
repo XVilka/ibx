@@ -26,8 +26,7 @@ let () =
           ~contract:(Contract.stock (Symbol.of_string "AAPL") ~currency:`USD)
         >>= fun (order_status, oid) ->
         Pipe.iter_without_pushback order_status ~f:(fun status ->
-          printf "%s\n\n%!"
-            (Sexp.to_string_hum (Order_status.sexp_of_t status));
+          printf "%s\n\n%!" (Order_status.sexp_of_t status |> Sexp.to_string_hum);
           begin
             match Order_status.state status with
             | `Filled ->
