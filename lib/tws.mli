@@ -283,9 +283,38 @@ val historical_data
   -> ?until:Time.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Historical_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> Historical_data.t Tws_result.t Or_error.t Deferred.t
 
-val cancel_historical_data : t -> Query_id.t -> unit
+val historical_data_exn
+  :  ?bar_size:[
+  | `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
+  | `One_min | `Two_mins | `Three_mins | `Five_mins | `Fifteen_mins | `Thirty_mins
+  | `One_hour
+  | `One_day
+  ] (* defaults to One_day *)
+  -> ?bar_span:[
+  | `Sec of int
+  | `Day of int
+  | `Week of int
+  | `Month of int
+  | `Year
+  ] (* defaults to Year *)
+  -> ?use_rth:bool
+  -> ?show:[
+  | `Trades
+  | `Midpoint
+  | `Bid
+  | `Ask
+  | `Bid_ask
+  | `Historical_volatility
+  | `Implied_volatility
+  | `Option_volume
+  ]
+  -> ?until:Time.t
+  -> t
+  -> contract:[< Security_type.t ] Contract.t
+  -> Historical_data.t Deferred.t
+
 
 (** {1 Realtime bars} *)
 (******************************************************************************)

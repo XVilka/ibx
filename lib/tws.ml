@@ -531,13 +531,20 @@ let historical_data
   with_connection t ~f:(fun con ->
     let q = Query.Historical_data.create ~contract ~end_date_time:until
       ~bar_size ~bar_span ~use_rth ~show in
-    Ib.Streaming_request.dispatch Tws_reqs.req_historical_data con q
+    dispatch_and_cancel Tws_reqs.req_historical_data con q
   )
 
-let cancel_historical_data t id =
-  with_connection_unit t ~f:(fun con ->
-    Ib.Streaming_request.cancel Tws_reqs.req_historical_data con id
-  )
+let historical_data_exn
+    ?(bar_size = `One_day)
+    ?(bar_span = `Year)
+    ?(use_rth = true)
+    ?(show = `Trades)
+    ?(until = Time.now ())
+    t ~contract =
+  historical_data t ~bar_size ~bar_span ~use_rth ~show ~until ~contract
+  >>| function
+  | Error e -> raise (Error.to_exn e)
+  | Ok result -> Tws_result.ok_exn result
 
 (* +-----------------------------------------------------------------------+
    | Realtime bars                                                         |
