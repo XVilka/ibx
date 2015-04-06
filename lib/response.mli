@@ -281,6 +281,10 @@ module Portfolio_update : sig
     -> realized_pnl:Price.t
     -> account_code:Account_code.t
     -> t
+
+  (** [return update] calculates the return of a portfolio [update], ie
+      sign(position) * (market_value / (average_cost * position) - 1) *)
+  val return : t -> float
 end
 
 (** {1 Contract details} *)

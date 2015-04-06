@@ -764,6 +764,13 @@ module Portfolio_update = struct
 
   let create = Fields.create
 
+  let return t =
+    let mkt_value = (t.market_value :> float) in
+    let position = float t.position in
+    let avg_cost = (t.average_cost :> float) in
+    let sign x = if x < 0. then -.1. else 1. in
+    sign position *. (mkt_value /. (avg_cost *. position) -. 1.)
+
   let ( = ) t1 t2 : bool =
     let use op = fun field ->
       op (Field.get field t1) (Field.get field t2)
