@@ -815,7 +815,12 @@ module Streaming_request = struct
               Pipe.close pipe_w;
               return (`Die err)
             | Ok tws_error ->
-              don't_wait_for (Pipe.write pipe_w (Error tws_error));
+              if not (Pipe.is_closed pipe_w) then begin
+                (* Pipes are closed after cancellations of streaming
+                   requests and write calls must be guarded against
+                   subsequent incoming messages. *)
+                don't_wait_for (Pipe.write pipe_w (Error tws_error));
+              end;
               Ivar.fill_if_empty ivar (Ok (pipe_r, query_id));
               return `Keep
           end)
