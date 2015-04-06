@@ -25,7 +25,7 @@ let print_quote_table quotes =
 let symbols = ["AAPL";"AMZN";"CSCO";"FB";"GOOG";"IBM";"MSFT";"ORCL";"SAP";"YHOO"]
 
 let () =
-  Command.async_basic ~summary:" print market data"
+  Command.async_or_error ~summary:" print market data"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

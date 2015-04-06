@@ -59,7 +59,7 @@ let plot_hist_bars ~bar_span ~bar_size ~currency ~symbol =
 ;;
 
 let () =
-  Command.async_basic ~summary:"plot historical bars"
+  Command.async_or_error ~summary:"plot historical bars"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

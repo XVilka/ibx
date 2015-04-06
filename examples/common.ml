@@ -18,13 +18,10 @@ let with_tws ~do_log ~host ~port ~client_id f =
       ~on_handler_error:`Raise
       (fun tws -> f tws)
   )
-  >>= fun result ->
+  >>| fun result ->
   match result with
-  | Ok () -> return ()
-  | Error exn ->
-    let error = Monitor.extract_exn exn |> Error.of_exn in
-    prerr_endline (Error.to_string_hum error);
-    exit 1
+  | Ok _ as x -> x
+  | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
 ;;
 
 

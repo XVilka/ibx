@@ -32,7 +32,7 @@ let contracts : Security_type.t Contract.t list = [
 ]
 
 let () =
-  Command.async_basic ~summary:"show contract details"
+  Command.async_or_error ~summary:"show contract details"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

@@ -3,7 +3,7 @@ open Async.Std
 open Ibx.Std
 
 let () =
-  Command.async_basic ~summary:"print account updates"
+  Command.async_or_error ~summary:"print account updates"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

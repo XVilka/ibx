@@ -43,7 +43,7 @@ let show_portfolio updates =
 ;;
 
 let () =
-  Command.async_basic ~summary:"show portfolio"
+  Command.async_or_error ~summary:"show portfolio"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

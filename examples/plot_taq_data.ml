@@ -36,10 +36,11 @@ let plot_taq_data ~duration ~currency ~symbol =
       [ Series.steps_timey bids ~title:"bid" ~color:`Green
       ; Series.steps_timey asks ~title:"ask" ~color:`Red
       ; Series.points_timey trades ~title:"trades" ~color:`Blue ];
-    Gp.close gp)
+    Gp.close gp
+  )
 
 let () =
-  Command.async_basic ~summary:"plot TAQ data"
+  Command.async_or_error ~summary:"plot TAQ data"
     Command.Spec.(
       empty
       +> Common.logging_flag ()
@@ -53,9 +54,8 @@ let () =
     )
     (fun do_log quiet host port client_id duration currency symbol () ->
       verbose := not quiet;
-      if Time.Span.(duration > minute) then begin
-        prerr_endline "Maximum duration is 1 minute";
-        exit 1;
-      end else
+      if Time.Span.(duration > minute) then
+        return (Or_error.error_string "Maximum duration is 1 minute")
+      else
         plot_taq_data ~do_log ~host ~port ~client_id ~duration ~currency ~symbol)
   |> Command.run

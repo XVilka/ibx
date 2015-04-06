@@ -3,7 +3,7 @@ open Async.Std
 open Ibx.Std
 
 let () =
-  Command.async_basic ~summary:"submit market buy order for AAPL"
+  Command.async_or_error ~summary:"submit market buy order for AAPL"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

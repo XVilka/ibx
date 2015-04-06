@@ -69,7 +69,7 @@ let timeout_arg () =
   )
 
 let () =
-  Command.async_basic ~summary:"submit market buy order"
+  Command.async_or_error ~summary:"submit market buy order"
     Command.Spec.(
       empty
       +> Common.logging_flag ()

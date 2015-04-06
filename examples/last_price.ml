@@ -3,7 +3,7 @@ open Async.Std
 open Ibx.Std
 
 let () =
-  Command.async_basic ~summary:"Retrieve last stock price"
+  Command.async_or_error ~summary:"Retrieve last stock price"
     Command.Spec.(
       empty
       +> Common.logging_flag ()
