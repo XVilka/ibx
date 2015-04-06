@@ -850,9 +850,9 @@ module Streaming_request = struct
                   return (`Die err)
                 | Ok response ->
                   if not (Pipe.is_closed pipe_w) then begin
-                    (* We guard this write call to protect us against
-                       incoming messages after a cancelation, causing
-                       a write call to a closed pipe. *)
+                    (* Pipes are closed after cancellations of streaming
+                       requests and write calls must be guarded against
+                       subsequent incoming messages. *)
                     don't_wait_for (Pipe.write pipe_w (Ok response))
                   end;
                   return `Keep
