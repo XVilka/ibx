@@ -31,7 +31,7 @@ let show_portfolio positions =
         sprintf "%4.2f" (P.average_cost pos :> float));
     Column.create "Total P&L" ~align:Align.right
       (fun pos ->
-        sprintf "%4.2f" (P.(realized_pnl pos + unrealized_pnl pos) :> float));
+        sprintf "%4.2f" (P.total_pnl pos :> float));
   ] positions)
 ;;
 
