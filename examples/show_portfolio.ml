@@ -7,7 +7,7 @@ module Ascii_table = Textutils.Ascii_table
 let show_portfolio positions =
   let open Price in
   let module P = Portfolio_position in
-  Ascii_table.(output ~oc:stdout ~limit_width_to:120 [
+  Ascii_table.(output ~oc:stdout ~limit_width_to:130 [
     Column.create "Contract" ~align:Align.left
       (fun pos ->
         sprintf "%s" (P.contract pos |> Contract.to_string));
@@ -32,6 +32,9 @@ let show_portfolio positions =
     Column.create "Total P&L" ~align:Align.right
       (fun pos ->
         sprintf "%4.2f" (P.total_pnl pos :> float));
+    Column.create "Return" ~align:Align.right
+      (fun pos ->
+        sprintf "%2.2f %%" (P.return pos *. 100.));
   ] positions)
 ;;
 
