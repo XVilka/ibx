@@ -440,12 +440,12 @@ let account_updates t =
 
 let account_updates_exn t = account_updates t >>| Or_error.ok_exn
 
-let portfolio_updates t =
+let portfolio_positions t =
   updates_gen t
     Tws_reqs.req_portfolio_updates
-    Query.Portfolio_updates.create
+    Query.Portfolio_positions.create
 
-let portfolio_updates_exn t = portfolio_updates t >>| Or_error.ok_exn
+let portfolio_positions_exn t = portfolio_positions t >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |

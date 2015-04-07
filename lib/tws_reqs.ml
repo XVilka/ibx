@@ -106,7 +106,7 @@ let req_account_updates = Ib.Streaming_request_without_id.create
   ]
   ~skip_header:[
     Ib.Header.create ~tag:R.Account_update_time ~version:1;
-    Ib.Header.create ~tag:R.Portfolio_update ~version:7;
+    Ib.Header.create ~tag:R.Portfolio_position ~version:7;
   ]
   ~tws_query:Query.Account_updates.pickler
   ~tws_response:[
@@ -117,16 +117,16 @@ let req_account_updates = Ib.Streaming_request_without_id.create
 let req_portfolio_updates = Ib.Streaming_request_without_id.create
   ~send_header:(Ib.Header.create ~tag:S.Account_data ~version:2)
   ~recv_header:[
-    Ib.Header.create ~tag:R.Portfolio_update ~version:7;
+    Ib.Header.create ~tag:R.Portfolio_position ~version:7;
     Ib.Header.create ~tag:R.Account_download_end ~version:1;
   ]
   ~skip_header:[
     Ib.Header.create ~tag:R.Account_update ~version:2;
     Ib.Header.create ~tag:R.Account_update_time ~version:1;
   ]
-  ~tws_query:Query.Portfolio_updates.pickler
+  ~tws_query:Query.Portfolio_positions.pickler
   ~tws_response:[
-    U.map Response.Portfolio_update.unpickler ~f:(fun x -> `Update x);
+    U.map Response.Portfolio_position.unpickler ~f:(fun x -> `Update x);
     U.map Account_code.unpickler ~f:(fun x -> `Update_end x);
   ] ()
 

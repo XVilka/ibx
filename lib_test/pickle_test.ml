@@ -82,8 +82,8 @@ module Query = struct
       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.account_updates);
 
     (fun () ->
-      let module Q = Query.Portfolio_updates in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.portfolio_updates);
+      let module Q = Query.Portfolio_positions in
+      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.portfolio_positions);
 
     (* ============================ Executions ============================= *)
 
@@ -170,8 +170,8 @@ module Response = struct
       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.account_update_g);
 
     (fun () ->
-      let module R = Response.Portfolio_update in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.portfolio_update_g);
+      let module R = Response.Portfolio_position in
+      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.portfolio_position_g);
 
     (* ========================= Contract details ========================== *)
 

@@ -149,21 +149,21 @@ let suite = "Client" >::: [
     )
   );
 
-  "portfolio-updates" >:: (fun () ->
+  "portfolio-positions" >:: (fun () ->
     with_tws_client (fun tws ->
-      let module R = Response.Portfolio_update in
-      let gen_portfolio_updates = Lazy.force Gen.portfolio_updates in
-      Tws.portfolio_updates_exn tws
+      let module R = Response.Portfolio_position in
+      let gen_portfolio_positions = Lazy.force Gen.portfolio_positions in
+      Tws.portfolio_positions_exn tws
       >>= fun reader ->
       Pipe.read_all reader
       >>| fun result ->
-      List.iter2_exn gen_portfolio_updates (Queue.to_list result)
-        ~f:(fun gen_portfolio_update portfolio_update ->
+      List.iter2_exn gen_portfolio_positions (Queue.to_list result)
+        ~f:(fun gen_portfolio_position portfolio_position ->
           assert_response_equal
             (module R : Response_intf.S with type t = R.t)
-            ~expected:gen_portfolio_update
-            ~actual:portfolio_update;
-          Log.Global.sexp ~level:`Debug portfolio_update R.sexp_of_t)
+            ~expected:gen_portfolio_position
+            ~actual:portfolio_position;
+          Log.Global.sexp ~level:`Debug portfolio_position R.sexp_of_t)
     )
   );
 

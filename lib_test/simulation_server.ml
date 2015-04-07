@@ -417,11 +417,11 @@ module Message_generator = struct
                 query_id = None;
                 data     = to_tws pickler x;
               }))
-            (List.map (Lazy.force Gen.portfolio_updates) ~f:(fun x ->
-              let pickler = Only_in_test.force R.Portfolio_update.pickler in
+            (List.map (Lazy.force Gen.portfolio_positions) ~f:(fun x ->
+              let pickler = Only_in_test.force R.Portfolio_position.pickler in
               E.Server_response {
                 Response.
-                tag      = V.Portfolio_update;
+                tag      = V.Portfolio_position;
                 version  = 7;
                 query_id = None;
                 data     = to_tws pickler x;

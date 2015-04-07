@@ -118,7 +118,7 @@ module Account_updates : sig
     -> t
 end
 
-module Portfolio_updates : sig
+module Portfolio_positions : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create

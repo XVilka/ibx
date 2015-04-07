@@ -257,10 +257,10 @@ module Account_update : sig
     -> t
 end
 
-module Portfolio_update : sig
+module Portfolio_position : sig
   type t = private
     { contract : Security_type.t Contract.t;
-      position : int;
+      amount : int;
       market_price : Price.t;
       market_value : Price.t;
       average_cost : Price.t;
@@ -273,7 +273,7 @@ module Portfolio_update : sig
 
   val create
     :  contract:Security_type.t Contract.t
-    -> position:int
+    -> amount:int
     -> market_price:Price.t
     -> market_value:Price.t
     -> average_cost:Price.t
@@ -282,7 +282,7 @@ module Portfolio_update : sig
     -> account_code:Account_code.t
     -> t
 
-  (** [return update] calculates the return of a portfolio [update], ie
+  (** [return position] calculates the return of a portfolio [position], ie
       sign(position) * (market_value / (average_cost * position) - 1) *)
   val return : t -> float
 end

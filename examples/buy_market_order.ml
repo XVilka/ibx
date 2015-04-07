@@ -34,10 +34,11 @@ let () =
             | _ -> ()
           end)
         >>= fun () ->
-        Tws.portfolio_updates_exn tws
-        >>= fun updates ->
-        Pipe.iter_without_pushback updates ~f:(fun update ->
-          print_endline (Portfolio_update.sexp_of_t update |> Sexp.to_string_hum)
+        Tws.portfolio_positions_exn tws
+        >>= fun positions ->
+        Pipe.iter_without_pushback positions ~f:(fun position ->
+          print_endline
+            (Portfolio_position.sexp_of_t position |> Sexp.to_string_hum)
         )
       )
     )

@@ -194,9 +194,9 @@ val account_updates : t -> Account_update.t Pipe.Reader.t Or_error.t Deferred.t
 
 val account_updates_exn : t -> Account_update.t Pipe.Reader.t Deferred.t
 
-val portfolio_updates : t -> Portfolio_update.t Pipe.Reader.t Or_error.t Deferred.t
+val portfolio_positions: t -> Portfolio_position.t Pipe.Reader.t Or_error.t Deferred.t
 
-val portfolio_updates_exn : t -> Portfolio_update.t Pipe.Reader.t Deferred.t
+val portfolio_positions_exn : t -> Portfolio_position.t Pipe.Reader.t Deferred.t
 
 val commissions : t -> Commission.t Pipe.Reader.t
 

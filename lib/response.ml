@@ -750,10 +750,10 @@ module Account_update = struct
           (fun t -> `Args $ t.key $ t.value $ t.currency $ t.account_code)))
 end
 
-module Portfolio_update = struct
+module Portfolio_position = struct
   type t =
     { contract : Security_type.t Contract.t;
-      position : int;
+      amount : int;
       market_price : Price.t;
       market_value : Price.t;
       average_cost : Price.t;
@@ -766,7 +766,7 @@ module Portfolio_update = struct
 
   let return t =
     let mkt_value = (t.market_value :> float) in
-    let position = float t.position in
+    let position = float t.amount in
     let avg_cost = (t.average_cost :> float) in
     let sign x = if x < 0. then -.1. else 1. in
     sign position *. (mkt_value /. (avg_cost *. position) -. 1.)
@@ -777,7 +777,7 @@ module Portfolio_update = struct
     in
     Fields.for_all
       ~contract:(use Contract.(=))
-      ~position:(use (=))
+      ~amount:(use (=))
       ~market_price:(use Price.(=.))
       ~market_value:(use Price.(=.))
       ~average_cost:(use Price.(=.))
@@ -789,22 +789,22 @@ module Portfolio_update = struct
     let contract_spec =
       Raw_contract.Unpickler_specs.portfolio_update_response ()
     in
-    Unpickler.create ~name:"Response.Portfolio_update"
+    Unpickler.create ~name:"Response.Portfolio_position"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-          ~position:(fields_value (required int))
+          ~amount:(fields_value (required int))
           ~market_price:(fields_value (required Price.val_type))
           ~market_value:(fields_value (required Price.val_type))
           ~average_cost:(fields_value (required Price.val_type))
           ~unrealized_pnl:(fields_value (required Price.val_type))
           ~realized_pnl:(fields_value (required Price.val_type))
           ~account_code:(fields_value (required Account_code.val_type)))
-      (fun contract position market_price market_value average_cost
+      (fun contract amount market_price market_value average_cost
         unrealized_pnl realized_pnl account_code ->
           { contract = Contract.of_raw contract;
-            position;
+            amount;
             market_price;
             market_value;
             average_cost;
@@ -817,13 +817,13 @@ module Portfolio_update = struct
     let contract_spec =
       Raw_contract.Pickler_specs.portfolio_update_response ()
     in
-    Pickler.create ~name:"Response.Portfolio_value"
+    Pickler.create ~name:"Response.Portfolio_position"
       Pickler.Spec.(
         wrap (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-            ~position:(fields_value (required int))
+            ~amount:(fields_value (required int))
             ~market_price:(fields_value (required Price.val_type))
             ~market_value:(fields_value (required Price.val_type))
             ~average_cost:(fields_value (required Price.val_type))
@@ -833,7 +833,7 @@ module Portfolio_update = struct
           (fun t ->
             `Args
               $ (Contract.to_raw t.contract)
-              $ t.position
+              $ t.amount
               $ t.market_price
               $ t.market_value
               $ t.average_cost

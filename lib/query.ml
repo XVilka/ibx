@@ -349,8 +349,8 @@ module Account_updates = Updates (struct
   let name = "Query.Account_updates"
 end)
 
-module Portfolio_updates = Updates (struct
-  let name = "Query.Portfolio_updates"
+module Portfolio_positions = Updates (struct
+  let name = "Query.Portfolio_positions"
 end)
 
 (* +-----------------------------------------------------------------------+

@@ -328,7 +328,7 @@ module Q : sig
   (* Account and portfolio *)
 
   val account_updates : Query.Account_updates.t gen
-  val portfolio_updates : Query.Portfolio_updates.t gen
+  val portfolio_positions : Query.Portfolio_positions.t gen
 
   (* Executions *)
 
@@ -520,8 +520,8 @@ end = struct
       ~subscribe:(bg ())
       ~account_code:(account_code_g ())
 
-  let portfolio_updates () =
-    Query.Portfolio_updates.create
+  let portfolio_positions () =
+    Query.Portfolio_positions.create
       ~subscribe:(bg ())
       ~account_code:(account_code_g ())
 
@@ -746,8 +746,8 @@ module R : sig
   val account_update_g  : Response.Account_update.t gen
   val account_updates_g : Response.Account_update.t list gen
 
-  val portfolio_update_g  : Response.Portfolio_update.t gen
-  val portfolio_updates_g : Response.Portfolio_update.t list gen
+  val portfolio_position_g  : Response.Portfolio_position.t gen
+  val portfolio_positions_g : Response.Portfolio_position.t list gen
 
   (* Contract details *)
 
@@ -956,7 +956,7 @@ end = struct
     List.permute ~random_state:(Random.State.make_self_init ())
       (List.init (1 + Random.int bound) ~f:(fun _ -> account_update_g ()))
 
-  let portfolio_update_g () =
+  let portfolio_position_g () =
     let contract_g () = oneof
       [ always (
         Contract.stock
@@ -994,9 +994,9 @@ end = struct
           (symbol_g ()))
       ] ()
     in
-    Response.Portfolio_update.create
+    Response.Portfolio_position.create
       ~contract:(contract_g ())
-      ~position:(nng ())
+      ~amount:(nng ())
       ~market_price:(price_g ())
       ~market_value:(price_g ())
       ~average_cost:(price_g ())
@@ -1004,9 +1004,9 @@ end = struct
       ~realized_pnl:(price_g ())
       ~account_code:(account_code_g ())
 
-  let portfolio_updates_g () =
+  let portfolio_positions_g () =
     List.permute ~random_state:(Random.State.make_self_init ())
-      (List.init (1 + Random.int bound) ~f:(fun _ -> portfolio_update_g ()))
+      (List.init (1 + Random.int bound) ~f:(fun _ -> portfolio_position_g ()))
 
   (* =========================== Contract details ========================== *)
 

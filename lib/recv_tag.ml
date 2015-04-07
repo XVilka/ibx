@@ -30,7 +30,7 @@ type t =
 | Tws_error
 | Open_order
 | Account_update
-| Portfolio_update
+| Portfolio_position
 | Account_update_time
 | Next_order_id
 | Contract_data
@@ -67,7 +67,7 @@ let tws_of_t = function
   | Tws_error -> "4"
   | Open_order -> "5"
   | Account_update -> "6"
-  | Portfolio_update -> "7"
+  | Portfolio_position -> "7"
   | Account_update_time -> "8"
   | Next_order_id -> "9"
   | Contract_data -> "10"
@@ -103,7 +103,7 @@ let t_of_tws = function
   | "4" -> Tws_error
   | "5" -> Open_order
   | "6" -> Account_update
-  | "7" -> Portfolio_update
+  | "7" -> Portfolio_position
   | "8" -> Account_update_time
   | "9" -> Next_order_id
   | "10" -> Contract_data
@@ -140,7 +140,7 @@ let corresponding_response_has_query_id = function
   | Tws_error -> true
   | Open_order -> true
   | Account_update -> false
-  | Portfolio_update -> false
+  | Portfolio_position -> false
   | Account_update_time -> false
   | Next_order_id -> false
   | Contract_data -> true
