@@ -5,41 +5,34 @@ open Ibx.Std
 module Ascii_table = Textutils.Ascii_table
 
 let show_portfolio updates =
+  let open Price in
   let module P = Portfolio_update in
-  Ascii_table.output ~oc:stdout ~limit_width_to:120 [
-    Ascii_table.Column.create ~align:Ascii_table.Align.left
-      "Contract"
+  Ascii_table.(output ~oc:stdout ~limit_width_to:120 [
+    Column.create "Contract" ~align:Align.left
       (fun update ->
         sprintf "%s" (P.contract update |> Contract.to_string));
-    Ascii_table.Column.create ~align:Ascii_table.Align.left
-      "Exchange"
+    Column.create "Exchange" ~align:Align.left
       (fun update ->
         sprintf "%s" (P.contract update |> Contract.exchange |> Exchange.to_string));
-    Ascii_table.Column.create ~align:Ascii_table.Align.right
-      "Position"
+    Column.create "Position" ~align:Align.right
       (fun update ->
         sprintf "%d" (P.position update));
-    Ascii_table.Column.create ~align:Ascii_table.Align.center
-      "Currency"
+    Column.create "Currency" ~align:Align.center
       (fun update ->
         sprintf "%s" (P.contract update |> Contract.currency |> Currency.to_string));
-    Ascii_table.Column.create ~align:Ascii_table.Align.right
-      "Market Price"
+    Column.create "Market Price" ~align:Align.right
       (fun update ->
         sprintf "%4.2f" (P.market_price update :> float));
-    Ascii_table.Column.create ~align:Ascii_table.Align.right
-      "Market Value"
+    Column.create "Market Value" ~align:Align.right
       (fun update ->
         sprintf "%4.2f" (P.market_value update :> float));
-    Ascii_table.Column.create ~align:Ascii_table.Align.right
-      "Avg Cost"
+    Column.create "Avg Cost" ~align:Align.right
       (fun update ->
         sprintf "%4.2f" (P.average_cost update :> float));
-    Ascii_table.Column.create ~align:Ascii_table.Align.right
-      "Total P&L"
-      (fun update -> sprintf "%4.2f"
-        ((P.realized_pnl update :> float) +. (P.unrealized_pnl update :> float)));
-  ] updates
+    Column.create "Total P&L" ~align:Align.right
+      (fun update ->
+        sprintf "%4.2f" (P.(realized_pnl update + unrealized_pnl update) :> float));
+  ] updates)
 ;;
 
 let () =
