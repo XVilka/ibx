@@ -767,11 +767,15 @@ module Portfolio_position = struct
   let total_pnl t = Price.(t.unrealized_pnl + t.realized_pnl)
 
   let return t =
-    let mkt_value = (t.market_value :> float) in
     let position = float t.amount in
-    let avg_cost = (t.average_cost :> float) in
-    let sign x = if x < 0. then -.1. else 1. in
-    sign position *. (mkt_value /. (avg_cost *. position) -. 1.)
+    let market_value = (t.market_value :> float) in
+    let average_cost = (t.average_cost :> float) in
+    Float.(match sign position with
+    | Sign.Zero -> zero
+    | Sign.Pos  ->     (market_value / (average_cost * position) - one)
+    | Sign.Neg  -> neg (market_value / (average_cost * position) - one)
+    )
+  ;;
 
   let ( = ) t1 t2 : bool =
     let use op = fun field ->
