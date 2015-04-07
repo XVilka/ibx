@@ -43,7 +43,7 @@ let () =
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Deferred.List.iter contracts ~f:(fun contract ->
-          let symbol = Symbol.to_string (Contract.symbol contract) in
+          let symbol = (Contract.symbol contract :> string) in
           let message s =
             printf "===== [ %s ] =====\n" symbol;
             print_endline s;
