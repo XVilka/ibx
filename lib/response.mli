@@ -282,6 +282,10 @@ module Portfolio_position : sig
     -> account_code:Account_code.t
     -> t
 
+  (* [total_pnl position] computes the total P&L of a porfolio [position], ie
+     unrealized P&L + realized P&L. *)
+  val total_pnl : t -> Price.t
+
   (** [return position] calculates the return of a portfolio [position], ie
       sign(position) * (market_value / (average_cost * position) - 1) *)
   val return : t -> float

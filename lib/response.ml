@@ -764,6 +764,8 @@ module Portfolio_position = struct
 
   let create = Fields.create
 
+  let total_pnl t = Price.(t.unrealized_pnl + t.realized_pnl)
+
   let return t =
     let mkt_value = (t.market_value :> float) in
     let position = float t.amount in
