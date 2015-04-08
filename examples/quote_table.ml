@@ -25,14 +25,9 @@ let print_quote_table quotes =
 let symbols = ["AAPL";"AMZN";"CSCO";"FB";"GOOG";"IBM";"MSFT";"ORCL";"SAP";"YHOO"]
 
 let () =
-  Command.async_or_error ~summary:" print market data"
-    Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
-    )
+  Command.async_or_error
+    Command.Spec.(Common.common_args ())
+    ~summary:"Tabularize the current quotes for a list of symbols"
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->

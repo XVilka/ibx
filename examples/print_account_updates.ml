@@ -3,14 +3,8 @@ open Async.Std
 open Ibx.Std
 
 let () =
-  Command.async_or_error ~summary:"print account updates"
-    Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
-    )
+  Command.async_or_error ~summary:"Print account updates"
+    Command.Spec.(Common.common_args ())
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Tws.account_updates_exn tws

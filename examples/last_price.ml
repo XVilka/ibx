@@ -3,13 +3,10 @@ open Async.Std
 open Ibx.Std
 
 let () =
-  Command.async_or_error ~summary:"Retrieve last stock price"
+  Command.async_or_error
+    ~summary:"Retrieve the last stock price"
     Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
+      Common.common_args ()
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )

@@ -69,15 +69,9 @@ let timeout_arg () =
   )
 
 let () =
-  Command.async_or_error ~summary:"submit market buy order"
-    Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
-      +> timeout_arg ()
-    )
+  Command.async_or_error
+    ~summary:"Submit a market buy order"
+    Command.Spec.(Common.common_args () +> timeout_arg ())
     (fun do_log host port client_id timeout () ->
       run ~do_log ~host ~port ~client_id ~timeout)
   |> Command.run

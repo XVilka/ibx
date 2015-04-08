@@ -39,19 +39,15 @@ let plot_taq_data ~duration ~currency ~symbol =
   )
 
 let () =
-  Command.async_or_error ~summary:"plot TAQ data"
+  Command.async_or_error ~summary:"Plot trade and quote (TAQ) data"
     Command.Spec.(
-      empty
-      +> Common.logging_flag ()
+      Common.common_args ()
       +> flag "-quiet" no_arg ~doc:" quiet mode"
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
       +> Common.duration_arg ()
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun do_log quiet host port client_id duration currency symbol () ->
+    (fun do_log host port client_id quiet duration currency symbol () ->
       verbose := not quiet;
       if Time.Span.(duration > minute) then
         return (Or_error.error_string "Maximum duration is 1 minute")

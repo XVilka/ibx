@@ -3,14 +3,9 @@ open Async.Std
 open Ibx.Std
 
 let () =
-  Command.async_or_error ~summary:"submit market buy order for AAPL"
-    Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
-    )
+  Command.async_or_error
+    ~summary:"Submit a market buy order for AAPL"
+    Command.Spec.(Common.common_args ())
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         don't_wait_for (

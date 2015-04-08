@@ -37,15 +37,9 @@ let print_market_data ~duration =
   )
 
 let () =
-  Command.async_or_error ~summary:" print market data"
-    Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.duration_arg ()
-      +> Common.client_id_arg ()
-    )
-    (fun do_log host port duration client_id () ->
+  Command.async_or_error
+    ~summary:"Print market data for three symbols"
+    Command.Spec.(Common.common_args () +> Common.duration_arg ())
+    (fun do_log host port client_id duration () ->
       print_market_data ~do_log ~host ~port ~client_id ~duration)
   |> Command.run

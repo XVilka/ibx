@@ -25,27 +25,17 @@ let with_tws ~do_log ~host ~port ~client_id f =
 ;;
 
 
-let logging_flag () =
+let common_args () =
   Command.Spec.(
-    flag "-enable-logging" no_arg ~doc:" enable logging"
-  )
-
-let client_id_arg () =
-  Command.Spec.(
-    flag "-client-id" (optional_with_default 0 int)
-      ~doc:" client id of TWS or Gateway (default 0)"
-  )
-
-let host_arg () =
-  Command.Spec.(
-    flag "-host" (optional_with_default "127.0.0.1" string)
+    empty
+    +> flag "-enable-logging" no_arg
+      ~doc:" enable logging"
+    +> flag "-host" (optional_with_default "127.0.0.1" string)
       ~doc:" hostname of TWS or Gateway (default localhost)"
-  )
-
-let port_arg () =
-  Command.Spec.(
-    flag "-port" (optional_with_default 4001 int)
+    +> flag "-port" (optional_with_default 4001 int)
       ~doc:" TWS port 7496 or Gateway port 4001 (default 4001)"
+    +> flag "-client-id" (optional_with_default 0 int)
+      ~doc:" client id of TWS or Gateway (default 0)"
   )
 
 let duration_arg () =

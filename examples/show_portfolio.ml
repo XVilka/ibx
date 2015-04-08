@@ -39,14 +39,9 @@ let show_portfolio positions =
 ;;
 
 let () =
-  Command.async_or_error ~summary:"show portfolio"
-    Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
-    )
+  Command.async_or_error
+    ~summary:"Show all portfolio positions"
+    Command.Spec.(Common.common_args ())
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Tws.portfolio_positions_exn tws

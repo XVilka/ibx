@@ -3,13 +3,9 @@ open Async.Std
 open Ibx.Std
 
 let () =
-  Command.async_or_error ~summary:"print market depth"
+  Command.async_or_error ~summary:"Print market depth"
     Command.Spec.(
-      empty
-      +> Common.logging_flag ()
-      +> Common.host_arg ()
-      +> Common.port_arg ()
-      +> Common.client_id_arg ()
+      Common.common_args ()
       +> Common.duration_arg ()
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
