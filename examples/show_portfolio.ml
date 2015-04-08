@@ -5,7 +5,6 @@ open Ibx.Std
 module Ascii_table = Textutils.Ascii_table
 
 let show_portfolio positions =
-  let open Price in
   let module P = Portfolio_position in
   Ascii_table.(output ~oc:stdout ~limit_width_to:130 [
     Column.create "Contract" ~align:Align.left
