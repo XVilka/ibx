@@ -13,19 +13,18 @@ let plot_taq_data ~duration ~currency ~symbol =
     upon (Clock.after duration) (fun () ->
       Tws.cancel_quotes tws id
     );
-    Pipe.fold taq_data ~init:([], [], [])
-      ~f:(fun (bids, asks, trades) taq_record ->
-        if !verbose then Format.printf "@[%a@]@\n%!" TAQ.pp taq_record;
-        return (match taq_record with
-        | TAQ.Trade trade ->
-          bids, asks,
-          Trade.(stamp trade, price trade) :: trades
-        | TAQ.Quote quote ->
-          Quote.(stamp quote, bid_price quote) :: bids,
-          Quote.(stamp quote, ask_price quote) :: asks,
-          trades
-        )
+    Pipe.fold taq_data ~init:([], [], []) ~f:(fun (bids, asks, trades) taq ->
+      if !verbose then Format.printf "@[%a@]@\n%!" TAQ.pp taq;
+      return (match taq with
+      | TAQ.Trade trade ->
+        bids, asks,
+        Trade.(stamp trade, price trade) :: trades
+      | TAQ.Quote quote ->
+        Quote.(stamp quote, bid_price quote) :: bids,
+        Quote.(stamp quote, ask_price quote) :: asks,
+        trades
       )
+    )
     >>| fun (bids, asks, trades) ->
     (* Reverse accumulated quotes and trades and use coercion on price types. *)
     let bids = List.rev (bids : ('t * Price.t) list :> ('t * float) list) in
