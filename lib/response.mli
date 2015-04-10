@@ -284,7 +284,7 @@ module Portfolio_position : sig
 
   val contract : t -> [< Security_type.t ] Contract.t
 
-  (* [total_pnl position] computes the total P&L of a porfolio [position], ie
+  (* [total_pnl position] computes the total P&L of a portfolio [position], ie
      unrealized P&L + realized P&L. *)
   val total_pnl : t -> Price.t
 
