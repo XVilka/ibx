@@ -61,7 +61,11 @@ module Security_type = struct
 end
 
 module Security_id = struct
-  include String
+  type t = string with sexp
+  let tws_of_t = String.to_string
+  let t_of_tws = String.of_string
+  let val_type = Val_type.create tws_of_t t_of_tws
+
   module Type = struct
     type t = [ `ISIN | `CUSIP | `SEDOL | `RIC ] with sexp
 
@@ -80,10 +84,6 @@ module Security_id = struct
 
     let val_type = Val_type.create tws_of_t t_of_tws
   end
-
-  let tws_of_t = to_string
-  let t_of_tws = of_string
-  let val_type = Val_type.create tws_of_t t_of_tws
 end
 
 module Option_right = struct
