@@ -320,7 +320,7 @@ module Pickler_specs = struct
         ~combo_legs:(fields_value skipped))
     |> wrap_contract_spec
 
-  let portfolio_update_response () =
+  let portfolio_position_response () =
     Pickler.Spec.(
       Fields.fold
         ~init:(empty ())
@@ -604,7 +604,7 @@ module Unpickler_specs = struct
       ++ value (optional Symbol.val_type)
         ~name:(field_name Fields.local_symbol))
 
-  let portfolio_update_response () =
+  let portfolio_position_response () =
     Unpickler.Spec.(
       step (fun conv id symbol security_type expiry strike option_right
         multiplier exchange currency local_symbol ->

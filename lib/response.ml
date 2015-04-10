@@ -805,7 +805,7 @@ module Portfolio_position = struct
 
   let unpickler =
     let contract_spec =
-      Raw_contract.Unpickler_specs.portfolio_update_response ()
+      Raw_contract.Unpickler_specs.portfolio_position_response ()
     in
     Unpickler.create ~name:"Response.Portfolio_position"
       Unpickler.Spec.(
@@ -833,7 +833,7 @@ module Portfolio_position = struct
 
   let pickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Pickler_specs.portfolio_update_response ()
+      Raw_contract.Pickler_specs.portfolio_position_response ()
     in
     Pickler.create ~name:"Response.Portfolio_position"
       Pickler.Spec.(
