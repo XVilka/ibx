@@ -54,6 +54,7 @@ let security_id t =
 let option_right t = Option.value_exn t.Raw_contract.option_right
 let strike t = Option.value_exn t.Raw_contract.strike
 let expiry t = Option.value_exn t.Raw_contract.expiry
+let days_to_expiry t ~zone = Date.diff (expiry t) (Date.today ~zone)
 let multiplier t = Option.value_exn t.Raw_contract.multiplier
 let include_expired t = t.Raw_contract.include_expired
 let combo_legs t = t.Raw_contract.combo_legs

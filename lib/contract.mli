@@ -56,10 +56,11 @@ val security_id   : 'a t -> [ `ISIN  of string
                             | `CUSIP of string
                             | `SEDOL of string ] option
 
-val strike       : [ `Option ] t -> Price.t
-val option_right : [ `Option ] t -> Option_right.t
-val expiry       : [ `Option | `Futures ] t -> Date.t
-val multiplier   : [ `Option | `Futures ] t -> string
+val strike          : [ `Option ] t -> Price.t
+val option_right    : [ `Option ] t -> Option_right.t
+val expiry          : [ `Option | `Futures ] t -> Date.t
+val days_to_expiry  : [ `Option | `Futures ] t -> zone:Time.Zone.t -> int
+val multiplier      : [ `Option | `Futures ] t -> string
 val include_expired : [ `Futures ] t -> bool
 val combo_legs : 'a t -> int
 
