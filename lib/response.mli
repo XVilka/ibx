@@ -259,7 +259,7 @@ end
 
 module Portfolio_position : sig
   type t = private
-    { contract : Security_type.t Contract.t;
+    { contract : Raw_contract.t;
       amount : int;
       market_price : Price.t;
       market_value : Price.t;
@@ -272,7 +272,7 @@ module Portfolio_position : sig
   include Response_intf.S with type t := t
 
   val create
-    :  contract:Security_type.t Contract.t
+    :  contract:[< Security_type.t ] Contract.t
     -> amount:int
     -> market_price:Price.t
     -> market_value:Price.t
@@ -281,6 +281,8 @@ module Portfolio_position : sig
     -> realized_pnl:Price.t
     -> account_code:Account_code.t
     -> t
+
+  val contract : t -> [< Security_type.t ] Contract.t
 
   (* [total_pnl position] computes the total P&L of a porfolio [position], ie
      unrealized P&L + realized P&L. *)
@@ -296,7 +298,7 @@ end
 
 module Contract_details : sig
   type t = private
-    { contract : Security_type.t Contract.t;
+    { contract : Raw_contract.t;
       market_name : string;
       trading_class : string;
       min_tick : float;
@@ -316,7 +318,7 @@ module Contract_details : sig
   include Response_intf.S with type t := t
 
   val create
-    :  contract:Security_type.t Contract.t
+    :  contract:[< Security_type.t ] Contract.t
     -> market_name:string
     -> trading_class:string
     -> min_tick:float
@@ -333,6 +335,8 @@ module Contract_details : sig
     -> trading_hours:string
     -> liquid_hours:string
     -> t
+
+  val contract : t -> [< Security_type.t ] Contract.t
 end
 
 (** {1 Execution} *)
@@ -346,7 +350,7 @@ module Execution : sig
 
   type t = private
     { order_id : Order_id.t;
-      contract : Security_type.t Contract.t;
+      contract : Raw_contract.t;
       exec_id : Execution_id.t;
       time : Time.t;
       account_code : Account_code.t;
@@ -366,7 +370,7 @@ module Execution : sig
 
   val create
     :  order_id:Order_id.t
-    -> contract:Security_type.t Contract.t
+    -> contract:[< Security_type.t ] Contract.t
     -> exec_id:Execution_id.t
     -> time:Time.t
     -> account_code:Account_code.t
@@ -381,6 +385,8 @@ module Execution : sig
     -> average_price:Price.t
     -> order_ref:string option
     -> t
+
+  val contract : t -> [< Security_type.t ] Contract.t
 end
 
 module Commission : sig

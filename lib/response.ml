@@ -752,7 +752,7 @@ end
 
 module Portfolio_position = struct
   type t =
-    { contract : Security_type.t Contract.t;
+    { contract : Raw_contract.t;
       amount : int;
       market_price : Price.t;
       market_value : Price.t;
@@ -762,7 +762,19 @@ module Portfolio_position = struct
       account_code : Account_code.t;
     } with sexp, fields
 
-  let create = Fields.create
+  let create ~contract ~amount ~market_price ~market_value ~average_cost
+      ~unrealized_pnl ~realized_pnl ~account_code =
+    { contract = Contract.to_raw contract;
+      amount;
+      market_price;
+      market_value;
+      average_cost;
+      unrealized_pnl;
+      realized_pnl;
+      account_code;
+    }
+
+  let contract t = Contract.of_raw t.contract
 
   let total_pnl t = Price.(t.unrealized_pnl + t.realized_pnl)
 
@@ -782,7 +794,7 @@ module Portfolio_position = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~contract:(use Contract.(=))
+      ~contract:(use Raw_contract.(=))
       ~amount:(use (=))
       ~market_price:(use Price.(=.))
       ~market_value:(use Price.(=.))
@@ -809,7 +821,7 @@ module Portfolio_position = struct
           ~account_code:(fields_value (required Account_code.val_type)))
       (fun contract amount market_price market_value average_cost
         unrealized_pnl realized_pnl account_code ->
-          { contract = Contract.of_raw contract;
+          { contract = contract;
             amount;
             market_price;
             market_value;
@@ -838,7 +850,7 @@ module Portfolio_position = struct
             ~account_code:(fields_value (required Account_code.val_type)))
           (fun t ->
             `Args
-              $ (Contract.to_raw t.contract)
+              $ t.contract
               $ t.amount
               $ t.market_price
               $ t.market_value
@@ -854,7 +866,7 @@ end
 
 module Contract_details = struct
   type t =
-    { contract : Security_type.t Contract.t;
+    { contract : Raw_contract.t;
       market_name : string;
       trading_class : string;
       min_tick : float;
@@ -872,14 +884,35 @@ module Contract_details = struct
       liquid_hours : string;
     } with sexp, fields
 
-  let create = Fields.create
+  let create ~contract ~market_name ~trading_class ~min_tick ~order_types
+      ~valid_exchanges ~price_magnifier ~underlying_id ~long_name ~contract_month
+      ~industry ~category ~subcategory ~timezone_id ~trading_hours ~liquid_hours =
+    { contract = Contract.to_raw contract;
+      market_name;
+      trading_class;
+      min_tick;
+      order_types;
+      valid_exchanges;
+      price_magnifier;
+      underlying_id;
+      long_name;
+      contract_month;
+      industry;
+      category;
+      subcategory;
+      timezone_id;
+      trading_hours;
+      liquid_hours;
+    }
+
+  let contract t = Contract.of_raw t.contract
 
   let ( = ) t1 t2 : bool =
     let use op = fun field ->
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~contract:(use Contract.(=))
+      ~contract:(use Raw_contract.(=))
       ~market_name:(use (=))
       ~trading_class:(use (=))
       ~min_tick:(use Float.(=.))
@@ -957,24 +990,24 @@ module Contract_details = struct
         order_types valid_exchanges price_magnifier underlying_id long_name
         listing_exchange contract_month industry category subcategory
         timezone_id trading_hours liquid_hours ->
-          { contract = Contract.of_raw (
-            { Raw_contract.
-              contract_id;
-              symbol;
-              security_type;
-              expiry;
-              strike;
-              option_right;
-              multiplier;
-              exchange;
-              listing_exchange;
-              currency;
-              local_symbol;
-              include_expired = false;
-              security_id_type = None;
-              security_id = None;
-              combo_legs = 0;
-            });
+          { contract =
+              { Raw_contract.
+                contract_id;
+                symbol;
+                security_type;
+                expiry;
+                strike;
+                option_right;
+                multiplier;
+                exchange;
+                listing_exchange;
+                currency;
+                local_symbol;
+                include_expired = false;
+                security_id_type = None;
+                security_id = None;
+                combo_legs = 0;
+              };
             market_name;
             trading_class;
             min_tick;
@@ -1056,28 +1089,27 @@ module Contract_details = struct
               (* liquid hour *)
               ++ value (required string))
           (fun t ->
-            let contract = Contract.to_raw t.contract in
             `Args
-              $ contract.Raw_contract.symbol
-              $ contract.Raw_contract.security_type
-              $ contract.Raw_contract.expiry
-              $ contract.Raw_contract.strike
-              $ contract.Raw_contract.option_right
-              $ contract.Raw_contract.exchange
-              $ contract.Raw_contract.currency
-              $ contract.Raw_contract.local_symbol
+              $ t.contract.Raw_contract.symbol
+              $ t.contract.Raw_contract.security_type
+              $ t.contract.Raw_contract.expiry
+              $ t.contract.Raw_contract.strike
+              $ t.contract.Raw_contract.option_right
+              $ t.contract.Raw_contract.exchange
+              $ t.contract.Raw_contract.currency
+              $ t.contract.Raw_contract.local_symbol
               $ t.market_name
               $ t.trading_class
-              $ contract.Raw_contract.contract_id
+              $ t.contract.Raw_contract.contract_id
               $ t.min_tick
-              $ contract.Raw_contract.multiplier
+              $ t.contract.Raw_contract.multiplier
               $ (String.concat t.order_types ~sep:",")
               $ (List.map t.valid_exchanges ~f:Exchange.tws_of_t
                     |> String.concat ~sep:",")
               $ t.price_magnifier
               $ t.underlying_id
               $ t.long_name
-              $ contract.Raw_contract.listing_exchange
+              $ t.contract.Raw_contract.listing_exchange
               $ t.contract_month
               $ t.industry
               $ t.category
@@ -1118,7 +1150,7 @@ module Execution = struct
 
   type t =
     { order_id : Raw_order.Id.t;
-      contract : Security_type.t Contract.t;
+      contract : Raw_contract.t;
       exec_id : Execution_id.t;
       time : Time.t;
       account_code : Account_code.t;
@@ -1134,7 +1166,27 @@ module Execution = struct
       order_ref : string option;
     } with fields, sexp
 
-  let create = Fields.create
+  let create ~order_id ~contract ~exec_id ~time ~account_code ~exchange ~side
+      ~quantity ~price ~permanent_id ~client_id ~liquidation ~cumulative_quantity
+      ~average_price ~order_ref =
+    { order_id;
+      contract = Contract.to_raw contract;
+      exec_id;
+      time;
+      account_code;
+      exchange;
+      side;
+      quantity;
+      price;
+      permanent_id;
+      client_id;
+      liquidation;
+      cumulative_quantity;
+      average_price;
+      order_ref;
+    }
+
+  let contract t = Contract.of_raw t.contract
 
   let ( = ) t1 t2 : bool =
     let use op = fun field ->
@@ -1142,7 +1194,7 @@ module Execution = struct
     in
     Fields.for_all
       ~order_id:(use Raw_order.Id.(=))
-      ~contract:(use Contract.(=))
+      ~contract:(use Raw_contract.(=))
       ~exec_id:(use Execution_id.(=))
       ~time:(use Time.(=))
       ~account_code:(use Account_code.(=))
@@ -1184,7 +1236,7 @@ module Execution = struct
         quantity price permanent_id client_id liquidation cumulative_quantity
         average_price order_ref ->
           { order_id;
-            contract = Contract.of_raw contract;
+            contract;
             exec_id;
             time;
             account_code;
@@ -1227,7 +1279,7 @@ module Execution = struct
           (fun t ->
             `Args
               $ t.order_id
-              $ (Contract.to_raw t.contract)
+              $ t.contract
               $ t.exec_id
               $ t.time
               $ t.account_code
