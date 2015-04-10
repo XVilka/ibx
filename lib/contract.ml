@@ -29,6 +29,17 @@ include struct
   module Security_type = Security_type
 end
 
+module Security_id = struct
+  type t =
+  [ `ISIN  of string
+  | `RIC   of string
+  | `CUSIP of string
+  | `SEDOL of string
+  ] with sexp
+  let to_string t = sexp_of_t t |> Sexp.to_string
+  let of_string s = Sexp.of_string s |> t_of_sexp
+end
+
 type 'a t = Raw_contract.t constraint 'a = [< Security_type.t] with sexp
 
 let to_raw = Fn.id
