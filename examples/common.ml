@@ -57,8 +57,7 @@ let currency_arg () =
   )
 
 module Bar_span = struct
-  let of_string x = Bar_span.t_of_sexp (Sexp.of_string x)
-  let arg_type = Command.Spec.Arg_type.create of_string
+  let arg_type = Command.Spec.Arg_type.create Bar_span.of_string
 end
 
 let bar_span_arg () =
@@ -68,8 +67,7 @@ let bar_span_arg () =
   )
 
 module Bar_size = struct
-  let of_string x = Bar_size.t_of_sexp (Sexp.Atom x)
-  let arg_type = Command.Spec.Arg_type.create of_string
+  let arg_type = Command.Spec.Arg_type.create Bar_size.of_string
 end
 
 let bar_size_arg () =

@@ -558,6 +558,9 @@ module Historical_data = struct
       | s -> invalid_argf "Bar_size.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
+
+    let to_string t = Sexp.to_string (sexp_of_t t)
+    let of_string s = t_of_sexp (Sexp.of_string s)
   end
 
   module Bar_span = struct
@@ -593,6 +596,9 @@ module Historical_data = struct
       | _ -> invalid_argf "Duration.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
+
+    let to_string t = Sexp.to_string (sexp_of_t t)
+    let of_string s = t_of_sexp (Sexp.of_string s)
   end
 
   module Show = struct
@@ -629,6 +635,9 @@ module Historical_data = struct
       | s -> invalid_argf "Show.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
+
+    let to_string t = Sexp.to_string (sexp_of_t t)
+    let of_string s = t_of_sexp (Sexp.of_string s)
   end
 
   type t =

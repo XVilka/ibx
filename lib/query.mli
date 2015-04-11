@@ -176,6 +176,7 @@ module Historical_data : sig
     | `One_hour
     | `One_day
     ] with sexp
+    include Stringable.S with type t := t
   end
 
   module Bar_span : sig
@@ -186,6 +187,7 @@ module Historical_data : sig
     | `Month of int
     | `Year
     ] with sexp
+    include Stringable.S with type t := t
   end
 
   module Show : sig
@@ -199,6 +201,7 @@ module Historical_data : sig
     | `Implied_volatility
     | `Option_volume
     ] with sexp
+    include Stringable.S with type t := t
   end
 
   type t with sexp
