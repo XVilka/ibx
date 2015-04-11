@@ -53,10 +53,10 @@ type t =
 | Cancel_realtime_bars
 | Fundamental_data
 | Cancel_fundamental_data
-| Implied_volatility
-| Option_price
-| Cancel_implied_volatility
-| Cancel_option_price
+| Calc_implied_volatility
+| Calc_option_price
+| Cancel_calc_implied_volatility
+| Cancel_calc_option_price
 with sexp
 
 let tws_of_t = function
@@ -89,10 +89,10 @@ let tws_of_t = function
   | Cancel_realtime_bars -> "51"
   | Fundamental_data -> "52"
   | Cancel_fundamental_data -> "53"
-  | Implied_volatility -> "54"
-  | Option_price -> "55"
-  | Cancel_implied_volatility -> "56"
-  | Cancel_option_price -> "57"
+  | Calc_implied_volatility -> "54"
+  | Calc_option_price -> "55"
+  | Cancel_calc_implied_volatility -> "56"
+  | Cancel_calc_option_price -> "57"
 
 let t_of_tws = function
   | "1" -> Market_data
@@ -124,10 +124,10 @@ let t_of_tws = function
   | "51" -> Cancel_realtime_bars
   | "52" -> Fundamental_data
   | "53" -> Cancel_fundamental_data
-  | "54" -> Implied_volatility
-  | "55" -> Option_price
-  | "56" -> Cancel_implied_volatility
-  | "57" -> Cancel_option_price
+  | "54" -> Calc_implied_volatility
+  | "55" -> Calc_option_price
+  | "56" -> Cancel_calc_implied_volatility
+  | "57" -> Cancel_calc_option_price
   | s -> failwithf "Send_tag.of_string: %S" s ()
 
 let corresponding_query_has_id = function
@@ -160,9 +160,9 @@ let corresponding_query_has_id = function
   | Cancel_realtime_bars -> true
   | Fundamental_data -> true
   | Cancel_fundamental_data -> true
-  | Implied_volatility -> true
-  | Option_price -> true
-  | Cancel_implied_volatility -> true
-  | Cancel_option_price -> true
+  | Calc_implied_volatility -> true
+  | Calc_option_price -> true
+  | Cancel_calc_implied_volatility -> true
+  | Cancel_calc_option_price -> true
 
 let val_type = Val_type.create tws_of_t t_of_tws

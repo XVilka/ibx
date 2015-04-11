@@ -329,14 +329,14 @@ let cancel_market_data t id =
     Ib.Streaming_request.cancel Tws_reqs.req_market_data con id
   )
 
-let option_price t ~contract ~volatility ~underlying_price =
+let calc_option_price t ~contract ~volatility ~underlying_price =
   with_connection t ~f:(fun con ->
-    let q = Query.Option_price.create
+    let q = Query.Calc_option_price.create
       ~contract
       ~volatility
       ~underlying_price
     in
-    dispatch_and_cancel Tws_reqs.req_option_price con q >>| function
+    dispatch_and_cancel Tws_reqs.req_calc_option_price con q >>| function
     | Error _ as x -> x
     | Ok result ->
       match result with
@@ -345,17 +345,17 @@ let option_price t ~contract ~volatility ~underlying_price =
       | Ok (Some opt_price) -> Ok opt_price
   )
 
-let option_price_exn t ~contract ~volatility ~underlying_price =
-  option_price t ~contract ~volatility ~underlying_price >>| Or_error.ok_exn
+let calc_option_price_exn t ~contract ~volatility ~underlying_price =
+  calc_option_price t ~contract ~volatility ~underlying_price >>| Or_error.ok_exn
 
-let implied_volatility t ~contract ~option_price ~underlying_price =
+let calc_implied_volatility t ~contract ~option_price ~underlying_price =
   with_connection t ~f:(fun con ->
-    let q = Query.Implied_volatility.create
+    let q = Query.Calc_implied_volatility.create
       ~contract
       ~option_price
       ~underlying_price
     in
-    dispatch_and_cancel Tws_reqs.req_implied_volatility con q >>| function
+    dispatch_and_cancel Tws_reqs.req_calc_implied_volatility con q >>| function
     | Error _ as x -> x
     | Ok result ->
       match result with
@@ -364,8 +364,8 @@ let implied_volatility t ~contract ~option_price ~underlying_price =
       | Ok (Some implied_vol) -> Ok implied_vol
   )
 
-let implied_volatility_exn t ~contract ~option_price ~underlying_price =
-  implied_volatility t ~contract ~option_price ~underlying_price
+let calc_implied_volatility_exn t ~contract ~option_price ~underlying_price =
+  calc_implied_volatility t ~contract ~option_price ~underlying_price
   >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+

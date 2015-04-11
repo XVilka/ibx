@@ -209,10 +209,10 @@ module Protocol = struct
       | S.Cancel_realtime_bars -> return (`Ok no_data)
       | S.Fundamental_data -> unimplemented S.Fundamental_data
       | S.Cancel_fundamental_data -> unimplemented S.Cancel_fundamental_data
-      | S.Implied_volatility -> read ~len:13
-      | S.Option_price -> read ~len:13
-      | S.Cancel_implied_volatility -> return (`Ok no_data)
-      | S.Cancel_option_price -> return (`Ok no_data)
+      | S.Calc_implied_volatility -> read ~len:13
+      | S.Calc_option_price -> read ~len:13
+      | S.Cancel_calc_implied_volatility -> return (`Ok no_data)
+      | S.Cancel_calc_option_price -> return (`Ok no_data)
 
     module Deferred_read_result : sig
       type 'a t = [ `Eof | `Ok of 'a ] Deferred.t
@@ -367,8 +367,8 @@ module Message_generator = struct
 
         | S.Cancel_market_data -> []
 
-        | S.Option_price
-        | S.Implied_volatility ->
+        | S.Calc_option_price
+        | S.Calc_implied_volatility ->
           let pickler = Only_in_test.force R.Tick_option.pickler in
           [ E.Server_response {
             Response.
@@ -378,8 +378,8 @@ module Message_generator = struct
             data     = to_tws pickler (Lazy.force Gen.tick_option) }
           ]
 
-        | S.Cancel_option_price
-        | S.Cancel_implied_volatility -> []
+        | S.Cancel_calc_option_price
+        | S.Cancel_calc_implied_volatility -> []
 
         (* =========================== Orders ============================ *)
 

@@ -318,8 +318,8 @@ module Q : sig
   (* Market data *)
 
   val market_data_g : Query.Market_data.t gen
-  val option_price_g : Query.Option_price.t gen
-  val implied_volatility_g : Query.Implied_volatility.t gen
+  val calc_option_price_g : Query.Calc_option_price.t gen
+  val calc_implied_volatility_g : Query.Calc_implied_volatility.t gen
 
   (* Orders *)
 
@@ -430,7 +430,7 @@ end = struct
       ~tick_generics:(tick_generics_g ())
       ~snapshot:(bg ())
 
-  let option_price_g () =
+  let calc_option_price_g () =
     let option_g () =
       Contract.option
         ~multiplier:(sg ())
@@ -444,12 +444,12 @@ end = struct
         ~expiry:(expiry_g ())
         (symbol_g ())
     in
-    Query.Option_price.create
+    Query.Calc_option_price.create
       ~contract:(option_g ())
       ~volatility:(pfg ())
       ~underlying_price:(price_g ())
 
-  let implied_volatility_g () =
+  let calc_implied_volatility_g () =
     let option_g () =
       Contract.option
         ~multiplier:(sg ())
@@ -463,7 +463,7 @@ end = struct
         ~expiry:(expiry_g ())
         (symbol_g ())
     in
-    Query.Implied_volatility.create
+    Query.Calc_implied_volatility.create
       ~contract:(option_g ())
       ~option_price:(price_g ())
       ~underlying_price:(price_g ())

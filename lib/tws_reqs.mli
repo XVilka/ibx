@@ -38,11 +38,11 @@ val req_market_data :
                         | `Tick_string of Response.Tick_string.t
                         ]) Ib.Streaming_request.t
 
-val req_option_price :
-  (Query.Option_price.t, Price.t option) Ib.Streaming_request.t
+val req_calc_option_price :
+  (Query.Calc_option_price.t, Price.t option) Ib.Streaming_request.t
 
-val req_implied_volatility :
-  (Query.Implied_volatility.t, float option) Ib.Streaming_request.t
+val req_calc_implied_volatility :
+  (Query.Calc_implied_volatility.t, float option) Ib.Streaming_request.t
 
 (** {1 Contract details} *)
 (*****************************************************************************)

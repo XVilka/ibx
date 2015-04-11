@@ -140,28 +140,28 @@ val market_data_exn
 
 val cancel_market_data : t -> Query_id.t -> unit
 
-val option_price
+val calc_option_price
   :  t
   -> contract:[ `Option ] Contract.t
   -> volatility:float
   -> underlying_price:Price.t
   -> Price.t Or_error.t Deferred.t
 
-val option_price_exn
+val calc_option_price_exn
   :  t
   -> contract:[ `Option ] Contract.t
   -> volatility:float
   -> underlying_price:Price.t
   -> Price.t Deferred.t
 
-val implied_volatility
+val calc_implied_volatility
   :  t
   -> contract:[ `Option ] Contract.t
   -> option_price:Price.t
   -> underlying_price:Price.t
   -> float Or_error.t Deferred.t
 
-val implied_volatility_exn
+val calc_implied_volatility_exn
   :  t
   -> contract:[ `Option ] Contract.t
   -> option_price:Price.t
