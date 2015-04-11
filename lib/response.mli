@@ -311,7 +311,7 @@ module Contract_details : sig
       industry : string;
       category : string;
       subcategory : string;
-      timezone_id : string;
+      time_zone : Time.Zone.t;
       trading_hours : string;
       liquid_hours : string;
     } with sexp, fields
@@ -331,7 +331,7 @@ module Contract_details : sig
     -> industry:string
     -> category:string
     -> subcategory:string
-    -> timezone_id:string
+    -> time_zone:Time.Zone.t
     -> trading_hours:string
     -> liquid_hours:string
     -> t

@@ -879,14 +879,14 @@ module Contract_details = struct
       industry : string;
       category : string;
       subcategory : string;
-      timezone_id : string;
+      time_zone : Time.Zone.t;
       trading_hours : string;
       liquid_hours : string;
     } with sexp, fields
 
   let create ~contract ~market_name ~trading_class ~min_tick ~order_types
       ~valid_exchanges ~price_magnifier ~underlying_id ~long_name ~contract_month
-      ~industry ~category ~subcategory ~timezone_id ~trading_hours ~liquid_hours =
+      ~industry ~category ~subcategory ~time_zone ~trading_hours ~liquid_hours =
     { contract = Contract.to_raw contract;
       market_name;
       trading_class;
@@ -900,7 +900,7 @@ module Contract_details = struct
       industry;
       category;
       subcategory;
-      timezone_id;
+      time_zone;
       trading_hours;
       liquid_hours;
     }
@@ -925,7 +925,7 @@ module Contract_details = struct
       ~industry:(use (=))
       ~category:(use (=))
       ~subcategory:(use (=))
-      ~timezone_id:(use (=))
+      ~time_zone:(use Time.Zone.(=))
       ~trading_hours:(use (=))
       ~liquid_hours:(use (=))
 
@@ -979,8 +979,8 @@ module Contract_details = struct
           ~name:(field_name Fields.category)
         ++ value (required string)
           ~name:(field_name Fields.subcategory)
-        ++ value (required string)
-          ~name:(field_name Fields.timezone_id)
+        ++ value (required zone)
+          ~name:(field_name Fields.time_zone)
         ++ value (required string)
           ~name:(field_name Fields.trading_hours)
         ++ value (required string)
@@ -989,7 +989,7 @@ module Contract_details = struct
         local_symbol market_name trading_class contract_id min_tick multiplier
         order_types valid_exchanges price_magnifier underlying_id long_name
         listing_exchange contract_month industry category subcategory
-        timezone_id trading_hours liquid_hours ->
+        time_zone trading_hours liquid_hours ->
           { contract =
               { Raw_contract.
                 contract_id;
@@ -1027,7 +1027,7 @@ module Contract_details = struct
             industry;
             category;
             subcategory;
-            timezone_id;
+            time_zone;
             trading_hours;
             liquid_hours;
           })
@@ -1082,8 +1082,8 @@ module Contract_details = struct
               ++ value (required string)
               (* subcategory *)
               ++ value (required string)
-              (* timezone id *)
-              ++ value (required string)
+              (* time_zone *)
+              ++ value (required zone)
               (* trading hours *)
               ++ value (required string)
               (* liquid hour *)
@@ -1114,7 +1114,7 @@ module Contract_details = struct
               $ t.industry
               $ t.category
               $ t.subcategory
-              $ t.timezone_id
+              $ t.time_zone
               $ t.trading_hours
               $ t.liquid_hours)))
 end

@@ -65,6 +65,8 @@ module Val_type = struct
   let tws_of_date = Date.to_string_iso8601_basic
   let date_of_tws = Date.of_string_iso8601_basic ~pos:0
   let date = create tws_of_date date_of_tws
+
+  let zone = create Time.Zone.to_string Time.Zone.of_string
 end
 
 module Pickler = struct
@@ -109,6 +111,7 @@ module Pickler = struct
       let bool   = bool
       let time   = time
       let date   = date
+      let zone   = zone
     end
 
     type 'a value = {
@@ -208,6 +211,7 @@ module Unpickler = struct
       let bool   = bool
       let time   = time
       let date   = date
+      let zone   = zone
     end
 
     type 'a parse = raw_tws Queue.t -> 'a * raw_tws Queue.t

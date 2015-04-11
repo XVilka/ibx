@@ -32,6 +32,7 @@ module Rg_common : sig
   val sg : string gen
   val pfg : float gen
   val tmg : Time.t gen
+  val tzg : Time.Zone.t gen
 
   val always : 'a -> 'a gen
   val og : 'a gen -> 'a option gen
@@ -91,6 +92,8 @@ end = struct
     |> Float.modf
     |> Float.Parts.integral
     |> Time.of_float
+
+  let tzg () = Time.Zone.local
 
   let always x () = x
 
@@ -1058,7 +1061,7 @@ end = struct
       ~industry:(sg ())
       ~category:(sg ())
       ~subcategory:(sg ())
-      ~timezone_id:(sg ())
+      ~time_zone:(tzg ())
       ~trading_hours:(sg ())
       ~liquid_hours:(sg ())
 

@@ -46,14 +46,15 @@ module Pickler : sig
 
     val ($) : 'a -> 'b -> 'a * 'b
 
-    val unit   : unit   Val_type.t
-    val string : string Val_type.t
-    val int    : int    Val_type.t
-    val int64  : int64  Val_type.t
-    val float  : float  Val_type.t
-    val bool   : bool   Val_type.t
-    val time   : Time.t Val_type.t
-    val date   : Date.t Val_type.t
+    val unit   : unit        Val_type.t
+    val string : string      Val_type.t
+    val int    : int         Val_type.t
+    val int64  : int64       Val_type.t
+    val float  : float       Val_type.t
+    val bool   : bool        Val_type.t
+    val time   : Time.t      Val_type.t
+    val date   : Date.t      Val_type.t
+    val zone   : Time.Zone.t Val_type.t
 
     type 'a value
 
@@ -89,14 +90,16 @@ module Unpickler : sig
     val step  : ('c1 -> 'c2) -> ('c1, 'c2) t
     val empty : unit -> ('c, 'c) t
 
-    val unit   : unit   Val_type.t
-    val string : string Val_type.t
-    val int    : int    Val_type.t
-    val int64  : int64  Val_type.t
-    val float  : float  Val_type.t
-    val bool   : bool   Val_type.t
-    val time   : Time.t Val_type.t
-    val date   : Date.t Val_type.t
+    val unit   : unit        Val_type.t
+    val string : string      Val_type.t
+    val int    : int         Val_type.t
+    val int64  : int64       Val_type.t
+    val float  : float       Val_type.t
+    val bool   : bool        Val_type.t
+    val time   : Time.t      Val_type.t
+    val date   : Date.t      Val_type.t
+    val zone   : Time.Zone.t Val_type.t
+
 
     type 'a value
 
