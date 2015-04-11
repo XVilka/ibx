@@ -48,6 +48,9 @@ module Action = struct
     | "SSHORT" -> `Sell_short
     | s -> invalid_argf "Action.t_of_tws: %S" s ()
 
+  let to_string t = Sexp.to_string (sexp_of_t t)
+  let of_string s = t_of_sexp (Sexp.Atom s)
+
   let val_type = Val_type.create tws_of_t t_of_tws
 end
 

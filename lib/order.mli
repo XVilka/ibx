@@ -30,6 +30,7 @@ end
 
 module Action : sig
   type t = [ `Buy | `Sell | `Sell_short ] with sexp
+  include Stringable.S with type t := t
 end
 
 module Type : sig
