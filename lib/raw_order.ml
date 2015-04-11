@@ -52,15 +52,15 @@ module Action = struct
 end
 
 module Type = struct
-  type t = [ `MKT | `LMT ] with sexp
+  type t = [ `Market | `Limit ] with sexp
 
   let tws_of_t = function
-    | `MKT -> "MKT"
-    | `LMT -> "LMT"
+    | `Market -> "MKT"
+    | `Limit -> "LMT"
 
   let t_of_tws = function
-    | "MKT" -> `MKT
-    | "LMT" -> `LMT
+    | "MKT" -> `Market
+    | "LMT" -> `Limit
     | s -> invalid_argf "Type.t_of_tws: %S" s ()
 
   let to_string = tws_of_t

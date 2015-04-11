@@ -33,7 +33,7 @@ module Action : sig
 end
 
 module Type : sig
-  type t = [ `MKT | `LMT ] with sexp
+  type t = [ `Market | `Limit ] with sexp
   include Stringable.S with type t := t
 end
 
@@ -54,17 +54,17 @@ val quantity   : ('a, 'b) t -> int
 val buy_limit
   :  quantity:int
   -> Price.t
-  -> ([> `Buy ], [> `LMT ]) t
+  -> ([> `Buy ], [> `Limit ]) t
 
 val sell_limit
   :  quantity:int
   -> Price.t
-  -> ([> `Sell ], [> `LMT ]) t
+  -> ([> `Sell ], [> `Limit ]) t
 
 val buy_market
   :  quantity:int
-  -> ([> `Buy  ], [> `MKT ]) t
+  -> ([> `Buy  ], [> `Market ]) t
 
 val sell_market
   :  quantity:int
-  -> ([> `Sell ], [> `MKT ]) t
+  -> ([> `Sell ], [> `Market ]) t
