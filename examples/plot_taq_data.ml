@@ -31,10 +31,10 @@ let plot_taq_data ~duration ~currency ~symbol =
     let asks = List.rev (asks : ('t * Price.t) list :> ('t * float) list) in
     let trades = List.rev (trades : ('t * Price.t) list :> ('t * float) list) in
     let gp = Gp.create () in
-    Gp.plot_many gp
-      [ Series.steps_timey bids ~title:"bid" ~color:`Green
-      ; Series.steps_timey asks ~title:"ask" ~color:`Red
-      ; Series.points_timey trades ~title:"trades" ~color:`Blue ];
+    Gp.plot_many gp ~title:symbol
+      [ Series.steps_timey bids ~title:"Bid Price" ~color:`Green
+      ; Series.steps_timey asks ~title:"Ask Price" ~color:`Red
+      ; Series.points_timey trades ~title:"Trades" ~color:`Blue ];
     Gp.close gp
   )
 

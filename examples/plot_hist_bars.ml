@@ -36,9 +36,9 @@ let () =
         >>| fun hist_data ->
         let sma50 = unstage (Filter.sma ~period:50) in
         let gp = Gp.create () in
-        Gp.plot_many gp [
+        Gp.plot_many gp ~title:symbol [
           (* Create a candlestick chart series. *)
-          Series.candlesticks ~title:symbol
+          Series.candlesticks ~title:"Price"
             (List.map hist_data.bars ~f:(fun bar ->
               Historical_bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
              :> (Time.t * (float * float * float * float)) list);
