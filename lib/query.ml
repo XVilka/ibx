@@ -520,13 +520,17 @@ end
 
 module Historical_data = struct
   module Bar_size = struct
-    type t =
-    [ `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
-    | `One_min | `Two_mins | `Three_mins | `Five_mins
-    | `Fifteen_mins | `Thirty_mins
-    | `One_hour
-    | `One_day
-    ] with sexp
+    module T = struct
+      type t =
+      [ `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
+      | `One_min | `Two_mins | `Three_mins | `Five_mins
+      | `Fifteen_mins | `Thirty_mins
+      | `One_hour
+      | `One_day
+      ] with sexp
+    end
+    include T
+    include Sexpable.To_stringable (T)
 
     let tws_of_t = function
       | `One_sec -> "1 sec"
@@ -558,19 +562,20 @@ module Historical_data = struct
       | s -> invalid_argf "Bar_size.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
-
-    let to_string t = Sexp.to_string (sexp_of_t t)
-    let of_string s = t_of_sexp (Sexp.of_string s)
   end
 
   module Bar_span = struct
-    type t =
-    [ `Sec of int
-    | `Day of int
-    | `Week of int
-    | `Month of int
-    | `Year
-    ] with sexp
+    module T = struct
+      type t =
+      [ `Sec of int
+      | `Day of int
+      | `Week of int
+      | `Month of int
+      | `Year
+      ] with sexp
+    end
+    include T
+    include Sexpable.To_stringable (T)
 
     let tws_of_t = function
       | `Sec   x -> sprintf "%d S" x
@@ -596,22 +601,23 @@ module Historical_data = struct
       | _ -> invalid_argf "Duration.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
-
-    let to_string t = Sexp.to_string (sexp_of_t t)
-    let of_string s = t_of_sexp (Sexp.of_string s)
   end
 
   module Show = struct
-    type t =
-    [ `Trades
-    | `Midpoint
-    | `Bid
-    | `Ask
-    | `Bid_ask
-    | `Historical_volatility
-    | `Implied_volatility
-    | `Option_volume
-    ] with sexp
+    module T = struct
+      type t =
+      [ `Trades
+      | `Midpoint
+      | `Bid
+      | `Ask
+      | `Bid_ask
+      | `Historical_volatility
+      | `Implied_volatility
+      | `Option_volume
+      ] with sexp
+    end
+    include T
+    include Sexpable.To_stringable (T)
 
     let tws_of_t = function
       | `Trades -> "TRADES"
@@ -635,9 +641,6 @@ module Historical_data = struct
       | s -> invalid_argf "Show.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
-
-    let to_string t = Sexp.to_string (sexp_of_t t)
-    let of_string s = t_of_sexp (Sexp.of_string s)
   end
 
   type t =
