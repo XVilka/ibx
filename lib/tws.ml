@@ -942,9 +942,18 @@ let quote_snapshot_exn t ~contract =
 module Trade_snapshot = struct
   type t =
     { symbol : Symbol.t;
+      mutable no_ask : bool;
+      mutable no_bid : bool;
       mutable last_size  : int;
       mutable last_price : Price.t;
-    } with sexp, fields
+      mutable last_close : Price.t;
+    } with sexp
+
+  let no_trading t = t.no_ask && t.no_bid
+  let symbol     t = t.symbol
+  let last_size  t = t.last_size
+  (* Use closing price as proxy for the last price in case of no trading. *)
+  let last_price t = if no_trading t then t.last_close else t.last_price
 end
 
 let trade_snapshot t ~contract =
@@ -952,8 +961,11 @@ let trade_snapshot t ~contract =
     let trade =
       { Trade_snapshot.
         symbol = Contract.symbol contract;
+        no_ask = false;
+        no_bid = false;
         last_size  = 0;
         last_price = Price.zero;
+        last_close = Price.zero;
       }
     in
     let q = Query.Market_data.create
@@ -966,7 +978,6 @@ let trade_snapshot t ~contract =
     | Error _ as x -> return x
     | Ok (ticks, id) ->
       let module Type = Tick_price.Type in
-      let num_ticks = 1 in
       Monitor.try_with (fun () ->
         Pipe.fold ticks ~init:(0, trade) ~f:(fun (counter, trade) result ->
           match result with
@@ -981,10 +992,23 @@ let trade_snapshot t ~contract =
                 trade.Trade_snapshot.last_size  <- Tick_price.size  tick;
                 trade.Trade_snapshot.last_price <- Tick_price.price tick;
                 counter + 1
-              | Type.Ask | Type.Bid
-              | Type.Low | Type.High | Type.Close | Type.Open -> counter
+              | Type.Close ->
+                trade.Trade_snapshot.last_close <- Tick_price.price tick;
+                counter + 1
+              | Type.Ask ->
+                trade.Trade_snapshot.no_ask <-
+                  Price.(Tick_price.price tick = neg one);
+                counter + 1
+              | Type.Bid ->
+                trade.Trade_snapshot.no_bid <-
+                  Price.(Tick_price.price tick = neg one);
+                counter + 1
+              | Type.Low | Type.High | Type.Open -> counter
             in
-            if counter = num_ticks then begin
+            if
+              counter = 4 ||
+              counter = 3 && Trade_snapshot.no_trading trade
+            then begin
               Ib.Streaming_request.cancel Tws_reqs.req_taq_snapshot con id;
               Pipe.close_read ticks
             end;
