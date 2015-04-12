@@ -1125,27 +1125,22 @@ end
 
 module Execution = struct
   module Side = struct
-    type t = [ `Purchase | `Sale ] with sexp
+    module T = struct
+      type t = [ `bought | `sold ] with sexp
+    end
+    include T
+    include Sexpable.To_stringable (T)
 
     let tws_of_t = function
-      | `Purchase -> "BOT"
-      | `Sale     -> "SLD"
+      | `bought -> "BOT"
+      | `sold    -> "SLD"
 
     let t_of_tws = function
-      | "BOT" -> `Purchase
-      | "SLD" -> `Sale
+      | "BOT" -> `bought
+      | "SLD" -> `sold
       | s -> invalid_argf "Side.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
-
-    let to_string = function
-      | `Purchase -> "purchase"
-      | `Sale -> "sale"
-
-    let of_string = function
-      | "purchase" -> `Purchase
-      | "sale" -> `Sale
-      | s -> invalid_argf "Side.of_string: %S" s ()
   end
 
   type t =

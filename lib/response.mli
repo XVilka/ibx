@@ -344,7 +344,7 @@ end
 
 module Execution : sig
   module Side : sig
-    type t = [ `Purchase | `Sale ] with sexp
+    type t = [ `bought | `sold ] with sexp
     include Stringable.S with type t := t
   end
 
@@ -375,7 +375,7 @@ module Execution : sig
     -> time:Time.t
     -> account_code:Account_code.t
     -> exchange:Exchange.t
-    -> side:[ `Purchase | `Sale ]
+    -> side:Side.t
     -> quantity:int
     -> price:Price.t
     -> permanent_id:int

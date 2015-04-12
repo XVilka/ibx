@@ -1107,8 +1107,8 @@ end = struct
     in
     let exec_id_g = always (Execution_id.of_string (sg ())) in
     let side_g () = oneof [
-      always (`Purchase);
-      always (`Sale);
+      always (`bought);
+      always (`sold);
     ] ()
     in
     Response.Execution.create
