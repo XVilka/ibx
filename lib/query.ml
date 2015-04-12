@@ -590,7 +590,7 @@ module Historical_data = struct
         String.nset pattern 16 time_unit;
         if Str.string_match (Str.regexp pattern) s 0 then
           Int.of_string (Str.matched_group 1 s)
-        else invalid_argf "Duration.t_of_tws: %S" s ()
+        else invalid_argf "Bar_span.t_of_tws: %S" s ()
       in
       match String.nget s (String.length s - 1) with
       | 'S' -> `Sec   (extract_int s ~time_unit:'S')
@@ -598,7 +598,7 @@ module Historical_data = struct
       | 'W' -> `Week  (extract_int s ~time_unit:'W')
       | 'M' -> `Month (extract_int s ~time_unit:'M')
       | 'Y' -> `Year
-      | _ -> invalid_argf "Duration.t_of_tws: %S" s ()
+      | _ -> invalid_argf "Bar_span.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
   end
