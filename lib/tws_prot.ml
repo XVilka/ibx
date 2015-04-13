@@ -66,7 +66,13 @@ module Val_type = struct
   let date_of_tws = Date.of_string_iso8601_basic ~pos:0
   let date = create tws_of_date date_of_tws
 
-  let zone = create Time.Zone.to_string Time.Zone.of_string
+  let time_zone_of_string = function
+    | "CST" -> Time.Zone.find_exn "America/Chicago"
+    (* NOTE: Futures traded in Chicago, like ES, have CST as time zone which is
+       ambiguous.  Return the time zone of Chicago instead. *)
+    | s -> Time.Zone.of_string s
+
+  let zone = create Time.Zone.to_string time_zone_of_string
 end
 
 module Pickler = struct
