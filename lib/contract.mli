@@ -28,7 +28,7 @@ module Id : sig
 end
 
 module Security_type : sig
-  type t = [ `Stock | `Futures | `Option | `Forex ] with sexp
+  type t = [ `Stock | `Futures | `Option | `Fut_opt | `Forex ] with sexp
   include Stringable.S with type t := t
 end
 
@@ -62,11 +62,11 @@ val listing_exchange : 'a t -> Exchange.t option
 val currency         : 'a t -> Currency.t
 val local_symbol     : 'a t -> Symbol.t option
 val security_id      : 'a t ->  Security_id.t option
-val strike           : [ `Option ] t -> Price.t
-val option_right     : [ `Option ] t -> Option_right.t
-val expiry           : [< `Option | `Futures ] t -> Date.t
-val days_to_expiry   : [< `Option | `Futures ] t -> zone:Time.Zone.t -> int
-val multiplier       : [< `Option | `Futures ] t -> string
+val strike           : [< `Option | `Fut_opt ] t -> Price.t
+val option_right     : [< `Option | `Fut_opt ] t -> Option_right.t
+val expiry           : [< `Futures | `Option | `Fut_opt ] t -> Date.t
+val days_to_expiry   : [< `Futures | `Option | `Fut_opt ] t -> zone:Time.Zone.t -> int
+val multiplier       : [< `Futures | `Option | `Fut_opt | `Futures ] t -> string
 val include_expired  : [ `Futures ] t -> bool
 val combo_legs       : 'a t -> int
 
@@ -110,6 +110,20 @@ val option
   -> strike:Price.t
   -> Symbol.t
   -> [> `Option ] t
+
+val futures_option
+  :  ?id:Id.t
+  -> ?multiplier:string
+  -> ?listing_exchange:Exchange.t
+  -> ?local_symbol:Symbol.t
+  -> ?security_id:Security_id.t
+  -> ?exchange:Exchange.t
+  -> currency:Currency.t
+  -> option_right:Option_right.t
+  -> expiry:Date.t
+  -> strike:Price.t
+  -> Symbol.t
+  -> [> `Fut_opt ] t
 
 val forex
   :  ?id:Id.t

@@ -86,7 +86,7 @@ let to_string t =
     sprintf "%s %s"
       (Symbol.to_string t.Raw_contract.symbol)
       (Option.value_exn t.Raw_contract.expiry |> expiry_to_string)
-  | `Option ->
+  | `Option | `Fut_opt ->
     sprintf "%s %s %d %s"
       (Symbol.to_string t.Raw_contract.symbol)
       (Option.value_exn t.Raw_contract.expiry |> expiry_to_string)
@@ -151,6 +151,26 @@ let option ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
       ?exchange
       ~currency
       ~security_type:"OPT"
+      ~expiry
+      ~strike
+      ~option_right
+      symbol
+  )
+
+let futures_option ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
+    ?exchange ~currency ~option_right ~expiry ~strike symbol =
+  let security_id_type, security_id = split_security_id security_id in
+  of_raw (
+    Raw_contract.create
+      ?id
+      ?multiplier
+      ?listing_exchange
+      ?local_symbol
+      ?security_id_type
+      ?security_id
+      ?exchange
+      ~currency
+      ~security_type:"FOP"
       ~expiry
       ~strike
       ~option_right
