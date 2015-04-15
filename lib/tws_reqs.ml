@@ -202,6 +202,7 @@ let req_taq_snapshot = Ib.Streaming_request.create
   ]
   ~skip_header:[
     Ib.Header.create ~tag:R.Tick_size ~version:6;
+    Ib.Header.create ~tag:R.Tick_option ~version:6;
     Ib.Header.create ~tag:R.Tick_string ~version:6;
     Ib.Header.create ~tag:R.Tick_generic ~version:6;
     Ib.Header.create ~tag:R.Snapshot_end ~version:1;
