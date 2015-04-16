@@ -27,25 +27,28 @@ let () =
       +> Common.currency_arg ()
       +> Common.bar_span_arg ()
       +> Common.bar_size_arg ()
+      +> Common.sma_period_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun do_log host port client_id currency bar_span bar_size symbol () ->
+    (fun do_log host port client_id currency span size period symbol () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
-        Tws.historical_data_exn tws ~bar_span ~bar_size
+        Tws.historical_data_exn tws ~bar_span:span ~bar_size:size
           ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
         >>| fun hist_data ->
-        let sma50 = unstage (Filter.sma ~period:50) in
         let gp = Gp.create () in
-        Gp.plot_many gp ~title:symbol [
-          (* Create a candlestick chart series. *)
+        Gp.set gp ~use_grid:true;
+        [ (* Create a candlestick chart series. *)
           Series.candlesticks ~title:"Price"
             (List.map hist_data.bars ~f:(fun bar ->
               Historical_bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
-             :> (Time.t * (float * float * float * float)) list);
+             :> (Time.t * (float * float * float * float)) list) |> Option.some;
           (* Create a moving average time series of the closing prices. *)
-          Series.lines_timey ~color:`Green ~title:"SMA 50"
-            (List.map hist_data.bars ~f:(fun bar ->
-              Historical_bar.(stamp bar, sma50 (cl bar :> float)))) ];
+          Option.map period ~f:(fun period ->
+            let sma = unstage (Filter.sma ~period) in
+            Series.lines_timey ~color:`Green ~title:(sprintf "SMA %d" period)
+              (List.map hist_data.bars ~f:(fun bar ->
+                Historical_bar.(stamp bar, sma (cl bar :> float)))));
+        ] |> List.filter_map ~f:Fn.id |> Gp.plot_many gp ~title:symbol;
         Gp.close gp
       )
     )

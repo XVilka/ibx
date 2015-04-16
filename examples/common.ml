@@ -75,3 +75,9 @@ let bar_size_arg () =
     flag "-size" (optional_with_default `One_day Bar_size.arg_type)
       ~doc:" the size of the bars that will be returned"
   )
+
+let sma_period_arg () =
+  Command.Spec.(
+    flag "-sma" (optional int)
+      ~doc:" the look-back period of the simple moving average"
+  )
