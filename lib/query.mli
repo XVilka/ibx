@@ -152,7 +152,7 @@ module Contract_details : sig
 
   val create
     :  ?contract_id:Contract_id.t
-    -> ?multiplier:string
+    -> ?multiplier:int
     -> ?listing_exchange:Exchange.t
     -> ?local_symbol:Symbol.t
     -> ?security_id:Security_id.t

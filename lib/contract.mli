@@ -67,7 +67,7 @@ val strike           : [< `Option | `Fut_opt ] t -> Price.t
 val option_right     : [< `Option | `Fut_opt ] t -> Option_right.t
 val expiry           : [< `Futures | `Option | `Fut_opt ] t -> Date.t
 val days_to_expiry   : [< `Futures | `Option | `Fut_opt ] t -> zone:Time.Zone.t -> int
-val multiplier       : [< `Futures | `Option | `Fut_opt | `Futures ] t -> string
+val multiplier       : [< `Futures | `Option | `Fut_opt | `Futures ] t -> int
 val include_expired  : [ `Futures ] t -> bool
 val combo_legs       : 'a t -> int
 
@@ -87,7 +87,7 @@ val stock
 
 val futures
   :  ?id:Id.t
-  -> ?multiplier:string
+  -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
@@ -100,7 +100,7 @@ val futures
 
 val option
   :  ?id:Id.t
-  -> ?multiplier:string
+  -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
@@ -114,7 +114,7 @@ val option
 
 val futures_option
   :  ?id:Id.t
-  -> ?multiplier:string
+  -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
