@@ -76,6 +76,7 @@ module Tws_error = struct
 
   let to_error t = Error.of_string (to_string_hum t)
   let to_exn t = Error.to_exn (to_error t)
+  let raise t = Error.raise (to_error t)
 end
 
 module Server_time = struct

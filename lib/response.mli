@@ -41,6 +41,7 @@ module Tws_error : sig
 
   val to_error : t -> Error.t
   val to_exn : t -> exn
+  val raise : t -> 'a
 end
 
 module Server_time : sig
