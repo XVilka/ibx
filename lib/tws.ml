@@ -323,7 +323,7 @@ let market_data ?(snapshot = false) ?(tick_generics = []) t ~contract =
 let market_data_exn ?snapshot ?tick_generics t ~contract =
   market_data ?snapshot ?tick_generics t ~contract >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_market_data t id =
   with_connection_unit t ~f:(fun con ->
@@ -373,9 +373,9 @@ let calc_implied_volatility_exn t ~contract ~option_price ~underlying_price =
    | Orders                                                                |
    +-----------------------------------------------------------------------+ *)
 
-let dedup_adjacents ~equal pipe_r =
+let dedup_adjacents ~equal pipe =
   let last = ref None in
-  Pipe.filter_map pipe_r ~f:(fun x ->
+  Pipe.filter_map pipe ~f:(fun x ->
     match !last with
     | None -> last := Some x; !last
     | Some y -> if equal x y then None else begin last := Some x; !last end)
@@ -391,20 +391,20 @@ let submit_order t ~contract ~order =
     in
     Ib.Streaming_request.dispatch Tws_reqs.req_submit_order con q >>| function
     | Error _ as e -> e
-    | Ok (pipe_r, id) ->
+    | Ok (pipe, id) ->
       let equal t1 t2 = match t1, t2 with
         | Error e1, Error e2 -> Tws_error.(=) e1 e2
         | Ok x1, Ok x2 -> Order_status.(=) x1 x2
         | _, _ -> false
       in
       let oid = Order_id.of_int_exn (Query_id.to_int_exn id) in
-      Ok (dedup_adjacents ~equal pipe_r, oid)
+      Ok (dedup_adjacents ~equal pipe, oid)
   )
 
 let submit_order_exn t ~contract ~order =
   submit_order t ~contract ~order >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_order_status t oid =
   with_connection_unit t ~f:(fun con ->
@@ -422,8 +422,8 @@ let updates_gen t req create_query =
     let q = create_query ~subscribe:true ~account_code:code  in
     Ib.Streaming_request_without_id.(dispatch req con q >>| function
     | Error _ as e -> e
-    | Ok pipe_r ->
-      Pipe.filter_map pipe_r ~f:(function
+    | Ok pipe ->
+      Pipe.filter_map pipe ~f:(function
       | `Update update -> Some update
       | `Update_end c  -> if Account_code.(code = c) then cancel req con; None
       ) |> (fun pipe -> Ok pipe)
@@ -473,7 +473,7 @@ let filter_executions ?time t ~contract ~order_action =
 let filter_executions_exn ?time t ~contract ~order_action =
   filter_executions ?time t ~contract ~order_action >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok pipe_r -> Pipe.map pipe_r ~f:Tws_result.ok_exn
+  | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
 (* +-----------------------------------------------------------------------+
    | Contract details                                                      |
@@ -507,7 +507,7 @@ let contract_details_exn t ?contract_id ?multiplier ?listing_exchange
     ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
     ~security_type symbol >>| function
     | Error e -> raise (Error.to_exn e)
-    | Ok pipe_r -> Pipe.map pipe_r ~f:Tws_result.ok_exn
+    | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
 
 (* +-----------------------------------------------------------------------+
@@ -523,7 +523,7 @@ let market_depth ?(num_rows = 10) t ~contract =
 let market_depth_exn ?num_rows t ~contract =
   market_depth ?num_rows t ~contract >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_market_depth t id =
   with_connection_unit t ~f:(fun con ->
@@ -576,7 +576,7 @@ let realtime_bars
 let realtime_bars_exn ?bar_size ?show ?use_rth t ~contract =
   realtime_bars ?bar_size ?show ?use_rth t ~contract >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_realtime_bars t id =
   with_connection_unit t ~f:(fun con ->
@@ -653,7 +653,7 @@ let trades t ~contract =
 let trades_exn t ~contract =
   trades t ~contract >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_trades t id =
   with_connection_unit t ~f:(fun con ->
@@ -820,7 +820,7 @@ let quotes t ~contract =
 let quotes_exn t ~contract =
   quotes t ~contract >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_quotes t id =
   with_connection_unit t ~f:(fun con ->
@@ -875,7 +875,7 @@ let taq_data t ~contract =
 let taq_data_exn t ~contract =
   taq_data t ~contract >>| function
   | Error e -> raise (Error.to_exn e)
-  | Ok (pipe_r, id) -> Pipe.map pipe_r ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_taq_data t id =
   with_connection_unit t ~f:(fun con ->
