@@ -1029,6 +1029,39 @@ end = struct
   (* =========================== Contract details ========================== *)
 
   let contract_data_g () =
+    let contract_g () = oneof
+      [ always (
+        Contract.stock
+          ?id:(og contract_id_g ())
+          ?listing_exchange:(og exchange_g ())
+          ?local_symbol:(og symbol_g ())
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          (symbol_g ()))
+      ; always (
+        Contract.futures
+          ?id:(og contract_id_g ())
+          ?multiplier:(og sg ())
+          ?listing_exchange:(og exchange_g ())
+          ?local_symbol:(og symbol_g ())
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          ~expiry:(expiry_g ())
+          (symbol_g ()))
+      ; always (
+        Contract.option
+          ?id:(og contract_id_g ())
+          ?multiplier:(og sg ())
+          ?listing_exchange:(og exchange_g ())
+          ?local_symbol:(og symbol_g ())
+          ?exchange:(og exchange_g ())
+          ~currency:(currency_g ())
+          ~option_right:(option_right_g ())
+          ~expiry:(expiry_g ())
+          ~strike:(price_g ())
+          (symbol_g ()))
+      ] ()
+    in
     Response.Contract_data.create
       ~contract:(contract_g ())
       ~market_name:(sg ())
