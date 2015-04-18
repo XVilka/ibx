@@ -284,6 +284,38 @@ val futures_chain_exn
   -> Symbol.t
   -> ([> `Futures ] Contract.t) Pipe.Reader.t Deferred.t
 
+val option_chain
+  :  t
+  -> ?contract_id:Contract_id.t
+  -> ?multiplier:string
+  -> ?listing_exchange:Exchange.t
+  -> ?local_symbol:Symbol.t
+  -> ?security_id:Security_id.t
+  -> ?include_expired:bool
+  -> ?exchange:Exchange.t
+  -> ?expiry:Date.t
+  -> ?strike:Price.t
+  -> option_right:Option_right.t
+  -> currency:Currency.t
+  -> Symbol.t
+  -> ([> `Option ] Contract.t) Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
+
+val option_chain_exn
+  :  t
+  -> ?contract_id:Contract_id.t
+  -> ?multiplier:string
+  -> ?listing_exchange:Exchange.t
+  -> ?local_symbol:Symbol.t
+  -> ?security_id:Security_id.t
+  -> ?include_expired:bool
+  -> ?exchange:Exchange.t
+  -> ?expiry:Date.t
+  -> ?strike:Price.t
+  -> option_right:Option_right.t
+  -> currency:Currency.t
+  -> Symbol.t
+  -> ([> `Option ] Contract.t) Pipe.Reader.t Deferred.t
+
 
 (** {1 Market depth} *)
 (******************************************************************************)

@@ -526,6 +526,27 @@ let futures_chain_exn t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
+let option_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
+    ?security_id ?include_expired ?exchange ?expiry ?strike ~option_right
+    ~currency symbol =
+  contract_details t
+    ?contract_id ?multiplier ?listing_exchange ?local_symbol ?security_id
+    ?include_expired ?exchange ?expiry ?strike ~option_right ~currency
+    ~security_type:`Option symbol >>| function
+    | Error _ as e -> e
+    | Ok pipe ->
+      Ok (Pipe.map pipe ~f:(fun x -> Result.map x ~f:Contract_data.contract))
+
+let option_chain_exn t ?contract_id ?multiplier ?listing_exchange ?local_symbol
+    ?security_id ?include_expired ?exchange ?expiry ?strike ~option_right
+    ~currency symbol =
+  option_chain t
+    ?contract_id ?multiplier ?listing_exchange ?local_symbol
+    ?security_id ?include_expired ?exchange ?expiry ?strike ~option_right
+    ~currency symbol >>| function
+    | Error e -> Error.raise e
+    | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
+
 
 (* +-----------------------------------------------------------------------+
    | Market depth                                                          |
