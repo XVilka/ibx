@@ -6,11 +6,11 @@ module Ascii_table = Textutils.Ascii_table
 
 let print_quote_table quotes =
   let module Q = Quote_snapshot in
-  let get_symbol    quote = sprintf "%s"    (Q.symbol quote |> Symbol.to_string) in
-  let get_bid_size  quote = sprintf "%d"    (Q.bid_size  quote) in
-  let get_bid_price quote = sprintf "%4.2f" (Q.bid_price quote |> Price.to_float) in
-  let get_ask_size  quote = sprintf "%d"    (Q.ask_size  quote) in
-  let get_ask_price quote = sprintf "%4.2f" (Q.ask_price quote |> Price.to_float) in
+  let get_symbol    quote = sprintf "%s"    Q.(symbol    quote :> string) in
+  let get_bid_size  quote = sprintf "%d"    Q.(bid_size  quote) in
+  let get_bid_price quote = sprintf "%4.2f" Q.(bid_price quote :> float) in
+  let get_ask_size  quote = sprintf "%d"    Q.(ask_size  quote) in
+  let get_ask_price quote = sprintf "%4.2f" Q.(ask_price quote :> float) in
   let create_col ?(align=Ascii_table.Align.right) =
     Ascii_table.Column.create ~align
   in
@@ -31,15 +31,14 @@ let () =
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
-          let stock = Contract.stock
-            ~exchange:`SMART
-            ~currency:`USD
-            (Symbol.of_string symbol)
-          in
-          Tws.contract_details_exn tws ~contract:stock
+          Tws.contract_details_exn tws ~currency:`USD
+            ~security_type:`Stock (Symbol.of_string symbol)
           >>= fun details ->
+          let data = Option.value_exn (Pipe.peek details) in
           (* Extract unambiguous contract description. *)
-          let contract = Contract_details.contract details in
-          Tws.quote_snapshot_exn tws ~contract)
-        >>| fun quotes -> print_quote_table quotes))
+          Tws.quote_snapshot_exn tws ~contract:(Contract_data.contract data)
+        )
+        >>| fun quotes -> print_quote_table quotes
+      )
+    )
   |> Command.run
