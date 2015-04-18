@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 133bf5554591dd75112dc58a654ea258)
+# DO NOT EDIT (digest: f5a4112276b16bd2315eee3c5b52e34d)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -155,15 +155,6 @@ true: annot, bin_annot
 <examples/server_time.{native,byte}>: package(textutils)
 <examples/server_time.{native,byte}>: package(threads)
 <examples/server_time.{native,byte}>: use_ibx
-# Executable show-contract-details
-<examples/show_contract_details.{native,byte}>: package(async)
-<examples/show_contract_details.{native,byte}>: package(core)
-<examples/show_contract_details.{native,byte}>: package(fieldslib.syntax)
-<examples/show_contract_details.{native,byte}>: package(sexplib.syntax)
-<examples/show_contract_details.{native,byte}>: package(str)
-<examples/show_contract_details.{native,byte}>: package(textutils)
-<examples/show_contract_details.{native,byte}>: package(threads)
-<examples/show_contract_details.{native,byte}>: use_ibx
 # Executable show-portfolio
 <examples/show_portfolio.{native,byte}>: package(async)
 <examples/show_portfolio.{native,byte}>: package(core)

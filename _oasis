@@ -156,14 +156,6 @@ Executable "server-time"
   BuildDepends:   ibx
   CompiledObject: best
 
-Executable "show-contract-details"
-  Build$:         flag(examples)
-  Path:           examples
-  MainIs:         show_contract_details.ml
-  Install:        false
-  BuildDepends:   ibx
-  CompiledObject: best
-
 Executable "show-portfolio"
   Build$:         flag(examples)
   Path:           examples
