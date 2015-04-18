@@ -100,6 +100,14 @@ Executable "demultiplex"
   BuildDepends:   ibx
   CompiledObject: best
 
+Executable "futures-chain"
+  Build$:         flag(examples)
+  Path:           examples
+  MainIs:         futures_chain.ml
+  Install:        false
+  BuildDepends:   ibx
+  CompiledObject: best
+
 Executable "last-price"
   Build$:         flag(examples)
   Path:           examples

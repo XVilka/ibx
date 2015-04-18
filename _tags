@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: f5a4112276b16bd2315eee3c5b52e34d)
+# DO NOT EDIT (digest: 845cf39eceb99c420fbabe2abb3ee9dd)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -89,6 +89,15 @@ true: annot, bin_annot
 <examples/demultiplex.{native,byte}>: package(textutils)
 <examples/demultiplex.{native,byte}>: package(threads)
 <examples/demultiplex.{native,byte}>: use_ibx
+# Executable futures-chain
+<examples/futures_chain.{native,byte}>: package(async)
+<examples/futures_chain.{native,byte}>: package(core)
+<examples/futures_chain.{native,byte}>: package(fieldslib.syntax)
+<examples/futures_chain.{native,byte}>: package(sexplib.syntax)
+<examples/futures_chain.{native,byte}>: package(str)
+<examples/futures_chain.{native,byte}>: package(textutils)
+<examples/futures_chain.{native,byte}>: package(threads)
+<examples/futures_chain.{native,byte}>: use_ibx
 # Executable last-price
 <examples/last_price.{native,byte}>: package(async)
 <examples/last_price.{native,byte}>: package(core)
