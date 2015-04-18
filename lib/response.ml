@@ -880,7 +880,7 @@ module Contract_data = struct
       industry : string;
       category : string;
       subcategory : string;
-      time_zone : Time.Zone.t;
+      time_zone : Time.Zone.t option;
       trading_hours : string;
       liquid_hours : string;
     } with sexp, fields
@@ -901,7 +901,7 @@ module Contract_data = struct
       industry;
       category;
       subcategory;
-      time_zone;
+      time_zone = Some time_zone;
       trading_hours;
       liquid_hours;
     }
@@ -926,7 +926,7 @@ module Contract_data = struct
       ~industry:(use (=))
       ~category:(use (=))
       ~subcategory:(use (=))
-      ~time_zone:(use Time.Zone.(=))
+      ~time_zone:(use (Option.equal Time.Zone.(=)))
       ~trading_hours:(use (=))
       ~liquid_hours:(use (=))
 
@@ -980,7 +980,7 @@ module Contract_data = struct
           ~name:(field_name Fields.category)
         ++ value (required string)
           ~name:(field_name Fields.subcategory)
-        ++ value (required zone)
+        ++ value (optional zone)
           ~name:(field_name Fields.time_zone)
         ++ value (required string)
           ~name:(field_name Fields.trading_hours)
@@ -1084,7 +1084,7 @@ module Contract_data = struct
               (* subcategory *)
               ++ value (required string)
               (* time_zone *)
-              ++ value (required zone)
+              ++ value (optional zone)
               (* trading hours *)
               ++ value (required string)
               (* liquid hour *)

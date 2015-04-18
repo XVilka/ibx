@@ -312,7 +312,7 @@ module Contract_data : sig
       industry : string;
       category : string;
       subcategory : string;
-      time_zone : Time.Zone.t;
+      time_zone : Time.Zone.t option;
       trading_hours : string;
       liquid_hours : string;
     } with sexp, fields
