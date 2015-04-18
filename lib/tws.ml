@@ -259,7 +259,7 @@ let with_connection_unit t ~f = match t.con with
   | `Connected con -> f con
 
 let dispatch_and_cancel req con query =
-  Ib.Streaming_request.dispatch req con query
+  Ib.Streaming_request.(dispatch req con query
   >>= function
   | Error _ as e -> return e
   | Ok (reader, id) ->
@@ -268,7 +268,8 @@ let dispatch_and_cancel req con query =
     Exn.protectx read_result ~f:(function
     | `Eof -> Or_error.of_exn Eof_from_client
     | `Ok result -> Ok (Queue.dequeue_exn result)
-    ) ~finally:(fun _ -> Ib.Streaming_request.cancel req con id)
+    ) ~finally:(fun _ -> cancel req con id)
+  )
 
 (* +-----------------------------------------------------------------------+
    | Connection and server                                                 |
@@ -417,20 +418,16 @@ let cancel_order_status t oid =
 
 let updates_gen t req create_query =
   with_connection t ~f:(fun con ->
-    let account_code = Option.value_exn (account_code t) in
-    let q = create_query ~subscribe:true ~account_code  in
-    Ib.Streaming_request_without_id.dispatch req con q >>| function
+    let code = Option.value_exn (account_code t) in
+    let q = create_query ~subscribe:true ~account_code:code  in
+    Ib.Streaming_request_without_id.(dispatch req con q >>| function
     | Error _ as e -> e
     | Ok pipe_r ->
-      let pipe_r =
-        Pipe.filter_map pipe_r ~f:(function
-        | `Update x -> Some x
-        | `Update_end code ->
-          if Account_code.(=) account_code code then
-            Ib.Streaming_request_without_id.cancel req con;
-          None)
-      in
-      Ok pipe_r
+      Pipe.filter_map pipe_r ~f:(function
+      | `Update update -> Some update
+      | `Update_end c  -> if Account_code.(code = c) then cancel req con; None
+      ) |> (fun pipe -> Ok pipe)
+    )
   )
 
 let account_updates t =
@@ -462,19 +459,15 @@ let filter_executions ?time t ~contract ~order_action =
       ~time:(Option.value time ~default:(Time.sub (Time.now ()) Time.Span.day))
       ~order_action
     in
-    Ib.Streaming_request.dispatch Tws_reqs.req_executions con q >>| function
+    Ib.Streaming_request.(dispatch Tws_reqs.req_executions con q >>| function
     | Error _ as e -> e
-    | Ok (pipe_r, id) ->
-      let pipe_r = Pipe.filter_map pipe_r ~f:(function
-        | Error _ as x ->
-          Some x
-        | Ok `Execution exec ->
-          Some (Ok exec)
-        | Ok `Executions_end  ->
-          Ib.Streaming_request.cancel Tws_reqs.req_executions con id;
-          None)
-      in
-      Ok pipe_r
+    | Ok (pipe, id) ->
+      Pipe.filter_map pipe ~f:(function
+      | Error _ as e -> Some e
+      | Ok (`Execution x)  -> Some (Ok x)
+      | Ok `Executions_end -> cancel Tws_reqs.req_executions con id; None
+      ) |> (fun pipe -> Ok pipe)
+    )
   )
 
 let filter_executions_exn ?time t ~contract ~order_action =
@@ -497,12 +490,12 @@ let contract_details t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     in
     Ib.Streaming_request.(dispatch Tws_reqs.req_contract_details con q >>| function
     | Error _ as e -> e
-    | Ok (pipe_r, id) ->
-      Pipe.filter_map pipe_r ~f:(function
+    | Ok (pipe, id) ->
+      Pipe.filter_map pipe ~f:(function
       | Error _ as e -> Some e
       | Ok (`Contract_data x) -> Some (Ok x)
       | Ok `Contract_data_end -> cancel Tws_reqs.req_contract_details con id; None
-      ) |> (fun x -> Ok x)
+      ) |> (fun pipe -> Ok pipe)
     )
   )
 
