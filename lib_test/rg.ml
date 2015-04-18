@@ -555,7 +555,6 @@ end = struct
     Query.Contract_details.create
       ?contract_id:(og contract_id_g ())
       ?multiplier:(og nng ())
-      ?listing_exchange:(og exchange_g ())
       ?local_symbol:(og symbol_g ())
       ?security_id:(og security_id_g ())
       ?exchange:(og exchange_g ())
