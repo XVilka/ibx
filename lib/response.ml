@@ -129,7 +129,7 @@ module Tick_price = struct
   type t =
     { tick_type : Type.t;
       price : Price.t;
-      size : int;
+      size : Volume.t;
       can_auto_execute : bool option;
     } with sexp, fields
 
@@ -142,7 +142,7 @@ module Tick_price = struct
     Fields.for_all
       ~tick_type:(use (=))
       ~price:(use Price.(=.))
-      ~size:(use (=))
+      ~size:(use Volume.(=))
       ~can_auto_execute:(use (Option.equal (=)))
 
   let unpickler =
@@ -152,7 +152,7 @@ module Tick_price = struct
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
           ~price:(fields_value (optional_with_default ~default:Price.zero Price.val_type))
-          ~size:(fields_value (required int))
+          ~size:(fields_value (required Volume.val_type))
           ~can_auto_execute:(fields_value (optional bool ~none_on_default:"-1")))
       (fun tick_type price size can_auto_execute ->
         { tick_type; price; size; can_auto_execute })
@@ -165,15 +165,15 @@ module Tick_price = struct
             ~init:(empty ())
             ~tick_type:(fields_value (required Type.val_type))
             ~price:(fields_value (required Price.val_type))
-            ~size:(fields_value (required int))
+            ~size:(fields_value (required Volume.val_type))
             ~can_auto_execute:(fields_value (optional bool ~default_on_none:"-1")))
           (fun t -> `Args $ t.tick_type $ t.price $ t.size $ t.can_auto_execute)))
 
   let pp ppf t =
     Format.fprintf ppf "type=%s price=%4.2f size=%d %s"
       (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
-      (Price.to_float t.price)
-      t.size
+      (t.price :> float)
+      (t.size :> int)
       (Option.value_map t.can_auto_execute ~default:"n/a" ~f:(function
         | true  -> "can_auto_execute"
         | false -> "no_auto_execute"))
@@ -201,7 +201,7 @@ module Tick_size = struct
 
   type t =
     { tick_type : Type.t;
-      size : int;
+      size : Volume.t;
     } with sexp, fields
 
   let create = Fields.create
@@ -214,7 +214,7 @@ module Tick_size = struct
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
-          ~size:(fields_value (required int)))
+          ~size:(fields_value (required Volume.val_type)))
       (fun tick_type size -> { tick_type; size })
 
   let pickler = Only_in_test.of_thunk (fun () ->
@@ -224,13 +224,13 @@ module Tick_size = struct
           Fields.fold
             ~init:(empty ())
             ~tick_type:(fields_value (required Type.val_type))
-            ~size:(fields_value (required int)))
+            ~size:(fields_value (required Volume.val_type)))
           (fun t -> `Args $ t.tick_type $ t.size)))
 
   let pp ppf t =
     Format.fprintf ppf "type=%s size=%i"
       (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
-      t.size
+      (t.size :> int)
 end
 
 module Tick_option = struct
@@ -754,7 +754,7 @@ end
 module Portfolio_position = struct
   type t =
     { contract : Raw_contract.t;
-      amount : int;
+      volume : Volume.t;
       market_price : Price.t;
       market_value : Price.t;
       average_cost : Price.t;
@@ -763,10 +763,10 @@ module Portfolio_position = struct
       account_code : Account_code.t;
     } with sexp, fields
 
-  let create ~contract ~amount ~market_price ~market_value ~average_cost
+  let create ~contract ~volume ~market_price ~market_value ~average_cost
       ~unrealized_pnl ~realized_pnl ~account_code =
     { contract = Contract.to_raw contract;
-      amount;
+      volume;
       market_price;
       market_value;
       average_cost;
@@ -780,13 +780,13 @@ module Portfolio_position = struct
   let total_pnl t = Price.(t.unrealized_pnl + t.realized_pnl)
 
   let return t =
-    let position = float t.amount in
+    let volume = Volume.to_float t.volume in
     let market_value = (t.market_value :> float) in
     let average_cost = (t.average_cost :> float) in
-    Float.(match sign position with
+    Float.(match sign volume with
     | Sign.Zero -> zero
-    | Sign.Pos  ->     (market_value / (average_cost * position) - one)
-    | Sign.Neg  -> neg (market_value / (average_cost * position) - one)
+    | Sign.Pos  ->     (market_value / (average_cost * volume) - one)
+    | Sign.Neg  -> neg (market_value / (average_cost * volume) - one)
     )
   ;;
 
@@ -796,7 +796,7 @@ module Portfolio_position = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~amount:(use (=))
+      ~volume:(use Volume.(=))
       ~market_price:(use Price.(=.))
       ~market_value:(use Price.(=.))
       ~average_cost:(use Price.(=.))
@@ -813,17 +813,17 @@ module Portfolio_position = struct
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-          ~amount:(fields_value (required int))
+          ~volume:(fields_value (required Volume.val_type))
           ~market_price:(fields_value (required Price.val_type))
           ~market_value:(fields_value (required Price.val_type))
           ~average_cost:(fields_value (required Price.val_type))
           ~unrealized_pnl:(fields_value (required Price.val_type))
           ~realized_pnl:(fields_value (required Price.val_type))
           ~account_code:(fields_value (required Account_code.val_type)))
-      (fun contract amount market_price market_value average_cost
+      (fun contract volume market_price market_value average_cost
         unrealized_pnl realized_pnl account_code ->
           { contract = contract;
-            amount;
+            volume;
             market_price;
             market_value;
             average_cost;
@@ -842,7 +842,7 @@ module Portfolio_position = struct
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-            ~amount:(fields_value (required int))
+            ~volume:(fields_value (required Volume.val_type))
             ~market_price:(fields_value (required Price.val_type))
             ~market_value:(fields_value (required Price.val_type))
             ~average_cost:(fields_value (required Price.val_type))
@@ -852,7 +852,7 @@ module Portfolio_position = struct
           (fun t ->
             `Args
               $ t.contract
-              $ t.amount
+              $ t.volume
               $ t.market_price
               $ t.market_value
               $ t.average_cost
@@ -1152,18 +1152,18 @@ module Execution = struct
       account_code : Account_code.t;
       exchange : Exchange.t;
       side : Side.t;
-      quantity : int;
+      volume : Volume.t;
       price : Price.t;
       permanent_id : int;
       client_id : Client_id.t;
       liquidation : int;
-      cumulative_quantity : int;
+      cumulative_volume : Volume.t;
       average_price : Price.t;
       order_ref : string option;
     } with fields, sexp
 
   let create ~order_id ~contract ~exec_id ~time ~account_code ~exchange ~side
-      ~quantity ~price ~permanent_id ~client_id ~liquidation ~cumulative_quantity
+      ~volume ~price ~permanent_id ~client_id ~liquidation ~cumulative_volume
       ~average_price ~order_ref =
     { order_id;
       contract = Contract.to_raw contract;
@@ -1172,12 +1172,12 @@ module Execution = struct
       account_code;
       exchange;
       side;
-      quantity;
+      volume;
       price;
       permanent_id;
       client_id;
       liquidation;
-      cumulative_quantity;
+      cumulative_volume;
       average_price;
       order_ref;
     }
@@ -1196,12 +1196,12 @@ module Execution = struct
       ~account_code:(use Account_code.(=))
       ~exchange:(use (=))
       ~side:(use (=))
-      ~quantity:(use (=))
+      ~volume:(use Volume.(=))
       ~price:(use Price.(=.))
       ~permanent_id:(use (=))
       ~client_id:(use Client_id.(=))
       ~liquidation:(use (=))
-      ~cumulative_quantity:(use (=))
+      ~cumulative_volume:(use Volume.(=))
       ~average_price:(use Price.(=.))
       ~order_ref:(use (=))
 
@@ -1220,16 +1220,16 @@ module Execution = struct
           ~account_code:(fields_value (required Account_code.val_type))
           ~exchange:(fields_value (required Exchange.val_type))
           ~side:(fields_value (required Side.val_type))
-          ~quantity:(fields_value (required int))
+          ~volume:(fields_value (required Volume.val_type))
           ~price:(fields_value (required Price.val_type))
           ~permanent_id:(fields_value (required int))
           ~client_id:(fields_value (required Client_id.val_type))
           ~liquidation:(fields_value (required int))
-          ~cumulative_quantity:(fields_value (required int))
+          ~cumulative_volume:(fields_value (required Volume.val_type))
           ~average_price:(fields_value (required Price.val_type))
           ~order_ref:(fields_value (optional string)))
       (fun order_id contract exec_id time account_code exchange side
-        quantity price permanent_id client_id liquidation cumulative_quantity
+        volume price permanent_id client_id liquidation cumulative_volume
         average_price order_ref ->
           { order_id;
             contract;
@@ -1238,12 +1238,12 @@ module Execution = struct
             account_code;
             exchange;
             side;
-            quantity;
+            volume;
             price;
             permanent_id;
             client_id;
             liquidation;
-            cumulative_quantity;
+            cumulative_volume;
             average_price;
             order_ref;
           })
@@ -1264,12 +1264,12 @@ module Execution = struct
             ~account_code:(fields_value (required Account_code.val_type))
             ~exchange:(fields_value (required Exchange.val_type))
             ~side:(fields_value (required Side.val_type))
-            ~quantity:(fields_value (required int))
+            ~volume:(fields_value (required Volume.val_type))
             ~price:(fields_value (required Price.val_type))
             ~permanent_id:(fields_value (required int))
             ~client_id:(fields_value (required Client_id.val_type))
             ~liquidation:(fields_value (required int))
-            ~cumulative_quantity:(fields_value (required int))
+            ~cumulative_volume:(fields_value (required Volume.val_type))
             ~average_price:(fields_value (required Price.val_type))
             ~order_ref:(fields_value (optional string)))
           (fun t ->
@@ -1281,12 +1281,12 @@ module Execution = struct
               $ t.account_code
               $ t.exchange
               $ t.side
-              $ t.quantity
+              $ t.volume
               $ t.price
               $ t.permanent_id
               $ t.client_id
               $ t.liquidation
-              $ t.cumulative_quantity
+              $ t.cumulative_volume
               $ t.average_price
               $ t.order_ref)))
 end
@@ -1400,7 +1400,7 @@ module Book_update = struct
       operation : Operation.t;
       side : Side.t;
       price : Price.t;
-      size : int;
+      size : Volume.t;
     } with sexp, fields
 
   let create = Fields.create
@@ -1414,7 +1414,7 @@ module Book_update = struct
       ~operation:(use (=))
       ~side:(use (=))
       ~price:(use Price.(=.))
-      ~size:(use (=))
+      ~size:(use Volume.(=))
 
   let unpickler =
     Unpickler.create ~name:"Response.Book_update"
@@ -1425,7 +1425,7 @@ module Book_update = struct
           ~operation:(fields_value (required Operation.val_type))
           ~side:(fields_value (required Side.val_type))
           ~price:(fields_value (required Price.val_type))
-          ~size:(fields_value (required int)))
+          ~size:(fields_value (required Volume.val_type)))
       (fun position operation side price size ->
         { position; operation; side; price; size })
 
@@ -1439,7 +1439,7 @@ module Book_update = struct
             ~operation:(fields_value (required Operation.val_type))
             ~side:(fields_value (required Side.val_type))
             ~price:(fields_value (required Price.val_type))
-            ~size:(fields_value (required int)))
+            ~size:(fields_value (required Volume.val_type)))
           (fun t ->
             `Args $ t.position $ t.operation $ t.side $ t.price $ t.size)))
 end
@@ -1456,7 +1456,7 @@ module Historical_data = struct
         hi : Price.t;
         lo : Price.t;
         cl : Price.t;
-        volume : int;
+        volume : Volume.t;
         wap : Price.t;
         has_gaps : bool;
         count : int;
@@ -1474,7 +1474,7 @@ module Historical_data = struct
         ~hi:(use Price.(=.))
         ~lo:(use Price.(=.))
         ~cl:(use Price.(=.))
-        ~volume:(use (=))
+        ~volume:(use Volume.(=))
         ~wap:(use Price.(=.))
         ~has_gaps:(use (=))
         ~count:(use (=))
@@ -1489,7 +1489,7 @@ module Historical_data = struct
             ~hi:(fields_value (required Price.val_type))
             ~lo:(fields_value (required Price.val_type))
             ~cl:(fields_value (required Price.val_type))
-            ~volume:(fields_value (required int))
+            ~volume:(fields_value (required Volume.val_type))
             ~wap:(fields_value (required Price.val_type))
             ~has_gaps:(fields_value (required string))
             ~count:(fields_value (required int)))
@@ -1516,7 +1516,7 @@ module Historical_data = struct
               ~hi:(fields_value (required Price.val_type))
               ~lo:(fields_value (required Price.val_type))
               ~cl:(fields_value (required Price.val_type))
-              ~volume:(fields_value (required int))
+              ~volume:(fields_value (required Volume.val_type))
               ~wap:(fields_value (required Price.val_type))
               ~has_gaps:(fields_value (required string))
               ~count:(fields_value (required int)))
@@ -1628,7 +1628,8 @@ module Historical_data = struct
       Array.set hi_prices i (bar.Bar.hi :> float);
       Array.set lo_prices i (bar.Bar.lo :> float);
       Array.set cl_prices i (bar.Bar.cl :> float);
-      Array.set volumes   i bar.Bar.volume);
+      Array.set volumes   i (bar.Bar.volume :> int)
+    );
     { Data_frame.
       stamps;
       op_prices;
@@ -1650,7 +1651,7 @@ module Realtime_bar = struct
       hi : Price.t;
       lo : Price.t;
       cl : Price.t;
-      volume : int;
+      volume : Volume.t;
       wap : Price.t;
       count : int;
     } with sexp, fields
@@ -1667,7 +1668,7 @@ module Realtime_bar = struct
       ~hi:(use Price.(=.))
       ~lo:(use Price.(=.))
       ~cl:(use Price.(=.))
-      ~volume:(use (=))
+      ~volume:(use Volume.(=))
       ~wap:(use Price.(=.))
       ~count:(use (=))
 
@@ -1681,7 +1682,7 @@ module Realtime_bar = struct
           ~hi:(fields_value (required Price.val_type))
           ~lo:(fields_value (required Price.val_type))
           ~cl:(fields_value (required Price.val_type))
-          ~volume:(fields_value (required int))
+          ~volume:(fields_value (required Volume.val_type))
           ~wap:(fields_value (required Price.val_type))
           ~count:(fields_value (required int)))
       (fun stamp op hi lo cl volume wap count ->
@@ -1706,7 +1707,7 @@ module Realtime_bar = struct
             ~hi:(fields_value (required Price.val_type))
             ~lo:(fields_value (required Price.val_type))
             ~cl:(fields_value (required Price.val_type))
-            ~volume:(fields_value (required int))
+            ~volume:(fields_value (required Volume.val_type))
             ~wap:(fields_value (required Price.val_type))
             ~count:(fields_value (required int)))
           (fun t ->

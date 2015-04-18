@@ -50,22 +50,22 @@ include Raw_order_intf.S
 val ( = ) : ('a, 'b) t -> ('a, 'b) t -> bool
 
 val order_type : ('a, 'b) t -> [> Type.t ]
-val quantity   : ('a, 'b) t -> int
+val quantity   : ('a, 'b) t -> Volume.t
 
 val buy_limit
-  :  quantity:int
+  :  quantity:Volume.t
   -> Price.t
   -> ([> `Buy ], [> `Limit ]) t
 
 val sell_limit
-  :  quantity:int
+  :  quantity:Volume.t
   -> Price.t
   -> ([> `Sell ], [> `Limit ]) t
 
 val buy_market
-  :  quantity:int
+  :  quantity:Volume.t
   -> ([> `Buy  ], [> `Market ]) t
 
 val sell_market
-  :  quantity:int
+  :  quantity:Volume.t
   -> ([> `Sell ], [> `Market ]) t

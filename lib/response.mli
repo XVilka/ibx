@@ -61,7 +61,7 @@ module Tick_price : sig
   type t = private
     { tick_type : Type.t;
       price : Price.t;
-      size : int;
+      size : Volume.t;
       can_auto_execute : bool option;
     }
   with sexp, fields
@@ -70,7 +70,7 @@ module Tick_price : sig
   val create
     :  tick_type:Type.t
     -> price:Price.t
-    -> size:int
+    -> size:Volume.t
     -> can_auto_execute:bool option
     -> t
 
@@ -83,12 +83,12 @@ module Tick_size : sig
   end
   type t = private
     { tick_type : Type.t;
-      size : int;
+      size : Volume.t;
     }
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create : tick_type:Type.t -> size:int -> t
+  val create : tick_type:Type.t -> size:Volume.t -> t
   val pp : Format.formatter -> t -> unit
 end
 
@@ -261,7 +261,7 @@ end
 module Portfolio_position : sig
   type t = private
     { contract : Raw_contract.t;
-      amount : int;
+      volume : Volume.t;
       market_price : Price.t;
       market_value : Price.t;
       average_cost : Price.t;
@@ -274,7 +274,7 @@ module Portfolio_position : sig
 
   val create
     :  contract:[< Security_type.t ] Contract.t
-    -> amount:int
+    -> volume:Volume.t
     -> market_price:Price.t
     -> market_value:Price.t
     -> average_cost:Price.t
@@ -357,12 +357,12 @@ module Execution : sig
       account_code : Account_code.t;
       exchange : Exchange.t;
       side : Side.t;
-      quantity : int;
+      volume : Volume.t;
       price : Price.t;
       permanent_id : int;
       client_id : Client_id.t;
       liquidation : int;
-      cumulative_quantity : int;
+      cumulative_volume : Volume.t;
       average_price : Price.t;
       order_ref : string option;
     }
@@ -377,12 +377,12 @@ module Execution : sig
     -> account_code:Account_code.t
     -> exchange:Exchange.t
     -> side:Side.t
-    -> quantity:int
+    -> volume:Volume.t
     -> price:Price.t
     -> permanent_id:int
     -> client_id:Client_id.t
     -> liquidation:int
-    -> cumulative_quantity:int
+    -> cumulative_volume:Volume.t
     -> average_price:Price.t
     -> order_ref:string option
     -> t
@@ -426,7 +426,7 @@ module Book_update : sig
       operation : Operation.t;
       side : Side.t;
       price : Price.t;
-      size : int;
+      size : Volume.t;
     }
   with sexp, fields
   include Response_intf.S with type t := t
@@ -436,7 +436,7 @@ module Book_update : sig
     -> operation:Operation.t
     -> side:Side.t
     -> price:Price.t
-    -> size:int
+    -> size:Volume.t
     -> t
 end
 
@@ -451,7 +451,7 @@ module Historical_data : sig
         hi : Price.t;
         lo : Price.t;
         cl : Price.t;
-        volume : int;
+        volume : Volume.t;
         wap : Price.t;
         has_gaps : bool;
         count : int;
@@ -465,7 +465,7 @@ module Historical_data : sig
       -> hi:Price.t
       -> lo:Price.t
       -> cl:Price.t
-      -> volume:int
+      -> volume:Volume.t
       -> wap:Price.t
       -> has_gaps:bool
       -> count:int
@@ -510,7 +510,7 @@ module Realtime_bar : sig
       hi : Price.t;
       lo : Price.t;
       cl : Price.t;
-      volume : int;
+      volume : Volume.t;
       wap : Price.t;
       count : int;
     }
@@ -523,7 +523,7 @@ module Realtime_bar : sig
     -> hi:Price.t
     -> lo:Price.t
     -> cl:Price.t
-    -> volume:int
+    -> volume:Volume.t
     -> wap:Price.t
     -> count:int
     -> t

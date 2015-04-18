@@ -58,7 +58,8 @@ Library ibx
                   Tws_reqs,
                   Tws_result,
                   Twsable,
-                  Unpickable
+                  Unpickable,
+                  Volume
   BuildDepends:   core  (>= 112.17.00),
                   async (>= 112.17.00),
                   sexplib.syntax,

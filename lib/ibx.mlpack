@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 72c4b6c4dd4562e13ab530f5f8558c56)
+# DO NOT EDIT (digest: f76158c78b5faef3998e7f68e6deaed7)
 Account_code
 Client_id
 Config
@@ -31,4 +31,5 @@ Tws_reqs
 Tws_result
 Twsable
 Unpickable
+Volume
 # OASIS_STOP

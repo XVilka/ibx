@@ -15,7 +15,7 @@ let show_portfolio positions =
         sprintf "%s" (P.contract pos |> Contract.exchange |> Exchange.to_string));
     Column.create "Position" ~align:Align.right
       (fun pos ->
-        sprintf "%d" (P.amount pos));
+        sprintf "%d" (P.volume pos :> int));
     Column.create "Currency" ~align:Align.center
       (fun pos ->
         sprintf "%s" (P.contract pos |> Contract.currency |> Currency.to_string));

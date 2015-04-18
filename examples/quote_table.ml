@@ -7,9 +7,9 @@ module Ascii_table = Textutils.Ascii_table
 let print_quote_table quotes =
   let module Q = Quote_snapshot in
   let get_symbol    quote = sprintf "%s"    Q.(symbol    quote :> string) in
-  let get_bid_size  quote = sprintf "%d"    Q.(bid_size  quote) in
+  let get_bid_size  quote = sprintf "%d"    Q.(bid_size  quote :> int) in
   let get_bid_price quote = sprintf "%4.2f" Q.(bid_price quote :> float) in
-  let get_ask_size  quote = sprintf "%d"    Q.(ask_size  quote) in
+  let get_ask_size  quote = sprintf "%d"    Q.(ask_size  quote :> int) in
   let get_ask_price quote = sprintf "%4.2f" Q.(ask_price quote :> float) in
   let create_col ?(align=Ascii_table.Align.right) =
     Ascii_table.Column.create ~align

@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 94562145681ef27f4e32047f14be463c)
+# DO NOT EDIT (digest: af89a70fec19cf0d6680a7229a9d022d)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -47,6 +47,7 @@ true: annot, bin_annot
 "lib/tws_result.cmx": for-pack(Ibx)
 "lib/twsable.cmx": for-pack(Ibx)
 "lib/unpickable.cmx": for-pack(Ibx)
+"lib/volume.cmx": for-pack(Ibx)
 <lib/*.ml{,i,y}>: package(async)
 <lib/*.ml{,i,y}>: package(core)
 <lib/*.ml{,i,y}>: package(fieldslib.syntax)

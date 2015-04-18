@@ -40,7 +40,7 @@ type t =
     security_id : Raw_contract.Security_id.t option;
     (* ====================== order fields ====================== *)
     order_action : string;
-    quantity : int;
+    quantity : Volume.t;
     order_kind : string;
     limit_price : Price.t option;
     stop_price : Price.t option;
@@ -54,7 +54,7 @@ type t =
     parent_id : Raw_order.Id.t option;
     block_order : bool;
     sweep_to_fill : bool;
-    display_size : int option;
+    display_size : Volume.t option;
     stop_trigger_method : Raw_order.Stop_trigger_method.t;
     outside_regular_trading_hours : bool;
     hidden : bool;
@@ -73,7 +73,7 @@ type t =
     rule80A : Raw_order.Rule80A.t option;
     settling_firm : string option;
     all_or_none : bool;
-    minimum_quantity : int option;
+    minimum_quantity : Volume.t option;
     percent_offset : float option;
     electronic_trade_only : bool;
     firm_quote_only : bool;
@@ -93,8 +93,8 @@ type t =
     reference_price_type : Raw_order.Reference_price_type.t option;
     trailing_stop_price : Price.t option;
     trailing_percent : float option;
-    scale_initial_level_size : int option;
-    scale_subsequent_level_size : int option;
+    scale_initial_level_size : Volume.t option;
+    scale_subsequent_level_size : Volume.t option;
     scale_price_increment : float option;
     hedge_type : Raw_order.Hedge_type.t option;
     opt_out_smart_routing : bool;
@@ -296,7 +296,7 @@ let pickler =
           ~security_id_type:(fields_value (optional Raw_contract.Security_id.Type.val_type))
           ~security_id:(fields_value (optional Raw_contract.Security_id.val_type))
           ~order_action:(fields_value (required string))
-          ~quantity:(fields_value (required int))
+          ~quantity:(fields_value (required Volume.val_type))
           ~order_kind:(fields_value (required string))
           ~limit_price:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
           ~stop_price:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
@@ -310,7 +310,7 @@ let pickler =
           ~parent_id:(fields_value (optional Raw_order.Id.val_type ~default_on_none:"0"))
           ~block_order:(fields_value (required bool))
           ~sweep_to_fill:(fields_value (required bool))
-          ~display_size:(fields_value (optional int ~default_on_none:"0"))
+          ~display_size:(fields_value (optional Volume.val_type ~default_on_none:"0"))
           ~stop_trigger_method:(fields_value (required Raw_order.Stop_trigger_method.val_type))
           ~outside_regular_trading_hours:(fields_value (required bool))
           ~hidden:(fields_value (required bool))
@@ -329,7 +329,7 @@ let pickler =
           ~rule80A:(fields_value (optional Raw_order.Rule80A.val_type))
           ~settling_firm:(fields_value (optional string))
           ~all_or_none:(fields_value (required bool))
-          ~minimum_quantity:(fields_value (optional int))
+          ~minimum_quantity:(fields_value (optional Volume.val_type))
           ~percent_offset:(fields_value (optional float))
           ~electronic_trade_only:(fields_value (required bool))
           ~firm_quote_only:(fields_value (required bool))
@@ -349,8 +349,8 @@ let pickler =
           ~reference_price_type:(fields_value (optional Raw_order.Reference_price_type.val_type))
           ~trailing_stop_price:(fields_value (optional Price.val_type))
           ~trailing_percent:(fields_value (optional float))
-          ~scale_initial_level_size:(fields_value (optional int))
-          ~scale_subsequent_level_size:(fields_value (optional int))
+          ~scale_initial_level_size:(fields_value (optional Volume.val_type))
+          ~scale_subsequent_level_size:(fields_value (optional Volume.val_type))
           ~scale_price_increment:(fields_value (optional float))
           ~hedge_type:(fields_value (optional Raw_order.Hedge_type.val_type))
           ~opt_out_smart_routing:(fields_value (required bool))
@@ -460,7 +460,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~security_id_type:(fields_value (optional Raw_contract.Security_id.Type.val_type))
         ~security_id:(fields_value (optional Raw_contract.Security_id.val_type))
         ~order_action:(fields_value (required string))
-        ~quantity:(fields_value (required int))
+        ~quantity:(fields_value (required Volume.val_type))
         ~order_kind:(fields_value (required string))
         ~limit_price:(fields_value (optional Price.val_type ~none_on_default:"0.0"))
         ~stop_price:(fields_value (optional Price.val_type ~none_on_default:"0.0"))
@@ -474,7 +474,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~parent_id:(fields_value (optional Raw_order.Id.val_type ~none_on_default:"0"))
         ~block_order:(fields_value (required bool))
         ~sweep_to_fill:(fields_value (required bool))
-        ~display_size:(fields_value (optional int ~none_on_default:"0"))
+        ~display_size:(fields_value (optional Volume.val_type ~none_on_default:"0"))
         ~stop_trigger_method:(fields_value (required Raw_order.Stop_trigger_method.val_type))
         ~outside_regular_trading_hours:(fields_value (required bool))
         ~hidden:(fields_value (required bool))
@@ -493,7 +493,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~rule80A:(fields_value (optional Raw_order.Rule80A.val_type))
         ~settling_firm:(fields_value (optional string))
         ~all_or_none:(fields_value (required bool))
-        ~minimum_quantity:(fields_value (optional int))
+        ~minimum_quantity:(fields_value (optional Volume.val_type))
         ~percent_offset:(fields_value (optional float))
         ~electronic_trade_only:(fields_value (required bool))
         ~firm_quote_only:(fields_value (required bool))
@@ -513,8 +513,8 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~reference_price_type:(fields_value (optional Raw_order.Reference_price_type.val_type))
         ~trailing_stop_price:(fields_value (optional Price.val_type))
         ~trailing_percent:(fields_value (optional float))
-        ~scale_initial_level_size:(fields_value (optional int))
-        ~scale_subsequent_level_size:(fields_value (optional int))
+        ~scale_initial_level_size:(fields_value (optional Volume.val_type))
+        ~scale_subsequent_level_size:(fields_value (optional Volume.val_type))
         ~scale_price_increment:(fields_value (optional float))
         ~hedge_type:(fields_value (optional Raw_order.Hedge_type.val_type))
         ~opt_out_smart_routing:(fields_value (required bool))

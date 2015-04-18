@@ -13,8 +13,8 @@ let submit_and_wait_for_fill tws ~timeout ~contract ~order =
   let order_type = Order.Type.to_string (Order.order_type order) in
   printf "Submit %s buy order for %d shares of %s\n%!"
     order_type
-    (Order.quantity order)
-    (Contract.symbol contract |> Symbol.to_string);
+    (Order.quantity order :> int)
+    (Contract.symbol contract :> string);
   Tws.submit_order_exn tws ~contract ~order
   >>= fun (order_status, oid) ->
   let wait_for_fill = Pipe.iter order_status ~f:(fun status ->
@@ -37,7 +37,7 @@ let run ~timeout =
     ~currency:`USD
     (Symbol.of_string "IBM")
   in
-  let num_shares = 100 in
+  let num_shares = Volume.of_int_exn 100 in
   Common.with_tws (fun tws ->
     Tws.quote_snapshot_exn tws ~contract:ibm
     >>= fun snapshot ->
@@ -57,8 +57,8 @@ let run ~timeout =
         (Execution.time exec |> Time.to_string_trimmed ~zone:Time.Zone.local)
         (Execution.exchange exec |> Exchange.to_string)
         (Execution.side exec |> Execution.Side.to_string)
-        (Execution.quantity exec)
-        (Execution.price exec |> Price.to_float))
+        (Execution.volume exec :> int)
+        (Execution.price exec :> float))
     )
 
 let timeout_arg () =

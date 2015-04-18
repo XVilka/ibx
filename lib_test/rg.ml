@@ -48,6 +48,7 @@ module Rg_common : sig
 
   val currency_g : Currency.t gen
   val price_g : Price.t gen
+  val volume_g : Volume.t gen
   val symbol_g : Symbol.t gen
   val exchange_g : Exchange.t gen
   val expiry_g : Date.t gen
@@ -134,8 +135,9 @@ end = struct
      always (`KRW);
   ] ()
 
-  let price_g    () = Price.of_float (pfg ())
-  let symbol_g   () = Symbol.of_string (sg ())
+  let price_g  () = Price.of_float (pfg ())
+  let volume_g () = Volume.of_int_exn (nng ())
+  let symbol_g () = Symbol.of_string (sg ())
 
   let exchange_g () = oneof [
     always (`SMART);
@@ -311,10 +313,10 @@ end = struct
   ] ()
 
   let order_g () = oneof [
-    always (Order.buy_market  ~quantity:(nng ()));
-    always (Order.sell_market ~quantity:(nng ()));
-    always (Order.buy_limit   ~quantity:(nng ()) (price_g ()));
-    always (Order.buy_limit   ~quantity:(nng ()) (price_g ()));
+    always (Order.buy_market  ~quantity:(volume_g ()));
+    always (Order.sell_market ~quantity:(volume_g ()));
+    always (Order.buy_limit   ~quantity:(volume_g ()) (price_g ()));
+    always (Order.buy_limit   ~quantity:(volume_g ()) (price_g ()));
   ] ()
 
 end
@@ -817,7 +819,7 @@ end = struct
     Response.Tick_price.create
       ~tick_type:(tick_type_g ())
       ~price:(price_g ())
-      ~size:(nng ())
+      ~size:(volume_g ())
       ~can_auto_execute:(og bg ())
 
   let tick_size_g () =
@@ -831,7 +833,7 @@ end = struct
     in
     Response.Tick_size.create
       ~tick_type:(tick_type_g ())
-      ~size:(nng ())
+      ~size:(volume_g ())
 
   let tick_option_g () =
     let module Type = Tick_option.Type in
@@ -1012,7 +1014,7 @@ end = struct
     in
     Response.Portfolio_position.create
       ~contract:(contract_g ())
-      ~amount:(nng ())
+      ~volume:(volume_g ())
       ~market_price:(price_g ())
       ~market_value:(price_g ())
       ~average_cost:(price_g ())
@@ -1103,12 +1105,12 @@ end = struct
       ~account_code:(account_code_g ())
       ~exchange:(exchange_g ())
       ~side:(side_g ())
-      ~quantity:(nng ())
+      ~volume:(volume_g ())
       ~permanent_id:(nng ())
       ~price:(price_g ())
       ~client_id:(client_id_g ())
       ~liquidation:(nng ())
-      ~cumulative_quantity:(nng ())
+      ~cumulative_volume:(volume_g ())
       ~average_price:(price_g ())
       ~order_ref:(og sg ())
 
@@ -1138,7 +1140,7 @@ end = struct
       ~operation:(operation_g ())
       ~side:(side_g ())
       ~price:(price_g ())
-      ~size:(nng ())
+      ~size:(volume_g ())
 
   let book_updates_g () =
     List.init (1 + Random.int bound) ~f:(fun _ -> book_update_g ())
@@ -1153,7 +1155,7 @@ end = struct
         ~hi:(price_g ())
         ~lo:(price_g ())
         ~cl:(price_g ())
-        ~volume:(nng ())
+        ~volume:(volume_g ())
         ~wap:(price_g ())
         ~has_gaps:(bg ())
         ~count:(nng ())
@@ -1172,7 +1174,7 @@ end = struct
       ~hi:(price_g ())
       ~lo:(price_g ())
       ~cl:(price_g ())
-      ~volume:(nng ())
+      ~volume:(volume_g ())
       ~wap:(price_g ())
       ~count:(nng ())
 

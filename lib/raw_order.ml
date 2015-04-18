@@ -312,7 +312,7 @@ type t =
   { (* ===================== main order fields ==================== *)
     order_id : Id.t;
     action : string;
-    quantity : int;
+    quantity : Volume.t;
     order_type : string;
     limit_price : Price.t option;
     stop_price : Price.t option;
@@ -325,7 +325,7 @@ type t =
     parent_id : Id.t option;
     block_order : bool;
     sweep_to_fill : bool;
-    display_size : int option;
+    display_size : Volume.t option;
     stop_trigger_method : Stop_trigger_method.t;
     outside_regular_trading_hours : bool;
     hidden : bool;
@@ -334,7 +334,7 @@ type t =
     override_percentage_constraints : bool;
     rule80A : Rule80A.t option;
     all_or_none : bool;
-    minimum_quantity : int option;
+    minimum_quantity : Volume.t option;
     percent_offset : float option;
     trailing_stop_price : Price.t option;
     trailing_percent : float option;
@@ -379,8 +379,8 @@ type t =
     basis_points : float option;
     basis_points_type : int option;
     (* ==================== scale orders only ===================== *)
-    scale_initial_level_size : int option;
-    scale_subsequent_level_size : int option;
+    scale_initial_level_size : Volume.t option;
+    scale_subsequent_level_size : Volume.t option;
     scale_price_increment : float option;
     scale_price_adjust_value : float option;
     scale_price_adjust_interval : int option;

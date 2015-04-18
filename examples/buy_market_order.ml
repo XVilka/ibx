@@ -17,7 +17,7 @@ let () =
             printf "%s\n\n%!" (Commission.sexp_of_t comm |> Sexp.to_string_hum))
         );
         Tws.submit_order_exn tws
-          ~order:(Order.buy_market ~quantity:100)
+          ~order:(Order.buy_market ~quantity:(Volume.of_int_exn 100))
           ~contract:(Contract.stock (Symbol.of_string "AAPL") ~currency:`USD)
         >>= fun (order_status, oid) ->
         Pipe.iter_without_pushback order_status ~f:(fun status ->

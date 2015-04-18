@@ -608,7 +608,7 @@ module Trade = struct
   type t =
     { mutable stamp : Time.t;
       mutable price : Price.t;
-      mutable size  : int;
+      mutable size  : Volume.t;
     } with sexp, fields
 
   let make_filter () =
@@ -616,7 +616,7 @@ module Trade = struct
       {
         stamp = Time.epoch;
         price = Price.zero;
-        size  = 0;
+        size  = Volume.zero;
       }
     in
     stage (fun tick ->
@@ -626,7 +626,7 @@ module Trade = struct
         | Tick_price.Type.Last ->
           let new_price = Tick_price.price tick in
           let new_size  = Tick_price.size tick in
-          if new_size = 0 then
+          if Volume.(new_size = zero) then
             None (* We skip trades with 0 size. *)
           else begin
             t.price <- new_price;
@@ -646,8 +646,8 @@ module Trade = struct
   let pp ppf t =
     Format.fprintf ppf "T|%s|%4.2f|%4d"
       (Time.to_string t.stamp)
-      (Price.to_float t.price)
-      t.size
+      (t.price :> float)
+      (t.size :> int)
 end
 
 let trades t ~contract =
@@ -684,10 +684,10 @@ let cancel_trades t id =
 module Quote = struct
   type t =
     { mutable stamp : Time.t;
-      mutable ask_size : int;
-      mutable bid_size : int;
-      mutable ask_size_change : int;
-      mutable bid_size_change : int;
+      mutable ask_size : Volume.t;
+      mutable bid_size : Volume.t;
+      mutable ask_size_change : Volume.t;
+      mutable bid_size_change : Volume.t;
       mutable ask_price : Price.t;
       mutable bid_price : Price.t;
       mutable ask_price_change : Price.t;
@@ -706,10 +706,10 @@ module Quote = struct
     let t =
       {
         stamp            = Time.epoch;
-        ask_size         = 0;
-        bid_size         = 0;
-        ask_size_change  = 0;
-        bid_size_change  = 0;
+        ask_size         = Volume.zero;
+        bid_size         = Volume.zero;
+        ask_size_change  = Volume.zero;
+        bid_size_change  = Volume.zero;
         ask_price        = Price.zero;
         bid_price        = Price.zero;
         ask_price_change = Price.zero;
@@ -727,21 +727,21 @@ module Quote = struct
           let old_ask_size  = t.ask_size in
           let old_ask_price = t.ask_price in
           (* Compute the ask size & price change. *)
-          if old_ask_size > 0 then
-            t.ask_size_change <- new_ask_size - old_ask_size;
+          if Volume.(old_ask_size > zero) then
+            t.ask_size_change <- Volume.(new_ask_size - old_ask_size);
           if Price.(old_ask_price >. zero) then
             t.ask_price_change <- Price.(new_ask_price - old_ask_price);
           (* Update the ask size & price. *)
           t.ask_size  <- new_ask_size;
           t.ask_price <- new_ask_price;
-          if t.ask_size_change = 0 && old_ask_size = 0 then
+          if Volume.(t.ask_size_change = zero && old_ask_size = zero) then
             (* This case occurs only when the first tick is on the ask side. *)
             t.change <- `Unknown
-          else if t.ask_size_change = 0 then
+          else if Volume.(t.ask_size_change = zero) then
             t.change <- `Ask_price_change
           else
             t.change <- `Ask_size_and_price_change;
-          if t.bid_size = 0 then
+          if Volume.(t.bid_size = zero) then
             None (* We don't issue a quote without any bid information. *)
           else begin
             t.stamp <- Time.now ();
@@ -753,21 +753,21 @@ module Quote = struct
           let old_bid_size  = t.bid_size in
           let old_bid_price = t.bid_price in
           (* Compute bid size & price change. *)
-          if old_bid_size > 0 then
-            t.bid_size_change <- new_bid_size - old_bid_size;
+          if Volume.(old_bid_size > zero) then
+            t.bid_size_change <- Volume.(new_bid_size - old_bid_size);
           if Price.(old_bid_price >. zero) then
             t.bid_price_change <- Price.(new_bid_price - old_bid_price);
           (* Update the bid size & price. *)
           t.bid_size  <- new_bid_size;
           t.bid_price <- new_bid_price;
-          if t.bid_size_change = 0 && old_bid_size = 0 then
+          if Volume.(t.bid_size_change = zero && old_bid_size = zero) then
             (* This case occurs only when the first tick is on the bid side. *)
             t.change <- `Unknown
-          else if t.bid_size_change = 0 then
+          else if Volume.(t.bid_size_change = zero) then
             t.change <- `Bid_price_change
           else
             t.change <- `Bid_size_and_price_change;
-          if t.ask_size = 0 then
+          if Volume.(t.ask_size = zero) then
             None (* We don't issue a quote without any ask information. *)
           else begin
             t.stamp <- Time.now ();
@@ -784,10 +784,10 @@ module Quote = struct
         | Tick_size.Type.Ask ->
           let new_ask_size = Tick_size.size tick in
           let old_ask_size = t.ask_size in
-          if new_ask_size = old_ask_size then
+          if Volume.(new_ask_size = old_ask_size) then
             None
           else begin
-            t.ask_size_change <- new_ask_size - old_ask_size;
+            t.ask_size_change <- Volume.(new_ask_size - old_ask_size);
             t.ask_size <- new_ask_size;
             t.change <- `Ask_size_change;
             t.stamp <- Time.now ();
@@ -799,7 +799,7 @@ module Quote = struct
           if new_bid_size = old_bid_size then
             None
           else begin
-            t.bid_size_change <- new_bid_size - old_bid_size;
+            t.bid_size_change <- Volume.(new_bid_size - old_bid_size);
             t.bid_size <- new_bid_size;
             t.change <- `Bid_size_change;
             t.stamp <- Time.now ();
@@ -812,9 +812,10 @@ module Quote = struct
   let pp ppf t =
     Format.fprintf ppf "Q|%s|%4.2f|%4.2f|%4d|%4d"
       (Time.to_string t.stamp)
-      (Price.to_float t.bid_price)
-      (Price.to_float t.ask_price)
-      t.bid_size t.ask_size
+      (t.bid_price :> float)
+      (t.ask_price :> float)
+      (t.bid_size :> int)
+      (t.ask_size :> int)
 end
 
 let quotes t ~contract =
@@ -906,8 +907,8 @@ let cancel_taq_data t id =
 module Quote_snapshot = struct
   type t =
     { symbol : Symbol.t;
-      mutable ask_size : int;
-      mutable bid_size : int;
+      mutable ask_size : Volume.t;
+      mutable bid_size : Volume.t;
       mutable ask_price : Price.t;
       mutable bid_price : Price.t;
     } with sexp, fields
@@ -917,8 +918,8 @@ let quote_snapshot t ~contract =
   let quote =
     { Quote_snapshot.
       symbol    = Contract.symbol contract;
-      ask_size  = 0;
-      bid_size  = 0;
+      ask_size  = Volume.zero;
+      bid_size  = Volume.zero;
       ask_price = Price.zero;
       bid_price = Price.zero;
     }
@@ -974,7 +975,7 @@ module Trade_snapshot = struct
     { symbol : Symbol.t;
       mutable no_ask : bool;
       mutable no_bid : bool;
-      mutable last_size  : int;
+      mutable last_size  : Volume.t;
       mutable last_price : Price.t;
       mutable last_close : Price.t;
     } with sexp
@@ -993,7 +994,7 @@ let trade_snapshot t ~contract =
         symbol = Contract.symbol contract;
         no_ask = false;
         no_bid = false;
-        last_size  = 0;
+        last_size  = Volume.zero;
         last_price = Price.zero;
         last_close = Price.zero;
       }

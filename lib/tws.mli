@@ -398,7 +398,7 @@ module Trade : sig
 
   val stamp : t -> Time.t
   val price : t -> Price.t
-  val size  : t -> int
+  val size  : t -> Volume.t
 
   val pp : Format.formatter -> t -> unit
 end
@@ -420,8 +420,8 @@ module Quote : sig
   with sexp
 
   val stamp     : t -> Time.t
-  val ask_size  : t -> int
-  val bid_size  : t -> int
+  val ask_size  : t -> Volume.t
+  val bid_size  : t -> Volume.t
   val ask_price : t -> Price.t
   val bid_price : t -> Price.t
   val change    : t ->
@@ -434,8 +434,8 @@ module Quote : sig
     | `Bid_size_and_price_change ]
   val ask_price_change : t -> Price.t
   val bid_price_change : t -> Price.t
-  val ask_size_change  : t -> int
-  val bid_size_change  : t -> int
+  val ask_size_change  : t -> Volume.t
+  val bid_size_change  : t -> Volume.t
 
   val pp : Format.formatter -> t -> unit
 end
@@ -480,8 +480,8 @@ val cancel_taq_data : t -> Query_id.t -> unit
 module Quote_snapshot : sig
   type t
   val symbol    : t -> Symbol.t
-  val ask_size  : t -> int
-  val bid_size  : t -> int
+  val ask_size  : t -> Volume.t
+  val bid_size  : t -> Volume.t
   val ask_price : t -> Price.t
   val bid_price : t -> Price.t
 end
@@ -499,7 +499,7 @@ val quote_snapshot_exn
 module Trade_snapshot : sig
   type t
   val symbol     : t -> Symbol.t
-  val last_size  : t -> int
+  val last_size  : t -> Volume.t
 
   (** [last_price t] returns the price of the last trade or the last closing
       price if no trading is going on. *)
