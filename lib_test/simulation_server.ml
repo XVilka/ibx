@@ -456,21 +456,23 @@ module Message_generator = struct
 
         (* ====================== Contract details ======================= *)
 
-        | S.Contract_data -> []
-          (* let pickler = Only_in_test.force R.Contract_details.pickler in *)
-          (* [ E.Server_response { *)
-          (*   Response. *)
-          (*   tag      = V.Contract_data; *)
-          (*   version  = 8; *)
-          (*   query_id = query.Query.id; *)
-          (*   data     = to_tws pickler (Lazy.force Gen.contract_details) } *)
-          (* ; E.Server_response { *)
-          (*   Response. *)
-          (*   tag      = V.Contract_data_end; *)
-          (*   version  = 1; *)
-          (*   query_id = query.Query.id; *)
-          (*   data     = "" } *)
-          (* ] *)
+        | S.Contract_data ->
+          List.map (Lazy.force Gen.contract_details) ~f:(fun x ->
+            let pickler = Only_in_test.force R.Contract_data.pickler in
+            E.Server_response {
+              Response.
+              tag      = V.Contract_data;
+              version  = 8;
+              query_id = query.Query.id;
+              data     = to_tws pickler x
+            }) @
+            [ E.Server_response {
+              Response.
+              tag      = V.Contract_data_end;
+              version  = 1;
+              query_id = query.Query.id;
+              data     = ""
+            }]
 
         (* ========================= Market depth ======================== *)
 
