@@ -864,7 +864,7 @@ end
    | Contract details                                                      |
    +-----------------------------------------------------------------------+ *)
 
-module Contract_details = struct
+module Contract_data = struct
   type t =
     { contract : Raw_contract.t;
       market_name : string;

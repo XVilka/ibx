@@ -226,13 +226,37 @@ val filter_executions_exn
 
 val contract_details
   :  t
-  -> contract:[< Security_type.t ] Contract.t
-  -> Contract_details.t Tws_result.t Or_error.t Deferred.t
+  -> ?contract_id:Contract_id.t
+  -> ?multiplier:string
+  -> ?listing_exchange:Exchange.t
+  -> ?local_symbol:Symbol.t
+  -> ?security_id:Security_id.t
+  -> ?include_expired:bool
+  -> ?exchange:Exchange.t
+  -> ?option_right:Option_right.t
+  -> ?expiry:Date.t
+  -> ?strike:Price.t
+  -> currency:Currency.t
+  -> security_type:Security_type.t
+  -> Symbol.t
+  -> Contract_data.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
 val contract_details_exn
   :  t
-  -> contract:[< Security_type.t ] Contract.t
-  -> Contract_details.t Deferred.t
+  -> ?contract_id:Contract_id.t
+  -> ?multiplier:string
+  -> ?listing_exchange:Exchange.t
+  -> ?local_symbol:Symbol.t
+  -> ?security_id:Security_id.t
+  -> ?include_expired:bool
+  -> ?exchange:Exchange.t
+  -> ?option_right:Option_right.t
+  -> ?expiry:Date.t
+  -> ?strike:Price.t
+  -> currency:Currency.t
+  -> security_type:Security_type.t
+  -> Symbol.t
+  -> Contract_data.t Pipe.Reader.t Deferred.t
 
 
 (** {1 Market depth} *)

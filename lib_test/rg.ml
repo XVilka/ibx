@@ -56,6 +56,7 @@ module Rg_common : sig
                        | `RIC   of string
                        | `CUSIP of string
                        | `SEDOL of string ] gen
+  val security_type_g : Security_type.t gen
 
   val option_g : [ `Option ] Contract.t gen
   val contract_g : Security_type.t Contract.t gen
@@ -243,6 +244,14 @@ end = struct
     always (`CUSIP (sg ()));
     always (`SEDOL (sg ()));
     always (`RIC   (sg ()));
+  ] ()
+
+  let security_type_g () = oneof [
+    always (`Stock);
+    always (`Futures);
+    always (`Option);
+    always (`Fut_opt);
+    always (`Forex);
   ] ()
 
   let option_g () =
@@ -541,16 +550,19 @@ end = struct
   (* ========================== Contract details =========================== *)
 
   let contract_details_g () =
-    let contract_g () =
-      Contract.futures
-        ~multiplier:(sg ())
-        ~local_symbol:(symbol_g ())
-        ~exchange:(exchange_g ())
-        ~currency:(currency_g ())
-        ~expiry:(expiry_g ())
-        (symbol_g ())
-    in
-    Query.Contract_details.create ~contract:(contract_g ())
+    Query.Contract_details.create
+      ?contract_id:(og contract_id_g ())
+      ?multiplier:(og sg ())
+      ?listing_exchange:(og exchange_g ())
+      ?local_symbol:(og symbol_g ())
+      ?security_id:(og security_id_g ())
+      ?exchange:(og exchange_g ())
+      ~currency:(currency_g ())
+      ~option_right:(option_right_g ())
+      ~expiry:(expiry_g ())
+      ~strike:(price_g ())
+      ~security_type:(security_type_g ())
+      (symbol_g ())
 
   (* ============================ Market depth ============================= *)
 
@@ -754,7 +766,8 @@ module R : sig
 
   (* Contract details *)
 
-  val contract_details_g : Response.Contract_details.t gen
+  val contract_data_g    : Response.Contract_data.t gen
+  val contract_details_g : Response.Contract_data.t list gen
 
   (* Executions *)
 
@@ -1013,41 +1026,8 @@ end = struct
 
   (* =========================== Contract details ========================== *)
 
-  let contract_details_g () =
-    let contract_g () = oneof
-      [ always (
-        Contract.stock
-          ?id:(og contract_id_g ())
-          ?listing_exchange:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?id:(og contract_id_g ())
-          ?multiplier:(og sg ())
-          ?listing_exchange:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?id:(og contract_id_g ())
-          ?multiplier:(og sg ())
-          ?listing_exchange:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~option_right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ] ()
-    in
-    Response.Contract_details.create
+  let contract_data_g () =
+    Response.Contract_data.create
       ~contract:(contract_g ())
       ~market_name:(sg ())
       ~trading_class:(sg ())
@@ -1064,6 +1044,10 @@ end = struct
       ~time_zone:(tzg ())
       ~trading_hours:(sg ())
       ~liquid_hours:(sg ())
+
+  let contract_details_g () =
+    List.permute ~random_state:(Random.State.make_self_init ())
+      (List.init (1 + Random.int bound) ~f:(fun _ -> contract_data_g ()))
 
   (* ============================= Executions ============================== *)
 

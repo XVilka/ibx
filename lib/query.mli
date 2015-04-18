@@ -149,7 +149,22 @@ end
 module Contract_details : sig
   type t with sexp
   include Query_intf.S with type t := t
-  val create : contract:[< Security_type.t ] Contract.t -> t
+
+  val create
+    :  ?contract_id:Contract_id.t
+    -> ?multiplier:string
+    -> ?listing_exchange:Exchange.t
+    -> ?local_symbol:Symbol.t
+    -> ?security_id:Security_id.t
+    -> ?include_expired:bool
+    -> ?exchange:Exchange.t
+    -> ?option_right:Option_right.t
+    -> ?expiry:Date.t
+    -> ?strike:Price.t
+    -> security_type:Security_type.t
+    -> currency:Currency.t
+    -> Symbol.t
+    -> t
 end
 
 (** {1 Market depth} *)

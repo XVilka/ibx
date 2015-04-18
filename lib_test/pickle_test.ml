@@ -173,11 +173,11 @@ module Response = struct
       let module R = Response.Portfolio_position in
       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.portfolio_position_g);
 
-    (* ========================= Contract details ========================== *)
+    (* =========================== Contract data =========================== *)
 
     (fun () ->
-      let module R = Response.Contract_details in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.contract_details_g);
+      let module R = Response.Contract_data in
+      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.contract_data_g);
 
     (* =========================== Executions ============================== *)
 

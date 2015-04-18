@@ -188,15 +188,20 @@ let suite = "Client" >::: [
 
   "contract-details" >:: (fun () ->
     with_tws_client (fun tws ->
-      let module R = Response.Contract_details in
+      let module R = Response.Contract_data in
       let gen_contract_details = Lazy.force Gen.contract_details in
-      Tws.contract_details_exn tws ~contract:(Rg.contract_g ())
-      >>| fun contract_details ->
-      assert_response_equal
-        (module R : Response_intf.S with type t = R.t)
-        ~expected:gen_contract_details
-        ~actual:contract_details;
-      Log.Global.sexp ~level:`Debug contract_details R.sexp_of_t
+      Tws.contract_details_exn tws ~security_type:(Rg.security_type_g ())
+        ~currency:(Rg.currency_g ()) (Rg.symbol_g ())
+      >>= fun reader ->
+      Pipe.read_all reader
+      >>| fun result ->
+      List.iter2_exn gen_contract_details (Queue.to_list result)
+        ~f:(fun gen_contract_data contract_data ->
+          assert_response_equal
+            (module R : Response_intf.S with type t = R.t)
+            ~expected:gen_contract_data
+            ~actual:contract_data;
+          Log.Global.sexp ~level:`Debug contract_data R.sexp_of_t)
     )
   );
 

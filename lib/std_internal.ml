@@ -22,5 +22,7 @@
 
 module Contract_id   = Raw_contract.Id
 module Execution_id  = Execution_id
+module Option_right  = Raw_contract.Option_right
 module Order_id      = Raw_order.Id
+module Security_id   = Contract.Security_id
 module Security_type = Contract.Security_type

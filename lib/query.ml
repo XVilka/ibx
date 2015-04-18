@@ -22,6 +22,7 @@
 
 open Core.Std
 open Tws_prot
+open Std_internal
 
 module Unit (Arg : sig val name:string end) = struct
   type t = unit with sexp
@@ -453,6 +454,35 @@ module Contract_details = struct
   type t = Raw_contract.t with sexp
 
   let create ~contract = Contract.to_raw contract
+
+  let split_security_id = function
+    | None -> None, None
+    | Some sec_id ->
+      match sec_id with
+      | `ISIN  x -> (Some `ISIN , Some x)
+      | `RIC   x -> (Some `RIC  , Some x)
+      | `CUSIP x -> (Some `CUSIP, Some x)
+      | `SEDOL x -> (Some `SEDOL, Some x)
+
+  let create ?contract_id ?multiplier ?listing_exchange ?local_symbol
+      ?security_id ?include_expired ?exchange ?option_right ?expiry ?strike
+      ~security_type ~currency symbol =
+    let security_id_type, security_id = split_security_id security_id in
+    Raw_contract.create
+      ?id:contract_id
+      ?multiplier
+      ?listing_exchange
+      ?local_symbol
+      ?security_id_type
+      ?security_id
+      ?exchange
+      ?expiry
+      ?strike
+      ?option_right
+      ~currency
+      ~security_type:(Raw_contract.Security_type.tws_of_t security_type)
+      symbol
+
   let ( = ) t1 t2 = Raw_contract.(=) t1 t2
 
   let pickler =

@@ -48,7 +48,9 @@ val req_calc_implied_volatility :
 (*****************************************************************************)
 
 val req_contract_details :
-  (Query.Contract_details.t, Response.Contract_details.t) Ib.Streaming_request.t
+  (Query.Contract_details.t, [ `Contract_data of Response.Contract_data.t
+                             | `Contract_data_end
+                             ]) Ib.Streaming_request.t
 
 (** {1 Orders} *)
 (*****************************************************************************)

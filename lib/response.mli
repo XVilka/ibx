@@ -296,7 +296,7 @@ end
 (** {1 Contract details} *)
 (*****************************************************************************)
 
-module Contract_details : sig
+module Contract_data : sig
   type t = private
     { contract : Raw_contract.t;
       market_name : string;

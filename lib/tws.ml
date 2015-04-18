@@ -486,16 +486,36 @@ let filter_executions_exn ?time t ~contract ~order_action =
    | Contract details                                                      |
    +-----------------------------------------------------------------------+ *)
 
-let contract_details t ~contract =
+let contract_details t ?contract_id ?multiplier ?listing_exchange ?local_symbol
+    ?security_id ?include_expired ?exchange ?option_right ?expiry ?strike
+    ~currency ~security_type symbol =
   with_connection t ~f:(fun con ->
-    let q = Query.Contract_details.create ~contract in
-    dispatch_and_cancel Tws_reqs.req_contract_details con q
+    let q = Query.Contract_details.create
+      ?contract_id ?multiplier ?listing_exchange ?local_symbol ?security_id
+      ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
+      ~security_type symbol
+    in
+    Ib.Streaming_request.(dispatch Tws_reqs.req_contract_details con q >>| function
+    | Error _ as e -> e
+    | Ok (pipe_r, id) ->
+      Pipe.filter_map pipe_r ~f:(function
+      | Error _ as e -> Some e
+      | Ok (`Contract_data x) -> Some (Ok x)
+      | Ok `Contract_data_end -> cancel Tws_reqs.req_contract_details con id; None
+      ) |> (fun x -> Ok x)
+    )
   )
 
-let contract_details_exn t ~contract =
-  contract_details t ~contract >>| function
-  | Error e -> raise (Error.to_exn e)
-  | Ok result -> Tws_result.ok_exn result
+let contract_details_exn t ?contract_id ?multiplier ?listing_exchange
+    ?local_symbol ?security_id ?include_expired ?exchange ?option_right ?expiry
+    ?strike ~currency ~security_type symbol =
+  contract_details t
+    ?contract_id ?multiplier ?listing_exchange ?local_symbol ?security_id
+    ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
+    ~security_type symbol >>| function
+    | Error e -> raise (Error.to_exn e)
+    | Ok pipe_r -> Pipe.map pipe_r ~f:Tws_result.ok_exn
+
 
 (* +-----------------------------------------------------------------------+
    | Market depth                                                          |
