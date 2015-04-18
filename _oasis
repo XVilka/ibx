@@ -149,6 +149,14 @@ Executable "print-market-depth"
   BuildDepends:   ibx
   CompiledObject: best
 
+Executable "option-chain"
+  Build$:         flag(examples)
+  Path:           examples
+  MainIs:         option_chain.ml
+  Install:        false
+  BuildDepends:   ibx
+  CompiledObject: best
+
 Executable "quote-table"
   Build$:         flag(examples)
   Path:           examples
