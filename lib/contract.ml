@@ -192,3 +192,16 @@ let forex ?id ?listing_exchange ?local_symbol ?security_id
       ~security_type:"CASH"
       symbol
   )
+
+let underlying t =
+  match Raw_contract.security_type t with
+  | "OPT" ->
+    stock
+      ~currency:t.Raw_contract.currency
+      t.Raw_contract.symbol
+  | "FOP" ->
+    futures
+      ~currency:t.Raw_contract.currency
+      ~expiry:(Option.value_exn t.Raw_contract.expiry)
+      t.Raw_contract.symbol
+  | _ -> assert false

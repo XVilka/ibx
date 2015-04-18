@@ -62,6 +62,7 @@ val listing_exchange : 'a t -> Exchange.t option
 val currency         : 'a t -> Currency.t
 val local_symbol     : 'a t -> Symbol.t option
 val security_id      : 'a t ->  Security_id.t option
+val underlying       : [< `Option | `Fut_opt ] t -> [> `Stock | `Futures ] t
 val strike           : [< `Option | `Fut_opt ] t -> Price.t
 val option_right     : [< `Option | `Fut_opt ] t -> Option_right.t
 val expiry           : [< `Futures | `Option | `Fut_opt ] t -> Date.t
