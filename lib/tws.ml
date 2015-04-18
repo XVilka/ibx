@@ -322,7 +322,7 @@ let market_data ?(snapshot = false) ?(tick_generics = []) t ~contract =
 
 let market_data_exn ?snapshot ?tick_generics t ~contract =
   market_data ?snapshot ?tick_generics t ~contract >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_market_data t id =
@@ -403,7 +403,7 @@ let submit_order t ~contract ~order =
 
 let submit_order_exn t ~contract ~order =
   submit_order t ~contract ~order >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_order_status t oid =
@@ -472,7 +472,7 @@ let filter_executions ?time t ~contract ~order_action =
 
 let filter_executions_exn ?time t ~contract ~order_action =
   filter_executions ?time t ~contract ~order_action >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
 (* +-----------------------------------------------------------------------+
@@ -506,7 +506,7 @@ let contract_details_exn t ?contract_id ?multiplier ?listing_exchange
     ?contract_id ?multiplier ?listing_exchange ?local_symbol ?security_id
     ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
     ~security_type symbol >>| function
-    | Error e -> raise (Error.to_exn e)
+    | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
 let futures_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
@@ -523,7 +523,7 @@ let futures_chain_exn t ?contract_id ?multiplier ?listing_exchange ?local_symbol
   futures_chain t
     ?contract_id ?multiplier ?listing_exchange ?local_symbol ?security_id
     ?include_expired ?exchange ~currency symbol >>| function
-    | Error e -> raise (Error.to_exn e)
+    | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
 
@@ -539,7 +539,7 @@ let market_depth ?(num_rows = 10) t ~contract =
 
 let market_depth_exn ?num_rows t ~contract =
   market_depth ?num_rows t ~contract >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_market_depth t id =
@@ -573,7 +573,7 @@ let historical_data_exn
     t ~contract =
   historical_data t ~bar_size ~bar_span ~use_rth ~show ~until ~contract
   >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok result -> Tws_result.ok_exn result
 
 (* +-----------------------------------------------------------------------+
@@ -592,7 +592,7 @@ let realtime_bars
 
 let realtime_bars_exn ?bar_size ?show ?use_rth t ~contract =
   realtime_bars ?bar_size ?show ?use_rth t ~contract >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_realtime_bars t id =
@@ -669,7 +669,7 @@ let trades t ~contract =
 
 let trades_exn t ~contract =
   trades t ~contract >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_trades t id =
@@ -836,7 +836,7 @@ let quotes t ~contract =
 
 let quotes_exn t ~contract =
   quotes t ~contract >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_quotes t id =
@@ -891,7 +891,7 @@ let taq_data t ~contract =
 
 let taq_data_exn t ~contract =
   taq_data t ~contract >>| function
-  | Error e -> raise (Error.to_exn e)
+  | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
 let cancel_taq_data t id =
@@ -941,7 +941,7 @@ let quote_snapshot t ~contract =
           | Error tws_error ->
             Ib.Streaming_request.cancel Tws_reqs.req_taq_snapshot con id;
             Pipe.close_read ticks;
-            raise (Tws_error.to_exn tws_error)
+            Tws_error.raise tws_error
           | Ok tick ->
             let counter =
               match Tick_price.tick_type tick with
@@ -1014,7 +1014,7 @@ let trade_snapshot t ~contract =
           | Error tws_error ->
             Ib.Streaming_request.cancel Tws_reqs.req_taq_snapshot con id;
             Pipe.close_read ticks;
-            raise (Tws_error.to_exn tws_error)
+            Tws_error.raise tws_error
           | Ok tick ->
             let counter =
               match Tick_price.tick_type tick with
