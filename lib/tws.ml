@@ -526,6 +526,30 @@ let futures_chain_exn t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
+let front_month_futures t ?contract_id ?multiplier ?listing_exchange
+    ?local_symbol ?security_id ?include_expired ?exchange ~currency symbol =
+  let sort_by_expiry futures_chain =
+    List.sort futures_chain ~cmp:(fun c1 c2 ->
+      Date.compare
+        (Option.value_exn (Contract.to_raw c1 |> Raw_contract.expiry))
+        (Option.value_exn (Contract.to_raw c2 |> Raw_contract.expiry)))
+  in
+  futures_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
+    ?security_id ?include_expired ?exchange ~currency symbol >>= function
+    | Error _ as e -> return e
+    | Ok pipe ->
+      try_with (fun () ->
+        Pipe.map pipe ~f:Tws_result.ok_exn |> Pipe.to_list
+      ) >>| function
+      | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
+      | Ok futures_chain -> Ok (sort_by_expiry futures_chain |> List.hd_exn)
+
+let front_month_futures_exn t ?contract_id ?multiplier ?listing_exchange
+    ?local_symbol ?security_id ?include_expired ?exchange ~currency symbol =
+  front_month_futures t ?contract_id ?multiplier ?listing_exchange
+    ?local_symbol ?security_id ?include_expired ?exchange ~currency symbol
+  >>| Or_error.ok_exn
+
 let option_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     ?security_id ?include_expired ?exchange ?expiry ?strike ~option_right
     ~currency symbol =
