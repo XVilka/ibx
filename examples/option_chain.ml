@@ -16,7 +16,7 @@ let () =
         in
         let group_by_expiry cs =
           List.group cs ~break:(fun c1 c2 ->
-            Date.((Contract.expiry c1) <> (Contract.expiry c2)))
+            Date.(Contract.expiry c1 <> Contract.expiry c2))
         in
         let sort_by_strike cs =
           List.sort cs ~cmp:(fun c1 c2 ->
