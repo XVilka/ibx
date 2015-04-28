@@ -200,7 +200,7 @@ module Historical_data : sig
     | `Day of int
     | `Week of int
     | `Month of int
-    | `Year
+    | `Year of int
     ] with sexp
     include Stringable.S with type t := t
   end

@@ -376,8 +376,8 @@ val historical_data
   | `Day of int
   | `Week of int
   | `Month of int
-  | `Year
-  ] (* defaults to Year *)
+  | `Year of int
+  ] (* defaults to 1 Year *)
   -> ?use_rth:bool
   -> ?show:[
   | `Trades
@@ -406,8 +406,8 @@ val historical_data_exn
   | `Day of int
   | `Week of int
   | `Month of int
-  | `Year
-  ] (* defaults to Year *)
+  | `Year of int
+  ] (* defaults to 1 Year *)
   -> ?use_rth:bool
   -> ?show:[
   | `Trades

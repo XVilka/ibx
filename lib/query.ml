@@ -601,7 +601,7 @@ module Historical_data = struct
       | `Day of int
       | `Week of int
       | `Month of int
-      | `Year
+      | `Year of int
       ] with sexp
     end
     include T
@@ -612,7 +612,7 @@ module Historical_data = struct
       | `Day   x -> sprintf "%d D" x
       | `Week  x -> sprintf "%d W" x
       | `Month x -> sprintf "%d M" x
-      | `Year    -> sprintf "1 Y"
+      | `Year  x -> sprintf "%d Y" x
 
     let t_of_tws s =
       let extract_int s ~time_unit =
@@ -627,7 +627,7 @@ module Historical_data = struct
       | 'D' -> `Day   (extract_int s ~time_unit:'D')
       | 'W' -> `Week  (extract_int s ~time_unit:'W')
       | 'M' -> `Month (extract_int s ~time_unit:'M')
-      | 'Y' -> `Year
+      | 'Y' -> `Year  (extract_int s ~time_unit:'Y')
       | _ -> invalid_argf "Bar_span.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws

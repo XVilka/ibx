@@ -659,7 +659,7 @@ end = struct
       always (`Day (1 + nng ()));
       always (`Week (1 + nng ()));
       always (`Month (1 + nng ()));
-      always (`Year);
+      always (`Year (1 + nng ()));
     ] ()
     in
     let show_g () = oneof [

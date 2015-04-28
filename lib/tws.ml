@@ -598,7 +598,7 @@ let cancel_market_depth t id =
 
 let historical_data
     ?(bar_size = `One_day)
-    ?(bar_span = `Year)
+    ?(bar_span = `Year 1)
     ?(use_rth = true)
     ?(show = `Trades)
     ?(until = Time.now ())
@@ -611,7 +611,7 @@ let historical_data
 
 let historical_data_exn
     ?(bar_size = `One_day)
-    ?(bar_span = `Year)
+    ?(bar_span = `Year 1)
     ?(use_rth = true)
     ?(show = `Trades)
     ?(until = Time.now ())

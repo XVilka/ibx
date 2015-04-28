@@ -62,7 +62,7 @@ end
 
 let bar_span_arg () =
   Command.Spec.(
-    flag "-span" (optional_with_default `Year Bar_span.arg_type)
+    flag "-span" (optional_with_default (`Year 1) Bar_span.arg_type)
       ~doc:" the time covered by the historical data request"
   )
 
