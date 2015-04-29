@@ -203,14 +203,16 @@ let req_taq_snapshot = Ib.Streaming_request.create
   ~canc_header:(Ib.Header.create ~tag:S.Cancel_market_data ~version:1)
   ~recv_header:[
     Ib.Header.create ~tag:R.Tick_price ~version:6;
+    Ib.Header.create ~tag:R.Snapshot_end ~version:1;
   ]
   ~skip_header:[
     Ib.Header.create ~tag:R.Tick_size ~version:6;
     Ib.Header.create ~tag:R.Tick_option ~version:6;
     Ib.Header.create ~tag:R.Tick_string ~version:6;
     Ib.Header.create ~tag:R.Tick_generic ~version:6;
-    Ib.Header.create ~tag:R.Snapshot_end ~version:1;
   ]
   ~tws_query:Query.Market_data.pickler
-  ~tws_response:[Response.Tick_price.unpickler]
-  ()
+  ~tws_response:[
+    U.map Response.Tick_price.unpickler ~f:(fun x -> `Tick_price x);
+    U.const `Snapshot_end;
+  ] ()

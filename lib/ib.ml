@@ -879,7 +879,10 @@ module Streaming_request = struct
                 Ivar.fill_if_empty ivar x;
                 return (`Die err)
               | Ok response ->
-                don't_wait_for (Pipe.write pipe_w (Ok response));
+                if not (Pipe.is_closed pipe_w) then begin
+                  (* Guard against an early closing of the pipe. *)
+                  don't_wait_for (Pipe.write pipe_w (Ok response));
+                end;
                 (* We fill the ivar only in the first iteration. *)
                 Ivar.fill_if_empty ivar (Ok (pipe_r, query_id));
                 return (`Replace (update pipe_w))

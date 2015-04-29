@@ -558,9 +558,6 @@ module Trade_snapshot : sig
   type t
   val symbol     : t -> Symbol.t
   val last_size  : t -> Volume.t
-
-  (** [last_price t] returns the price of the last trade or the last closing
-      price if no trading is going on. *)
   val last_price : t -> Price.t
 end
 
