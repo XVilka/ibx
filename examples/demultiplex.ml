@@ -30,7 +30,7 @@ let () =
             ~currency:`USD ~listed_on:`NASDAQ in
           Tws.market_data_exn tws ~contract:stock
           >>= fun (ticks, id) ->
-          upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id)
+          upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id);
           Pipe.iter ticks ~f:(unstage (make_tick_printer ~id ~symbol ~color))
         in
         let symbols, colors = ["AAPL"; "MSFT"; "GOOG"], [`Red; `Green; `Blue] in
