@@ -53,7 +53,7 @@ let security_type t = Security_type.t_of_tws t.Raw_contract.security_type
 let id t = t.Raw_contract.contract_id
 let symbol t = t.Raw_contract.symbol
 let exchange t = t.Raw_contract.exchange
-let listing_exchange t = t.Raw_contract.listing_exchange
+let listed_on t = t.Raw_contract.listing_exchange
 let currency t = t.Raw_contract.currency
 let local_symbol t = t.Raw_contract.local_symbol
 
@@ -102,13 +102,13 @@ let split_security_id = function
     | `CUSIP x -> (Some `CUSIP, Some x)
     | `SEDOL x -> (Some `SEDOL, Some x)
 
-let stock ?id ?listing_exchange ?local_symbol ?security_id
+let stock ?id ?listed_on ?local_symbol ?security_id
     ?exchange ~currency symbol =
   let security_id_type, security_id = split_security_id security_id in
   of_raw (
     Raw_contract.create
       ?id
-      ?listing_exchange
+      ?listing_exchange:listed_on
       ?local_symbol
       ?security_id_type
       ?security_id
@@ -118,14 +118,14 @@ let stock ?id ?listing_exchange ?local_symbol ?security_id
       symbol
   )
 
-let futures ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
+let futures ?id ?multiplier ?local_symbol ?security_id
     ?include_expired ?exchange ~currency ~expiry symbol =
   let security_id_type, security_id = split_security_id security_id in
   of_raw (
     Raw_contract.create
       ?id
       ?multiplier
-      ?listing_exchange
+      ?listing_exchange:None
       ?local_symbol
       ?security_id_type
       ?security_id
@@ -137,14 +137,14 @@ let futures ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
       symbol
   )
 
-let option ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
+let option ?id ?multiplier ?local_symbol ?security_id
     ?exchange ~currency ~option_right ~expiry ~strike symbol =
   let security_id_type, security_id = split_security_id security_id in
   of_raw (
     Raw_contract.create
       ?id
       ?multiplier
-      ?listing_exchange
+      ?listing_exchange:None
       ?local_symbol
       ?security_id_type
       ?security_id
@@ -157,14 +157,14 @@ let option ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
       symbol
   )
 
-let futures_option ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
+let futures_option ?id ?multiplier ?local_symbol ?security_id
     ?exchange ~currency ~option_right ~expiry ~strike symbol =
   let security_id_type, security_id = split_security_id security_id in
   of_raw (
     Raw_contract.create
       ?id
       ?multiplier
-      ?listing_exchange
+      ?listing_exchange:None
       ?local_symbol
       ?security_id_type
       ?security_id
@@ -177,13 +177,13 @@ let futures_option ?id ?multiplier ?listing_exchange ?local_symbol ?security_id
       symbol
   )
 
-let forex ?id ?listing_exchange ?local_symbol ?security_id
-    ?(exchange=`IDEALPRO) ~currency symbol =
+let forex ?id ?local_symbol ?security_id ?(exchange=`IDEALPRO)
+    ~currency symbol =
   let security_id_type, security_id = split_security_id security_id in
   of_raw (
     Raw_contract.create
       ?id
-      ?listing_exchange
+      ?listing_exchange:None
       ?local_symbol
       ?security_id_type
       ?security_id

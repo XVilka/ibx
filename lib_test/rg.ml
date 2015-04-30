@@ -259,7 +259,6 @@ end = struct
   let option_g () =
     Contract.option
       ~multiplier:(nng ())
-      ~listing_exchange:(exchange_g ())
       ~local_symbol:(symbol_g ())
       ~security_id:(security_id_g ())
       ~exchange:(exchange_g ())
@@ -273,7 +272,7 @@ end = struct
     [ always (
       Contract.stock
         ?id:(og contract_id_g ())
-        ?listing_exchange:(og exchange_g ())
+        ?listed_on:(og exchange_g ())
         ?local_symbol:(og symbol_g ())
         ?security_id:(og security_id_g ())
         ?exchange:(og exchange_g ())
@@ -283,7 +282,6 @@ end = struct
       Contract.futures
         ?id:(og contract_id_g ())
         ?multiplier:(og nng ())
-        ?listing_exchange:(og exchange_g ())
         ?local_symbol:(og symbol_g ())
         ?security_id:(og security_id_g ())
         ?include_expired:(og bg ())
@@ -295,7 +293,6 @@ end = struct
       Contract.option
         ?id:(og contract_id_g ())
         ?multiplier:(og nng ())
-        ?listing_exchange:(og exchange_g ())
         ?local_symbol:(og symbol_g ())
         ?security_id:(og security_id_g ())
         ?exchange:(og exchange_g ())
@@ -388,7 +385,7 @@ end = struct
       [ always (
         Contract.stock
           ?id:(og contract_id_g ())
-          ?listing_exchange:(og exchange_g ())
+          ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -398,7 +395,6 @@ end = struct
         Contract.futures
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?include_expired:None
@@ -410,7 +406,6 @@ end = struct
         Contract.option
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -448,7 +443,6 @@ end = struct
     let option_g () =
       Contract.option
         ~multiplier:(nng ())
-        ~listing_exchange:(exchange_g ())
         ~local_symbol:(symbol_g ())
         ?security_id:None
         ~exchange:(exchange_g ())
@@ -467,7 +461,6 @@ end = struct
     let option_g () =
       Contract.option
         ~multiplier:(nng ())
-        ~listing_exchange:(exchange_g ())
         ~local_symbol:(symbol_g ())
         ?security_id:None
         ~exchange:(exchange_g ())
@@ -489,7 +482,7 @@ end = struct
       [ always (
         Contract.stock
           ?id:(og contract_id_g ())
-          ?listing_exchange:(og exchange_g ())
+          ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:(og security_id_g ())
           ?exchange:(og exchange_g ())
@@ -499,7 +492,6 @@ end = struct
         Contract.futures
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:(og security_id_g ())
           ?include_expired:(og bg ())
@@ -511,7 +503,6 @@ end = struct
         Contract.option
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:(og security_id_g ())
           ?exchange:(og exchange_g ())
@@ -606,7 +597,7 @@ end = struct
       [ always (
         Contract.stock
           ?id:None
-          ?listing_exchange:(og exchange_g ())
+          ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -616,7 +607,6 @@ end = struct
         Contract.futures
           ?id:None
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?include_expired:(og bg ())
@@ -628,7 +618,6 @@ end = struct
         Contract.option
           ?id:None
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -688,7 +677,7 @@ end = struct
       [ always (
         Contract.stock
           ?id:None
-          ?listing_exchange:(og exchange_g ())
+          ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -698,7 +687,6 @@ end = struct
         Contract.futures
           ?id:None
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?include_expired:None
@@ -710,7 +698,6 @@ end = struct
         Contract.option
           ?id:None
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -978,7 +965,7 @@ end = struct
       [ always (
         Contract.stock
           ?id:(og contract_id_g ())
-          ?listing_exchange:None
+          ?listed_on:None
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -988,7 +975,6 @@ end = struct
         Contract.futures
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:None
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?include_expired:None
@@ -1000,7 +986,6 @@ end = struct
         Contract.option
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:None
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -1032,7 +1017,7 @@ end = struct
       [ always (
         Contract.stock
           ?id:(og contract_id_g ())
-          ?listing_exchange:(og exchange_g ())
+          ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -1041,7 +1026,6 @@ end = struct
         Contract.futures
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -1051,7 +1035,6 @@ end = struct
         Contract.option
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
-          ?listing_exchange:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -1090,7 +1073,7 @@ end = struct
       [ always (
         Contract.stock
           ?id:(og contract_id_g ())
-          ?listing_exchange:None
+          ?listed_on:None
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())
@@ -1100,7 +1083,6 @@ end = struct
         Contract.futures
           ?id:(og contract_id_g ())
           ?multiplier:None
-          ?listing_exchange:None
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?include_expired:None
@@ -1112,7 +1094,6 @@ end = struct
         Contract.option
           ?id:(og contract_id_g ())
           ?multiplier:None
-          ?listing_exchange:None
           ?local_symbol:(og symbol_g ())
           ?security_id:None
           ?exchange:(og exchange_g ())

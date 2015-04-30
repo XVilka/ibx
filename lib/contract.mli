@@ -58,7 +58,7 @@ val security_type    : 'a t -> [> Security_type.t ]
 val id               : 'a t -> Id.t option
 val symbol           : 'a t -> Symbol.t
 val exchange         : 'a t -> Exchange.t
-val listing_exchange : 'a t -> Exchange.t option
+val listed_on        : 'a t -> Exchange.t option
 val currency         : 'a t -> Currency.t
 val local_symbol     : 'a t -> Symbol.t option
 val security_id      : 'a t ->  Security_id.t option
@@ -77,7 +77,7 @@ val ( = ) : 'a t -> 'a t -> bool
 
 val stock
   :  ?id:Id.t
-  -> ?listing_exchange:Exchange.t
+  -> ?listed_on:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
   -> ?exchange:Exchange.t
@@ -88,7 +88,6 @@ val stock
 val futures
   :  ?id:Id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
   -> ?include_expired:bool
@@ -101,7 +100,6 @@ val futures
 val option
   :  ?id:Id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
   -> ?exchange:Exchange.t
@@ -115,7 +113,6 @@ val option
 val futures_option
   :  ?id:Id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
   -> ?exchange:Exchange.t
@@ -128,7 +125,6 @@ val futures_option
 
 val forex
   :  ?id:Id.t
-  -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?security_id:Security_id.t
   -> ?exchange:Exchange.t

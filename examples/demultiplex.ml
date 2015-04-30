@@ -26,15 +26,11 @@ let () =
     (fun do_log host port client_id duration () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         let print_ticks symbol color =
-          Tws.contract_details_exn tws ~currency:`USD
-            ~security_type:`Stock (Symbol.of_string symbol)
-          >>= fun details ->
-          let data = Option.value_exn (Pipe.peek details) in
-          Tws.market_data_exn tws ~contract:(Contract_data.contract data)
+          let stock = Contract.stock (Symbol.of_string symbol)
+            ~currency:`USD ~listed_on:`NASDAQ in
+          Tws.market_data_exn tws ~contract:stock
           >>= fun (ticks, id) ->
-          upon (Clock.after duration) (fun () ->
-            Tws.cancel_market_data tws id
-          );
+          upon (Clock.after duration) (fun () -> Tws.cancel_market_data tws id)
           Pipe.iter ticks ~f:(unstage (make_tick_printer ~id ~symbol ~color))
         in
         let symbols, colors = ["AAPL"; "MSFT"; "GOOG"], [`Red; `Green; `Blue] in
