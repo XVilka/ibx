@@ -1049,7 +1049,7 @@ end
 module Trade_snapshot_result = struct
   type t =
   | Empty_snapshot
-  | Full_snapshot of Trade_snapshot.t
+  | Received_trade of Trade_snapshot.t
 end
 
 let trade_snapshot t ~contract =
@@ -1072,9 +1072,6 @@ let trade_snapshot t ~contract =
             Tws_error.raise tws_error
           | Ok tick ->
             begin match tick with
-            | `Snapshot_end ->
-              cancel con id; Pipe.close_read ticks;
-              return snapshot
             | `Tick_price tick ->
               return (match Tick_price.tick_type tick with
               | T.Last ->
@@ -1082,18 +1079,21 @@ let trade_snapshot t ~contract =
                 | R.Empty_snapshot ->
                   (* Received full snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
-                  R.Full_snapshot {
+                  R.Received_trade {
                     Trade_snapshot.
                     symbol     = Contract.symbol contract;
                     last_size  = Tick_price.size tick;
                     last_price = Tick_price.price tick;
                   }
-                | R.Full_snapshot _ as snapshot ->
+                | R.Received_trade _ as snapshot ->
                   snapshot
                 end
               | T.Ask | T.Bid | T.Open | T.Low | T.High | T.Close ->
                 snapshot
               )
+            | `Snapshot_end ->
+              cancel con id; Pipe.close_read ticks;
+              return snapshot
             end
         )
       ) >>| function
@@ -1101,7 +1101,7 @@ let trade_snapshot t ~contract =
         Or_error.of_exn (Monitor.extract_exn exn)
       | Ok R.Empty_snapshot ->
         Or_error.error_string "No trade snapshot was received"
-      | Ok (R.Full_snapshot snapshot) ->
+      | Ok (R.Received_trade snapshot) ->
         Ok snapshot
   )
 
