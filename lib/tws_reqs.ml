@@ -198,7 +198,9 @@ let req_taq_data = Ib.Streaming_request.create
     U.map Response.Tick_size.unpickler  ~f:(fun x -> `Tick_size  x);
   ] ()
 
-let req_taq_snapshot = Ib.Streaming_request.create
+(* ========================= Snapshots ============================ *)
+
+let req_snapshot = Ib.Streaming_request.create
   ~send_header:(Ib.Header.create ~tag:S.Market_data ~version:9)
   ~canc_header:(Ib.Header.create ~tag:S.Cancel_market_data ~version:1)
   ~recv_header:[

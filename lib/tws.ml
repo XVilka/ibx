@@ -972,7 +972,7 @@ let quote_snapshot t ~contract =
     let q = Query.Market_data.create
       ~contract ~tick_generics:[] ~snapshot:true
     in
-    Ib.Streaming_request.dispatch Tws_reqs.req_taq_snapshot con q
+    Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
     >>= function
     | Error _ as x -> return x
     | Ok (ticks, id) ->
@@ -1075,13 +1075,13 @@ let trade_snapshot t ~contract =
     let q = Query.Market_data.create
       ~contract ~tick_generics:[] ~snapshot:true
     in
-    Ib.Streaming_request.dispatch Tws_reqs.req_taq_snapshot con q
+    Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
     >>= function
     | Error _ as x -> return x
     | Ok (ticks, id) ->
       let module T = Tick_price.Type in
       let module R = Trade_snapshot_result in
-      let cancel = Ib.Streaming_request.cancel Tws_reqs.req_taq_snapshot in
+      let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
       try_with (fun () ->
         Pipe.fold ticks ~init:R.Empty_snapshot ~f:(fun snapshot result ->
           match result with

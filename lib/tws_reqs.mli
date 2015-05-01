@@ -106,7 +106,10 @@ val req_taq_data :
                         | `Tick_size  of Response.Tick_size.t
                         ]) Ib.Streaming_request.t
 
-val req_taq_snapshot :
+(** {1 Snapshots} *)
+(*****************************************************************************)
+
+val req_snapshot :
   (Query.Market_data.t, [ `Tick_price of Response.Tick_price.t
                         | `Snapshot_end
                         ]) Ib.Streaming_request.t
