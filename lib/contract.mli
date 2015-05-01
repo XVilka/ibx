@@ -28,7 +28,14 @@ module Id : sig
 end
 
 module Security_type : sig
-  type t = [ `Stock | `Futures | `Option | `Fut_opt | `Forex ] with sexp
+  type t =
+  [ `Stock
+  | `Index
+  | `Futures
+  | `Option
+  | `Fut_opt
+  | `Forex
+  ] with sexp
   include Stringable.S with type t := t
 end
 
@@ -84,6 +91,15 @@ val stock
   -> currency:Currency.t
   -> Symbol.t
   -> [> `Stock ] t
+
+val index
+  :  ?id:Id.t
+  -> ?local_symbol:Symbol.t
+  -> ?security_id:Security_id.t
+  -> ?exchange:Exchange.t
+  -> currency:Currency.t
+  -> Symbol.t
+  -> [> `Index ] t
 
 val futures
   :  ?id:Id.t

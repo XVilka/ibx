@@ -80,7 +80,7 @@ let to_string t =
       (Date.year d mod 100);
   in
   match security_type t with
-  | `Stock | `Forex ->
+  | `Stock | `Index | `Forex ->
     Symbol.to_string t.Raw_contract.symbol
   | `Futures ->
     sprintf "%s %s"
@@ -115,6 +115,21 @@ let stock ?id ?listed_on ?local_symbol ?security_id
       ?exchange
       ~currency
       ~security_type:"STK"
+      symbol
+  )
+
+let index ?id ?local_symbol ?security_id ?exchange ~currency symbol =
+  let security_id_type, security_id = split_security_id security_id in
+  of_raw (
+    Raw_contract.create
+      ?id
+      ?listing_exchange:None
+      ?local_symbol
+      ?security_id_type
+      ?security_id
+      ?exchange
+      ~currency
+      ~security_type:"IND"
       symbol
   )
 
