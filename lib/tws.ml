@@ -962,9 +962,8 @@ end
 module Quote_snapshot_result = struct
   type t =
   | Empty_snapshot
-  | Received_ask of Quote_snapshot.t
   | Received_bid of Quote_snapshot.t
-  | Full_snapshot of Quote_snapshot.t
+  | Received_ask of Quote_snapshot.t
 end
 
 let quote_snapshot t ~contract =
@@ -987,34 +986,8 @@ let quote_snapshot t ~contract =
             Tws_error.raise tws_error
           | Ok tick ->
             begin match tick with
-            | `Snapshot_end ->
-              cancel con id; Pipe.close_read ticks;
-              return snapshot
             | `Tick_price tick ->
               return (match Tick_price.tick_type tick with
-              | T.Ask ->
-                begin match snapshot with
-                | R.Empty_snapshot ->
-                  R.Received_ask {
-                    Quote_snapshot.
-                    symbol    = Contract.symbol contract;
-                    ask_price = Tick_price.price tick;
-                    ask_size  = Tick_price.size tick;
-                    bid_price = Price.nan;
-                    bid_size  = Volume.zero;
-                  }
-                | R.Received_bid snapshot ->
-                  (* Received full snapshot.  Cancel the request. *)
-                  cancel con id; Pipe.close_read ticks;
-                  R.Full_snapshot
-                    { snapshot with
-                      Quote_snapshot.
-                      ask_price = Tick_price.price tick;
-                      ask_size  = Tick_price.size tick;
-                    }
-                | R.Received_ask _ | R.Full_snapshot _ as snapshot ->
-                  snapshot
-                end
               | T.Bid ->
                 begin match snapshot with
                 | R.Empty_snapshot ->
@@ -1026,20 +999,29 @@ let quote_snapshot t ~contract =
                     ask_price = Price.nan;
                     ask_size  = Volume.zero;
                   }
-                | R.Received_ask snapshot ->
+                | R.Received_bid _ | R.Received_ask _ as snapshot ->
+                  snapshot
+                end
+              | T.Ask ->
+                begin match snapshot with
+                | R.Received_bid snapshot ->
                   (* Received full snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
-                  R.Full_snapshot {
-                    snapshot with Quote_snapshot.
-                      bid_price = Tick_price.price tick;
-                      bid_size  = Tick_price.size tick;
-                  }
-                | R.Received_bid _ | R.Full_snapshot _ as snapshot ->
+                  R.Received_ask
+                    { snapshot with
+                      Quote_snapshot.
+                      ask_price = Tick_price.price tick;
+                      ask_size  = Tick_price.size tick;
+                    }
+                | R.Empty_snapshot | R.Received_ask _ as snapshot ->
                   snapshot
                 end
               | T.Last | T.Low | T.High | T.Close | T.Open ->
                 snapshot
               )
+            | `Snapshot_end ->
+              cancel con id; Pipe.close_read ticks;
+              return snapshot
             end
         )
       ) >>| function
@@ -1047,7 +1029,7 @@ let quote_snapshot t ~contract =
         Or_error.of_exn (Monitor.extract_exn exn)
       | Ok R.Empty_snapshot ->
         Or_error.error_string "No quote snapshot was received"
-      | Ok (R.Full_snapshot snapshot) ->
+      | Ok (R.Received_ask snapshot) ->
         Ok snapshot
       | Ok _ -> assert false
   )
