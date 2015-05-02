@@ -23,7 +23,6 @@
 open Core.Std
 open Async.Std
 open Std_internal
-open Response
 
 module Query_id : Unique_id
 

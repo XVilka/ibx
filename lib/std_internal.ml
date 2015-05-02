@@ -20,8 +20,23 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-module Contract_id   = Raw_contract.Id
-module Execution_id  = Execution_id
-module Option_right  = Raw_contract.Option_right
-module Order_id      = Order_id
-module Security_id   = Contract.Security_id
+module Account_update     = Response.Account_update
+module Book_update        = Response.Book_update
+module Commission         = Response.Commission
+module Contract_data      = Response.Contract_data
+module Contract_id        = Raw_contract.Id
+module Execution          = Response.Execution
+module Execution_id       = Execution_id
+module Historical_bar     = Response.Historical_data.Bar
+module Historical_data    = Response.Historical_data
+module Option_right       = Raw_contract.Option_right
+module Order_id           = Order_id
+module Order_status       = Response.Order_status
+module Portfolio_position = Response.Portfolio_position
+module Realtime_bar       = Response.Realtime_bar
+module Security_id        = Contract.Security_id
+module Tick_option        = Response.Tick_option
+module Tick_price         = Response.Tick_price
+module Tick_size          = Response.Tick_size
+module Tick_string        = Response.Tick_string
+module Tws_error          = Response.Tws_error
