@@ -1088,7 +1088,13 @@ let trade_snapshot t ~contract =
                 | R.Received_trade _ as snapshot ->
                   snapshot
                 end
-              | T.Ask | T.Bid | T.Open | T.Low | T.High | T.Close ->
+              | T.Bid ->
+                if Price.(Tick_price.price tick = neg one) then begin
+                  (* We won't receive a trade.  Cancel the request. *)
+                  cancel con id; Pipe.close_read ticks;
+                  R.Empty_snapshot
+                end else snapshot
+              | T.Ask | T.Open | T.Low | T.High | T.Close ->
                 snapshot
               )
             | `Snapshot_end ->
