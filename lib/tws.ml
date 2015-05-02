@@ -23,7 +23,6 @@
 open Core.Std
 open Async.Std
 open Std_internal
-open Response
 
 module Client_msg = struct
   module Control = struct
