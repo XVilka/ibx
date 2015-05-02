@@ -28,6 +28,7 @@ module Bar_size           = Query.Historical_data.Bar_size
 module Bar_span           = Query.Historical_data.Bar_span
 module Book_update        = Response.Book_update
 module Client_id          = Client_id
+module Close_snapshot     = Tws.Close_snapshot
 module Commission         = Response.Commission
 module Config             = Config
 module Contract           = Contract

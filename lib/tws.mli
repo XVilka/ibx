@@ -570,3 +570,22 @@ val trade_snapshot_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> Trade_snapshot.t Deferred.t
+
+(** {1 Close snapshot} *)
+(******************************************************************************)
+
+module Close_snapshot : sig
+  type t
+  val symbol : t -> Symbol.t
+  val price  : t -> Price.t
+end
+
+val close_snapshot
+  :  t
+  -> contract:[< Security_type.t ] Contract.t
+  -> Close_snapshot.t Or_error.t Deferred.t
+
+val close_snapshot_exn
+  :  t
+  -> contract:[< Security_type.t ] Contract.t
+  -> Close_snapshot.t Deferred.t

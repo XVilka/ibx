@@ -1113,3 +1113,76 @@ let trade_snapshot t ~contract =
 
 let trade_snapshot_exn t ~contract =
   trade_snapshot t ~contract >>| Or_error.ok_exn
+
+
+(* +-----------------------------------------------------------------------+
+   | Close snapshot                                                        |
+   +-----------------------------------------------------------------------+ *)
+
+module Close_snapshot = struct
+  type t =
+    { symbol : Symbol.t;
+      price  : Price.t;
+    } with sexp, fields
+end
+
+module Close_snapshot_result = struct
+  type t =
+  | Empty_snapshot
+  | Received_close of Close_snapshot.t
+end
+
+let close_snapshot t ~contract =
+  with_connection t ~f:(fun con ->
+    let q = Query.Market_data.create
+      ~contract ~tick_generics:[] ~snapshot:true
+    in
+    Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
+    >>= function
+    | Error _ as x -> return x
+    | Ok (ticks, id) ->
+      let module T = Tick_price.Type in
+      let module R = Close_snapshot_result in
+      let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
+      try_with (fun () ->
+        Pipe.fold ticks ~init:R.Empty_snapshot ~f:(fun snapshot result ->
+          match result with
+          | Error tws_error ->
+            cancel con id; Pipe.close_read ticks;
+            Tws_error.raise tws_error
+          | Ok tick ->
+            begin match tick with
+            | `Tick_price tick ->
+              return (match Tick_price.tick_type tick with
+              | T.Close ->
+                begin match snapshot with
+                | R.Empty_snapshot ->
+                  (* Received complete snapshot.  Cancel the request. *)
+                  cancel con id; Pipe.close_read ticks;
+                  R.Received_close {
+                    Close_snapshot.
+                    symbol = Contract.symbol contract;
+                    price  = Tick_price.price tick;
+                  }
+                | R.Received_close _ as snapshot ->
+                  snapshot
+                end
+              | T.Bid | T.Ask | T.Open | T.Low | T.High | T.Last ->
+                snapshot
+              )
+            | `Snapshot_end ->
+              cancel con id; Pipe.close_read ticks;
+              return snapshot
+            end
+        )
+      ) >>| function
+      | Error exn ->
+        Or_error.of_exn (Monitor.extract_exn exn)
+      | Ok R.Empty_snapshot ->
+        Or_error.error_string "No close snapshot was received"
+      | Ok (R.Received_close snapshot) ->
+        Ok snapshot
+  )
+
+let close_snapshot_exn t ~contract =
+  close_snapshot t ~contract >>| Or_error.ok_exn
