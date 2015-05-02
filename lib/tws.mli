@@ -556,9 +556,9 @@ val quote_snapshot_exn
 
 module Trade_snapshot : sig
   type t
-  val symbol     : t -> Symbol.t
-  val last_size  : t -> Volume.t
-  val last_price : t -> Price.t
+  val symbol : t -> Symbol.t
+  val size   : t -> Volume.t
+  val price  : t -> Price.t
 end
 
 val trade_snapshot

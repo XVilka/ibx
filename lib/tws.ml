@@ -1040,9 +1040,9 @@ let quote_snapshot_exn t ~contract =
 
 module Trade_snapshot = struct
   type t =
-    { symbol     : Symbol.t;
-      last_size  : Volume.t;
-      last_price : Price.t;
+    { symbol : Symbol.t;
+      size   : Volume.t;
+      price  : Price.t;
     } with sexp, fields
 end
 
@@ -1081,9 +1081,9 @@ let trade_snapshot t ~contract =
                   cancel con id; Pipe.close_read ticks;
                   R.Received_trade {
                     Trade_snapshot.
-                    symbol     = Contract.symbol contract;
-                    last_size  = Tick_price.size tick;
-                    last_price = Tick_price.price tick;
+                    symbol = Contract.symbol contract;
+                    size   = Tick_price.size tick;
+                    price  = Tick_price.price tick;
                   }
                 | R.Received_trade _ as snapshot ->
                   snapshot

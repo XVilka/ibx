@@ -20,9 +20,9 @@ let () =
           prerr_endline (Error.to_string_hum e);
           exit 1
         | Ok snapshot ->
-          let last_price = Trade_snapshot.last_price snapshot in
+          let last_price = Trade_snapshot.price snapshot in
           printf "[Info] Last price for %s was %4.2f %s\n"
-            symbol (Price.to_float last_price) (Currency.to_string currency);
+            symbol (last_price :> float) (Currency.to_string currency);
           return ()
       )
     )
