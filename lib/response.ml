@@ -1447,40 +1447,66 @@ end
    | Historical data                                                       |
    +-----------------------------------------------------------------------+ *)
 
-module Historical_data = struct
-  module Bar = struct
-    type t =
-      { stamp : Time.t;
-        op : Price.t;
-        hi : Price.t;
-        lo : Price.t;
-        cl : Price.t;
-        volume : Volume.t;
-        wap : Price.t;
-        has_gaps : bool;
-        count : int;
-      } with sexp, fields
+module Historical_bar = struct
+  type t =
+    { stamp : Time.t;
+      op : Price.t;
+      hi : Price.t;
+      lo : Price.t;
+      cl : Price.t;
+      volume : Volume.t;
+      wap : Price.t;
+      has_gaps : bool;
+      count : int;
+    } with sexp, fields
 
-    let create = Fields.create
+  let create = Fields.create
 
-    let ( = ) t1 t2 : bool =
-      let use op = fun field ->
-        op (Field.get field t1) (Field.get field t2)
-      in
-      Fields.for_all
-        ~stamp:(use Time.(=))
-        ~op:(use Price.(=.))
-        ~hi:(use Price.(=.))
-        ~lo:(use Price.(=.))
-        ~cl:(use Price.(=.))
-        ~volume:(use Volume.(=))
-        ~wap:(use Price.(=.))
-        ~has_gaps:(use (=))
-        ~count:(use (=))
+  let ( = ) t1 t2 : bool =
+    let use op = fun field ->
+      op (Field.get field t1) (Field.get field t2)
+    in
+    Fields.for_all
+      ~stamp:(use Time.(=))
+      ~op:(use Price.(=.))
+      ~hi:(use Price.(=.))
+      ~lo:(use Price.(=.))
+      ~cl:(use Price.(=.))
+      ~volume:(use Volume.(=))
+      ~wap:(use Price.(=.))
+      ~has_gaps:(use (=))
+      ~count:(use (=))
 
-    let unpickler =
-      Unpickler.create ~name:"Response.Historical_data.Bar"
-        Unpickler.Spec.(
+  let unpickler =
+    Unpickler.create ~name:"Response.Historical_bar"
+      Unpickler.Spec.(
+        Fields.fold
+          ~init:(empty ())
+          ~stamp:(fields_value (required Timestamp.val_type))
+          ~op:(fields_value (required Price.val_type))
+          ~hi:(fields_value (required Price.val_type))
+          ~lo:(fields_value (required Price.val_type))
+          ~cl:(fields_value (required Price.val_type))
+          ~volume:(fields_value (required Volume.val_type))
+          ~wap:(fields_value (required Price.val_type))
+          ~has_gaps:(fields_value (required string))
+          ~count:(fields_value (required int)))
+      (fun stamp op hi lo cl volume wap has_gaps count ->
+        { stamp;
+          op;
+          hi;
+          lo;
+          cl;
+          volume;
+          wap;
+          has_gaps = Bool.of_string has_gaps;
+          count;
+        })
+
+  let pickler = Only_in_test.of_thunk (fun () ->
+    Pickler.create ~name:"Response.Historical_bar"
+      Pickler.Spec.(
+        wrap (
           Fields.fold
             ~init:(empty ())
             ~stamp:(fields_value (required Timestamp.val_type))
@@ -1492,51 +1518,25 @@ module Historical_data = struct
             ~wap:(fields_value (required Price.val_type))
             ~has_gaps:(fields_value (required string))
             ~count:(fields_value (required int)))
-        (fun stamp op hi lo cl volume wap has_gaps count ->
-          { stamp;
-            op;
-            hi;
-            lo;
-            cl;
-            volume;
-            wap;
-            has_gaps = Bool.of_string has_gaps;
-            count;
-          })
+          (fun t ->
+            `Args
+              $ t.stamp
+              $ t.op
+              $ t.hi
+              $ t.lo
+              $ t.cl
+              $ t.volume
+              $ t.wap
+              $ Bool.to_string t.has_gaps
+              $ t.count)))
+end
 
-    let pickler = Only_in_test.of_thunk (fun () ->
-      Pickler.create ~name:"Response.Historical_data.Bar"
-        Pickler.Spec.(
-          wrap (
-            Fields.fold
-              ~init:(empty ())
-              ~stamp:(fields_value (required Timestamp.val_type))
-              ~op:(fields_value (required Price.val_type))
-              ~hi:(fields_value (required Price.val_type))
-              ~lo:(fields_value (required Price.val_type))
-              ~cl:(fields_value (required Price.val_type))
-              ~volume:(fields_value (required Volume.val_type))
-              ~wap:(fields_value (required Price.val_type))
-              ~has_gaps:(fields_value (required string))
-              ~count:(fields_value (required int)))
-            (fun t ->
-              `Args
-                $ t.stamp
-                $ t.op
-                $ t.hi
-                $ t.lo
-                $ t.cl
-                $ t.volume
-                $ t.wap
-                $ Bool.to_string t.has_gaps
-                $ t.count)))
-  end
-
+module Historical_data = struct
   type t =
     { start_time : Time.t;
       end_time : Time.t;
       num_bars : int;
-      bars : Bar.t list;
+      bars : Historical_bar.t list;
     } with sexp, fields
 
   let create ~start_time ~end_time ~bars =
@@ -1554,7 +1554,7 @@ module Historical_data = struct
       ~start_time:(use (=))
       ~end_time:(use (=))
       ~num_bars:(use (=))
-      ~bars:(use (List.for_all2_exn ~f:Bar.(=)))
+      ~bars:(use (List.for_all2_exn ~f:Historical_bar.(=)))
 
   let unpickler =
     Unpickler.create ~name:"Response.Historical_data"
@@ -1573,7 +1573,7 @@ module Historical_data = struct
             Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
             |> Queue.of_array
           in
-          Unpickler.run_exn Bar.unpickler bar_msg)
+          Unpickler.run_exn Historical_bar.unpickler bar_msg)
         in
         { start_time;
           end_time;
@@ -1592,7 +1592,7 @@ module Historical_data = struct
             ~num_bars:(fields_value (required int))
             ~bars:(fields_value tws_data))
           (fun t ->
-            let pickler = Only_in_test.force Bar.pickler in
+            let pickler = Only_in_test.force Historical_bar.pickler in
             let bars_msg =
               List.map t.bars ~f:(fun bar -> Pickler.run pickler bar)
               |> String.concat
@@ -1615,6 +1615,7 @@ module Historical_data = struct
   end
 
   let to_data_frame t =
+    let module Bar = Historical_bar in
     let stamps    = Array.create ~len:t.num_bars Time.epoch in
     let op_prices = Array.create ~len:t.num_bars Float.nan in
     let hi_prices = Array.create ~len:t.num_bars Float.nan in
@@ -1622,7 +1623,7 @@ module Historical_data = struct
     let cl_prices = Array.create ~len:t.num_bars Float.nan in
     let volumes   = Array.create ~len:t.num_bars 0 in
     List.iteri t.bars ~f:(fun i bar ->
-      Array.set stamps    i bar.Bar.stamp;
+      Array.set stamps    i  bar.Bar.stamp;
       Array.set op_prices i (bar.Bar.op :> float);
       Array.set hi_prices i (bar.Bar.hi :> float);
       Array.set lo_prices i (bar.Bar.lo :> float);

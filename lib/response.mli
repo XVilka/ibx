@@ -442,40 +442,40 @@ end
 (** {1 Historical data} *)
 (*****************************************************************************)
 
+module Historical_bar : sig
+  type t =
+    { stamp : Time.t;
+      op : Price.t;
+      hi : Price.t;
+      lo : Price.t;
+      cl : Price.t;
+      volume : Volume.t;
+      wap : Price.t;
+      has_gaps : bool;
+      count : int;
+    }
+  with sexp, fields
+  include Response_intf.S with type t := t
+
+  val create
+    :  stamp:Time.t
+    -> op:Price.t
+    -> hi:Price.t
+    -> lo:Price.t
+    -> cl:Price.t
+    -> volume:Volume.t
+    -> wap:Price.t
+    -> has_gaps:bool
+    -> count:int
+    -> t
+end
+
 module Historical_data : sig
-  module Bar : sig
-    type t =
-      { stamp : Time.t;
-        op : Price.t;
-        hi : Price.t;
-        lo : Price.t;
-        cl : Price.t;
-        volume : Volume.t;
-        wap : Price.t;
-        has_gaps : bool;
-        count : int;
-      }
-    with sexp, fields
-    include Response_intf.S with type t := t
-
-    val create
-      :  stamp:Time.t
-      -> op:Price.t
-      -> hi:Price.t
-      -> lo:Price.t
-      -> cl:Price.t
-      -> volume:Volume.t
-      -> wap:Price.t
-      -> has_gaps:bool
-      -> count:int
-      -> t
-  end
-
   type t =
     { start_time : Time.t;
       end_time : Time.t;
       num_bars : int;
-      bars : Bar.t list;
+      bars : Historical_bar.t list;
     }
   with sexp, fields
   include Response_intf.S with type t := t
@@ -483,7 +483,7 @@ module Historical_data : sig
   val create
     :  start_time:Time.t
     -> end_time:Time.t
-    -> bars:Bar.t list
+    -> bars:Historical_bar.t list
     -> t
 
   module Data_frame : sig

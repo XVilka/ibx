@@ -1164,7 +1164,7 @@ end = struct
 
   let historical_data_g () =
     let bar_g () =
-      Response.Historical_data.Bar.create
+      Response.Historical_bar.create
         ~stamp:(tmg ())
         ~op:(price_g ())
         ~hi:(price_g ())
