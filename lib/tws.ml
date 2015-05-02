@@ -1005,7 +1005,7 @@ let quote_snapshot t ~contract =
               | T.Ask ->
                 begin match snapshot with
                 | R.Received_bid snapshot ->
-                  (* Received full snapshot.  Cancel the request. *)
+                  (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
                   R.Received_ask
                     { snapshot with
@@ -1077,7 +1077,7 @@ let trade_snapshot t ~contract =
               | T.Last ->
                 begin match snapshot with
                 | R.Empty_snapshot ->
-                  (* Received full snapshot.  Cancel the request. *)
+                  (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
                   R.Received_trade {
                     Trade_snapshot.
