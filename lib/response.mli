@@ -23,7 +23,6 @@
 (** TWS responses *)
 
 open Core.Std
-open Std_internal
 
 (** {1 Connection and server} *)
 (*****************************************************************************)

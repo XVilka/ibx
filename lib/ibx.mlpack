@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: f76158c78b5faef3998e7f68e6deaed7)
+# DO NOT EDIT (digest: 5b83da208597b5b5fc1b3545f347a2c1)
 Account_code
 Client_id
 Config
@@ -9,6 +9,7 @@ Exchange
 Execution_id
 Ib
 Order
+Order_id
 Pickable
 Price
 Query
@@ -20,6 +21,7 @@ Raw_order_intf
 Recv_tag
 Response
 Response_intf
+Security_type
 Send_tag
 Std
 Std_internal

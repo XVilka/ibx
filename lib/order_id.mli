@@ -1,4 +1,4 @@
-(* File: raw_contract_intf.ml
+(* File: order_id.mli
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -20,11 +20,9 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Security_type
+open Core.Std
 
-module type S = sig
-  type raw
-  type 'a t constraint 'a = [< Security_type.t ]
-  val of_raw : raw -> 'a t
-  val to_raw : 'a t -> raw
-end
+type t
+include Unique_id.Id with type t := t
+include Unpickable.S with type t := t
+include Twsable.S with type t := t

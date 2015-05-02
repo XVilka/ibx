@@ -53,6 +53,7 @@ module Realtime_bar       = Response.Realtime_bar
 module Recv_tag           = Recv_tag
 module Response           = Response
 module Response_intf      = Response_intf
+module Security_type      = Security_type
 module Send_tag           = Send_tag
 module Server_time        = Response.Server_time
 module Symbol             = Symbol

@@ -480,7 +480,7 @@ module Contract_details = struct
       ?strike
       ?option_right
       ~currency
-      ~security_type:(Raw_contract.Security_type.tws_of_t security_type)
+      ~security_type:(Security_type.tws_of_t security_type)
       symbol
 
   let ( = ) t1 t2 = Raw_contract.(=) t1 t2

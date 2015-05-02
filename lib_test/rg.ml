@@ -248,13 +248,15 @@ end = struct
     always (`RIC   (sg ()));
   ] ()
 
-  let security_type_g () = oneof [
-    always (`Stock);
-    always (`Futures);
-    always (`Option);
-    always (`Fut_opt);
-    always (`Forex);
-  ] ()
+  let security_type_g () =
+    let open Security_type in
+    oneof [
+      always (`Stock);
+      always (`Futures);
+      always (`Option);
+      always (`Fut_opt);
+      always (`Forex);
+    ] ()
 
   let option_g () =
     Contract.option

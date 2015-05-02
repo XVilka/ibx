@@ -1,4 +1,4 @@
-(* File: raw_contract_intf.ml
+(* File: order_id.ml
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -20,11 +20,14 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Security_type
+open Core.Std
+open Tws_prot
 
-module type S = sig
-  type raw
-  type 'a t constraint 'a = [< Security_type.t ]
-  val of_raw : raw -> 'a t
-  val to_raw : 'a t -> raw
-end
+include Unique_id.Int63 (struct end)
+let tws_of_t = to_string
+let t_of_tws = of_string
+let val_type = Val_type.create tws_of_t t_of_tws
+let unpickler =
+  Unpickler.create ~name:"Order_Id"
+    Unpickler.Spec.(value (required val_type) ~name:"order_id")
+    Fn.id

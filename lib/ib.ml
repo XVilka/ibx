@@ -378,7 +378,7 @@ module Connection : Connection_internal = struct
   let next_query_id t =
     let new_id = Query_id.create () in
     Ivar.read t.next_order_id
-    >>| fun oid -> Query_id.increase new_id (Raw_order.Id.to_int_exn oid)
+    >>| fun oid -> Query_id.increase new_id (Order_id.to_int_exn oid)
 
   let is_closed t = Ivar.is_full t.stop
   let closed t = Ivar.read t.stop

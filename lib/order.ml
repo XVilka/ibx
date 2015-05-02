@@ -24,7 +24,6 @@ open Core.Std
 
 include struct
   open Raw_order
-  module Id = Id
   module Action = Action
   module Type = Type
 end

@@ -27,18 +27,6 @@ module Id : sig
   include Unique_id.Id with type t := t
 end
 
-module Security_type : sig
-  type t =
-  [ `Stock
-  | `Index
-  | `Futures
-  | `Option
-  | `Fut_opt
-  | `Forex
-  ] with sexp
-  include Stringable.S with type t := t
-end
-
 module Option_right : sig
   type t = [ `Call | `Put ] with sexp
   include Stringable.S with type t := t
@@ -61,7 +49,7 @@ include Raw_contract_intf.S
   with type raw := Raw_contract.t
   with type 'a t := 'a t
 
-val security_type    : 'a t -> [> Security_type.t ]
+val security_type    : 'a t -> Security_type.t
 val id               : 'a t -> Id.t option
 val symbol           : 'a t -> Symbol.t
 val exchange         : 'a t -> Exchange.t

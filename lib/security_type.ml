@@ -1,4 +1,4 @@
-(* File: raw_contract_intf.ml
+(* File: security_type.ml
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -20,11 +20,37 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Security_type
+open Core.Std
+open Tws_prot
 
-module type S = sig
-  type raw
-  type 'a t constraint 'a = [< Security_type.t ]
-  val of_raw : raw -> 'a t
-  val to_raw : 'a t -> raw
+module T = struct
+  type t =
+  [ `Stock
+  | `Index
+  | `Futures
+  | `Option
+  | `Fut_opt
+  | `Forex
+  ] with sexp
 end
+include T
+include Sexpable.To_stringable (T)
+
+let tws_of_t = function
+  | `Stock   -> "STK"
+  | `Index   -> "IND"
+  | `Futures -> "FUT"
+  | `Option  -> "OPT"
+  | `Fut_opt -> "FOP"
+  | `Forex   -> "CASH"
+
+let t_of_tws = function
+  | "STK"  -> `Stock
+  | "IND"  -> `Index
+  | "FUT"  -> `Futures
+  | "OPT"  -> `Option
+  | "FOP"  -> `Fut_opt
+  | "CASH" -> `Forex
+  | s -> invalid_argf "Security_type.t_of_tws: %S" s ()
+
+let val_type = Val_type.create tws_of_t t_of_tws

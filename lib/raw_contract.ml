@@ -28,40 +28,6 @@ module Id = struct
   let val_type = Val_type.create to_string of_string
 end
 
-module Security_type = struct
-  module T = struct
-    type t =
-    [ `Stock
-    | `Index
-    | `Futures
-    | `Option
-    | `Fut_opt
-    | `Forex
-    ] with sexp
-  end
-  include T
-  include Sexpable.To_stringable (T)
-
-  let tws_of_t = function
-    | `Stock   -> "STK"
-    | `Index   -> "IND"
-    | `Futures -> "FUT"
-    | `Option  -> "OPT"
-    | `Fut_opt -> "FOP"
-    | `Forex   -> "CASH"
-
-  let t_of_tws = function
-  	| "STK"  -> `Stock
-    | "IND"  -> `Index
-	| "FUT"  -> `Futures
-	| "OPT"  -> `Option
-    | "FOP"  -> `Fut_opt
-    | "CASH" -> `Forex
-    | s -> invalid_argf "Security_type.t_of_tws: %S" s ()
-
-  let val_type = Val_type.create tws_of_t t_of_tws
-end
-
 module Security_id = struct
   type t = string with sexp
   let tws_of_t = String.to_string

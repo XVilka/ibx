@@ -26,7 +26,6 @@ include struct
   open Raw_contract
   module Id = Id
   module Option_right = Option_right
-  module Security_type = Security_type
 end
 
 module Security_id = struct

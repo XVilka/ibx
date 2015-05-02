@@ -23,17 +23,6 @@
 open Core.Std
 open Tws_prot
 
-module Id = struct
-  include Unique_id.Int63 (struct end)
-  let tws_of_t = to_string
-  let t_of_tws = of_string
-  let val_type = Val_type.create tws_of_t t_of_tws
-  let unpickler =
-    Unpickler.create ~name:"Order.Id"
-      Unpickler.Spec.(value (required val_type) ~name:"order_id")
-      Fn.id
-end
-
 module Action = struct
   type t = [ `Buy | `Sell | `Sell_short ] with sexp
 
@@ -310,7 +299,7 @@ end
 
 type t =
   { (* ===================== main order fields ==================== *)
-    order_id : Id.t;
+    order_id : Order_id.t;
     action : string;
     quantity : Volume.t;
     order_type : string;
@@ -322,7 +311,7 @@ type t =
     oca_type : Oca_type.t option;
     order_ref : string option;
     transmit : bool;
-    parent_id : Id.t option;
+    parent_id : Order_id.t option;
     block_order : bool;
     sweep_to_fill : bool;
     display_size : Volume.t option;
@@ -481,7 +470,7 @@ let create
     ~order_type
     ~quantity
     () =
-  { order_id = Id.create ();
+  { order_id = Order_id.create ();
     action;
     quantity;
     order_type;
@@ -566,7 +555,7 @@ let ( = ) t1 t2 : bool =
     op (Field.get field t1) (Field.get field t2)
   in
   Fields.for_all
-    ~order_id:(use Id.(=))
+    ~order_id:(use Order_id.(=))
     ~action:(use (=))
     ~quantity:(use (=))
     ~order_type:(use (=))
@@ -577,7 +566,7 @@ let ( = ) t1 t2 : bool =
     ~oca_type:(use (=))
     ~order_ref:(use (=))
     ~transmit:(use (=))
-    ~parent_id:(use (Option.equal Id.(=)))
+    ~parent_id:(use (Option.equal Order_id.(=)))
     ~block_order:(use (=))
     ~sweep_to_fill:(use (=))
     ~display_size:(use (=))

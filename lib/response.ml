@@ -21,7 +21,6 @@
 *)
 
 open Core.Std
-open Std_internal
 open Tws_prot
 
 module Timestamp = struct
@@ -623,7 +622,7 @@ module Order_status = struct
       remaining : int;
       average_fill_price : Price.t;
       permanent_id : int;
-      parent_id : Raw_order.Id.t;
+      parent_id : Order_id.t;
       last_fill_price : Price.t;
       client_id : Client_id.t;
       why_held : string option;
@@ -642,7 +641,7 @@ module Order_status = struct
       ~remaining:(use (=))
       ~average_fill_price:(use Price.(=.))
       ~permanent_id:(use (=))
-      ~parent_id:(use Raw_order.Id.(=))
+      ~parent_id:(use Order_id.(=))
       ~last_fill_price:(use Price.(=.))
       ~client_id:(use Client_id.(=))
       ~why_held:(use (=))
@@ -657,7 +656,7 @@ module Order_status = struct
           ~remaining:(fields_value (required int))
           ~average_fill_price:(fields_value (required Price.val_type))
           ~permanent_id:(fields_value (required int))
-          ~parent_id:(fields_value (required Raw_order.Id.val_type))
+          ~parent_id:(fields_value (required Order_id.val_type))
           ~last_fill_price:(fields_value (required Price.val_type))
           ~client_id:(fields_value (required Client_id.val_type))
           ~why_held:(fields_value (optional string)))
@@ -685,7 +684,7 @@ module Order_status = struct
             ~remaining:(fields_value (required int))
             ~average_fill_price:(fields_value (required Price.val_type))
             ~permanent_id:(fields_value (required int))
-            ~parent_id:(fields_value (required Raw_order.Id.val_type))
+            ~parent_id:(fields_value (required Order_id.val_type))
             ~last_fill_price:(fields_value (required Price.val_type))
             ~client_id:(fields_value (required Client_id.val_type))
             ~why_held:(fields_value (optional string)))
@@ -1145,7 +1144,7 @@ module Execution = struct
   end
 
   type t =
-    { order_id : Raw_order.Id.t;
+    { order_id : Order_id.t;
       contract : Raw_contract.t;
       exec_id : Execution_id.t;
       time : Time.t;
@@ -1189,7 +1188,7 @@ module Execution = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~order_id:(use Raw_order.Id.(=))
+      ~order_id:(use Order_id.(=))
       ~contract:(use Raw_contract.(=))
       ~exec_id:(use Execution_id.(=))
       ~time:(use Time.(=))
@@ -1213,7 +1212,7 @@ module Execution = struct
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
-          ~order_id:(fields_value (required Raw_order.Id.val_type))
+          ~order_id:(fields_value (required Order_id.val_type))
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~exec_id:(fields_value (required Execution_id.val_type))
           ~time:(fields_value (required Timestamp.val_type))
@@ -1257,7 +1256,7 @@ module Execution = struct
         wrap (
           Fields.fold
             ~init:(empty ())
-            ~order_id:(fields_value (required Raw_order.Id.val_type))
+            ~order_id:(fields_value (required Order_id.val_type))
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~exec_id:(fields_value (required Execution_id.val_type))
             ~time:(fields_value (required Timestamp.val_type))

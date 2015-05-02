@@ -22,12 +22,6 @@
 
 open Core.Std
 
-module Id : sig
-  type t = Raw_order.Id.t with sexp
-  include Unique_id.Id with type t := t
-  include Unpickable.S with type t := t
-end
-
 module Action : sig
   type t = [ `Buy | `Sell | `Sell_short ] with sexp
   include Stringable.S with type t := t

@@ -51,7 +51,7 @@ type t =
     origin : Raw_order.Origin.t;
     order_ref : string option;
     transmit : bool;
-    parent_id : Raw_order.Id.t option;
+    parent_id : Order_id.t option;
     block_order : bool;
     sweep_to_fill : bool;
     display_size : Volume.t option;
@@ -222,7 +222,7 @@ let ( = ) t1 t2 : bool =
     ~origin:(use (=))
     ~order_ref:(use (=))
     ~transmit:(use (=))
-    ~parent_id:(use (Option.equal Raw_order.Id.(=)))
+    ~parent_id:(use (Option.equal Order_id.(=)))
     ~block_order:(use (=))
     ~sweep_to_fill:(use (=))
     ~display_size:(use (=))
@@ -307,7 +307,7 @@ let pickler =
           ~origin:(fields_value (required Raw_order.Origin.val_type))
           ~order_ref:(fields_value (optional string))
           ~transmit:(fields_value (required bool))
-          ~parent_id:(fields_value (optional Raw_order.Id.val_type ~default_on_none:"0"))
+          ~parent_id:(fields_value (optional Order_id.val_type ~default_on_none:"0"))
           ~block_order:(fields_value (required bool))
           ~sweep_to_fill:(fields_value (required bool))
           ~display_size:(fields_value (optional Volume.val_type ~default_on_none:"0"))
@@ -471,7 +471,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~origin:(fields_value (required Raw_order.Origin.val_type))
         ~order_ref:(fields_value (optional string))
         ~transmit:(fields_value (required bool))
-        ~parent_id:(fields_value (optional Raw_order.Id.val_type ~none_on_default:"0"))
+        ~parent_id:(fields_value (optional Order_id.val_type ~none_on_default:"0"))
         ~block_order:(fields_value (required bool))
         ~sweep_to_fill:(fields_value (required bool))
         ~display_size:(fields_value (optional Volume.val_type ~none_on_default:"0"))
