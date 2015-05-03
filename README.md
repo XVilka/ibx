@@ -69,7 +69,7 @@ and retrieve the last price for a given stock symbol:
           let stock = Contract.stock ~currency:`USD (Symbol.of_string symbol) in
           Tws.trade_snapshot_exn tws ~contract:stock
           >>= fun snapshot ->
-          let price = Price.to_float (Trade_snapshot.last_price snapshot) in
+          let price = Price.to_float (Trade_snapshot.price snapshot) in
           printf "[Info] Last price for %s was %4.2f USD\n" symbol price;
           return ()
         )
