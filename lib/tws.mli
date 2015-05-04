@@ -268,33 +268,7 @@ val futures_chain
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Futures ] Contract.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
-
-val front_month_futures
-  :  t
-  -> ?contract_id:Contract_id.t
-  -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
-  -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
-  -> ?include_expired:bool
-  -> ?exchange:Exchange.t
-  -> currency:Currency.t
-  -> Symbol.t
-  -> [> `Futures ] Contract.t Or_error.t Deferred.t
-
-val front_month_futures_exn
-  :  t
-  -> ?contract_id:Contract_id.t
-  -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
-  -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
-  -> ?include_expired:bool
-  -> ?exchange:Exchange.t
-  -> currency:Currency.t
-  -> Symbol.t
-  -> [> `Futures ] Contract.t Deferred.t
+  -> [> `Futures ] Contract.t list Or_error.t Deferred.t
 
 val futures_chain_exn
   :  t
@@ -307,7 +281,7 @@ val futures_chain_exn
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Futures ] Contract.t Pipe.Reader.t Deferred.t
+  -> [> `Futures ] Contract.t list Deferred.t
 
 val option_chain
   :  t
@@ -323,7 +297,7 @@ val option_chain
   -> option_right:Option_right.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Option ] Contract.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
+  -> [> `Option ] Contract.t list Or_error.t Deferred.t
 
 val option_chain_exn
   :  t
@@ -339,7 +313,7 @@ val option_chain_exn
   -> option_right:Option_right.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Option ] Contract.t Pipe.Reader.t Deferred.t
+  -> [> `Option ] Contract.t list Deferred.t
 
 
 (** {1 Market depth} *)
