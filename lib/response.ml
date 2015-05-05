@@ -345,7 +345,7 @@ module Tick_option = struct
     let float_to_string x = sprintf "%4.2f" x in
     let price_to_string x = float_to_string (Price.to_float x) in
     Format.fprintf ppf
-      "type=%s vol=%s delta=%sf gamma=%s vega=%s theta=%s \
+      "type=%s vol=%s delta=%s gamma=%s vega=%s theta=%s \
        opt_price=%s pv_dividend=%s und_price=%s"
       (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
       (Option.value_map t.implied_volatility ~default:"n/a" ~f:float_to_string)
