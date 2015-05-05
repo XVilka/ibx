@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 9a06d51d2639a8ec35d8f2c476ca6a67)
+# DO NOT EDIT (digest: 88ce824aa99c861c07fc0b07d620974e)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -74,7 +74,7 @@ true: annot, bin_annot
 <lib_test/*.ml{,i,y}>: package(textutils)
 <lib_test/*.ml{,i,y}>: package(threads)
 <lib_test/*.ml{,i,y}>: use_ibx
-# Executable buy-market-order
+# Executable buy_market_order
 <examples/buy_market_order.{native,byte}>: package(async)
 <examples/buy_market_order.{native,byte}>: package(core)
 <examples/buy_market_order.{native,byte}>: package(fieldslib.syntax)
@@ -92,7 +92,7 @@ true: annot, bin_annot
 <examples/demultiplex.{native,byte}>: package(textutils)
 <examples/demultiplex.{native,byte}>: package(threads)
 <examples/demultiplex.{native,byte}>: use_ibx
-# Executable futures-chain
+# Executable futures_chain
 <examples/futures_chain.{native,byte}>: package(async)
 <examples/futures_chain.{native,byte}>: package(core)
 <examples/futures_chain.{native,byte}>: package(fieldslib.syntax)
@@ -101,7 +101,7 @@ true: annot, bin_annot
 <examples/futures_chain.{native,byte}>: package(textutils)
 <examples/futures_chain.{native,byte}>: package(threads)
 <examples/futures_chain.{native,byte}>: use_ibx
-# Executable last-price
+# Executable last_price
 <examples/last_price.{native,byte}>: package(async)
 <examples/last_price.{native,byte}>: package(core)
 <examples/last_price.{native,byte}>: package(fieldslib.syntax)
@@ -110,7 +110,7 @@ true: annot, bin_annot
 <examples/last_price.{native,byte}>: package(textutils)
 <examples/last_price.{native,byte}>: package(threads)
 <examples/last_price.{native,byte}>: use_ibx
-# Executable plot-hist-bars
+# Executable plot_hist_bars
 <examples/plot_hist_bars.{native,byte}>: package(async)
 <examples/plot_hist_bars.{native,byte}>: package(core)
 <examples/plot_hist_bars.{native,byte}>: package(fieldslib.syntax)
@@ -120,7 +120,7 @@ true: annot, bin_annot
 <examples/plot_hist_bars.{native,byte}>: package(textutils)
 <examples/plot_hist_bars.{native,byte}>: package(threads)
 <examples/plot_hist_bars.{native,byte}>: use_ibx
-# Executable plot-taq-data
+# Executable plot_taq_data
 <examples/plot_taq_data.{native,byte}>: package(async)
 <examples/plot_taq_data.{native,byte}>: package(core)
 <examples/plot_taq_data.{native,byte}>: package(fieldslib.syntax)
@@ -140,7 +140,7 @@ true: annot, bin_annot
 <examples/print_account_updates.{native,byte}>: package(textutils)
 <examples/print_account_updates.{native,byte}>: package(threads)
 <examples/print_account_updates.{native,byte}>: use_ibx
-# Executable print-market-depth
+# Executable print_market_depth
 <examples/print_market_depth.{native,byte}>: package(async)
 <examples/print_market_depth.{native,byte}>: package(core)
 <examples/print_market_depth.{native,byte}>: package(fieldslib.syntax)
@@ -149,7 +149,7 @@ true: annot, bin_annot
 <examples/print_market_depth.{native,byte}>: package(textutils)
 <examples/print_market_depth.{native,byte}>: package(threads)
 <examples/print_market_depth.{native,byte}>: use_ibx
-# Executable option-chain
+# Executable option_chain
 <examples/option_chain.{native,byte}>: package(async)
 <examples/option_chain.{native,byte}>: package(core)
 <examples/option_chain.{native,byte}>: package(fieldslib.syntax)
@@ -158,7 +158,7 @@ true: annot, bin_annot
 <examples/option_chain.{native,byte}>: package(textutils)
 <examples/option_chain.{native,byte}>: package(threads)
 <examples/option_chain.{native,byte}>: use_ibx
-# Executable quote-table
+# Executable quote_table
 <examples/quote_table.{native,byte}>: package(async)
 <examples/quote_table.{native,byte}>: package(core)
 <examples/quote_table.{native,byte}>: package(fieldslib.syntax)
@@ -167,7 +167,7 @@ true: annot, bin_annot
 <examples/quote_table.{native,byte}>: package(textutils)
 <examples/quote_table.{native,byte}>: package(threads)
 <examples/quote_table.{native,byte}>: use_ibx
-# Executable server-time
+# Executable server_time
 <examples/server_time.{native,byte}>: package(async)
 <examples/server_time.{native,byte}>: package(core)
 <examples/server_time.{native,byte}>: package(fieldslib.syntax)
@@ -176,7 +176,7 @@ true: annot, bin_annot
 <examples/server_time.{native,byte}>: package(textutils)
 <examples/server_time.{native,byte}>: package(threads)
 <examples/server_time.{native,byte}>: use_ibx
-# Executable show-portfolio
+# Executable show_portfolio
 <examples/show_portfolio.{native,byte}>: package(async)
 <examples/show_portfolio.{native,byte}>: package(core)
 <examples/show_portfolio.{native,byte}>: package(fieldslib.syntax)
@@ -185,7 +185,7 @@ true: annot, bin_annot
 <examples/show_portfolio.{native,byte}>: package(textutils)
 <examples/show_portfolio.{native,byte}>: package(threads)
 <examples/show_portfolio.{native,byte}>: use_ibx
-# Executable submit-orders
+# Executable submit_orders
 <examples/submit_orders.{native,byte}>: package(async)
 <examples/submit_orders.{native,byte}>: package(core)
 <examples/submit_orders.{native,byte}>: package(fieldslib.syntax)

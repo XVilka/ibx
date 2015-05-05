@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: f02aa10c53a9fbc36237846d44431c7a) *)
+(* DO NOT EDIT (digest: 8b503c7169369f15b4dbc5a1d9344a65) *)
 
 This is the INSTALL file for the ibx distribution.
 
@@ -18,7 +18,7 @@ In order to compile this package, you will need:
 * sexplib for library ibx
 * fieldslib for library ibx
 * textutils for library ibx
-* gnuplot for executable plot-hist-bars, executable plot-taq-data
+* gnuplot for executable plot_hist_bars, executable plot_taq_data
 
 Installing
 ==========
