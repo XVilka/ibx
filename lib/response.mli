@@ -97,28 +97,28 @@ module Tick_option : sig
   end
   type t = private
     { tick_type : Type.t;
-      implied_volatility : float;
+      implied_vol : float;
       delta : float;
       option_price : Price.t;
       pv_dividend : float;
       gamma : float;
       vega : float;
       theta : float;
-      underlying_price : Price.t;
+      under_price : Price.t;
     }
   with sexp, fields
   include Response_intf.S with type t := t
 
   val create
     :  tick_type:Type.t
-    -> implied_volatility:float
+    -> implied_vol:float
     -> delta:float
     -> option_price:Price.t
     -> pv_dividend:float
     -> gamma:float
     -> vega:float
     -> theta:float
-    -> underlying_price:Price.t
+    -> under_price:Price.t
     -> t
 
   val pp : Format.formatter -> t -> unit

@@ -72,7 +72,7 @@ let req_calc_implied_volatility = Ib.Streaming_request.create
   ~recv_header:[Ib.Header.create ~tag:R.Tick_option ~version:6]
   ~tws_query:Query.Calc_implied_volatility.pickler
   ~tws_response:[
-    U.map Response.Tick_option.unpickler ~f:Response.Tick_option.implied_volatility;
+    U.map Response.Tick_option.unpickler ~f:Response.Tick_option.implied_vol;
   ] ()
 
 (* ===================== Contract details ========================= *)
