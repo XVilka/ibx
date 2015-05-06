@@ -509,12 +509,13 @@ val cancel_taq_data : t -> Query_id.t -> unit
 (******************************************************************************)
 
 module Quote_snapshot : sig
-  type t
-  val symbol    : t -> Symbol.t
-  val ask_size  : t -> Volume.t
-  val bid_size  : t -> Volume.t
-  val ask_price : t -> Price.t
-  val bid_price : t -> Price.t
+  type t = private
+    { symbol    : Symbol.t;
+      ask_size  : Volume.t;
+      bid_size  : Volume.t;
+      ask_price : Price.t;
+      bid_price : Price.t;
+    } with sexp, fields
 end
 
 val quote_snapshot
@@ -528,10 +529,11 @@ val quote_snapshot_exn
   -> Quote_snapshot.t Deferred.t
 
 module Trade_snapshot : sig
-  type t
-  val symbol : t -> Symbol.t
-  val size   : t -> Volume.t
-  val price  : t -> Price.t
+  type t = private
+    { symbol : Symbol.t;
+      size   : Volume.t;
+      price  : Price.t;
+    } with sexp, fields
 end
 
 val trade_snapshot
@@ -548,9 +550,10 @@ val trade_snapshot_exn
 (******************************************************************************)
 
 module Close_snapshot : sig
-  type t
-  val symbol : t -> Symbol.t
-  val price  : t -> Price.t
+  type t = private
+    { symbol : Symbol.t;
+      price  : Price.t;
+    } with sexp, fields
 end
 
 val close_snapshot
