@@ -510,8 +510,7 @@ val cancel_taq_data : t -> Query_id.t -> unit
 
 module Quote_snapshot : sig
   type t = private
-    { symbol    : Symbol.t;
-      ask_size  : Volume.t;
+    { ask_size  : Volume.t;
       bid_size  : Volume.t;
       ask_price : Price.t;
       bid_price : Price.t;
@@ -530,9 +529,8 @@ val quote_snapshot_exn
 
 module Trade_snapshot : sig
   type t = private
-    { symbol : Symbol.t;
-      size   : Volume.t;
-      price  : Price.t;
+    { size  : Volume.t;
+      price : Price.t;
     } with sexp, fields
 end
 
@@ -550,10 +548,7 @@ val trade_snapshot_exn
 (******************************************************************************)
 
 module Close_snapshot : sig
-  type t = private
-    { symbol : Symbol.t;
-      price  : Price.t;
-    } with sexp, fields
+  type t = private { price  : Price.t } with sexp, fields
 end
 
 val close_snapshot

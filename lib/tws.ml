@@ -976,8 +976,7 @@ let cancel_taq_data t id =
 
 module Quote_snapshot = struct
   type t =
-    { symbol    : Symbol.t;
-      ask_size  : Volume.t;
+    { ask_size  : Volume.t;
       bid_size  : Volume.t;
       ask_price : Price.t;
       bid_price : Price.t;
@@ -1018,7 +1017,6 @@ let quote_snapshot t ~contract =
                 | R.Empty_snapshot ->
                   R.Received_bid {
                     Quote_snapshot.
-                    symbol    = Contract.symbol contract;
                     bid_price = Tick_price.price tick;
                     bid_size  = Tick_price.size tick;
                     ask_price = Price.nan;
@@ -1065,9 +1063,8 @@ let quote_snapshot_exn t ~contract =
 
 module Trade_snapshot = struct
   type t =
-    { symbol : Symbol.t;
-      size   : Volume.t;
-      price  : Price.t;
+    { size  : Volume.t;
+      price : Price.t;
     } with sexp, fields
 end
 
@@ -1106,9 +1103,8 @@ let trade_snapshot t ~contract =
                   cancel con id; Pipe.close_read ticks;
                   R.Received_trade {
                     Trade_snapshot.
-                    symbol = Contract.symbol contract;
-                    size   = Tick_price.size tick;
-                    price  = Tick_price.price tick;
+                    size  = Tick_price.size tick;
+                    price = Tick_price.price tick;
                   }
                 | R.Received_trade _ as snapshot ->
                   snapshot
@@ -1145,10 +1141,7 @@ let trade_snapshot_exn t ~contract =
    +-----------------------------------------------------------------------+ *)
 
 module Close_snapshot = struct
-  type t =
-    { symbol : Symbol.t;
-      price  : Price.t;
-    } with sexp, fields
+  type t = { price : Price.t } with sexp, fields
 end
 
 module Close_snapshot_result = struct
@@ -1185,9 +1178,7 @@ let close_snapshot t ~contract =
                   (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
                   R.Received_close {
-                    Close_snapshot.
-                    symbol = Contract.symbol contract;
-                    price  = Tick_price.price tick;
+                    Close_snapshot.price = Tick_price.price tick;
                   }
                 | R.Received_close _ as snapshot ->
                   snapshot
