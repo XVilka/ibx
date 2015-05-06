@@ -836,14 +836,14 @@ end = struct
     in
     Response.Tick_option.create
       ~tick_type:(tick_type_g ())
-      ~implied_volatility:(Some (pfg ()))
-      ~delta:(og greeks_g ())
-      ~option_price:(Some (price_g ()))
-      ~pv_dividend:(og pfg ())
-      ~gamma:(og greeks_g ())
-      ~vega:(og greeks_g ())
-      ~theta:(og greeks_g ())
-      ~underlying_price:(og price_g ())
+      ~implied_volatility:(pfg ())
+      ~delta:(greeks_g ())
+      ~option_price:(price_g ())
+      ~pv_dividend:(pfg ())
+      ~gamma:(greeks_g ())
+      ~vega:(greeks_g ())
+      ~theta:(greeks_g ())
+      ~underlying_price:(price_g ())
 
   let tick_string_g () =
     let module Type = Response.Tick_string.Type in

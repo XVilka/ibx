@@ -87,7 +87,7 @@ let suite = "Client" >::: [
         ~volatility:(Rg.pfg ())
         ~underlying_price:(Rg.price_g ())
       >>| fun opt_price ->
-      let gen_opt_price = Option.value_exn (R.option_price gen_tick_option) in
+      let gen_opt_price = R.option_price gen_tick_option in
       assert (Price.(=.) gen_opt_price opt_price);
       Log.Global.sexp ~level:`Debug opt_price Price.sexp_of_t
     )
@@ -102,7 +102,7 @@ let suite = "Client" >::: [
         ~option_price:(Rg.price_g ())
         ~underlying_price:(Rg.price_g ())
       >>| fun implied_vol ->
-      let gen_implied_vol = Option.value_exn (R.implied_volatility gen_tick_option) in
+      let gen_implied_vol = R.implied_volatility gen_tick_option in
       assert (Float.(=.) gen_implied_vol implied_vol);
       Log.Global.sexp ~level:`Debug implied_vol <:sexp_of< float >>
     )

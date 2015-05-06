@@ -340,9 +340,12 @@ let calc_option_price t ~contract ~volatility ~underlying_price =
     | Error _ as x -> x
     | Ok result ->
       match result with
-      | Error tws_error -> Error (Tws_error.to_error tws_error)
-      | Ok None -> Error (Error.of_string "missing option price")
-      | Ok (Some opt_price) -> Ok opt_price
+      | Error tws_error ->
+        Error (Tws_error.to_error tws_error)
+      | Ok opt_price ->
+        if Price.is_nan opt_price then
+          Error (Error.of_string "missing option price")
+        else Ok opt_price
   )
 
 let calc_option_price_exn t ~contract ~volatility ~underlying_price =
@@ -359,9 +362,12 @@ let calc_implied_volatility t ~contract ~option_price ~underlying_price =
     | Error _ as x -> x
     | Ok result ->
       match result with
-      | Error tws_error -> Error (Tws_error.to_error tws_error)
-      | Ok None -> Error (Error.of_string "missing implied volatility")
-      | Ok (Some implied_vol) -> Ok implied_vol
+      | Error tws_error ->
+        Error (Tws_error.to_error tws_error)
+      | Ok implied_vol ->
+        if Float.is_nan implied_vol then
+          Error (Error.of_string "missing implied volatility")
+        else Ok implied_vol
   )
 
 let calc_implied_volatility_exn t ~contract ~option_price ~underlying_price =

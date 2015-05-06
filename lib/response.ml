@@ -256,14 +256,14 @@ module Tick_option = struct
 
   type t =
     { tick_type : Type.t;
-      implied_volatility : float option;
-      delta : float option;
-      option_price : Price.t option;
-      pv_dividend : float option;
-      gamma : float option;
-      vega : float option;
-      theta : float option;
-      underlying_price : Price.t option;
+      implied_volatility : float;
+      delta : float;
+      option_price : Price.t;
+      pv_dividend : float;
+      gamma : float;
+      vega : float;
+      theta : float;
+      underlying_price : Price.t;
     } with sexp, fields
 
   let create = Fields.create
@@ -274,14 +274,14 @@ module Tick_option = struct
     in
     Fields.for_all
       ~tick_type:(use (=))
-      ~implied_volatility:(use (Option.equal Float.(=.)))
-      ~delta:(use (Option.equal Float.(=.)))
-      ~option_price:(use (Option.equal Price.(=.)))
-      ~pv_dividend:(use (Option.equal Float.(=.)))
-      ~gamma:(use (Option.equal Float.(=.)))
-      ~vega:(use (Option.equal Float.(=.)))
-      ~theta:(use (Option.equal Float.(=.)))
-      ~underlying_price:(use (Option.equal Price.(=.)))
+      ~implied_volatility:(use Float.(=.))
+      ~delta:(use Float.(=.))
+      ~option_price:(use Price.(=.))
+      ~pv_dividend:(use Float.(=.))
+      ~gamma:(use Float.(=.))
+      ~vega:(use Float.(=.))
+      ~theta:(use Float.(=.))
+      ~underlying_price:(use Price.(=.))
 
   let unpickler =
     Unpickler.create ~name:"Response.Tick_option"
@@ -301,17 +301,17 @@ module Tick_option = struct
         gamma vega theta underlying_price ->
           let abs = Float.abs in
           { tick_type;
-            implied_volatility = if implied_volatility < 0. then None
-              else Some implied_volatility;
-            delta = if abs delta > 1. then None else Some delta;
-            option_price = if Price.to_float option_price < 0. then None
-              else Some option_price;
-            pv_dividend = if pv_dividend < 0. then None else Some pv_dividend;
-            gamma = if abs gamma > 1. then None else Some gamma;
-            vega = if abs vega > 1. then None else Some vega;
-            theta = if abs theta > 1. then None else Some theta;
-            underlying_price = if Price.to_float underlying_price < 0. then None
-              else Some underlying_price;
+            implied_volatility =
+              if implied_volatility < 0. then Float.nan else implied_volatility;
+            delta = if abs delta > 1. then Float.nan else delta;
+            option_price =
+              if Price.to_float option_price < 0. then Price.nan else option_price;
+            pv_dividend = if pv_dividend < 0. then Float.nan else pv_dividend;
+            gamma = if abs gamma > 1. then Float.nan else gamma;
+            vega = if abs vega > 1. then Float.nan else vega;
+            theta = if abs theta > 1. then Float.nan else theta;
+            underlying_price =
+              if Price.to_float underlying_price < 0. then Price.nan else underlying_price;
           })
 
   let pickler = Only_in_test.of_thunk (fun () ->
@@ -332,14 +332,15 @@ module Tick_option = struct
           (fun t ->
             `Args
               $ t.tick_type
-              $ Option.value ~default:(-1.) t.implied_volatility
-              $ Option.value ~default:(-2.) t.delta
-              $ Option.value ~default:(Price.of_float (-1.)) t.option_price
-              $ Option.value ~default:(-1.) t.pv_dividend
-              $ Option.value ~default:(-2.) t.gamma
-              $ Option.value ~default:(-2.) t.vega
-              $ Option.value ~default:(-2.) t.theta
-              $ Option.value ~default:(Price.of_float (-1.)) t.underlying_price)))
+              $ (if Float.is_nan t.implied_volatility then -1. else t.implied_volatility)
+              $ (if Float.is_nan t.delta then -2. else t.delta)
+              $ (if Price.is_nan t.option_price then Price.(neg one) else t.option_price)
+              $ (if Float.is_nan t.pv_dividend then -1. else t.pv_dividend)
+              $ (if Float.is_nan t.gamma then -2. else t.gamma)
+              $ (if Float.is_nan t.vega then -2. else t.vega)
+              $ (if Float.is_nan t.theta then -2. else t.theta)
+              $ (if Price.is_nan t.underlying_price then Price.(neg one) else t.underlying_price))))
+
 
   let pp ppf t =
     let float_to_string x = sprintf "%4.2f" x in
@@ -348,14 +349,14 @@ module Tick_option = struct
       "type=%s vol=%s delta=%s gamma=%s vega=%s theta=%s \
        opt_price=%s pv_dividend=%s und_price=%s"
       (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
-      (Option.value_map t.implied_volatility ~default:"n/a" ~f:float_to_string)
-      (Option.value_map t.delta ~default:"n/a" ~f:float_to_string)
-      (Option.value_map t.gamma ~default:"n/a" ~f:float_to_string)
-      (Option.value_map t.vega ~default:"n/a" ~f:float_to_string)
-      (Option.value_map t.theta ~default:"n/a" ~f:float_to_string)
-      (Option.value_map t.option_price ~default:"n/a" ~f:price_to_string)
-      (Option.value_map t.pv_dividend ~default:"n/a" ~f:float_to_string)
-      (Option.value_map t.underlying_price ~default:"n/a" ~f:price_to_string)
+      (if Float.is_nan t.implied_volatility then "n/a" else float_to_string t.implied_volatility)
+      (if Float.is_nan t.delta then "n/a" else float_to_string t.delta)
+      (if Float.is_nan t.gamma then "n/a" else float_to_string t.gamma)
+      (if Float.is_nan t.vega then "n/a" else float_to_string t.vega)
+      (if Float.is_nan t.theta then "n/a" else float_to_string t.theta)
+      (if Price.is_nan t.option_price then "n/a" else price_to_string t.option_price)
+      (if Float.is_nan t.pv_dividend then "n/a" else float_to_string t.pv_dividend)
+      (if Price.is_nan t.underlying_price then "n/a" else price_to_string t.underlying_price)
 end
 
 module Tick_string = struct
