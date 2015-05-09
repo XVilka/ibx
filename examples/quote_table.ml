@@ -6,7 +6,7 @@ module Ascii_table = Textutils.Ascii_table
 
 let print_quote_table quotes =
   let module Q = Quote_snapshot in
-  let get_symbol    (s, _) = sprintf "%s"    s in
+  let get_symbol    (s, _) = s in
   let get_bid_size  (_, q) = sprintf "%d"    Q.(bid_size  q :> int) in
   let get_bid_price (_, q) = sprintf "%4.2f" Q.(bid_price q :> float) in
   let get_ask_size  (_, q) = sprintf "%d"    Q.(ask_size  q :> int) in
