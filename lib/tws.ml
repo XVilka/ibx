@@ -1014,8 +1014,9 @@ module Quote_snapshot = struct
                 | T.Bid ->
                   begin match snapshot with
                   | S.Empty_snapshot ->
+                    let price = Tick_price.price tick in
                     S.Received_bid {
-                      bid_price = Tick_price.price tick;
+                      bid_price = Price.(if price = neg one then nan else price);
                       bid_size  = Tick_price.size tick;
                       ask_price = Price.nan;
                       ask_size  = Volume.zero;
@@ -1028,9 +1029,10 @@ module Quote_snapshot = struct
                   | S.Received_bid snapshot ->
                     (* Received complete snapshot.  Cancel the request. *)
                     cancel con id; Pipe.close_read ticks;
+                    let price = Tick_price.price tick in
                     S.Received_ask
                       { snapshot with
-                        ask_price = Tick_price.price tick;
+                        ask_price = Price.(if price = neg one then nan else price);
                         ask_size  = Tick_price.size tick;
                       }
                   | S.Empty_snapshot | S.Received_ask _ as snapshot ->
