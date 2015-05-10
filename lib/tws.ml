@@ -985,8 +985,8 @@ module Quote_snapshot = struct
     | With_bid_and_ask of t
   end
 
-  let get_snapshot t ~contract =
-    with_connection t ~f:(fun con ->
+  let get_snapshot tws ~contract =
+    with_connection tws ~f:(fun con ->
       let q = Query.Market_data.create
         ~contract ~tick_generics:[] ~snapshot:true
       in
@@ -1070,8 +1070,8 @@ module Trade_snapshot = struct
     | With_trade of t
   end
 
-  let get_snapshot t ~contract =
-    with_connection t ~f:(fun con ->
+  let get_snapshot tws ~contract =
+    with_connection tws ~f:(fun con ->
       let q = Query.Market_data.create
         ~contract ~tick_generics:[] ~snapshot:true
       in
@@ -1148,8 +1148,8 @@ module Close_snapshot = struct
     | With_close of t
   end
 
-  let get_snapshot t ~contract =
-    with_connection t ~f:(fun con ->
+  let get_snapshot tws ~contract =
+    with_connection tws ~f:(fun con ->
       let q = Query.Market_data.create
         ~contract ~tick_generics:[] ~snapshot:true
       in
