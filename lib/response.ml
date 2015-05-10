@@ -1602,38 +1602,31 @@ module Historical_data = struct
   module Data_frame = struct
     type t =
       { stamps : Time.t array;
-        op_prices : float array;
-        hi_prices : float array;
-        lo_prices : float array;
-        cl_prices : float array;
-        volumes : int array;
+        op : float array;
+        hi : float array;
+        lo : float array;
+        cl : float array;
+        vo : int   array;
       } with sexp, fields
   end
 
-  let to_data_frame t =
+  let unpack_bars t =
     let module Bar = Historical_bar in
-    let stamps    = Array.create ~len:t.num_bars Time.epoch in
-    let op_prices = Array.create ~len:t.num_bars Float.nan in
-    let hi_prices = Array.create ~len:t.num_bars Float.nan in
-    let lo_prices = Array.create ~len:t.num_bars Float.nan in
-    let cl_prices = Array.create ~len:t.num_bars Float.nan in
-    let volumes   = Array.create ~len:t.num_bars 0 in
+    let stamps = Array.create ~len:t.num_bars Time.epoch in
+    let op = Array.create ~len:t.num_bars Float.nan in
+    let hi = Array.create ~len:t.num_bars Float.nan in
+    let lo = Array.create ~len:t.num_bars Float.nan in
+    let cl = Array.create ~len:t.num_bars Float.nan in
+    let vo = Array.create ~len:t.num_bars Int.zero  in
     List.iteri t.bars ~f:(fun i bar ->
-      Array.set stamps    i  bar.Bar.stamp;
-      Array.set op_prices i (bar.Bar.op :> float);
-      Array.set hi_prices i (bar.Bar.hi :> float);
-      Array.set lo_prices i (bar.Bar.lo :> float);
-      Array.set cl_prices i (bar.Bar.cl :> float);
-      Array.set volumes   i (bar.Bar.volume :> int)
+      Array.set stamps i bar.Bar.stamp;
+      Array.set op i (bar.Bar.op :> float);
+      Array.set hi i (bar.Bar.hi :> float);
+      Array.set lo i (bar.Bar.lo :> float);
+      Array.set cl i (bar.Bar.cl :> float);
+      Array.set vo i (bar.Bar.volume :> int);
     );
-    { Data_frame.
-      stamps;
-      op_prices;
-      hi_prices;
-      lo_prices;
-      cl_prices;
-      volumes;
-    }
+    { Data_frame.stamps; op; hi; lo; cl; vo; }
 end
 
 (* +-----------------------------------------------------------------------+

@@ -487,16 +487,19 @@ module Historical_data : sig
     -> t
 
   module Data_frame : sig
-    type t with sexp
-    val stamps    : t -> Time.t array
-    val op_prices : t -> float array
-    val hi_prices : t -> float array
-    val lo_prices : t -> float array
-    val cl_prices : t -> float array
-    val volumes   : t -> int array
+    type t = private
+      { stamps : Time.t array;
+        op : float array;
+        hi : float array;
+        lo : float array;
+        cl : float array;
+        vo : int   array;
+      } with fields, sexp
   end
 
-  val to_data_frame : t -> Data_frame.t
+  (** [unpack_bars t] unpacks bars into a data frame that stores prices and
+      volumes in its columns. *)
+  val unpack_bars : t -> Data_frame.t
 end
 
 (** {1 Realtime bars} *)
