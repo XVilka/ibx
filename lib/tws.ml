@@ -1050,7 +1050,8 @@ module Quote_snapshot = struct
         | Error exn ->
           Or_error.of_exn (Monitor.extract_exn exn)
         | Ok S.Empty_snapshot ->
-          Or_error.error_string "No quote snapshot was received"
+          let name = Contract.to_string contract in
+          Or_error.error_string (sprintf "No quote snapshot for %s" name)
         | Ok (S.Received_ask snapshot) ->
           Ok snapshot
         | Ok _ -> assert false
@@ -1126,7 +1127,8 @@ module Trade_snapshot = struct
         | Error exn ->
           Or_error.of_exn (Monitor.extract_exn exn)
         | Ok S.Empty_snapshot ->
-          Or_error.error_string "No trade snapshot was received"
+          let name = Contract.to_string contract in
+          Or_error.error_string (sprintf "No trade snapshot for %s" name)
         | Ok (S.Received_trade snapshot) ->
           Ok snapshot
     )
@@ -1197,7 +1199,8 @@ module Close_snapshot = struct
         | Error exn ->
           Or_error.of_exn (Monitor.extract_exn exn)
         | Ok S.Empty_snapshot ->
-          Or_error.error_string "No close snapshot was received"
+          let name = Contract.to_string contract in
+          Or_error.error_string (sprintf "No close snapshot for %s" name)
         | Ok (S.Received_close snapshot) ->
           Ok snapshot
     )
