@@ -1003,43 +1003,39 @@ module Quote_snapshot = struct
             | Error tws_error ->
               cancel con id; Pipe.close_read ticks;
               Tws_error.raise tws_error
-            | Ok tick ->
-              begin match tick with
-              | `Tick_price tick ->
-                begin match Tick_price.tick_type tick with
-                | T.Bid ->
-                  begin match snapshot with
-                  | S.Empty ->
-                    let price = Tick_price.price tick in
-                    S.With_bid {
-                      bid_price = Price.(if price = neg one then nan else price);
-                      bid_size  = Tick_price.size tick;
-                      ask_price = Price.nan;
-                      ask_size  = Volume.zero;
-                    }
-                  | S.With_bid _ | S.With_bid_and_ask _ as snapshot ->
-                    snapshot
-                  end
-                | T.Ask ->
-                  begin match snapshot with
-                  | S.With_bid snapshot ->
-                    (* Received complete snapshot.  Cancel the request. *)
-                    cancel con id; Pipe.close_read ticks;
-                    let price = Tick_price.price tick in
-                    S.With_bid_and_ask { snapshot with
-                      ask_price = Price.(if price = neg one then nan else price);
-                      ask_size  = Tick_price.size tick;
-                    }
-                  | S.Empty | S.With_bid_and_ask _ as snapshot ->
-                    snapshot
-                  end
-                | T.Last | T.Low | T.High | T.Close | T.Open ->
+            | Ok `Snapshot_end ->
+              cancel con id; Pipe.close_read ticks;
+              snapshot
+            | Ok (`Tick_price tick) ->
+              match Tick_price.tick_type tick with
+              | T.Bid ->
+                begin match snapshot with
+                | S.Empty ->
+                  let price = Tick_price.price tick in
+                  S.With_bid {
+                    bid_price = Price.(if price = neg one then nan else price);
+                    bid_size  = Tick_price.size tick;
+                    ask_price = Price.nan;
+                    ask_size  = Volume.zero;
+                  }
+                | S.With_bid _ | S.With_bid_and_ask _ as snapshot ->
                   snapshot
                 end
-              | `Snapshot_end ->
-                cancel con id; Pipe.close_read ticks;
+              | T.Ask ->
+                begin match snapshot with
+                | S.With_bid snapshot ->
+                  (* Received complete snapshot.  Cancel the request. *)
+                  cancel con id; Pipe.close_read ticks;
+                  let price = Tick_price.price tick in
+                  S.With_bid_and_ask { snapshot with
+                    ask_price = Price.(if price = neg one then nan else price);
+                    ask_size  = Tick_price.size tick;
+                  }
+                | S.Empty | S.With_bid_and_ask _ as snapshot ->
+                  snapshot
+                end
+              | T.Last | T.Low | T.High | T.Close | T.Open ->
                 snapshot
-              end
           )
         ) >>| function
         | Error exn ->
@@ -1088,33 +1084,30 @@ module Trade_snapshot = struct
             | Error tws_error ->
               cancel con id; Pipe.close_read ticks;
               Tws_error.raise tws_error
-            | Ok tick ->
-              match tick with
-              | `Tick_price tick ->
-                begin match Tick_price.tick_type tick with
-                | T.Last ->
-                  begin match snapshot with
-                  | S.Empty ->
-                    (* Received complete snapshot.  Cancel the request. *)
-                    cancel con id; Pipe.close_read ticks;
-                    S.With_trade {
-                      size  = Tick_price.size tick;
-                      price = Tick_price.price tick;
-                    }
-                  | S.With_trade _ as snapshot ->
-                    snapshot
-                  end
-                | T.Bid ->
-                  if Price.(Tick_price.price tick = neg one) then begin
-                    (* We won't receive a trade.  Cancel the request. *)
-                    cancel con id; Pipe.close_read ticks;
-                    S.Empty
-                  end else snapshot
-                | T.Ask | T.Open | T.Low | T.High | T.Close ->
+            | Ok `Snapshot_end ->
+              cancel con id; Pipe.close_read ticks;
+              snapshot
+            | Ok (`Tick_price tick) ->
+              match Tick_price.tick_type tick with
+              | T.Last ->
+                begin match snapshot with
+                | S.Empty ->
+                  (* Received complete snapshot.  Cancel the request. *)
+                  cancel con id; Pipe.close_read ticks;
+                  S.With_trade {
+                    size  = Tick_price.size tick;
+                    price = Tick_price.price tick;
+                  }
+                | S.With_trade _ as snapshot ->
                   snapshot
                 end
-              | `Snapshot_end ->
-                cancel con id; Pipe.close_read ticks;
+              | T.Bid ->
+                if Price.(Tick_price.price tick = neg one) then begin
+                  (* We won't receive a trade.  Cancel the request. *)
+                  cancel con id; Pipe.close_read ticks;
+                  S.Empty
+                end else snapshot
+              | T.Ask | T.Open | T.Low | T.High | T.Close ->
                 snapshot
           )
         ) >>| function
@@ -1166,26 +1159,23 @@ module Close_snapshot = struct
             | Error tws_error ->
               cancel con id; Pipe.close_read ticks;
               Tws_error.raise tws_error
-            | Ok tick ->
-              match tick with
-              | `Tick_price tick ->
-                begin match Tick_price.tick_type tick with
-                | T.Close ->
-                  begin match snapshot with
-                  | S.Empty ->
-                    (* Received complete snapshot.  Cancel the request. *)
-                    cancel con id; Pipe.close_read ticks;
-                    S.With_close {
-                      price = Tick_price.price tick
-                    }
-                  | S.With_close _ as snapshot ->
-                    snapshot
-                  end
-                | T.Bid | T.Ask | T.Open | T.Low | T.High | T.Last ->
+            | Ok `Snapshot_end ->
+              cancel con id; Pipe.close_read ticks;
+              snapshot
+            | Ok (`Tick_price tick) ->
+              match Tick_price.tick_type tick with
+              | T.Close ->
+                begin match snapshot with
+                | S.Empty ->
+                  (* Received complete snapshot.  Cancel the request. *)
+                  cancel con id; Pipe.close_read ticks;
+                  S.With_close {
+                    price = Tick_price.price tick
+                  }
+                | S.With_close _ as snapshot ->
                   snapshot
                 end
-              | `Snapshot_end ->
-                cancel con id; Pipe.close_read ticks;
+              | T.Bid | T.Ask | T.Open | T.Low | T.High | T.Last ->
                 snapshot
           )
         ) >>| function
