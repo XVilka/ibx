@@ -431,7 +431,7 @@ let updates_gen t req create_query =
       Pipe.filter_map pipe ~f:(function
       | `Update update -> Some update
       | `Update_end c  -> if Account_code.(code = c) then cancel req con; None
-      ) |> (fun pipe -> Ok pipe)
+      ) |> Or_error.return
     )
   )
 
@@ -471,7 +471,7 @@ let filter_executions ?time t ~contract ~order_action =
       | Error _ as e -> Some e
       | Ok (`Execution x)  -> Some (Ok x)
       | Ok `Executions_end -> cancel Tws_reqs.req_executions con id; None
-      ) |> (fun pipe -> Ok pipe)
+      ) |> Or_error.return
     )
   )
 
@@ -500,7 +500,7 @@ let contract_details t ?contract_id ?multiplier ?listing_exchange ?local_symbol
       | Error _ as e -> Some e
       | Ok (`Contract_data x) -> Some (Ok x)
       | Ok `Contract_data_end -> cancel Tws_reqs.req_contract_details con id; None
-      ) |> (fun pipe -> Ok pipe)
+      ) |> Or_error.return
     )
   )
 
@@ -531,11 +531,10 @@ let futures_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     return e
   | Ok pipe ->
     try_with (fun () ->
-      Pipe.to_list pipe
-      >>| fun details ->
+      Pipe.to_list pipe >>| fun details ->
       let chain = List.map details ~f:(fun x ->
-        Contract_data.contract (Tws_result.ok_exn x)
-      ) in
+        Contract_data.contract (Tws_result.ok_exn x))
+      in
       sort_by_expiry chain
     ) >>| fun result ->
     match result with
@@ -574,15 +573,12 @@ let option_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     return e
   | Ok pipe ->
     try_with (fun () ->
-      Pipe.to_list pipe
-      >>| fun details ->
+      Pipe.to_list pipe >>| fun details ->
       let chain = List.map details ~f:(fun x ->
-        Contract_data.contract (Tws_result.ok_exn x)
-      ) in
-      let flat_map l ~f = List.bind l f in
-      sort_by_expiry chain
-      |> group_by_expiry
-      |> flat_map ~f:sort_by_strike
+        Contract_data.contract (Tws_result.ok_exn x))
+      in
+      let flat_map = Fn.flip List.(>>=) in
+      sort_by_expiry chain |> group_by_expiry |> flat_map sort_by_strike
     ) >>| fun result ->
     match result with
     | Ok _ as x -> x
