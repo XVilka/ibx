@@ -672,42 +672,10 @@ let cancel_realtime_bars t id =
 
 module Trade = struct
   type t =
-    { mutable stamp : Time.t;
-      mutable price : Price.t;
-      mutable size  : Volume.t;
+    { stamp : Time.t;
+      price : Price.t;
+      size  : Volume.t;
     } with sexp, fields
-
-  let make_filter () =
-    let t =
-      {
-        stamp = Time.epoch;
-        price = Price.zero;
-        size  = Volume.zero;
-      }
-    in
-    stage (fun tick ->
-      match tick with
-      | `Tick_price tick ->
-        begin match Tick_price.tick_type tick with
-        | Tick_price.Type.Last ->
-          let new_price = Tick_price.price tick in
-          let new_size  = Tick_price.size tick in
-          if Volume.(new_size = zero) then
-            None (* We skip trades with 0 size. *)
-          else begin
-            t.price <- new_price;
-            t.size  <- new_size;
-            t.stamp <- Time.now ();
-            Some t
-          end
-        | Tick_price.Type.Bid
-        | Tick_price.Type.Ask
-        | Tick_price.Type.High
-        | Tick_price.Type.Low
-        | Tick_price.Type.Close
-        | Tick_price.Type.Open -> None
-        end
-      | `Tick_size _tick -> None)
 
   let pp ppf t =
     Format.fprintf ppf "T|%s|%4.2f|%4d"
@@ -716,164 +684,55 @@ module Trade = struct
       (t.size :> int)
 end
 
-let trades t ~contract =
-  with_connection t ~f:(fun con ->
-    let q = Query.Market_data.create ~contract ~tick_generics:[] ~snapshot:false in
-    Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q >>| function
-    | Error _ as x -> x
-    | Ok (ticks, id) ->
-      let filter_trade = unstage (Trade.make_filter ()) in
-      let trades = Pipe.filter_map ticks ~f:(function
-        | Error _ as x -> Some x
-        | Ok tick ->
-          match filter_trade tick with
-          | None -> None
-          | Some trade -> Some (Ok trade))
-      in
-      Ok (trades, id)
-  )
-
-let trades_exn t ~contract =
-  trades t ~contract >>| function
-  | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
-
-let cancel_trades t id =
-  with_connection_unit t ~f:(fun con ->
-    Ib.Streaming_request.cancel Tws_reqs.req_taq_data con id
-  )
-
-(* +-----------------------------------------------------------------------+
-   | Quotes                                                                |
-   +-----------------------------------------------------------------------+ *)
-
 module Quote = struct
-  type t =
-    { mutable stamp : Time.t;
-      mutable ask_size : Volume.t;
-      mutable bid_size : Volume.t;
-      mutable ask_size_change : Volume.t;
-      mutable bid_size_change : Volume.t;
-      mutable ask_price : Price.t;
-      mutable bid_price : Price.t;
-      mutable ask_price_change : Price.t;
-      mutable bid_price_change : Price.t;
-      mutable change :
-        [ `Unknown
-        | `Ask_size_change
-        | `Bid_size_change
-        | `Ask_price_change
-        | `Bid_price_change
-        | `Ask_size_and_price_change
-        | `Bid_size_and_price_change ];
-    } with sexp, fields
+  module Change = struct
+    type t =
+    | Unknown
+    | Ask_price of Price.t
+    | Bid_price of Price.t
+    | Ask_size of Volume.t
+    | Bid_size of Volume.t
+    | Ask_price_and_size of Price.t * Volume.t
+    | Bid_price_and_size of Price.t * Volume.t
+    with sexp
 
-  let make_filter () =
-    let t =
-      {
-        stamp            = Time.epoch;
-        ask_size         = Volume.zero;
-        bid_size         = Volume.zero;
-        ask_size_change  = Volume.zero;
-        bid_size_change  = Volume.zero;
-        ask_price        = Price.zero;
-        bid_price        = Price.zero;
-        ask_price_change = Price.zero;
-        bid_price_change = Price.zero;
-        change           = `Unknown;
-      }
-    in
-    stage (fun tick ->
-      match tick with
-      | `Tick_price tick ->
-        begin match Tick_price.tick_type tick with
-        | Tick_price.Type.Ask ->
-          let new_ask_size  = Tick_price.size  tick in
-          let new_ask_price = Tick_price.price tick in
-          let old_ask_size  = t.ask_size in
-          let old_ask_price = t.ask_price in
-          (* Compute the ask size & price change. *)
-          if Volume.(old_ask_size > zero) then
-            t.ask_size_change <- Volume.(new_ask_size - old_ask_size);
-          if Price.(old_ask_price >. zero) then
-            t.ask_price_change <- Price.(new_ask_price - old_ask_price);
-          (* Update the ask size & price. *)
-          t.ask_size  <- new_ask_size;
-          t.ask_price <- new_ask_price;
-          if Volume.(t.ask_size_change = zero && old_ask_size = zero) then
-            (* This case occurs only when the first tick is on the ask side. *)
-            t.change <- `Unknown
-          else if Volume.(t.ask_size_change = zero) then
-            t.change <- `Ask_price_change
-          else
-            t.change <- `Ask_size_and_price_change;
-          if Volume.(t.bid_size = zero) then
-            None (* We don't issue a quote without any bid information. *)
-          else begin
-            t.stamp <- Time.now ();
-            Some t
-          end
-        | Tick_price.Type.Bid ->
-          let new_bid_size  = Tick_price.size  tick in
-          let new_bid_price = Tick_price.price tick in
-          let old_bid_size  = t.bid_size in
-          let old_bid_price = t.bid_price in
-          (* Compute bid size & price change. *)
-          if Volume.(old_bid_size > zero) then
-            t.bid_size_change <- Volume.(new_bid_size - old_bid_size);
-          if Price.(old_bid_price >. zero) then
-            t.bid_price_change <- Price.(new_bid_price - old_bid_price);
-          (* Update the bid size & price. *)
-          t.bid_size  <- new_bid_size;
-          t.bid_price <- new_bid_price;
-          if Volume.(t.bid_size_change = zero && old_bid_size = zero) then
-            (* This case occurs only when the first tick is on the bid side. *)
-            t.change <- `Unknown
-          else if Volume.(t.bid_size_change = zero) then
-            t.change <- `Bid_price_change
-          else
-            t.change <- `Bid_size_and_price_change;
-          if Volume.(t.ask_size = zero) then
-            None (* We don't issue a quote without any ask information. *)
-          else begin
-            t.stamp <- Time.now ();
-            Some t
-          end
-        | Tick_price.Type.Last
-        | Tick_price.Type.High
-        | Tick_price.Type.Low
-        | Tick_price.Type.Close
-        | Tick_price.Type.Open -> None
-        end
-      | `Tick_size tick ->
-        begin match Tick_size.tick_type tick with
-        | Tick_size.Type.Ask ->
-          let new_ask_size = Tick_size.size tick in
-          let old_ask_size = t.ask_size in
-          if Volume.(new_ask_size = old_ask_size) then
-            None
-          else begin
-            t.ask_size_change <- Volume.(new_ask_size - old_ask_size);
-            t.ask_size <- new_ask_size;
-            t.change <- `Ask_size_change;
-            t.stamp <- Time.now ();
-            Some t
-          end
-        | Tick_size.Type.Bid ->
-          let new_bid_size = Tick_size.size tick in
-          let old_bid_size = t.bid_size in
-          if new_bid_size = old_bid_size then
-            None
-          else begin
-            t.bid_size_change <- Volume.(new_bid_size - old_bid_size);
-            t.bid_size <- new_bid_size;
-            t.change <- `Bid_size_change;
-            t.stamp <- Time.now ();
-            Some t
-          end
-        | Tick_size.Type.Last
-        | Tick_size.Type.Volume -> None
-        end)
+    let ask_size ~size_change =
+      if Volume.(size_change <> zero) then
+        Ask_size size_change
+      else
+        Unknown
+
+    let bid_size ~size_change =
+      if Volume.(size_change <> zero) then
+        Bid_size size_change
+      else
+        Unknown
+
+    let ask_price_and_size ~price_change ~size_change =
+      if Price.is_nan price_change then
+        Unknown
+      else if Volume.(size_change <> zero) then
+        Ask_price_and_size (price_change, size_change)
+      else
+        Ask_price price_change
+
+    let bid_price_and_size ~price_change ~size_change =
+      if Price.is_nan price_change then
+        Unknown
+      else if Volume.(size_change <> zero) then
+        Bid_price_and_size (price_change, size_change)
+      else
+        Bid_price price_change
+  end
+
+  type t =
+    { stamp : Time.t;
+      ask_price : Price.t;
+      bid_price : Price.t;
+      ask_size : Volume.t;
+      bid_size : Volume.t;
+      change : Change.t;
+    } with sexp, fields
 
   let pp ppf t =
     Format.fprintf ppf "Q|%s|%4.2f|%4.2f|%4d|%4d"
@@ -882,34 +741,41 @@ module Quote = struct
       (t.ask_price :> float)
       (t.bid_size :> int)
       (t.ask_size :> int)
+
+  let update_ask t ~ask_size ~ask_price =
+    { t with
+      stamp = Time.now ();
+      ask_price = ask_price;
+      ask_size = ask_size;
+      change = Change.ask_price_and_size
+        ~price_change:Price.(ask_price - t.ask_price)
+        ~size_change:Volume.(ask_size - t.ask_size)
+    }
+
+  let update_bid t ~bid_size ~bid_price =
+    { t with
+      stamp = Time.now ();
+      bid_size = bid_size;
+      bid_price = bid_price;
+      change = Change.bid_price_and_size
+        ~price_change:Price.(bid_price - t.bid_price)
+        ~size_change:Volume.(bid_size - t.bid_size)
+    }
+
+  let update_ask_size t ~ask_size =
+    { t with
+      stamp = Time.now ();
+      ask_size = ask_size;
+      change = Change.ask_size ~size_change:Volume.(ask_size - t.ask_size);
+    }
+
+  let update_bid_size t ~bid_size =
+    { t with
+      stamp = Time.now ();
+      bid_size = bid_size;
+      change = Change.bid_size ~size_change:Volume.(bid_size - t.bid_size);
+    }
 end
-
-let quotes t ~contract =
-  with_connection t ~f:(fun con ->
-    let q = Query.Market_data.create ~contract ~tick_generics:[] ~snapshot:false in
-    Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q >>| function
-    | Error _ as x -> x
-    | Ok (ticks, id) ->
-      let filter_quote = unstage (Quote.make_filter ()) in
-      let quotes = Pipe.filter_map ticks ~f:(function
-        | Error _ as x -> Some x
-        | Ok tick ->
-          match filter_quote tick with
-          | None -> None
-          | Some quote -> Some (Ok quote))
-      in
-      Ok (quotes, id)
-  )
-
-let quotes_exn t ~contract =
-  quotes t ~contract >>| function
-  | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
-
-let cancel_quotes t id =
-  with_connection_unit t ~f:(fun con ->
-    Ib.Streaming_request.cancel Tws_reqs.req_taq_data con id
-  )
 
 (* +-----------------------------------------------------------------------+
    | TAQ data                                                              |
@@ -921,40 +787,97 @@ module TAQ = struct
   | Quote of Quote.t
   with sexp
 
-  let trade x = Trade x
-  let quote x = Quote x
-
   let pp ppf = function
     | Trade trade -> Trade.pp ppf trade
     | Quote quote -> Quote.pp ppf quote
+
+  let get_snapshots tws ~contract =
+    with_connection tws ~f:(fun con ->
+      let q = Query.Market_data.create
+        ~contract ~tick_generics:[] ~snapshot:false
+      in
+      Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q >>| function
+      | Error _ as e -> e
+      | Ok (ticks, id) ->
+        let taq_data = Pipe.init (fun w ->
+          let trade =
+            { Trade.
+              stamp = Time.epoch;
+              price = Price.nan;
+              size = Volume.zero;
+            }
+          in
+          let quote =
+            { Quote.
+              stamp = Time.epoch;
+              ask_price = Price.nan;
+              ask_size = Volume.zero;
+              bid_price = Price.nan;
+              bid_size = Volume.zero;
+              change = Quote.Change.Unknown;
+            }
+          in
+          Pipe.fold ticks ~init:(trade, quote)
+            ~f:(fun ((trade, quote) as taq) tick ->
+              match tick with
+              | Error _ as e ->
+                don't_wait_for (Pipe.write w e);
+                return taq
+              | Ok (`Tick_price tick) ->
+                let module T = Tick_price.Type in
+                begin match Tick_price.tick_type tick with
+                | T.Ask ->
+                  let quote = Quote.update_ask quote
+                    ~ask_price:(Tick_price.price tick)
+                    ~ask_size:(Tick_price.size tick)
+                  in
+                  don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                  return (trade, quote)
+                | T.Bid ->
+                  let quote = Quote.update_bid quote
+                    ~bid_price:(Tick_price.price tick)
+                    ~bid_size:(Tick_price.size tick)
+                  in
+                  don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                  return (trade, quote)
+                | T.Last ->
+                  let trade =
+                    { Trade.
+                      stamp = Time.now ();
+                      price = Tick_price.price tick;
+                      size = Tick_price.size tick;
+                    }
+                  in
+                  don't_wait_for (Pipe.write w (Ok (Trade trade)));
+                  return (trade, quote)
+                | T.Open | T.High | T.Low | T.Close ->
+                  return taq
+                end
+              | Ok (`Tick_size tick) ->
+                let module T = Tick_size.Type in
+                begin match Tick_size.tick_type tick with
+                | T.Ask ->
+                  let quote = Quote.update_ask_size quote
+                    ~ask_size:(Tick_size.size tick)
+                  in
+                  don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                  return (trade, quote)
+                | T.Bid ->
+                  let quote = Quote.update_bid_size quote
+                    ~bid_size:(Tick_size.size tick)
+                  in
+                  don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                  return (trade, quote)
+                | T.Last | T.Volume ->
+                  return taq
+                end
+            ) |> Deferred.ignore)
+        in
+        Ok (taq_data, id)
+    )
 end
 
-let taq_data t ~contract =
-  with_connection t ~f:(fun con ->
-    let q = Query.Market_data.create
-      ~contract
-      ~tick_generics:[]
-      ~snapshot:false
-    in
-    Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q >>| function
-    | Error _ as x -> x
-    | Ok (ticks, id) ->
-      let filter_quote = unstage (Quote.make_filter ()) in
-      let filter_trade = unstage (Trade.make_filter ()) in
-      let taq_records = Pipe.filter_map ticks ~f:(function
-        | Error _ as x -> Some x
-        | Ok tick ->
-          match filter_quote tick with
-          | Some quote -> Some (Ok (TAQ.quote quote))
-          | None ->
-            begin
-              match filter_trade tick with
-              | Some trade -> Some (Ok (TAQ.trade trade))
-              | None -> None
-            end)
-      in
-      Ok (taq_records, id)
-  )
+let taq_data = TAQ.get_snapshots
 
 let taq_data_exn t ~contract =
   taq_data t ~contract >>| function
@@ -965,6 +888,45 @@ let cancel_taq_data t id =
   with_connection_unit t ~f:(fun con ->
     Ib.Streaming_request.cancel Tws_reqs.req_taq_data con id
   )
+
+let trades t ~contract =
+  taq_data t ~contract >>| function
+  | Error _ as e  -> e
+  | Ok (pipe, id) ->
+    let trades = Pipe.filter_map pipe ~f:(function
+      | Error _ as e -> Some e
+      | Ok (TAQ.Trade trade) -> Some (Ok trade)
+      | Ok (TAQ.Quote _) -> None
+    )
+    in
+    Ok (trades, id)
+
+let trades_exn t ~contract =
+  trades t ~contract >>| function
+  | Error e -> Error.raise e
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+
+let cancel_trades = cancel_taq_data
+
+let quotes t ~contract =
+  taq_data t ~contract >>| function
+  | Error _ as e  -> e
+  | Ok (pipe, id) ->
+    let quotes = Pipe.filter_map pipe ~f:(function
+      | Error _ as e -> Some e
+      | Ok (TAQ.Quote quote) -> Some (Ok quote)
+      | Ok (TAQ.Trade _) -> None
+    )
+    in
+    Ok (quotes, id)
+
+let quotes_exn t ~contract =
+  quotes t ~contract >>| function
+  | Error e -> Error.raise e
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+
+let cancel_quotes = cancel_taq_data
+
 
 (* +-----------------------------------------------------------------------+
    | TAQ snapshots                                                         |

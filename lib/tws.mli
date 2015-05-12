@@ -424,49 +424,48 @@ val cancel_realtime_bars : t -> Query_id.t -> unit
 (******************************************************************************)
 
 module Trade : sig
-  type t
-  with sexp
-
-  val stamp : t -> Time.t
-  val price : t -> Price.t
-  val size  : t -> Volume.t
+  type t = private
+    { stamp : Time.t;
+      price : Price.t;
+      size  : Volume.t;
+    } with sexp, fields
 
   val pp : Format.formatter -> t -> unit
 end
 
 val trades
-  : t
+  :  t
   -> contract:[< Security_type.t ] Contract.t
   -> (Trade.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val trades_exn
-  : t
+  :  t
   -> contract:[< Security_type.t ] Contract.t
   -> (Trade.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_trades : t -> Query_id.t -> unit
 
 module Quote : sig
-  type t
-  with sexp
+  module Change : sig
+    type t =
+    | Unknown
+    | Ask_price of Price.t
+    | Bid_price of Price.t
+    | Ask_size of Volume.t
+    | Bid_size of Volume.t
+    | Ask_price_and_size of Price.t * Volume.t
+    | Bid_price_and_size of Price.t * Volume.t
+    with sexp
+  end
 
-  val stamp     : t -> Time.t
-  val ask_size  : t -> Volume.t
-  val bid_size  : t -> Volume.t
-  val ask_price : t -> Price.t
-  val bid_price : t -> Price.t
-  val change    : t ->
-    [ `Unknown
-    | `Ask_size_change
-    | `Bid_size_change
-    | `Ask_price_change
-    | `Bid_price_change
-    | `Ask_size_and_price_change
-    | `Bid_size_and_price_change ]
-  val ask_price_change : t -> Price.t
-  val bid_price_change : t -> Price.t
-  val ask_size_change  : t -> Volume.t
-  val bid_size_change  : t -> Volume.t
+  type t = private
+    { stamp : Time.t;
+      ask_price : Price.t;
+      bid_price : Price.t;
+      ask_size : Volume.t;
+      bid_size : Volume.t;
+      change : Change.t;
+    } with sexp, fields
 
   val pp : Format.formatter -> t -> unit
 end
