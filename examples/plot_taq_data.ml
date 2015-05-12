@@ -11,8 +11,7 @@ let plot_taq_data ~duration ~currency ~symbol =
     Tws.taq_data_exn tws ~contract:stock
     >>= fun (taq_data, id) ->
     upon (Clock.after duration) (fun () ->
-      Tws.cancel_quotes tws id
-    );
+      Tws.cancel_taq_data tws id);
     Pipe.fold taq_data ~init:([], [], []) ~f:(fun (bids, asks, trades) taq ->
       if !verbose then Format.printf "@[%a@]@\n%!" TAQ.pp taq;
       return (match taq with
