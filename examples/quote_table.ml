@@ -11,16 +11,13 @@ let print_quote_table quotes =
   let get_bid_price (_, q) = sprintf "%4.2f" Q.(bid_price q :> float) in
   let get_ask_size  (_, q) = sprintf "%d"    Q.(ask_size  q :> int) in
   let get_ask_price (_, q) = sprintf "%4.2f" Q.(ask_price q :> float) in
-  let create_col ?(align=Ascii_table.Align.right) =
-    Ascii_table.Column.create ~align
-  in
-  Ascii_table.output ~oc:stdout [
-    create_col "Symbol"    get_symbol ~align:Ascii_table.Align.left;
-    create_col "Bid size"  get_bid_size;
-    create_col "Bid price" get_bid_price;
-    create_col "Ask size"  get_ask_size;
-    create_col "Ask price" get_ask_price;
-  ] quotes
+  Ascii_table.(output ~oc:stdout [
+    Column.create "Symbol"    get_symbol ~align:Align.left;
+    Column.create "Bid size"  get_bid_size;
+    Column.create "Bid price" get_bid_price;
+    Column.create "Ask size"  get_ask_size;
+    Column.create "Ask price" get_ask_price;
+  ] quotes)
 
 let symbols = ["AAPL";"AMZN";"CSCO";"FB";"GOOG";"IBM";"MSFT";"ORCL";"SAP";"YHOO"]
 

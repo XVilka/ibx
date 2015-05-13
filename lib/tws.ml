@@ -825,21 +825,21 @@ module TAQ = struct
                 return taq
               | Ok (`Tick_price tick) ->
                 let module T = Tick_price.Type in
-                begin match Tick_price.tick_type tick with
+                return (match Tick_price.tick_type tick with
                 | T.Ask ->
                   let quote = Quote.update_ask quote
                     ~ask_price:(Tick_price.price tick)
                     ~ask_size:(Tick_price.size tick)
                   in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                  return (trade, quote)
+                  trade, quote
                 | T.Bid ->
                   let quote = Quote.update_bid quote
                     ~bid_price:(Tick_price.price tick)
                     ~bid_size:(Tick_price.size tick)
                   in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                  return (trade, quote)
+                  trade, quote
                 | T.Last ->
                   let trade =
                     { Trade.
@@ -849,28 +849,28 @@ module TAQ = struct
                     }
                   in
                   don't_wait_for (Pipe.write w (Ok (Trade trade)));
-                  return (trade, quote)
+                  trade, quote
                 | T.Open | T.High | T.Low | T.Close ->
-                  return taq
-                end
+                  taq
+                )
               | Ok (`Tick_size tick) ->
                 let module T = Tick_size.Type in
-                begin match Tick_size.tick_type tick with
+                return (match Tick_size.tick_type tick with
                 | T.Ask ->
                   let quote = Quote.update_ask_size quote
                     ~ask_size:(Tick_size.size tick)
                   in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                  return (trade, quote)
+                  trade, quote
                 | T.Bid ->
                   let quote = Quote.update_bid_size quote
                     ~bid_size:(Tick_size.size tick)
                   in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                  return (trade, quote)
+                  trade, quote
                 | T.Last | T.Volume ->
-                  return taq
-                end
+                  taq
+                )
             ) |> Deferred.ignore)
         in
         Ok (taq_data, id)
