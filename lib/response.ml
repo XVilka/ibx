@@ -1450,7 +1450,7 @@ module Historical_bar = struct
       hi : Price.t;
       lo : Price.t;
       cl : Price.t;
-      volume : Volume.t;
+      vo : Volume.t;
       wap : Price.t;
       has_gaps : bool;
       count : int;
@@ -1468,7 +1468,7 @@ module Historical_bar = struct
       ~hi:(use Price.(=.))
       ~lo:(use Price.(=.))
       ~cl:(use Price.(=.))
-      ~volume:(use Volume.(=))
+      ~vo:(use Volume.(=))
       ~wap:(use Price.(=.))
       ~has_gaps:(use (=))
       ~count:(use (=))
@@ -1483,17 +1483,17 @@ module Historical_bar = struct
           ~hi:(fields_value (required Price.val_type))
           ~lo:(fields_value (required Price.val_type))
           ~cl:(fields_value (required Price.val_type))
-          ~volume:(fields_value (required Volume.val_type))
+          ~vo:(fields_value (required Volume.val_type))
           ~wap:(fields_value (required Price.val_type))
           ~has_gaps:(fields_value (required string))
           ~count:(fields_value (required int)))
-      (fun stamp op hi lo cl volume wap has_gaps count ->
+      (fun stamp op hi lo cl vo wap has_gaps count ->
         { stamp;
           op;
           hi;
           lo;
           cl;
-          volume;
+          vo;
           wap;
           has_gaps = Bool.of_string has_gaps;
           count;
@@ -1510,7 +1510,7 @@ module Historical_bar = struct
             ~hi:(fields_value (required Price.val_type))
             ~lo:(fields_value (required Price.val_type))
             ~cl:(fields_value (required Price.val_type))
-            ~volume:(fields_value (required Volume.val_type))
+            ~vo:(fields_value (required Volume.val_type))
             ~wap:(fields_value (required Price.val_type))
             ~has_gaps:(fields_value (required string))
             ~count:(fields_value (required int)))
@@ -1521,7 +1521,7 @@ module Historical_bar = struct
               $ t.hi
               $ t.lo
               $ t.cl
-              $ t.volume
+              $ t.vo
               $ t.wap
               $ Bool.to_string t.has_gaps
               $ t.count)))
@@ -1624,7 +1624,7 @@ module Historical_data = struct
       Array.set hi i (bar.Bar.hi :> float);
       Array.set lo i (bar.Bar.lo :> float);
       Array.set cl i (bar.Bar.cl :> float);
-      Array.set vo i (bar.Bar.volume :> int);
+      Array.set vo i (bar.Bar.vo :> int);
     );
     { Data_frame.stamps; op; hi; lo; cl; vo; }
 end
@@ -1640,7 +1640,7 @@ module Realtime_bar = struct
       hi : Price.t;
       lo : Price.t;
       cl : Price.t;
-      volume : Volume.t;
+      vo : Volume.t;
       wap : Price.t;
       count : int;
     } with sexp, fields
@@ -1657,7 +1657,7 @@ module Realtime_bar = struct
       ~hi:(use Price.(=.))
       ~lo:(use Price.(=.))
       ~cl:(use Price.(=.))
-      ~volume:(use Volume.(=))
+      ~vo:(use Volume.(=))
       ~wap:(use Price.(=.))
       ~count:(use (=))
 
@@ -1671,16 +1671,16 @@ module Realtime_bar = struct
           ~hi:(fields_value (required Price.val_type))
           ~lo:(fields_value (required Price.val_type))
           ~cl:(fields_value (required Price.val_type))
-          ~volume:(fields_value (required Volume.val_type))
+          ~vo:(fields_value (required Volume.val_type))
           ~wap:(fields_value (required Price.val_type))
           ~count:(fields_value (required int)))
-      (fun stamp op hi lo cl volume wap count ->
+      (fun stamp op hi lo cl vo wap count ->
           { stamp;
             op;
             hi;
             lo;
             cl;
-            volume;
+            vo;
             wap;
             count;
           })
@@ -1696,7 +1696,7 @@ module Realtime_bar = struct
             ~hi:(fields_value (required Price.val_type))
             ~lo:(fields_value (required Price.val_type))
             ~cl:(fields_value (required Price.val_type))
-            ~volume:(fields_value (required Volume.val_type))
+            ~vo:(fields_value (required Volume.val_type))
             ~wap:(fields_value (required Price.val_type))
             ~count:(fields_value (required int)))
           (fun t ->
@@ -1706,7 +1706,7 @@ module Realtime_bar = struct
               $ t.hi
               $ t.lo
               $ t.cl
-              $ t.volume
+              $ t.vo
               $ t.wap
               $ t.count)))
 end

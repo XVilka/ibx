@@ -1170,7 +1170,7 @@ end = struct
         ~hi:(price_g ())
         ~lo:(price_g ())
         ~cl:(price_g ())
-        ~volume:(volume_g ())
+        ~vo:(volume_g ())
         ~wap:(price_g ())
         ~has_gaps:(bg ())
         ~count:(nng ())
@@ -1189,7 +1189,7 @@ end = struct
       ~hi:(price_g ())
       ~lo:(price_g ())
       ~cl:(price_g ())
-      ~volume:(volume_g ())
+      ~vo:(volume_g ())
       ~wap:(price_g ())
       ~count:(nng ())
 

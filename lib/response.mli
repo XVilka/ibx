@@ -449,7 +449,7 @@ module Historical_bar : sig
       hi : Price.t;
       lo : Price.t;
       cl : Price.t;
-      volume : Volume.t;
+      vo : Volume.t;
       wap : Price.t;
       has_gaps : bool;
       count : int;
@@ -463,7 +463,7 @@ module Historical_bar : sig
     -> hi:Price.t
     -> lo:Price.t
     -> cl:Price.t
-    -> volume:Volume.t
+    -> vo:Volume.t
     -> wap:Price.t
     -> has_gaps:bool
     -> count:int
@@ -512,7 +512,7 @@ module Realtime_bar : sig
       hi : Price.t;
       lo : Price.t;
       cl : Price.t;
-      volume : Volume.t;
+      vo : Volume.t;
       wap : Price.t;
       count : int;
     }
@@ -525,7 +525,7 @@ module Realtime_bar : sig
     -> hi:Price.t
     -> lo:Price.t
     -> cl:Price.t
-    -> volume:Volume.t
+    -> vo:Volume.t
     -> wap:Price.t
     -> count:int
     -> t
