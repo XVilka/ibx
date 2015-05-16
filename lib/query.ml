@@ -675,7 +675,7 @@ module Historical_data = struct
 
   type t =
     { contract : Raw_contract.t;
-      end_date_time : Time.t;
+      until : Time.t;
       bar_size : Bar_size.t;
       bar_span : Bar_span.t;
       use_rth : bool;
@@ -683,9 +683,9 @@ module Historical_data = struct
       date_format : string;
     } with sexp, fields
 
-  let create ~contract ~end_date_time ~bar_size ~bar_span ~use_rth ~show =
+  let create ~contract ~until ~bar_size ~bar_span ~use_rth ~show =
     { contract = Contract.to_raw contract;
-      end_date_time;
+      until;
       bar_size;
       bar_span;
       use_rth;
@@ -699,7 +699,7 @@ module Historical_data = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~end_date_time:(use Time.(=))
+      ~until:(use Time.(=))
       ~bar_size:(use (=))
       ~bar_span:(use (=))
       ~use_rth:(use (=))
@@ -716,7 +716,7 @@ module Historical_data = struct
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-            ~end_date_time:(fields_value (required time))
+            ~until:(fields_value (required time))
             ~bar_size:(fields_value (required Bar_size.val_type))
             ~bar_span:(fields_value (required Bar_span.val_type))
             ~use_rth:(fields_value (required bool))
@@ -725,7 +725,7 @@ module Historical_data = struct
           (fun t ->
             `Args
               $ t.contract
-              $ t.end_date_time
+              $ t.until
               $ t.bar_size
               $ t.bar_span
               $ t.use_rth
@@ -741,15 +741,15 @@ module Historical_data = struct
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-          ~end_date_time:(fields_value (required time))
+          ~until:(fields_value (required time))
           ~bar_size:(fields_value (required Bar_size.val_type))
           ~bar_span:(fields_value (required Bar_span.val_type))
           ~use_rth:(fields_value (required bool))
           ~show:(fields_value (required Show.val_type))
           ~date_format:(fields_value (required string)))
-      (fun contract end_date_time bar_size bar_span use_rth show date_format ->
+      (fun contract until bar_size bar_span use_rth show date_format ->
         { contract;
-          end_date_time;
+          until;
           bar_size;
           bar_span;
           use_rth;

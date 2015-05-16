@@ -666,7 +666,7 @@ end = struct
     in
     Query.Historical_data.create
       ~contract:(contract_g ())
-      ~end_date_time:(tmg ())
+      ~until:(tmg ())
       ~bar_size:(bar_size_g ())
       ~bar_span:(bar_span_g ())
       ~use_rth:(bg ())

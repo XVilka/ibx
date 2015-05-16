@@ -223,7 +223,7 @@ module Historical_data : sig
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
-    -> end_date_time:Time.t
+    -> until:Time.t
     -> bar_size:Bar_size.t
     -> bar_span:Bar_span.t
     -> use_rth:bool

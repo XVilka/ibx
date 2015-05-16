@@ -625,7 +625,7 @@ let historical_data
     ?(until = Time.now ())
     t ~contract =
   with_connection t ~f:(fun con ->
-    let q = Query.Historical_data.create ~contract ~end_date_time:until
+    let q = Query.Historical_data.create ~contract ~until
       ~bar_size ~bar_span ~use_rth ~show in
     dispatch_and_cancel Tws_reqs.req_historical_data con q
   )
