@@ -341,7 +341,7 @@ module Q : sig
   (* Account and portfolio *)
 
   val account_updates : Query.Account_updates.t gen
-  val portfolio_positions : Query.Portfolio_positions.t gen
+  val positions : Query.Positions.t gen
 
   (* Executions *)
 
@@ -527,8 +527,8 @@ end = struct
       ~subscribe:(bg ())
       ~account_code:(account_code_g ())
 
-  let portfolio_positions () =
-    Query.Portfolio_positions.create
+  let positions () =
+    Query.Positions.create
       ~subscribe:(bg ())
       ~account_code:(account_code_g ())
 
@@ -751,8 +751,8 @@ module R : sig
   val account_update_g  : Response.Account_update.t gen
   val account_updates_g : Response.Account_update.t list gen
 
-  val portfolio_position_g  : Response.Portfolio_position.t gen
-  val portfolio_positions_g : Response.Portfolio_position.t list gen
+  val position_g  : Response.Position.t gen
+  val positions_g : Response.Position.t list gen
 
   (* Contract details *)
 
@@ -962,7 +962,7 @@ end = struct
     List.permute ~random_state:(Random.State.make_self_init ())
       (List.init (1 + Random.int bound) ~f:(fun _ -> account_update_g ()))
 
-  let portfolio_position_g () =
+  let position_g () =
     let contract_g () = oneof
       [ always (
         Contract.stock
@@ -998,7 +998,7 @@ end = struct
           (symbol_g ()))
       ] ()
     in
-    Response.Portfolio_position.create
+    Response.Position.create
       ~contract:(contract_g ())
       ~volume:(volume_g ())
       ~market_price:(price_g ())
@@ -1008,9 +1008,9 @@ end = struct
       ~realized_pnl:(price_g ())
       ~account_code:(account_code_g ())
 
-  let portfolio_positions_g () =
+  let positions_g () =
     List.permute ~random_state:(Random.State.make_self_init ())
-      (List.init (1 + Random.int bound) ~f:(fun _ -> portfolio_position_g ()))
+      (List.init (1 + Random.int bound) ~f:(fun _ -> position_g ()))
 
   (* =========================== Contract details ========================== *)
 

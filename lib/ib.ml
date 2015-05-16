@@ -454,7 +454,7 @@ module Connection : Connection_internal = struct
       | R.Tws_error -> read ~len:2
       | R.Open_order -> read ~len:93
       | R.Account_update -> read ~len:4
-      | R.Portfolio_position -> read ~len:17
+      | R.Position -> read ~len:17
       | R.Account_update_time -> read ~len:1
       | R.Next_order_id -> read ~len:1
       | R.Contract_data -> read ~len:26

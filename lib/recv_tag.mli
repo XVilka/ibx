@@ -27,7 +27,7 @@ type t =
 | Tws_error
 | Open_order
 | Account_update
-| Portfolio_position
+| Position
 | Account_update_time
 | Next_order_id
 | Contract_data

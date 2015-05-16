@@ -66,10 +66,10 @@ val req_account_updates :
                             | `Update_end of Account_code.t
                             ]) Ib.Streaming_request_without_id.t
 
-val req_portfolio_updates :
-  (Query.Portfolio_positions.t, [ `Update of Response.Portfolio_position.t
-                                | `Update_end of Account_code.t
-                                ]) Ib.Streaming_request_without_id.t
+val req_positions :
+  (Query.Positions.t, [ `Update of Response.Position.t
+                      | `Update_end of Account_code.t
+                      ]) Ib.Streaming_request_without_id.t
 
 (** {1 Execution data} *)
 (*****************************************************************************)

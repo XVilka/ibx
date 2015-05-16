@@ -436,18 +436,11 @@ let updates_gen t req create_query =
   )
 
 let account_updates t =
-  updates_gen t
-    Tws_reqs.req_account_updates
-    Query.Account_updates.create
-
+  updates_gen t Tws_reqs.req_account_updates Query.Account_updates.create
 let account_updates_exn t = account_updates t >>| Or_error.ok_exn
 
-let portfolio_positions t =
-  updates_gen t
-    Tws_reqs.req_portfolio_updates
-    Query.Portfolio_positions.create
-
-let portfolio_positions_exn t = portfolio_positions t >>| Or_error.ok_exn
+let positions t = updates_gen t Tws_reqs.req_positions Query.Positions.create
+let positions_exn t = positions t >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |

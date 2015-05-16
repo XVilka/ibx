@@ -15,8 +15,8 @@ let print_quote_table quotes =
     Column.create "Symbol"    get_symbol ~align:Align.left;
     Column.create "Bid size"  get_bid_size;
     Column.create "Bid price" get_bid_price;
-    Column.create "Ask size"  get_ask_size;
     Column.create "Ask price" get_ask_price;
+    Column.create "Ask size"  get_ask_size;
   ] quotes)
 
 let symbols = ["AAPL";"AMZN";"CSCO";"FB";"GOOG";"IBM";"MSFT";"ORCL";"SAP";"YHOO"]

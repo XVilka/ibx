@@ -257,7 +257,7 @@ module Account_update : sig
     -> t
 end
 
-module Portfolio_position : sig
+module Position : sig
   type t = private
     { contract : Raw_contract.t;
       volume : Volume.t;

@@ -746,7 +746,7 @@ module Account_update = struct
           (fun t -> `Args $ t.key $ t.value $ t.currency $ t.account_code)))
 end
 
-module Portfolio_position = struct
+module Position = struct
   type t =
     { contract : Raw_contract.t;
       volume : Volume.t;

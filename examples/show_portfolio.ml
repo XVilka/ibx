@@ -5,7 +5,7 @@ open Ibx.Std
 module Ascii_table = Textutils.Ascii_table
 
 let show_portfolio positions =
-  let module P = Portfolio_position in
+  let module P = Position in
   Ascii_table.(output ~oc:stdout ~limit_width_to:130 [
     Column.create "Contract" ~align:Align.left
       (fun pos ->
@@ -43,7 +43,7 @@ let () =
     Command.Spec.(Common.common_args ())
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
-        Tws.portfolio_positions_exn tws
+        Tws.positions_exn tws
         >>= fun result ->
         Pipe.to_list result
         >>| fun positions ->
