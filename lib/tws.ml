@@ -963,10 +963,10 @@ module Quote_snapshot = struct
               | T.Bid ->
                 begin match snapshot with
                 | S.Empty ->
-                  let price = Tick_price.price tick in
+                  let price, size = Tick_price.(price tick, size tick) in
                   S.With_bid {
                     bid_price = Price.(if price = neg one then nan else price);
-                    bid_size  = Tick_price.size tick;
+                    bid_size  = size;
                     ask_price = Price.nan;
                     ask_size  = Volume.zero;
                   }
@@ -978,10 +978,10 @@ module Quote_snapshot = struct
                 | S.With_bid snapshot ->
                   (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
-                  let price = Tick_price.price tick in
+                  let price, size = Tick_price.(price tick, size tick) in
                   S.With_bid_and_ask { snapshot with
                     ask_price = Price.(if price = neg one then nan else price);
-                    ask_size  = Tick_price.size tick;
+                    ask_size  = size;
                   }
                 | S.Empty | S.With_bid_and_ask _ as snapshot ->
                   snapshot
@@ -1046,15 +1046,14 @@ module Trade_snapshot = struct
                 | S.Empty ->
                   (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
-                  S.With_trade {
-                    size  = Tick_price.size tick;
-                    price = Tick_price.price tick;
-                  }
+                  let price, size = Tick_price.(price tick, size tick) in
+                  S.With_trade { size; price }
                 | S.With_trade _ as snapshot ->
                   snapshot
                 end
               | T.Bid ->
-                if Price.(Tick_price.price tick = neg one) then begin
+                let price = Tick_price.price tick in
+                if Price.(price = neg one) then begin
                   (* We won't receive a trade.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
                   S.Empty
@@ -1121,9 +1120,7 @@ module Close_snapshot = struct
                 | S.Empty ->
                   (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
-                  S.With_close {
-                    price = Tick_price.price tick
-                  }
+                  S.With_close { price = Tick_price.price tick }
                 | S.With_close _ as snapshot ->
                   snapshot
                 end
