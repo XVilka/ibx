@@ -3,14 +3,14 @@ open Async.Std
 open Ibx.Std
 
 module Ascii_table = Textutils.Ascii_table
+module Quote = Quote_snapshot
 
 let print_quote_table quotes =
-  let module Q = Quote_snapshot in
   let get_symbol    (s, _) = s in
-  let get_bid_size  (_, q) = sprintf "%d"    Q.(bid_size  q :> int) in
-  let get_bid_price (_, q) = sprintf "%4.2f" Q.(bid_price q :> float) in
-  let get_ask_size  (_, q) = sprintf "%d"    Q.(ask_size  q :> int) in
-  let get_ask_price (_, q) = sprintf "%4.2f" Q.(ask_price q :> float) in
+  let get_bid_size  (_, q) = sprintf "%d"    Quote.(bid_size  q :> int) in
+  let get_bid_price (_, q) = sprintf "%4.2f" Quote.(bid_price q :> float) in
+  let get_ask_price (_, q) = sprintf "%4.2f" Quote.(ask_price q :> float) in
+  let get_ask_size  (_, q) = sprintf "%d"    Quote.(ask_size  q :> int) in
   Ascii_table.(output ~oc:stdout [
     Column.create "Symbol"    get_symbol ~align:Align.left;
     Column.create "Bid size"  get_bid_size;
