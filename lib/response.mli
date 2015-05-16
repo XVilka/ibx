@@ -211,9 +211,9 @@ module Order_status : sig
   end
   type t = private
     { state : State.t;
-      filled : int;
-      remaining : int;
-      average_fill_price : Price.t;
+      filled : Volume.t;
+      remaining : Volume.t;
+      avg_fill_price : Price.t;
       permanent_id : int;
       parent_id : Order_id.t;
       last_fill_price : Price.t;
@@ -225,9 +225,9 @@ module Order_status : sig
 
   val create
     :  state:State.t
-    -> filled:int
-    -> remaining:int
-    -> average_fill_price:Price.t
+    -> filled:Volume.t
+    -> remaining:Volume.t
+    -> avg_fill_price:Price.t
     -> permanent_id:int
     -> parent_id:Order_id.t
     -> last_fill_price:Price.t

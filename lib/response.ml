@@ -614,9 +614,9 @@ module Order_status = struct
 
   type t =
     { state : State.t;
-      filled : int;
-      remaining : int;
-      average_fill_price : Price.t;
+      filled : Volume.t;
+      remaining : Volume.t;
+      avg_fill_price : Price.t;
       permanent_id : int;
       parent_id : Order_id.t;
       last_fill_price : Price.t;
@@ -635,7 +635,7 @@ module Order_status = struct
       ~state:(use (=))
       ~filled:(use (=))
       ~remaining:(use (=))
-      ~average_fill_price:(use Price.(=.))
+      ~avg_fill_price:(use Price.(=.))
       ~permanent_id:(use (=))
       ~parent_id:(use Order_id.(=))
       ~last_fill_price:(use Price.(=.))
@@ -648,20 +648,20 @@ module Order_status = struct
         Fields.fold
           ~init:(empty ())
           ~state:(fields_value (required State.val_type))
-          ~filled:(fields_value (required int))
-          ~remaining:(fields_value (required int))
-          ~average_fill_price:(fields_value (required Price.val_type))
+          ~filled:(fields_value (required Volume.val_type))
+          ~remaining:(fields_value (required Volume.val_type))
+          ~avg_fill_price:(fields_value (required Price.val_type))
           ~permanent_id:(fields_value (required int))
           ~parent_id:(fields_value (required Order_id.val_type))
           ~last_fill_price:(fields_value (required Price.val_type))
           ~client_id:(fields_value (required Client_id.val_type))
           ~why_held:(fields_value (optional string)))
-      (fun state filled remaining average_fill_price permanent_id parent_id
+      (fun state filled remaining avg_fill_price permanent_id parent_id
         last_fill_price client_id why_held ->
           { state;
             filled;
             remaining;
-            average_fill_price;
+            avg_fill_price;
             permanent_id;
             parent_id;
             last_fill_price;
@@ -676,9 +676,9 @@ module Order_status = struct
           Fields.fold
             ~init:(empty ())
             ~state:(fields_value (required State.val_type))
-            ~filled:(fields_value (required int))
-            ~remaining:(fields_value (required int))
-            ~average_fill_price:(fields_value (required Price.val_type))
+            ~filled:(fields_value (required Volume.val_type))
+            ~remaining:(fields_value (required Volume.val_type))
+            ~avg_fill_price:(fields_value (required Price.val_type))
             ~permanent_id:(fields_value (required int))
             ~parent_id:(fields_value (required Order_id.val_type))
             ~last_fill_price:(fields_value (required Price.val_type))
@@ -689,7 +689,7 @@ module Order_status = struct
               $ t.state
               $ t.filled
               $ t.remaining
-              $ t.average_fill_price
+              $ t.avg_fill_price
               $ t.permanent_id
               $ t.parent_id
               $ t.last_fill_price

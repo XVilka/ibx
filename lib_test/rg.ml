@@ -936,9 +936,9 @@ end = struct
     in
     Response.Order_status.create
       ~state:(state_g ())
-      ~filled:(nng ())
-      ~remaining:(nng ())
-      ~average_fill_price:(price_g ())
+      ~filled:(volume_g ())
+      ~remaining:(volume_g ())
+      ~avg_fill_price:(price_g ())
       ~permanent_id:(nng ())
       ~parent_id:(order_id_g ())
       ~last_fill_price:(price_g ())
