@@ -28,8 +28,8 @@ let () =
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
         Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
-          Tws.contract_details_exn tws ~currency:`USD
-            ~security_type:`Stock (Symbol.of_string symbol)
+          Tws.contract_details_exn tws
+            ~currency:`USD ~sec_type:`Stock (Symbol.of_string symbol)
           >>= fun details ->
           let data = Option.value_exn (Pipe.peek details) in
           (* Extract unambiguous contract description. *)

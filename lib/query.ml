@@ -371,7 +371,7 @@ module Executions = struct
       account_code : Account_code.t;
       time : Time.t;
       symbol : Symbol.t;
-      security_type : string;
+      sec_type : string;
       exchange : Exchange.t;
       order_action : Order.Action.t;
     } with sexp, fields
@@ -382,7 +382,7 @@ module Executions = struct
       account_code;
       time;
       symbol = Raw_contract.symbol contract;
-      security_type = Raw_contract.security_type contract;
+      sec_type = Raw_contract.sec_type contract;
       exchange = Raw_contract.exchange contract;
       order_action;
     }
@@ -396,7 +396,7 @@ module Executions = struct
       ~account_code:(use Account_code.(=))
       ~time:(use Time.(=))
       ~symbol:(use Symbol.(=))
-      ~security_type:(use (=))
+      ~sec_type:(use (=))
       ~exchange:(use (=))
       ~order_action:(use (=))
 
@@ -410,7 +410,7 @@ module Executions = struct
             ~account_code:(fields_value (required Account_code.val_type))
             ~time:(fields_value (required Time.val_type))
             ~symbol:(fields_value (required Symbol.val_type))
-            ~security_type:(fields_value (required string))
+            ~sec_type:(fields_value (required string))
             ~exchange:(fields_value (required Exchange.val_type))
             ~order_action:(fields_value (required Raw_order.Action.val_type)))
           (fun t ->
@@ -419,7 +419,7 @@ module Executions = struct
               $ t.account_code
               $ t.time
               $ t.symbol
-              $ t.security_type
+              $ t.sec_type
               $ t.exchange
               $ t.order_action))
 
@@ -432,15 +432,15 @@ module Executions = struct
           ~account_code:(fields_value (required Account_code.val_type))
           ~time:(fields_value (required Time.val_type))
           ~symbol:(fields_value (required Symbol.val_type))
-          ~security_type:(fields_value (required string))
+          ~sec_type:(fields_value (required string))
           ~exchange:(fields_value (required Exchange.val_type))
           ~order_action:(fields_value (required Raw_order.Action.val_type)))
-      (fun client_id account_code time symbol security_type exchange order_action ->
+      (fun client_id account_code time symbol sec_type exchange order_action ->
         { client_id;
           account_code;
           time;
           symbol;
-          security_type;
+          sec_type;
           exchange;
           order_action;
         }))
@@ -455,7 +455,7 @@ module Contract_details = struct
 
   let create ~contract = Contract.to_raw contract
 
-  let split_security_id = function
+  let split_sec_id = function
     | None -> None, None
     | Some sec_id ->
       match sec_id with
@@ -465,22 +465,22 @@ module Contract_details = struct
       | `SEDOL x -> (Some `SEDOL, Some x)
 
   let create ?contract_id ?multiplier ?listing_exchange ?local_symbol
-      ?security_id ?include_expired ?exchange ?option_right ?expiry ?strike
-      ~security_type ~currency symbol =
-    let security_id_type, security_id = split_security_id security_id in
+      ?sec_id ?include_expired ?exchange ?option_right ?expiry ?strike
+      ~sec_type ~currency symbol =
+    let sec_id_type, sec_id = split_sec_id sec_id in
     Raw_contract.create
       ?id:contract_id
       ?multiplier
       ?listing_exchange
       ?local_symbol
-      ?security_id_type
-      ?security_id
+      ?sec_id_type
+      ?sec_id
       ?exchange
       ?expiry
       ?strike
       ?option_right
       ~currency
-      ~security_type:(Security_type.tws_of_t security_type)
+      ~sec_type:(Security_type.tws_of_t sec_type)
       symbol
 
   let ( = ) t1 t2 = Raw_contract.(=) t1 t2

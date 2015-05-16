@@ -155,13 +155,13 @@ module Contract_details : sig
     -> ?multiplier:int
     -> ?listing_exchange:Exchange.t
     -> ?local_symbol:Symbol.t
-    -> ?security_id:Security_id.t
+    -> ?sec_id:Security_id.t
     -> ?include_expired:bool
     -> ?exchange:Exchange.t
     -> ?option_right:Option_right.t
     -> ?expiry:Date.t
     -> ?strike:Price.t
-    -> security_type:Security_type.t
+    -> sec_type:Security_type.t
     -> currency:Currency.t
     -> Symbol.t
     -> t

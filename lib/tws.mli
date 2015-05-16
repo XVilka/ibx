@@ -229,14 +229,14 @@ val contract_details
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
   -> ?option_right:Option_right.t
   -> ?expiry:Date.t
   -> ?strike:Price.t
   -> currency:Currency.t
-  -> security_type:Security_type.t
+  -> sec_type:Security_type.t
   -> Symbol.t
   -> Contract_data.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
@@ -246,14 +246,14 @@ val contract_details_exn
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
   -> ?option_right:Option_right.t
   -> ?expiry:Date.t
   -> ?strike:Price.t
   -> currency:Currency.t
-  -> security_type:Security_type.t
+  -> sec_type:Security_type.t
   -> Symbol.t
   -> Contract_data.t Pipe.Reader.t Deferred.t
 
@@ -263,7 +263,7 @@ val futures_chain
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
   -> currency:Currency.t
@@ -276,7 +276,7 @@ val futures_chain_exn
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
   -> currency:Currency.t
@@ -289,7 +289,7 @@ val option_chain
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
   -> ?expiry:Date.t
@@ -305,7 +305,7 @@ val option_chain_exn
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
   -> ?expiry:Date.t

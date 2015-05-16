@@ -49,14 +49,14 @@ include Raw_contract_intf.S
   with type raw := Raw_contract.t
   with type 'a t := 'a t
 
-val security_type    : 'a t -> Security_type.t
+val sec_type         : 'a t -> Security_type.t
 val id               : 'a t -> Id.t option
 val symbol           : 'a t -> Symbol.t
 val exchange         : 'a t -> Exchange.t
 val listed_on        : 'a t -> Exchange.t option
 val currency         : 'a t -> Currency.t
 val local_symbol     : 'a t -> Symbol.t option
-val security_id      : 'a t ->  Security_id.t option
+val sec_id           : 'a t ->  Security_id.t option
 val underlying       : [< `Option | `Fut_opt ] t -> [> `Stock | `Futures ] t
 val strike           : [< `Option | `Fut_opt ] t -> Price.t
 val option_right     : [< `Option | `Fut_opt ] t -> Option_right.t
@@ -74,7 +74,7 @@ val stock
   :  ?id:Id.t
   -> ?listed_on:Exchange.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> Symbol.t
@@ -83,7 +83,7 @@ val stock
 val index
   :  ?id:Id.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> Symbol.t
@@ -93,7 +93,7 @@ val futures
   :  ?id:Id.t
   -> ?multiplier:int
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
   -> currency:Currency.t
@@ -105,7 +105,7 @@ val option
   :  ?id:Id.t
   -> ?multiplier:int
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> option_right:Option_right.t
@@ -118,7 +118,7 @@ val futures_option
   :  ?id:Id.t
   -> ?multiplier:int
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> option_right:Option_right.t
@@ -130,7 +130,7 @@ val futures_option
 val forex
   :  ?id:Id.t
   -> ?local_symbol:Symbol.t
-  -> ?security_id:Security_id.t
+  -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> Symbol.t

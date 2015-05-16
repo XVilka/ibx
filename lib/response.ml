@@ -932,7 +932,7 @@ module Contract_data = struct
         value (required Symbol.val_type)
           ~name:(field_name Raw_contract.Fields.symbol)
         ++ value (required string)
-          ~name:(field_name Raw_contract.Fields.security_type)
+          ~name:(field_name Raw_contract.Fields.sec_type)
         ++ value (optional date)
           ~name:(field_name Raw_contract.Fields.expiry)
         ++ value (optional Price.val_type)
@@ -981,7 +981,7 @@ module Contract_data = struct
           ~name:(field_name Fields.trading_hours)
         ++ value (required string)
           ~name:(field_name Fields.liquid_hours))
-      (fun symbol security_type expiry strike option_right exchange currency
+      (fun symbol sec_type expiry strike option_right exchange currency
         local_symbol market_name trading_class contract_id min_tick multiplier
         order_types valid_exchanges price_magnifier underlying_id long_name
         listing_exchange contract_month industry category subcategory
@@ -990,7 +990,7 @@ module Contract_data = struct
               { Raw_contract.
                 contract_id;
                 symbol;
-                security_type;
+                sec_type;
                 expiry;
                 strike;
                 option_right;
@@ -1000,8 +1000,8 @@ module Contract_data = struct
                 currency;
                 local_symbol;
                 include_expired = false;
-                security_id_type = None;
-                security_id = None;
+                sec_id_type = None;
+                sec_id = None;
                 combo_legs = 0;
               };
             market_name;
@@ -1087,7 +1087,7 @@ module Contract_data = struct
           (fun t ->
             `Args
               $ t.contract.Raw_contract.symbol
-              $ t.contract.Raw_contract.security_type
+              $ t.contract.Raw_contract.sec_type
               $ t.contract.Raw_contract.expiry
               $ t.contract.Raw_contract.strike
               $ t.contract.Raw_contract.option_right

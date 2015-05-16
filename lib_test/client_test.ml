@@ -190,7 +190,7 @@ let suite = "Client" >::: [
     with_tws_client (fun tws ->
       let module R = Response.Contract_data in
       let gen_contract_details = Lazy.force Gen.contract_details in
-      Tws.contract_details_exn tws ~security_type:(Rg.security_type_g ())
+      Tws.contract_details_exn tws ~sec_type:(Rg.security_type_g ())
         ~currency:(Rg.currency_g ()) (Rg.symbol_g ())
       >>= fun reader ->
       Pipe.read_all reader

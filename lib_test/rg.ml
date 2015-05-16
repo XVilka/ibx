@@ -262,7 +262,7 @@ end = struct
     Contract.option
       ~multiplier:(nng ())
       ~local_symbol:(symbol_g ())
-      ~security_id:(security_id_g ())
+      ~sec_id:(security_id_g ())
       ~exchange:(exchange_g ())
       ~currency:(currency_g ())
       ~strike:(price_g ())
@@ -276,7 +276,7 @@ end = struct
         ?id:(og contract_id_g ())
         ?listed_on:(og exchange_g ())
         ?local_symbol:(og symbol_g ())
-        ?security_id:(og security_id_g ())
+        ?sec_id:(og security_id_g ())
         ?exchange:(og exchange_g ())
         ~currency:(currency_g ())
         (symbol_g ()))
@@ -285,7 +285,7 @@ end = struct
         ?id:(og contract_id_g ())
         ?multiplier:(og nng ())
         ?local_symbol:(og symbol_g ())
-        ?security_id:(og security_id_g ())
+        ?sec_id:(og security_id_g ())
         ?include_expired:(og bg ())
         ?exchange:(og exchange_g ())
         ~currency:(currency_g ())
@@ -296,7 +296,7 @@ end = struct
         ?id:(og contract_id_g ())
         ?multiplier:(og nng ())
         ?local_symbol:(og symbol_g ())
-        ?security_id:(og security_id_g ())
+        ?sec_id:(og security_id_g ())
         ?exchange:(og exchange_g ())
         ~currency:(currency_g ())
         ~option_right:(option_right_g ())
@@ -389,7 +389,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           (symbol_g ()))
@@ -398,7 +398,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?include_expired:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -409,7 +409,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           ~option_right:(option_right_g ())
@@ -446,7 +446,7 @@ end = struct
       Contract.option
         ~multiplier:(nng ())
         ~local_symbol:(symbol_g ())
-        ?security_id:None
+        ?sec_id:None
         ~exchange:(exchange_g ())
         ~currency:(currency_g ())
         ~strike:(price_g ())
@@ -464,7 +464,7 @@ end = struct
       Contract.option
         ~multiplier:(nng ())
         ~local_symbol:(symbol_g ())
-        ?security_id:None
+        ?sec_id:None
         ~exchange:(exchange_g ())
         ~currency:(currency_g ())
         ~strike:(price_g ())
@@ -486,7 +486,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:(og security_id_g ())
+          ?sec_id:(og security_id_g ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           (symbol_g ()))
@@ -495,7 +495,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:(og security_id_g ())
+          ?sec_id:(og security_id_g ())
           ?include_expired:(og bg ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -506,7 +506,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:(og security_id_g ())
+          ?sec_id:(og security_id_g ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           ~option_right:(option_right_g ())
@@ -549,13 +549,13 @@ end = struct
       ?contract_id:(og contract_id_g ())
       ?multiplier:(og nng ())
       ?local_symbol:(og symbol_g ())
-      ?security_id:(og security_id_g ())
+      ?sec_id:(og security_id_g ())
       ?exchange:(og exchange_g ())
       ~currency:(currency_g ())
       ~option_right:(option_right_g ())
       ~expiry:(expiry_g ())
       ~strike:(price_g ())
-      ~security_type:(security_type_g ())
+      ~sec_type:(security_type_g ())
       (symbol_g ())
 
   (* ============================ Market depth ============================= *)
@@ -601,7 +601,7 @@ end = struct
           ?id:None
           ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           (symbol_g ()))
@@ -610,7 +610,7 @@ end = struct
           ?id:None
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?include_expired:(og bg ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -621,7 +621,7 @@ end = struct
           ?id:None
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           ~option_right:(option_right_g ())
@@ -681,7 +681,7 @@ end = struct
           ?id:None
           ?listed_on:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           (symbol_g ()))
@@ -690,7 +690,7 @@ end = struct
           ?id:None
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?include_expired:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -701,7 +701,7 @@ end = struct
           ?id:None
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           ~option_right:(option_right_g ())
@@ -969,7 +969,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?listed_on:None
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           (symbol_g ()))
@@ -978,7 +978,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?include_expired:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -989,7 +989,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:(og nng ())
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           ~option_right:(option_right_g ())
@@ -1077,7 +1077,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?listed_on:None
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           (symbol_g ()))
@@ -1086,7 +1086,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:None
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?include_expired:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -1097,7 +1097,7 @@ end = struct
           ?id:(og contract_id_g ())
           ?multiplier:None
           ?local_symbol:(og symbol_g ())
-          ?security_id:None
+          ?sec_id:None
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
           ~option_right:(option_right_g ())
