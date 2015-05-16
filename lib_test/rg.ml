@@ -1176,8 +1176,8 @@ end = struct
         ~count:(nng ())
     in
     Response.Historical_data.create
-      ~start_time:(tmg ())
-      ~end_time:(tmg ())
+      ~start:(tmg ())
+      ~stop:(tmg ())
       ~bars:(List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ()))
 
   (* =========================== Realtime bars ============================= *)

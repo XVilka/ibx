@@ -1529,15 +1529,15 @@ end
 
 module Historical_data = struct
   type t =
-    { start_time : Time.t;
-      end_time : Time.t;
+    { start : Time.t;
+      stop : Time.t;
       num_bars : int;
       bars : Historical_bar.t list;
     } with sexp, fields
 
-  let create ~start_time ~end_time ~bars =
-    { start_time;
-      end_time;
+  let create ~start ~stop ~bars =
+    { start;
+      stop;
       num_bars = List.length bars;
       bars;
     }
@@ -1547,8 +1547,8 @@ module Historical_data = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~start_time:(use (=))
-      ~end_time:(use (=))
+      ~start:(use (=))
+      ~stop:(use (=))
       ~num_bars:(use (=))
       ~bars:(use (List.for_all2_exn ~f:Historical_bar.(=)))
 
@@ -1557,11 +1557,11 @@ module Historical_data = struct
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
-          ~start_time:(fields_value (required Timestamp.val_type))
-          ~end_time:(fields_value (required Timestamp.val_type))
+          ~start:(fields_value (required Timestamp.val_type))
+          ~stop:(fields_value (required Timestamp.val_type))
           ~num_bars:(fields_value (required int))
           ~bars:(fun specs -> Fn.const (specs ++ capture_remaining_message)))
-      (fun start_time end_time num_bars bars_msg ->
+      (fun start stop num_bars bars_msg ->
         let num_fields = 9 in
         let bars_msg = Queue.to_array bars_msg in
         let bars = List.map (List.range 0 num_bars) ~f:(fun i ->
@@ -1571,8 +1571,8 @@ module Historical_data = struct
           in
           Unpickler.run_exn Historical_bar.unpickler bar_msg)
         in
-        { start_time;
-          end_time;
+        { start;
+          stop;
           num_bars;
           bars
         })
@@ -1583,8 +1583,8 @@ module Historical_data = struct
         wrap (
           Fields.fold
             ~init:(empty ())
-            ~start_time:(fields_value (required Timestamp.val_type))
-            ~end_time:(fields_value (required Timestamp.val_type))
+            ~start:(fields_value (required Timestamp.val_type))
+            ~stop:(fields_value (required Timestamp.val_type))
             ~num_bars:(fields_value (required int))
             ~bars:(fields_value tws_data))
           (fun t ->
@@ -1594,8 +1594,8 @@ module Historical_data = struct
               |> String.concat
             in
             `Args
-              $ t.start_time
-              $ t.end_time
+              $ t.start
+              $ t.stop
               $ t.num_bars
               $ bars_msg)))
 

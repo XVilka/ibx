@@ -472,8 +472,8 @@ end
 
 module Historical_data : sig
   type t =
-    { start_time : Time.t;
-      end_time : Time.t;
+    { start : Time.t;
+      stop : Time.t;
       num_bars : int;
       bars : Historical_bar.t list;
     }
@@ -481,8 +481,8 @@ module Historical_data : sig
   include Response_intf.S with type t := t
 
   val create
-    :  start_time:Time.t
-    -> end_time:Time.t
+    :  start:Time.t
+    -> stop:Time.t
     -> bars:Historical_bar.t list
     -> t
 
