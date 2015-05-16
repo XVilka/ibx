@@ -760,38 +760,38 @@ module Quote = struct
       (t.bid_size :> int)
       (t.ask_size :> int)
 
-  let update_ask t ~ask_size ~ask_price =
+  let update_ask t ~size ~price =
     { t with
       stamp = Time.now ();
-      ask_price = ask_price;
-      ask_size = ask_size;
+      ask_price = price;
+      ask_size = size;
       change = Change.ask_price_and_size
-        ~price_change:Price.(ask_price - t.ask_price)
-        ~size_change:Volume.(ask_size - t.ask_size)
+        ~price_change:Price.(price - t.ask_price)
+        ~size_change:Volume.(size - t.ask_size)
     }
 
-  let update_bid t ~bid_size ~bid_price =
+  let update_bid t ~size ~price =
     { t with
       stamp = Time.now ();
-      bid_size = bid_size;
-      bid_price = bid_price;
+      bid_size = size;
+      bid_price = price;
       change = Change.bid_price_and_size
-        ~price_change:Price.(bid_price - t.bid_price)
-        ~size_change:Volume.(bid_size - t.bid_size)
+        ~price_change:Price.(price - t.bid_price)
+        ~size_change:Volume.(size - t.bid_size)
     }
 
-  let update_ask_size t ~ask_size =
+  let update_ask_size t ~size =
     { t with
       stamp = Time.now ();
-      ask_size = ask_size;
-      change = Change.ask_size ~size_change:Volume.(ask_size - t.ask_size);
+      ask_size = size;
+      change = Change.ask_size ~size_change:Volume.(size - t.ask_size);
     }
 
-  let update_bid_size t ~bid_size =
+  let update_bid_size t ~size =
     { t with
       stamp = Time.now ();
-      bid_size = bid_size;
-      change = Change.bid_size ~size_change:Volume.(bid_size - t.bid_size);
+      bid_size = size;
+      change = Change.bid_size ~size_change:Volume.(size - t.bid_size);
     }
 end
 
@@ -828,24 +828,18 @@ module TAQ = struct
                 let module T = Tick_price.Type in
                 return (match Tick_price.tick_type tick with
                 | T.Ask ->
-                  let quote = Quote.update_ask quote
-                    ~ask_price:(Tick_price.price tick)
-                    ~ask_size:(Tick_price.size tick)
-                  in
+                  let price, size = Tick_price.(price tick, size tick) in
+                  let quote = Quote.update_ask quote ~price ~size in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
                   trade, quote
                 | T.Bid ->
-                  let quote = Quote.update_bid quote
-                    ~bid_price:(Tick_price.price tick)
-                    ~bid_size:(Tick_price.size tick)
-                  in
+                  let price, size = Tick_price.(price tick, size tick) in
+                  let quote = Quote.update_bid quote ~price ~size in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
                   trade, quote
                 | T.Last ->
-                  let trade = Trade.create
-                    ~price:(Tick_price.price tick)
-                    ~size:(Tick_price.size tick)
-                  in
+                  let price, size = Tick_price.(price tick, size tick) in
+                  let trade = Trade.create ~price ~size in
                   don't_wait_for (Pipe.write w (Ok (Trade trade)));
                   trade, quote
                 | T.Open | T.High | T.Low | T.Close ->
@@ -855,15 +849,13 @@ module TAQ = struct
                 let module T = Tick_size.Type in
                 return (match Tick_size.tick_type tick with
                 | T.Ask ->
-                  let quote = Quote.update_ask_size quote
-                    ~ask_size:(Tick_size.size tick)
-                  in
+                  let size = Tick_size.size tick in
+                  let quote = Quote.update_ask_size quote ~size in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
                   trade, quote
                 | T.Bid ->
-                  let quote = Quote.update_bid_size quote
-                    ~bid_size:(Tick_size.size tick)
-                  in
+                  let size = Tick_size.size tick in
+                  let quote = Quote.update_bid_size quote ~size in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
                   trade, quote
                 | T.Last | T.Volume ->
