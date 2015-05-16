@@ -677,6 +677,15 @@ module Trade = struct
       size  : Volume.t;
     } with sexp, fields
 
+  let create ~price ~size =
+    { stamp = Time.now (); price; size }
+
+  let empty =
+    { stamp = Time.epoch;
+      price = Price.nan;
+      size = Volume.zero
+    }
+
   let pp ppf t =
     Format.fprintf ppf "T|%s|%4.2f|%4d"
       (Time.to_string t.stamp)
@@ -733,6 +742,15 @@ module Quote = struct
       bid_size : Volume.t;
       change : Change.t;
     } with sexp, fields
+
+  let empty =
+    { stamp = Time.epoch;
+      ask_price = Price.nan;
+      ask_size = Volume.zero;
+      bid_price = Price.nan;
+      bid_size = Volume.zero;
+      change = Change.Unknown;
+    }
 
   let pp ppf t =
     Format.fprintf ppf "Q|%s|%4.2f|%4.2f|%4d|%4d"
@@ -800,24 +818,7 @@ module TAQ = struct
       | Error _ as e -> e
       | Ok (ticks, id) ->
         let taq_data = Pipe.init (fun w ->
-          let trade =
-            { Trade.
-              stamp = Time.epoch;
-              price = Price.nan;
-              size = Volume.zero;
-            }
-          in
-          let quote =
-            { Quote.
-              stamp = Time.epoch;
-              ask_price = Price.nan;
-              ask_size = Volume.zero;
-              bid_price = Price.nan;
-              bid_size = Volume.zero;
-              change = Quote.Change.Unknown;
-            }
-          in
-          Pipe.fold ticks ~init:(trade, quote)
+          Pipe.fold ticks ~init:(Trade.empty, Quote.empty)
             ~f:(fun ((trade, quote) as taq) tick ->
               match tick with
               | Error _ as e ->
@@ -841,12 +842,9 @@ module TAQ = struct
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
                   trade, quote
                 | T.Last ->
-                  let trade =
-                    { Trade.
-                      stamp = Time.now ();
-                      price = Tick_price.price tick;
-                      size = Tick_price.size tick;
-                    }
+                  let trade = Trade.create
+                    ~price:(Tick_price.price tick)
+                    ~size:(Tick_price.size tick)
                   in
                   don't_wait_for (Pipe.write w (Ok (Trade trade)));
                   trade, quote
