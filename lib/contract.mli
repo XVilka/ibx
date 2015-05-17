@@ -22,11 +22,6 @@
 
 open Core.Std
 
-module Id : sig
-  type t = Raw_contract.Id.t with sexp
-  include Unique_id.Id with type t := t
-end
-
 module Option_right : sig
   type t = [ `Call | `Put ] with sexp
   include Stringable.S with type t := t
@@ -50,7 +45,7 @@ include Raw_contract_intf.S
   with type 'a t := 'a t
 
 val sec_type         : 'a t -> Security_type.t
-val id               : 'a t -> Id.t option
+val con_id           : 'a t -> Contract_id.t option
 val symbol           : 'a t -> Symbol.t
 val exchange         : 'a t -> Exchange.t
 val listed_on        : 'a t -> Exchange.t option
@@ -71,7 +66,7 @@ val to_string : 'a t -> string
 val ( = ) : 'a t -> 'a t -> bool
 
 val stock
-  :  ?id:Id.t
+  :  ?con_id:Contract_id.t
   -> ?listed_on:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
@@ -81,7 +76,7 @@ val stock
   -> [> `Stock ] t
 
 val index
-  :  ?id:Id.t
+  :  ?con_id:Contract_id.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
@@ -90,7 +85,7 @@ val index
   -> [> `Index ] t
 
 val futures
-  :  ?id:Id.t
+  :  ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
@@ -102,7 +97,7 @@ val futures
   -> [> `Futures ] t
 
 val option
-  :  ?id:Id.t
+  :  ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
@@ -115,7 +110,7 @@ val option
   -> [> `Option ] t
 
 val futures_option
-  :  ?id:Id.t
+  :  ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
@@ -128,7 +123,7 @@ val futures_option
   -> [> `Fut_opt ] t
 
 val forex
-  :  ?id:Id.t
+  :  ?con_id:Contract_id.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t

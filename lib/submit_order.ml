@@ -25,7 +25,7 @@ open Tws_prot
 
 type t =
   { (* ===================== contract fields ==================== *)
-    contract_id : Raw_contract.Id.t option;
+    con_id : Contract_id.t option;
     symbol : Symbol.t;
     sec_type : string;
     expiry : Date.t option;
@@ -111,7 +111,7 @@ let create ~contract ~order ~account_code =
   let contract = Contract.to_raw contract in
   let order = Order.to_raw order in
   { (* ========================== contract fields =========================== *)
-    contract_id                     = contract.Raw_contract.contract_id;
+    con_id                          = contract.Raw_contract.con_id;
     symbol                          = contract.Raw_contract.symbol;
     sec_type                        = contract.Raw_contract.sec_type;
     expiry                          = contract.Raw_contract.expiry;
@@ -197,7 +197,7 @@ let ( = ) t1 t2 : bool =
     op (Field.get field t1) (Field.get field t2)
   in
   Fields.for_all
-    ~contract_id:(use (Option.equal Raw_contract.Id.(=)))
+    ~con_id:(use (Option.equal Contract_id.(=)))
     ~symbol:(use Symbol.(=))
     ~sec_type:(use (=))
     ~expiry:(use (=))
@@ -282,7 +282,7 @@ let pickler =
       wrap (
         Fields.fold
           ~init:(empty ())
-          ~contract_id:(fields_value (optional Raw_contract.Id.val_type ~default_on_none:"0"))
+          ~con_id:(fields_value (optional Contract_id.val_type ~default_on_none:"0"))
           ~symbol:(fields_value (required Symbol.val_type))
           ~sec_type:(fields_value (required string))
           ~expiry:(fields_value (optional date))
@@ -362,7 +362,7 @@ let pickler =
           ~request_pre_trade_information:(fields_value (required bool)))
         (fun t ->
           `Args
-            $ t.contract_id
+            $ t.con_id
             $ t.symbol
             $ t.sec_type
             $ t.expiry
@@ -446,7 +446,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.Spec.(
       Fields.fold
         ~init:(empty ())
-        ~contract_id:(fields_value (optional Raw_contract.Id.val_type ~none_on_default:"0"))
+        ~con_id:(fields_value (optional Contract_id.val_type ~none_on_default:"0"))
         ~symbol:(fields_value (required Symbol.val_type))
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
@@ -525,7 +525,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~algo_strategy:(fields_value (optional string))
         ~request_pre_trade_information:(fields_value (required bool)))
     (fun
-      contract_id
+      con_id
       symbol
       sec_type
       expiry
@@ -603,7 +603,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
       underlying_combo
       algo_strategy
       request_pre_trade_information ->
-        { contract_id;
+        { con_id;
           symbol;
           sec_type;
           expiry;

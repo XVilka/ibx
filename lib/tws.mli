@@ -225,7 +225,7 @@ val filter_executions_exn
 
 val contract_details
   :  t
-  -> ?contract_id:Contract_id.t
+  -> ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
@@ -242,7 +242,7 @@ val contract_details
 
 val contract_details_exn
   :  t
-  -> ?contract_id:Contract_id.t
+  -> ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
@@ -259,7 +259,7 @@ val contract_details_exn
 
 val futures_chain
   :  t
-  -> ?contract_id:Contract_id.t
+  -> ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
@@ -272,7 +272,7 @@ val futures_chain
 
 val futures_chain_exn
   :  t
-  -> ?contract_id:Contract_id.t
+  -> ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
@@ -285,7 +285,7 @@ val futures_chain_exn
 
 val option_chain
   :  t
-  -> ?contract_id:Contract_id.t
+  -> ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t
@@ -301,7 +301,7 @@ val option_chain
 
 val option_chain_exn
   :  t
-  -> ?contract_id:Contract_id.t
+  -> ?con_id:Contract_id.t
   -> ?multiplier:int
   -> ?listing_exchange:Exchange.t
   -> ?local_symbol:Symbol.t

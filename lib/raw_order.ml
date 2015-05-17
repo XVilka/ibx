@@ -360,7 +360,7 @@ type t =
     reference_price_type : Reference_price_type.t option;
     delta_neutral_order_type : Type.t option;
     delta_neutral_aux_price : Price.t option;
-    delta_neutral_contract_id : Contract.Id.t option;
+    delta_neutral_contract_id : Contract_id.t option;
     delta_neutral_settling_firm : string option;
     delta_neutral_clearing_account : string option;
     delta_neutral_clearing_intent : string option;
@@ -608,7 +608,7 @@ let ( = ) t1 t2 : bool =
     ~reference_price_type:(use (=))
     ~delta_neutral_order_type:(use (=))
     ~delta_neutral_aux_price:(use (Option.equal Price.(=.)))
-    ~delta_neutral_contract_id:(use (Option.equal Contract.Id.(=)))
+    ~delta_neutral_contract_id:(use (Option.equal Contract_id.(=)))
     ~delta_neutral_settling_firm:(use (=))
     ~delta_neutral_clearing_account:(use (=))
     ~delta_neutral_clearing_intent:(use (=))

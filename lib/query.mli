@@ -151,7 +151,7 @@ module Contract_details : sig
   include Query_intf.S with type t := t
 
   val create
-    :  ?contract_id:Contract_id.t
+    :  ?con_id:Contract_id.t
     -> ?multiplier:int
     -> ?listing_exchange:Exchange.t
     -> ?local_symbol:Symbol.t

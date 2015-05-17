@@ -464,12 +464,12 @@ module Contract_details = struct
       | `CUSIP x -> (Some `CUSIP, Some x)
       | `SEDOL x -> (Some `SEDOL, Some x)
 
-  let create ?contract_id ?multiplier ?listing_exchange ?local_symbol
-      ?sec_id ?include_expired ?exchange ?option_right ?expiry ?strike
-      ~sec_type ~currency symbol =
+  let create ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
+      ?include_expired ?exchange ?option_right ?expiry ?strike ~sec_type
+      ~currency symbol =
     let sec_id_type, sec_id = split_sec_id sec_id in
     Raw_contract.create
-      ?id:contract_id
+      ?con_id
       ?multiplier
       ?listing_exchange
       ?local_symbol

@@ -32,6 +32,7 @@ Library ibx
                   Client_id,
                   Config,
                   Contract,
+                  Contract_id,
                   Currency,
                   Exchange,
                   Execution_id,

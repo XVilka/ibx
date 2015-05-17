@@ -477,12 +477,12 @@ let filter_executions_exn ?time t ~contract ~order_action =
    | Contract details                                                      |
    +-----------------------------------------------------------------------+ *)
 
-let contract_details t ?contract_id ?multiplier ?listing_exchange ?local_symbol
+let contract_details t ?con_id ?multiplier ?listing_exchange ?local_symbol
     ?sec_id ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
     ~sec_type symbol =
   with_connection t ~f:(fun con ->
     let q = Query.Contract_details.create
-      ?contract_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
+      ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
       ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
       ~sec_type symbol
     in
@@ -497,13 +497,12 @@ let contract_details t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     )
   )
 
-let contract_details_exn t ?contract_id ?multiplier ?listing_exchange
-    ?local_symbol ?sec_id ?include_expired ?exchange ?option_right ?expiry
-    ?strike ~currency ~sec_type symbol =
+let contract_details_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
+    ?sec_id ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
+    ~sec_type symbol =
   contract_details t
-    ?contract_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-    ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
-    ~sec_type symbol >>| function
+    ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
+    ?exchange ?option_right ?expiry ?strike ~currency ~sec_type symbol >>| function
     | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
@@ -514,10 +513,10 @@ let sort_by_expiry chain =
     Date.compare d1 d2
   )
 
-let futures_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
-    ?sec_id ?include_expired ?exchange ~currency symbol =
+let futures_chain t ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
+    ?include_expired ?exchange ~currency symbol =
   contract_details t
-    ?contract_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
+    ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
     ?include_expired ?exchange ~currency ~sec_type:`Futures symbol
   >>= function
   | Error _ as e ->
@@ -534,11 +533,11 @@ let futures_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     | Ok _ as x -> x
     | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
 
-let futures_chain_exn t ?contract_id ?multiplier ?listing_exchange ?local_symbol
+let futures_chain_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
     ?sec_id ?include_expired ?exchange ~currency symbol =
   futures_chain t
-    ?contract_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-    ?include_expired ?exchange ~currency symbol >>| Or_error.ok_exn
+    ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
+    ?exchange ~currency symbol >>| Or_error.ok_exn
 
 let group_by_expiry cs =
   List.group cs ~break:(fun c1 c2 ->
@@ -554,13 +553,11 @@ let sort_by_strike cs =
     Price.compare s1 s2
   )
 
-let option_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
-    ?sec_id ?include_expired ?exchange ?expiry ?strike ~option_right ~currency
-    symbol =
+let option_chain t ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
+    ?include_expired ?exchange ?expiry ?strike ~option_right ~currency symbol =
   contract_details t
-    ?contract_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-    ?include_expired ?exchange ?expiry ?strike ~option_right ~currency
-    ~sec_type:`Option symbol
+    ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
+    ?exchange ?expiry ?strike ~option_right ~currency ~sec_type:`Option symbol
   >>= function
   | Error _ as e ->
     return e
@@ -577,13 +574,12 @@ let option_chain t ?contract_id ?multiplier ?listing_exchange ?local_symbol
     | Ok _ as x -> x
     | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
 
-let option_chain_exn t ?contract_id ?multiplier ?listing_exchange ?local_symbol
+let option_chain_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
     ?sec_id ?include_expired ?exchange ?expiry ?strike ~option_right ~currency
     symbol =
   option_chain t
-    ?contract_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-    ?include_expired ?exchange ?expiry ?strike ~option_right ~currency symbol
-    >>| Or_error.ok_exn
+    ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
+    ?exchange ?expiry ?strike ~option_right ~currency symbol >>| Or_error.ok_exn
 
 
 (* +-----------------------------------------------------------------------+

@@ -1,9 +1,10 @@
 # OASIS_START
-# DO NOT EDIT (digest: 5b83da208597b5b5fc1b3545f347a2c1)
+# DO NOT EDIT (digest: 0e8fcd8f84cb44c73601edf83aeb29bc)
 Account_code
 Client_id
 Config
 Contract
+Contract_id
 Currency
 Exchange
 Execution_id

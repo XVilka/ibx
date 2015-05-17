@@ -949,8 +949,8 @@ module Contract_data = struct
           ~name:(field_name Fields.market_name)
         ++ value (required string)
           ~name:(field_name Fields.trading_class)
-        ++ value (optional Raw_contract.Id.val_type)
-          ~name:(field_name Raw_contract.Fields.contract_id)
+        ++ value (optional Contract_id.val_type)
+          ~name:(field_name Raw_contract.Fields.con_id)
         ++ value (required float)
           ~name:(field_name Fields.min_tick)
         ++ value (optional int)
@@ -982,13 +982,13 @@ module Contract_data = struct
         ++ value (required string)
           ~name:(field_name Fields.liquid_hours))
       (fun symbol sec_type expiry strike option_right exchange currency
-        local_symbol market_name trading_class contract_id min_tick multiplier
+        local_symbol market_name trading_class con_id min_tick multiplier
         order_types valid_exchanges price_magnifier underlying_id long_name
         listing_exchange contract_month industry category subcategory
         time_zone trading_hours liquid_hours ->
           { contract =
               { Raw_contract.
-                contract_id;
+                con_id;
                 symbol;
                 sec_type;
                 expiry;
@@ -1053,7 +1053,7 @@ module Contract_data = struct
               (* trading class *)
               ++ value (required string)
               (* contract id *)
-              ++ value (optional Raw_contract.Id.val_type)
+              ++ value (optional Contract_id.val_type)
               (* min tick *)
               ++ value (required float)
               (* multiplier *)
@@ -1096,7 +1096,7 @@ module Contract_data = struct
               $ t.contract.Raw_contract.local_symbol
               $ t.market_name
               $ t.trading_class
-              $ t.contract.Raw_contract.contract_id
+              $ t.contract.Raw_contract.con_id
               $ t.min_tick
               $ t.contract.Raw_contract.multiplier
               $ (String.concat t.order_types ~sep:",")
