@@ -23,11 +23,6 @@
 open Core.Std
 open Tws_prot
 
-module Id = struct
-  include Unique_id.Int63 (struct end)
-  let val_type = Val_type.create to_string of_string
-end
-
 module Security_id = struct
   type t = string with sexp
   let tws_of_t = String.to_string
