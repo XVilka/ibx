@@ -807,7 +807,7 @@ module TAQ = struct
       | Error _ as e -> e
       | Ok (ticks, id) ->
         let taq_data = Pipe.init (fun w ->
-          Pipe.fold ticks ~init:(Trade.empty, Quote.empty)
+          Deferred.ignore (Pipe.fold ticks ~init:(Trade.empty, Quote.empty)
             ~f:(fun ((trade, quote) as taq) tick ->
               match tick with
               | Error _ as e ->
@@ -850,7 +850,7 @@ module TAQ = struct
                 | T.Last | T.Volume ->
                   taq
                 )
-            ) |> Deferred.ignore)
+            ) : (Trade.t * Quote.t) Deferred.t))
         in
         Ok (taq_data, id)
     )
