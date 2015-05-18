@@ -22,11 +22,6 @@
 
 open Core.Std
 
-include struct
-  open Raw_contract
-  module Option_right = Option_right
-end
-
 module Security_id = struct
   module T = struct
     type t =

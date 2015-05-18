@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: c51212dc89f56fa500a99ced1269b2a7)
+# DO NOT EDIT (digest: 291d607e8ca7b08d709c9de1b12f85ca)
 lib/Account_code
 lib/Client_id
 lib/Config
@@ -13,6 +13,7 @@ lib/Order
 lib/Order_id
 lib/Pickable
 lib/Price
+lib/Option_right
 lib/Query
 lib/Query_intf
 lib/Raw_contract

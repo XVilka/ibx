@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 16832f4ce3257226b14340fa72347d75)
+# DO NOT EDIT (digest: 974cafd65dbf3250e437c5e0fc2f34d7)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -29,6 +29,7 @@ true: annot, bin_annot
 "lib/order_id.cmx": for-pack(Ibx)
 "lib/pickable.cmx": for-pack(Ibx)
 "lib/price.cmx": for-pack(Ibx)
+"lib/option_right.cmx": for-pack(Ibx)
 "lib/query.cmx": for-pack(Ibx)
 "lib/query_intf.cmx": for-pack(Ibx)
 "lib/raw_contract.cmx": for-pack(Ibx)

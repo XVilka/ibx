@@ -22,11 +22,6 @@
 
 open Core.Std
 
-module Option_right : sig
-  type t = [ `Call | `Put ] with sexp
-  include Stringable.S with type t := t
-end
-
 module Security_id : sig
   type t =
   [ `ISIN  of string

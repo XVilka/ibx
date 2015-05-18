@@ -54,30 +54,6 @@ module Security_id = struct
   end
 end
 
-module Option_right = struct
-  type t = [ `Call | `Put ] with sexp
-
-  let tws_of_t = function
-    | `Call -> "C"
-    | `Put  -> "P"
-
-  let t_of_tws = function
-    | "C" -> `Call
-    | "P" -> `Put
-    | s -> invalid_argf "Option_right.t_of_tws: %S" s ()
-
-  let to_string = function
-    | `Call -> "Call"
-    | `Put -> "Put"
-
-  let of_string = function
-    | "Call" -> `Call
-    | "Put" -> `Put
-    | s -> invalid_argf "Option_right.of_string: %S" s ()
-
-  let val_type = Val_type.create tws_of_t t_of_tws
-end
-
 type t =
   { con_id : Contract_id.t option;
     symbol : Symbol.t;

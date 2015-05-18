@@ -30,7 +30,7 @@ type t =
     sec_type : string;
     expiry : Date.t option;
     strike : Price.t option;
-    option_right : Raw_contract.Option_right.t option;
+    option_right : Option_right.t option;
     multiplier : int option;
     exchange : Exchange.t;
     listing_exchange : Exchange.t option;
@@ -287,7 +287,7 @@ let pickler =
           ~sec_type:(fields_value (required string))
           ~expiry:(fields_value (optional date))
           ~strike:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
-          ~option_right:(fields_value (optional Raw_contract.Option_right.val_type))
+          ~option_right:(fields_value (optional Option_right.val_type))
           ~multiplier:(fields_value (optional int))
           ~exchange:(fields_value (required Exchange.val_type))
           ~listing_exchange:(fields_value (optional Exchange.val_type))
@@ -451,7 +451,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type ~none_on_default:"0.0"))
-        ~option_right:(fields_value (optional Raw_contract.Option_right.val_type))
+        ~option_right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value (optional Exchange.val_type))
