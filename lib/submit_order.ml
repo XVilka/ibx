@@ -36,8 +36,8 @@ type t =
     listing_exchange : Exchange.t option;
     currency : Currency.t;
     local_symbol : Symbol.t option;
-    sec_id_type : Raw_contract.Security_id.Type.t option;
-    sec_id : Raw_contract.Security_id.t option;
+    sec_id_type : Security_id.Type.t option;
+    sec_id : Security_id.Id.t option;
     (* ====================== order fields ====================== *)
     order_action : string;
     quantity : Volume.t;
@@ -293,8 +293,8 @@ let pickler =
           ~listing_exchange:(fields_value (optional Exchange.val_type))
           ~currency:(fields_value (required Currency.val_type))
           ~local_symbol:(fields_value (optional Symbol.val_type))
-          ~sec_id_type:(fields_value (optional Raw_contract.Security_id.Type.val_type))
-          ~sec_id:(fields_value (optional Raw_contract.Security_id.val_type))
+          ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
+          ~sec_id:(fields_value (optional Security_id.Id.val_type))
           ~order_action:(fields_value (required string))
           ~quantity:(fields_value (required Volume.val_type))
           ~order_kind:(fields_value (required string))
@@ -457,8 +457,8 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~listing_exchange:(fields_value (optional Exchange.val_type))
         ~currency:(fields_value (required Currency.val_type))
         ~local_symbol:(fields_value (optional Symbol.val_type))
-        ~sec_id_type:(fields_value (optional Raw_contract.Security_id.Type.val_type))
-        ~sec_id:(fields_value (optional Raw_contract.Security_id.val_type))
+        ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
+        ~sec_id:(fields_value (optional Security_id.Id.val_type))
         ~order_action:(fields_value (required string))
         ~quantity:(fields_value (required Volume.val_type))
         ~order_kind:(fields_value (required string))

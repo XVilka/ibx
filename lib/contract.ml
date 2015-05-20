@@ -22,19 +22,6 @@
 
 open Core.Std
 
-module Security_id = struct
-  module T = struct
-    type t =
-    [ `ISIN  of string
-    | `RIC   of string
-    | `CUSIP of string
-    | `SEDOL of string
-    ] with sexp
-  end
-  include T
-  include Sexpable.To_stringable (T)
-end
-
 type 'a t = Raw_contract.t constraint 'a = [< Security_type.t] with sexp
 
 let to_raw = Fn.id
@@ -50,12 +37,11 @@ let listed_on t = t.Raw_contract.listing_exchange
 let currency t = t.Raw_contract.currency
 let local_symbol t = t.Raw_contract.local_symbol
 
-let sec_id t =
-  Option.map t.Raw_contract.sec_id_type ~f:(function
-    | `ISIN  -> `ISIN  (Option.value_exn t.Raw_contract.sec_id)
-    | `CUSIP -> `CUSIP (Option.value_exn t.Raw_contract.sec_id)
-    | `SEDOL -> `SEDOL (Option.value_exn t.Raw_contract.sec_id)
-    | `RIC   -> `RIC   (Option.value_exn t.Raw_contract.sec_id))
+let sec_id t = Option.map t.Raw_contract.sec_id_type ~f:(function
+  | `ISIN  -> `ISIN  (Option.value_exn t.Raw_contract.sec_id)
+  | `CUSIP -> `CUSIP (Option.value_exn t.Raw_contract.sec_id)
+  | `SEDOL -> `SEDOL (Option.value_exn t.Raw_contract.sec_id)
+  | `RIC   -> `RIC   (Option.value_exn t.Raw_contract.sec_id))
 
 let option_right t = Option.value_exn t.Raw_contract.option_right
 let strike t = Option.value_exn t.Raw_contract.strike
@@ -86,24 +72,14 @@ let to_string t =
       (Option.value_exn t.Raw_contract.strike |> Price.to_float |> Float.to_int)
       (Option.value_exn t.Raw_contract.option_right |> Option_right.to_string)
 
-let split_sec_id = function
-  | None -> None, None
-  | Some sec_id ->
-    match sec_id with
-    | `ISIN  x -> (Some `ISIN , Some x)
-    | `RIC   x -> (Some `RIC  , Some x)
-    | `CUSIP x -> (Some `CUSIP, Some x)
-    | `SEDOL x -> (Some `SEDOL, Some x)
-
 let stock ?con_id ?listed_on ?local_symbol ?sec_id ?exchange ~currency symbol =
-  let sec_id_type, sec_id = split_sec_id sec_id in
   of_raw (
     Raw_contract.create
       ?con_id
       ?listing_exchange:listed_on
       ?local_symbol
-      ?sec_id_type
-      ?sec_id
+      ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
+      ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
       ?exchange
       ~currency
       ~sec_type:"STK"
@@ -111,14 +87,13 @@ let stock ?con_id ?listed_on ?local_symbol ?sec_id ?exchange ~currency symbol =
   )
 
 let index ?con_id ?local_symbol ?sec_id ?exchange ~currency symbol =
-  let sec_id_type, sec_id = split_sec_id sec_id in
   of_raw (
     Raw_contract.create
       ?con_id
       ?listing_exchange:None
       ?local_symbol
-      ?sec_id_type
-      ?sec_id
+      ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
+      ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
       ?exchange
       ~currency
       ~sec_type:"IND"
@@ -126,16 +101,15 @@ let index ?con_id ?local_symbol ?sec_id ?exchange ~currency symbol =
   )
 
 let futures ?con_id ?multiplier ?local_symbol ?sec_id ?include_expired ?exchange
-    ~currency ~expiry symbol =
-  let sec_id_type, sec_id = split_sec_id sec_id in
+  ~currency ~expiry symbol =
   of_raw (
     Raw_contract.create
       ?con_id
       ?multiplier
       ?listing_exchange:None
       ?local_symbol
-      ?sec_id_type
-      ?sec_id
+      ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
+      ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
       ?include_expired
       ?exchange
       ~currency
@@ -146,15 +120,14 @@ let futures ?con_id ?multiplier ?local_symbol ?sec_id ?include_expired ?exchange
 
 let option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
     ~option_right ~expiry ~strike symbol =
-  let sec_id_type, sec_id = split_sec_id sec_id in
   of_raw (
     Raw_contract.create
       ?con_id
       ?multiplier
       ?listing_exchange:None
       ?local_symbol
-      ?sec_id_type
-      ?sec_id
+      ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
+      ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
       ?exchange
       ~currency
       ~sec_type:"OPT"
@@ -166,15 +139,14 @@ let option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
 
 let futures_option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
     ~option_right ~expiry ~strike symbol =
-  let sec_id_type, sec_id = split_sec_id sec_id in
   of_raw (
     Raw_contract.create
       ?con_id
       ?multiplier
       ?listing_exchange:None
       ?local_symbol
-      ?sec_id_type
-      ?sec_id
+      ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
+      ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
       ?exchange
       ~currency
       ~sec_type:"FOP"
@@ -185,14 +157,13 @@ let futures_option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
   )
 
 let forex ?con_id ?local_symbol ?sec_id ?(exchange=`IDEALPRO) ~currency symbol =
-  let sec_id_type, sec_id = split_sec_id sec_id in
   of_raw (
     Raw_contract.create
       ?con_id
       ?listing_exchange:None
       ?local_symbol
-      ?sec_id_type
-      ?sec_id
+      ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
+      ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
       ~exchange
       ~currency
       ~sec_type:"CASH"

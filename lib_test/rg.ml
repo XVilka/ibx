@@ -52,11 +52,8 @@ module Rg_common : sig
   val symbol_g : Symbol.t gen
   val exchange_g : Exchange.t gen
   val expiry_g : Date.t gen
-  val option_right_g : [ `Call | `Put ] gen
-  val security_id_g :  [ `ISIN  of string
-                       | `RIC   of string
-                       | `CUSIP of string
-                       | `SEDOL of string ] gen
+  val option_right_g : Option_right.t gen
+  val security_id_g : Security_id.t gen
   val security_type_g : Security_type.t gen
 
   val option_g : [ `Option ] Contract.t gen
@@ -242,10 +239,10 @@ end = struct
   ] ()
 
   let security_id_g () = oneof [
-    always (`ISIN  (sg ()));
-    always (`CUSIP (sg ()));
-    always (`SEDOL (sg ()));
-    always (`RIC   (sg ()));
+    always (Security_id.(isin  (sg () |> Id.of_string)));
+    always (Security_id.(ric   (sg () |> Id.of_string)));
+    always (Security_id.(cusip (sg () |> Id.of_string)));
+    always (Security_id.(sedol (sg () |> Id.of_string)));
   ] ()
 
   let security_type_g () =

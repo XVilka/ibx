@@ -23,32 +23,6 @@
 open Core.Std
 open Tws_prot
 
-module Security_id = struct
-  type t = string with sexp
-  let tws_of_t = String.to_string
-  let t_of_tws = String.of_string
-  let val_type = Val_type.create tws_of_t t_of_tws
-
-  module Type = struct
-    type t = [ `ISIN | `CUSIP | `SEDOL | `RIC ] with sexp
-
-    let tws_of_t = function
-      | `ISIN  -> "ISIN"
-      | `CUSIP -> "CUSIP"
-      | `SEDOL -> "SEDOL"
-      | `RIC   -> "RIC"
-
-    let t_of_tws = function
-      | "ISIN"  -> `ISIN
-      | "CUSIP" -> `CUSIP
-      | "SEDOL" -> `SEDOL
-      | "RIC"   -> `RIC
-      | s -> invalid_argf "Security_id.Type.t_of_tws: %S" s ()
-
-    let val_type = Val_type.create tws_of_t t_of_tws
-  end
-end
-
 type t =
   { con_id : Contract_id.t option;
     symbol : Symbol.t;
@@ -63,7 +37,7 @@ type t =
     local_symbol : Symbol.t option;
     include_expired : bool;
     sec_id_type : Security_id.Type.t option;
-    sec_id : Security_id.t option;
+    sec_id : Security_id.Id.t option;
     combo_legs : int;
   }
 with sexp, fields
@@ -192,7 +166,7 @@ module Pickler_specs = struct
         ~local_symbol:(fields_value (optional Symbol.val_type))
         ~include_expired:(fields_value (required bool))
         ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
-        ~sec_id:(fields_value (optional Security_id.val_type))
+        ~sec_id:(fields_value (optional Security_id.Id.val_type))
         ~combo_legs:(fields_value skipped))
     |> wrap_contract_spec
 
@@ -447,7 +421,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.include_expired)
       ++ value (optional Security_id.Type.val_type)
         ~name:(field_name Fields.sec_id_type)
-      ++ value (optional Security_id.val_type)
+      ++ value (optional Security_id.Id.val_type)
         ~name:(field_name Fields.sec_id))
 
   let market_depth_query () =

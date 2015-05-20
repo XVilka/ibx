@@ -455,26 +455,16 @@ module Contract_details = struct
 
   let create ~contract = Contract.to_raw contract
 
-  let split_sec_id = function
-    | None -> None, None
-    | Some sec_id ->
-      match sec_id with
-      | `ISIN  x -> (Some `ISIN , Some x)
-      | `RIC   x -> (Some `RIC  , Some x)
-      | `CUSIP x -> (Some `CUSIP, Some x)
-      | `SEDOL x -> (Some `SEDOL, Some x)
-
   let create ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
       ?include_expired ?exchange ?option_right ?expiry ?strike ~sec_type
       ~currency symbol =
-    let sec_id_type, sec_id = split_sec_id sec_id in
     Raw_contract.create
       ?con_id
       ?multiplier
       ?listing_exchange
       ?local_symbol
-      ?sec_id_type
-      ?sec_id
+      ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
+      ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
       ?exchange
       ?expiry
       ?strike

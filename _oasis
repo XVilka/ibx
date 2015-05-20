@@ -51,6 +51,7 @@ Library ibx
                   Recv_tag,
                   Response,
                   Response_intf,
+                  Security_id,
                   Security_type,
                   Send_tag,
                   Std,
