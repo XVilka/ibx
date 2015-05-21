@@ -439,7 +439,7 @@ module Book_update : sig
     -> t
 end
 
-(** {1 Historical data} *)
+(** {1 History} *)
 (*****************************************************************************)
 
 module Historical_bar : sig
