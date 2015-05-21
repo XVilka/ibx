@@ -149,11 +149,11 @@ let suite = "Client" >::: [
     )
   );
 
-  "positions" >:: (fun () ->
+  "portfolio" >:: (fun () ->
     with_tws_client (fun tws ->
       let module R = Response.Position in
       let gen_positions = Lazy.force Gen.positions in
-      Tws.positions_exn tws
+      Tws.portfolio_exn tws
       >>= fun reader ->
       Pipe.read_all reader
       >>| fun result ->

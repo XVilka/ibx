@@ -749,7 +749,7 @@ end
 module Position = struct
   type t =
     { contract : Raw_contract.t;
-      volume : Volume.t;
+      size : Volume.t;
       market_price : Price.t;
       market_value : Price.t;
       average_cost : Price.t;
@@ -758,10 +758,10 @@ module Position = struct
       account_code : Account_code.t;
     } with sexp, fields
 
-  let create ~contract ~volume ~market_price ~market_value ~average_cost
+  let create ~contract ~size ~market_price ~market_value ~average_cost
       ~unrealized_pnl ~realized_pnl ~account_code =
     { contract = Contract.to_raw contract;
-      volume;
+      size;
       market_price;
       market_value;
       average_cost;
@@ -775,13 +775,13 @@ module Position = struct
   let total_pnl t = Price.(t.unrealized_pnl + t.realized_pnl)
 
   let return t =
-    let volume = Volume.to_float t.volume in
+    let size = Volume.to_float t.size in
     let market_value = (t.market_value :> float) in
     let average_cost = (t.average_cost :> float) in
-    Float.(match sign volume with
+    Float.(match sign size with
     | Sign.Zero -> zero
-    | Sign.Pos  ->     (market_value / (average_cost * volume) - one)
-    | Sign.Neg  -> neg (market_value / (average_cost * volume) - one)
+    | Sign.Pos  ->     (market_value / (average_cost * size) - one)
+    | Sign.Neg  -> neg (market_value / (average_cost * size) - one)
     )
   ;;
 
@@ -791,7 +791,7 @@ module Position = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~volume:(use Volume.(=))
+      ~size:(use Volume.(=))
       ~market_price:(use Price.(=.))
       ~market_value:(use Price.(=.))
       ~average_cost:(use Price.(=.))
@@ -808,17 +808,17 @@ module Position = struct
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-          ~volume:(fields_value (required Volume.val_type))
+          ~size:(fields_value (required Volume.val_type))
           ~market_price:(fields_value (required Price.val_type))
           ~market_value:(fields_value (required Price.val_type))
           ~average_cost:(fields_value (required Price.val_type))
           ~unrealized_pnl:(fields_value (required Price.val_type))
           ~realized_pnl:(fields_value (required Price.val_type))
           ~account_code:(fields_value (required Account_code.val_type)))
-      (fun contract volume market_price market_value average_cost
+      (fun contract size market_price market_value average_cost
         unrealized_pnl realized_pnl account_code ->
-          { contract = contract;
-            volume;
+          { contract;
+            size;
             market_price;
             market_value;
             average_cost;
@@ -837,7 +837,7 @@ module Position = struct
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-            ~volume:(fields_value (required Volume.val_type))
+            ~size:(fields_value (required Volume.val_type))
             ~market_price:(fields_value (required Price.val_type))
             ~market_value:(fields_value (required Price.val_type))
             ~average_cost:(fields_value (required Price.val_type))
@@ -847,7 +847,7 @@ module Position = struct
           (fun t ->
             `Args
               $ t.contract
-              $ t.volume
+              $ t.size
               $ t.market_price
               $ t.market_value
               $ t.average_cost

@@ -118,7 +118,7 @@ let req_account_updates = Ib.Streaming_request_without_id.create
     U.map Account_code.unpickler ~f:(fun x -> `Update_end x);
   ] ()
 
-let req_positions = Ib.Streaming_request_without_id.create
+let req_portfolio = Ib.Streaming_request_without_id.create
   ~send_header:(Ib.Header.create ~tag:S.Account_data ~version:2)
   ~recv_header:[
     Ib.Header.create ~tag:R.Position ~version:7;

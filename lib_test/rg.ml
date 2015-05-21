@@ -997,7 +997,7 @@ end = struct
     in
     Response.Position.create
       ~contract:(contract_g ())
-      ~volume:(volume_g ())
+      ~size:(volume_g ())
       ~market_price:(price_g ())
       ~market_value:(price_g ())
       ~average_cost:(price_g ())

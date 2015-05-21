@@ -66,7 +66,7 @@ val req_account_updates :
                             | `Update_end of Account_code.t
                             ]) Ib.Streaming_request_without_id.t
 
-val req_positions :
+val req_portfolio :
   (Query.Positions.t, [ `Update of Response.Position.t
                       | `Update_end of Account_code.t
                       ]) Ib.Streaming_request_without_id.t

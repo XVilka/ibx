@@ -439,8 +439,8 @@ let account_updates t =
   updates_gen t Tws_reqs.req_account_updates Query.Account_updates.create
 let account_updates_exn t = account_updates t >>| Or_error.ok_exn
 
-let positions t = updates_gen t Tws_reqs.req_positions Query.Positions.create
-let positions_exn t = positions t >>| Or_error.ok_exn
+let portfolio t = updates_gen t Tws_reqs.req_portfolio Query.Positions.create
+let portfolio_exn t = portfolio t >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |

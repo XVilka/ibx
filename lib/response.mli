@@ -260,7 +260,7 @@ end
 module Position : sig
   type t = private
     { contract : Raw_contract.t;
-      volume : Volume.t;
+      size : Volume.t;
       market_price : Price.t;
       market_value : Price.t;
       average_cost : Price.t;
@@ -273,7 +273,7 @@ module Position : sig
 
   val create
     :  contract:[< Security_type.t ] Contract.t
-    -> volume:Volume.t
+    -> size:Volume.t
     -> market_price:Price.t
     -> market_value:Price.t
     -> average_cost:Price.t

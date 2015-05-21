@@ -15,7 +15,7 @@ let show_portfolio positions =
         sprintf "%s" (P.contract pos |> Contract.exchange |> Exchange.to_string));
     Column.create "Position" ~align:Align.right
       (fun pos ->
-        sprintf "%d" (P.volume pos :> int));
+        sprintf "%d" (P.size pos :> int));
     Column.create "Currency" ~align:Align.center
       (fun pos ->
         sprintf "%s" (P.contract pos |> Contract.currency |> Currency.to_string));
@@ -43,7 +43,7 @@ let () =
     Command.Spec.(Common.common_args ())
     (fun do_log host port client_id () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
-        Tws.positions_exn tws
+        Tws.portfolio_exn tws
         >>= fun result ->
         Pipe.to_list result
         >>| fun positions ->
