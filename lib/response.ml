@@ -1443,7 +1443,7 @@ end
    | History                                                               |
    +-----------------------------------------------------------------------+ *)
 
-module Historical_bar = struct
+module Bar = struct
   type t =
     { stamp : Time.t;
       op : Price.t;
@@ -1532,7 +1532,7 @@ module History = struct
     { start : Time.t;
       stop : Time.t;
       num_bars : int;
-      bars : Historical_bar.t list;
+      bars : Bar.t list;
     } with sexp, fields
 
   let create ~start ~stop ~bars =
@@ -1550,7 +1550,7 @@ module History = struct
       ~start:(use (=))
       ~stop:(use (=))
       ~num_bars:(use (=))
-      ~bars:(use (List.for_all2_exn ~f:Historical_bar.(=)))
+      ~bars:(use (List.for_all2_exn ~f:Bar.(=)))
 
   let unpickler =
     Unpickler.create ~name:"Response.History"
@@ -1569,7 +1569,7 @@ module History = struct
             Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
             |> Queue.of_array
           in
-          Unpickler.run_exn Historical_bar.unpickler bar_msg)
+          Unpickler.run_exn Bar.unpickler bar_msg)
         in
         { start;
           stop;
@@ -1588,7 +1588,7 @@ module History = struct
             ~num_bars:(fields_value (required int))
             ~bars:(fields_value tws_data))
           (fun t ->
-            let pickler = Only_in_test.force Historical_bar.pickler in
+            let pickler = Only_in_test.force Bar.pickler in
             let bars_msg =
               List.map t.bars ~f:(fun bar -> Pickler.run pickler bar)
               |> String.concat
@@ -1611,7 +1611,6 @@ module History = struct
   end
 
   let unpack_bars t =
-    let module Bar = Historical_bar in
     let stamps = Array.create ~len:t.num_bars Time.epoch in
     let op = Array.create ~len:t.num_bars Float.nan in
     let hi = Array.create ~len:t.num_bars Float.nan in

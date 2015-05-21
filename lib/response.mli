@@ -442,7 +442,7 @@ end
 (** {1 History} *)
 (*****************************************************************************)
 
-module Historical_bar : sig
+module Bar : sig
   type t =
     { stamp : Time.t;
       op : Price.t;
@@ -475,7 +475,7 @@ module History : sig
     { start : Time.t;
       stop : Time.t;
       num_bars : int;
-      bars : Historical_bar.t list;
+      bars : Bar.t list;
     }
   with sexp, fields
   include Response_intf.S with type t := t
@@ -483,7 +483,7 @@ module History : sig
   val create
     :  start:Time.t
     -> stop:Time.t
-    -> bars:Historical_bar.t list
+    -> bars:Bar.t list
     -> t
 
   module Data_frame : sig

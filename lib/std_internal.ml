@@ -21,13 +21,13 @@
 *)
 
 module Account_update  = Response.Account_update
+module Bar             = Response.Bar
 module Book_update     = Response.Book_update
 module Commission      = Response.Commission
 module Contract_data   = Response.Contract_data
 module Contract_id     = Contract_id
 module Execution       = Response.Execution
 module Execution_id    = Execution_id
-module Historical_bar  = Response.Historical_bar
 module History         = Response.History
 module Option_right    = Option_right
 module Order_id        = Order_id

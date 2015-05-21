@@ -40,14 +40,14 @@ let () =
         [ (* Create a candlestick chart series. *)
           Series.candlesticks ~title:"Price"
             (List.map (History.bars history) ~f:(fun bar ->
-              Historical_bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
+              Bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
              :> (Time.t * (float * float * float * float)) list) |> Option.some;
           (* Create a moving average time series of the closing prices. *)
           Option.map period ~f:(fun period ->
             let sma = unstage (Filter.sma ~period) in
             Series.lines_timey ~color:`Green ~title:(sprintf "SMA %d" period)
               (List.map (History.bars history) ~f:(fun bar ->
-                Historical_bar.(stamp bar, sma (cl bar :> float)))));
+                Bar.(stamp bar, sma (cl bar :> float)))));
         ] |> List.filter_map ~f:Fn.id |> Gp.plot_many gp ~title:symbol;
         Gp.close gp
       )
