@@ -228,17 +228,17 @@ let suite = "Client" >::: [
     )
   );
 
-  "historical-data" >:: (fun () ->
+  "history" >:: (fun () ->
     with_tws_client (fun tws ->
-      let module R = Response.Historical_data in
-      let gen_historical_data = Lazy.force Gen.historical_data in
-      Tws.historical_data_exn tws ~contract:(Rg.contract_g ())
-      >>| fun historical_data ->
+      let module R = Response.History in
+      let gen_history = Lazy.force Gen.history in
+      Tws.history_exn tws ~contract:(Rg.contract_g ())
+      >>| fun history ->
       assert_response_equal
         (module R : Response_intf.S with type t = R.t)
-        ~expected:gen_historical_data
-        ~actual:historical_data;
-      Log.Global.sexp ~level:`Debug historical_data R.sexp_of_t
+        ~expected:gen_history
+        ~actual:history;
+      Log.Global.sexp ~level:`Debug history R.sexp_of_t
     )
   );
 

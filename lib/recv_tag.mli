@@ -37,7 +37,7 @@ type t =
 | News_bulletins
 | Managed_accounts
 | Financial_advisor
-| Historical_data
+| History
 | Bond_contract_data
 | Scanner_parameters
 | Scanner_data

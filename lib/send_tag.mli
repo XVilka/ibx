@@ -39,12 +39,12 @@ type t =
 | Managed_accounts
 | Financial_advisor
 | Replace_financial_advisor
-| Historical_data
+| History
 | Exercise_options
 | Scanner_subscription
 | Cancel_scanner_subscription
 | Scanner_parameters
-| Cancel_historical_data
+| Cancel_history
 | Server_time
 | Realtime_bars
 | Cancel_realtime_bars

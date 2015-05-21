@@ -1527,7 +1527,7 @@ module Historical_bar = struct
               $ t.count)))
 end
 
-module Historical_data = struct
+module History = struct
   type t =
     { start : Time.t;
       stop : Time.t;
@@ -1553,7 +1553,7 @@ module Historical_data = struct
       ~bars:(use (List.for_all2_exn ~f:Historical_bar.(=)))
 
   let unpickler =
-    Unpickler.create ~name:"Response.Historical_data"
+    Unpickler.create ~name:"Response.History"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -1578,7 +1578,7 @@ module Historical_data = struct
         })
 
   let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Historical_data"
+    Pickler.create ~name:"Response.History"
       Pickler.Spec.(
         wrap (
           Fields.fold

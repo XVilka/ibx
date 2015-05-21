@@ -26,7 +26,7 @@ val account_updates  : Account_update.t list Lazy.t
 val book_updates     : Book_update.t list Lazy.t
 val contract_details : Contract_data.t list Lazy.t
 val executions       : Execution.t list Lazy.t
-val historical_data  : Historical_data.t Lazy.t
+val history          : History.t Lazy.t
 val market_data      : Market_data.t list Lazy.t
 val order_states     : Order_status.t list Lazy.t
 val positions        : Position.t list Lazy.t

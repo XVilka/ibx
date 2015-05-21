@@ -464,7 +464,7 @@ module Connection : Connection_internal = struct
       | R.News_bulletins -> unimplemented R.News_bulletins
       | R.Managed_accounts -> read ~len:1
       | R.Financial_advisor -> unimplemented R.Financial_advisor
-      | R.Historical_data ->
+      | R.History ->
         begin
           read ~len:3 >>= function
           | `Eof -> return `Eof

@@ -182,7 +182,7 @@ end
 (** {1 Historical data} *)
 (*****************************************************************************)
 
-module Historical_data : sig
+module History : sig
   module Bar_size : sig
     type t =
     [ `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
@@ -205,7 +205,7 @@ module Historical_data : sig
     include Stringable.S with type t := t
   end
 
-  module Show : sig
+  module Tick_type : sig
     type t =
     [ `Trades
     | `Midpoint
@@ -226,8 +226,8 @@ module Historical_data : sig
     -> until:Time.t
     -> bar_size:Bar_size.t
     -> bar_span:Bar_span.t
-    -> use_rth:bool
-    -> show:Show.t
+    -> use_tradehours:bool
+    -> tick_type:Tick_type.t
     -> t
 end
 

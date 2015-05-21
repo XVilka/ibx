@@ -352,9 +352,9 @@ module Q : sig
 
   val market_depth_g : Query.Market_depth.t gen
 
-  (* Historical data *)
+  (* History *)
 
-  val historical_data_g : Query.Historical_data.t gen
+  val history_g : Query.History.t gen
 
   (* Realtime bars *)
 
@@ -589,9 +589,9 @@ end = struct
       ~contract:(contract_g ())
       ~num_rows:(nng ())
 
-  (* =========================== Historical data =========================== *)
+  (* =============================== History =============================== *)
 
-  let historical_data_g () =
+  let history_g () =
     let contract_g () = oneof
       [ always (
         Contract.stock
@@ -650,7 +650,7 @@ end = struct
       always (`Year (1 + nng ()));
     ] ()
     in
-    let show_g () = oneof [
+    let tick_type_g () = oneof [
       always (`Trades);
       always (`Midpoint);
       always (`Bid);
@@ -661,13 +661,13 @@ end = struct
       always (`Option_volume);
     ] ()
     in
-    Query.Historical_data.create
+    Query.History.create
       ~contract:(contract_g ())
       ~until:(tmg ())
       ~bar_size:(bar_size_g ())
       ~bar_span:(bar_span_g ())
-      ~use_rth:(bg ())
-      ~show:(show_g ())
+      ~use_tradehours:(bg ())
+      ~tick_type:(tick_type_g ())
 
   (* =========================== Realtime bars ============================= *)
 
@@ -766,9 +766,9 @@ module R : sig
   val book_update_g  : Response.Book_update.t gen
   val book_updates_g : Response.Book_update.t list gen
 
-  (* Historical data *)
+  (* History *)
 
-  val historical_data_g : Response.Historical_data.t gen
+  val history_g : Response.History.t gen
 
   (* Realtime bars *)
 
@@ -1157,9 +1157,9 @@ end = struct
   let book_updates_g () =
     List.init (1 + Random.int bound) ~f:(fun _ -> book_update_g ())
 
-  (* =========================== Historical data =========================== *)
+  (* ============================== History ================================ *)
 
-  let historical_data_g () =
+  let history_g () =
     let bar_g () =
       Response.Historical_bar.create
         ~stamp:(tmg ())
@@ -1172,7 +1172,7 @@ end = struct
         ~has_gaps:(bg ())
         ~count:(nng ())
     in
-    Response.Historical_data.create
+    Response.History.create
       ~start:(tmg ())
       ~stop:(tmg ())
       ~bars:(List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ()))

@@ -334,10 +334,10 @@ val market_depth_exn
 val cancel_market_depth : t -> Query_id.t -> unit
 
 
-(** {1 Historical data} *)
+(** {1 History} *)
 (******************************************************************************)
 
-val historical_data
+val history
   :  ?bar_size:[
   | `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
   | `One_min | `Two_mins | `Three_mins | `Five_mins | `Fifteen_mins | `Thirty_mins
@@ -351,8 +351,8 @@ val historical_data
   | `Month of int
   | `Year of int
   ] (* defaults to 1 Year *)
-  -> ?use_rth:bool
-  -> ?show:[
+  -> ?use_tradehours:bool
+  -> ?tick_type:[
   | `Trades
   | `Midpoint
   | `Bid
@@ -365,9 +365,9 @@ val historical_data
   -> ?until:Time.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> Historical_data.t Tws_result.t Or_error.t Deferred.t
+  -> History.t Tws_result.t Or_error.t Deferred.t
 
-val historical_data_exn
+val history_exn
   :  ?bar_size:[
   | `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
   | `One_min | `Two_mins | `Three_mins | `Five_mins | `Fifteen_mins | `Thirty_mins
@@ -381,8 +381,8 @@ val historical_data_exn
   | `Month of int
   | `Year of int
   ] (* defaults to 1 Year *)
-  -> ?use_rth:bool
-  -> ?show:[
+  -> ?use_tradehours:bool
+  -> ?tick_type:[
   | `Trades
   | `Midpoint
   | `Bid
@@ -395,7 +395,7 @@ val historical_data_exn
   -> ?until:Time.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> Historical_data.t Deferred.t
+  -> History.t Deferred.t
 
 
 (** {1 Realtime bars} *)

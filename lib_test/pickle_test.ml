@@ -103,11 +103,11 @@ module Query = struct
       let module Q = Query.Market_depth in
       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.market_depth_g);
 
-    (* ========================= Historical data =========================== *)
+    (* ============================= History ============================= *)
 
     (fun () ->
-      let module Q = Query.Historical_data in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.historical_data_g);
+      let module Q = Query.History in
+      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.history_g);
 
     (* ========================== Realtime bars ============================ *)
 
@@ -191,11 +191,11 @@ module Response = struct
       let module R = Response.Book_update in
       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.book_update_g);
 
-    (* ========================= Historical data =========================== *)
+    (* ============================= History =============================== *)
 
     (fun () ->
-      let module R = Response.Historical_data in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.historical_data_g);
+      let module R = Response.History in
+      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.history_g);
 
     (* ========================== Realtime bars ============================ *)
 

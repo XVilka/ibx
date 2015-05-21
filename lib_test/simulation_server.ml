@@ -198,12 +198,12 @@ module Protocol = struct
       | S.Managed_accounts -> unimplemented S.Managed_accounts
       | S.Financial_advisor -> unimplemented S.Financial_advisor
       | S.Replace_financial_advisor -> unimplemented S.Replace_financial_advisor
-      | S.Historical_data -> read ~len:17
+      | S.History -> read ~len:17
       | S.Exercise_options -> unimplemented S.Exercise_options
       | S.Scanner_subscription -> unimplemented S.Scanner_subscription
       | S.Cancel_scanner_subscription -> unimplemented S.Cancel_scanner_subscription
       | S.Scanner_parameters -> unimplemented S.Scanner_parameters
-      | S.Cancel_historical_data -> return (`Ok no_data)
+      | S.Cancel_history -> return (`Ok no_data)
       | S.Server_time -> read ~len:1
       | S.Realtime_bars -> read ~len:13
       | S.Cancel_realtime_bars -> return (`Ok no_data)
@@ -511,19 +511,19 @@ module Message_generator = struct
 
         | S.Scanner_parameters -> []
 
-        (* ======================= Historical data ======================= *)
+        (* =========================== History =========================== *)
 
-        | S.Historical_data ->
-          let pickler = Only_in_test.force Historical_data.pickler in
+        | S.History ->
+          let pickler = Only_in_test.force History.pickler in
           [ E.Server_response {
             Response.
-            tag      = V.Historical_data;
+            tag      = V.History;
             version  = 3;
             query_id = query.Query.id;
-            data     = to_tws pickler (Lazy.force Gen.historical_data) }
+            data     = to_tws pickler (Lazy.force Gen.history) }
           ]
 
-        | S.Cancel_historical_data -> []
+        | S.Cancel_history -> []
 
         (* ======================= Realtime data ========================= *)
 

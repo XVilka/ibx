@@ -85,11 +85,11 @@ val req_executions :
 val req_market_depth :
   (Query.Market_depth.t, Response.Book_update.t) Ib.Streaming_request.t
 
-(** {1 Historical data} *)
+(** {1 History} *)
 (*****************************************************************************)
 
-val req_historical_data :
-  (Query.Historical_data.t, Response.Historical_data.t) Ib.Streaming_request.t
+val req_history :
+  (Query.History.t, Response.History.t) Ib.Streaming_request.t
 
 (** {1 Realtime bars} *)
 (*****************************************************************************)

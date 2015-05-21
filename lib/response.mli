@@ -470,7 +470,7 @@ module Historical_bar : sig
     -> t
 end
 
-module Historical_data : sig
+module History : sig
   type t =
     { start : Time.t;
       stop : Time.t;

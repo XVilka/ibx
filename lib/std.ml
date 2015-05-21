@@ -23,8 +23,8 @@
 include Std_internal
 
 module Account_code   = Account_code
-module Bar_size       = Query.Historical_data.Bar_size
-module Bar_span       = Query.Historical_data.Bar_span
+module Bar_size       = Query.History.Bar_size
+module Bar_span       = Query.History.Bar_span
 module Client_id      = Client_id
 module Close_snapshot = Tws.Close_snapshot
 module Config         = Config

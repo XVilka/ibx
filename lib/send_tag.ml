@@ -42,12 +42,12 @@ type t =
 | Managed_accounts
 | Financial_advisor
 | Replace_financial_advisor
-| Historical_data
+| History
 | Exercise_options
 | Scanner_subscription
 | Cancel_scanner_subscription
 | Scanner_parameters
-| Cancel_historical_data
+| Cancel_history
 | Server_time
 | Realtime_bars
 | Cancel_realtime_bars
@@ -78,12 +78,12 @@ let tws_of_t = function
   | Managed_accounts -> "17"
   | Financial_advisor -> "18"
   | Replace_financial_advisor -> "19"
-  | Historical_data -> "20"
+  | History -> "20"
   | Exercise_options -> "21"
   | Scanner_subscription -> "22"
   | Cancel_scanner_subscription -> "23"
   | Scanner_parameters -> "24"
-  | Cancel_historical_data -> "25"
+  | Cancel_history -> "25"
   | Server_time -> "49"
   | Realtime_bars -> "50"
   | Cancel_realtime_bars -> "51"
@@ -113,12 +113,12 @@ let t_of_tws = function
   | "17" -> Managed_accounts
   | "18" -> Financial_advisor
   | "19" -> Replace_financial_advisor
-  | "20" -> Historical_data
+  | "20" -> History
   | "21" -> Exercise_options
   | "22" -> Scanner_subscription
   | "23" -> Cancel_scanner_subscription
   | "24" -> Scanner_parameters
-  | "25" -> Cancel_historical_data
+  | "25" -> Cancel_history
   | "49" -> Server_time
   | "50" -> Realtime_bars
   | "51" -> Cancel_realtime_bars
@@ -149,12 +149,12 @@ let corresponding_query_has_id = function
   | Managed_accounts -> false
   | Financial_advisor -> false
   | Replace_financial_advisor -> false
-  | Historical_data -> true
+  | History -> true
   | Exercise_options -> true
   | Scanner_subscription -> false
   | Cancel_scanner_subscription -> true
   | Scanner_parameters -> false
-  | Cancel_historical_data -> true
+  | Cancel_history -> true
   | Server_time -> false
   | Realtime_bars -> true
   | Cancel_realtime_bars -> true

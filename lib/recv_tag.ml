@@ -40,7 +40,7 @@ type t =
 | News_bulletins
 | Managed_accounts
 | Financial_advisor
-| Historical_data
+| History
 | Bond_contract_data
 | Scanner_parameters
 | Scanner_data
@@ -77,7 +77,7 @@ let tws_of_t = function
   | News_bulletins -> "14"
   | Managed_accounts -> "15"
   | Financial_advisor -> "16"
-  | Historical_data -> "17"
+  | History -> "17"
   | Bond_contract_data -> "18"
   | Scanner_parameters -> "19"
   | Scanner_data -> "20"
@@ -113,7 +113,7 @@ let t_of_tws = function
   | "14" -> News_bulletins
   | "15" -> Managed_accounts
   | "16" -> Financial_advisor
-  | "17" -> Historical_data
+  | "17" -> History
   | "18" -> Bond_contract_data
   | "19" -> Scanner_parameters
   | "20" -> Scanner_data
@@ -150,7 +150,7 @@ let corresponding_response_has_query_id = function
   | News_bulletins -> false
   | Managed_accounts -> false
   | Financial_advisor -> false
-  | Historical_data -> true
+  | History -> true
   | Bond_contract_data -> true
   | Scanner_parameters -> false
   | Scanner_data -> false

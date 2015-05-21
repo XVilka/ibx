@@ -32,21 +32,21 @@ let () =
     )
     (fun do_log host port client_id currency span size period symbol () ->
       Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
-        Tws.historical_data_exn tws ~bar_span:span ~bar_size:size
-          ~contract:(Contract.stock ~currency (Symbol.of_string symbol))
-        >>| fun hist_data ->
+        let stock = Contract.stock ~currency (Symbol.of_string symbol) in
+        Tws.history_exn tws ~bar_span:span ~bar_size:size ~contract:stock
+        >>| fun history ->
         let gp = Gp.create () in
         Gp.set gp ~use_grid:true;
         [ (* Create a candlestick chart series. *)
           Series.candlesticks ~title:"Price"
-            (List.map (Historical_data.bars hist_data) ~f:(fun bar ->
+            (List.map (History.bars history) ~f:(fun bar ->
               Historical_bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
              :> (Time.t * (float * float * float * float)) list) |> Option.some;
           (* Create a moving average time series of the closing prices. *)
           Option.map period ~f:(fun period ->
             let sma = unstage (Filter.sma ~period) in
             Series.lines_timey ~color:`Green ~title:(sprintf "SMA %d" period)
-              (List.map (Historical_data.bars hist_data) ~f:(fun bar ->
+              (List.map (History.bars history) ~f:(fun bar ->
                 Historical_bar.(stamp bar, sma (cl bar :> float)))));
         ] |> List.filter_map ~f:Fn.id |> Gp.plot_many gp ~title:symbol;
         Gp.close gp

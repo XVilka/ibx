@@ -538,7 +538,7 @@ end
    | Historical data                                                       |
    +-----------------------------------------------------------------------+ *)
 
-module Historical_data = struct
+module History = struct
   module Bar_size = struct
     module T = struct
       type t =
@@ -623,7 +623,7 @@ module Historical_data = struct
     let val_type = Val_type.create tws_of_t t_of_tws
   end
 
-  module Show = struct
+  module Tick_type = struct
     module T = struct
       type t =
       [ `Trades
@@ -668,18 +668,18 @@ module Historical_data = struct
       until : Time.t;
       bar_size : Bar_size.t;
       bar_span : Bar_span.t;
-      use_rth : bool;
-      show : Show.t;
+      use_tradehours : bool;
+      tick_type : Tick_type.t;
       date_format : string;
     } with sexp, fields
 
-  let create ~contract ~until ~bar_size ~bar_span ~use_rth ~show =
+  let create ~contract ~until ~bar_size ~bar_span ~use_tradehours ~tick_type =
     { contract = Contract.to_raw contract;
       until;
       bar_size;
       bar_span;
-      use_rth;
-      show;
+      use_tradehours;
+      tick_type;
       date_format = "1";
     }
 
@@ -692,15 +692,15 @@ module Historical_data = struct
       ~until:(use Time.(=))
       ~bar_size:(use (=))
       ~bar_span:(use (=))
-      ~use_rth:(use (=))
-      ~show:(use (=))
+      ~use_tradehours:(use (=))
+      ~tick_type:(use (=))
       ~date_format:(use (=))
 
   let pickler =
     let contract_spec =
       Raw_contract.Pickler_specs.historical_data_query ()
     in
-    Pickler.create ~name:"Query.Historical_data"
+    Pickler.create ~name:"Query.History"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -709,8 +709,8 @@ module Historical_data = struct
             ~until:(fields_value (required time))
             ~bar_size:(fields_value (required Bar_size.val_type))
             ~bar_span:(fields_value (required Bar_span.val_type))
-            ~use_rth:(fields_value (required bool))
-            ~show:(fields_value (required Show.val_type))
+            ~use_tradehours:(fields_value (required bool))
+            ~tick_type:(fields_value (required Tick_type.val_type))
             ~date_format:(fields_value (required string)))
           (fun t ->
             `Args
@@ -718,15 +718,15 @@ module Historical_data = struct
               $ t.until
               $ t.bar_size
               $ t.bar_span
-              $ t.use_rth
-              $ t.show
+              $ t.use_tradehours
+              $ t.tick_type
               $ t.date_format))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
       Raw_contract.Unpickler_specs.historical_data_query ()
     in
-    Unpickler.create ~name:"Query.Historical_data"
+    Unpickler.create ~name:"Query.History"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -734,16 +734,16 @@ module Historical_data = struct
           ~until:(fields_value (required time))
           ~bar_size:(fields_value (required Bar_size.val_type))
           ~bar_span:(fields_value (required Bar_span.val_type))
-          ~use_rth:(fields_value (required bool))
-          ~show:(fields_value (required Show.val_type))
+          ~use_tradehours:(fields_value (required bool))
+          ~tick_type:(fields_value (required Tick_type.val_type))
           ~date_format:(fields_value (required string)))
-      (fun contract until bar_size bar_span use_rth show date_format ->
+      (fun contract until bar_size bar_span use_tradehours tick_type date_format ->
         { contract;
           until;
           bar_size;
           bar_span;
-          use_rth;
-          show;
+          use_tradehours;
+          tick_type;
           date_format;
         }))
 end

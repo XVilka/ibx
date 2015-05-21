@@ -159,14 +159,14 @@ let req_market_depth = Ib.Streaming_request.create
   ~tws_response:[Response.Book_update.unpickler]
   ()
 
-(* ====================== Historical data ========================= *)
+(* =========================== History ============================ *)
 
-let req_historical_data = Ib.Streaming_request.create
-  ~send_header:(Ib.Header.create ~tag:S.Historical_data ~version:4)
-  ~canc_header:(Ib.Header.create ~tag:S.Cancel_historical_data ~version:1)
-  ~recv_header:[Ib.Header.create ~tag:R.Historical_data ~version:3]
-  ~tws_query:Query.Historical_data.pickler
-  ~tws_response:[Response.Historical_data.unpickler]
+let req_history = Ib.Streaming_request.create
+  ~send_header:(Ib.Header.create ~tag:S.History ~version:4)
+  ~canc_header:(Ib.Header.create ~tag:S.Cancel_history ~version:1)
+  ~recv_header:[Ib.Header.create ~tag:R.History ~version:3]
+  ~tws_query:Query.History.pickler
+  ~tws_response:[Response.History.unpickler]
   ()
 
 (* ======================== Realtime bars ========================= *)

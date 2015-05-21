@@ -603,30 +603,30 @@ let cancel_market_depth t id =
   )
 
 (* +-----------------------------------------------------------------------+
-   | Historical data                                                       |
+   | History                                                               |
    +-----------------------------------------------------------------------+ *)
 
-let historical_data
+let history
     ?(bar_size = `One_day)
     ?(bar_span = `Year 1)
-    ?(use_rth = true)
-    ?(show = `Trades)
+    ?(use_tradehours = true)
+    ?(tick_type = `Trades)
     ?(until = Time.now ())
     t ~contract =
   with_connection t ~f:(fun con ->
-    let q = Query.Historical_data.create ~contract ~until
-      ~bar_size ~bar_span ~use_rth ~show in
-    dispatch_and_cancel Tws_reqs.req_historical_data con q
+    let q = Query.History.create
+      ~contract ~until ~bar_size ~bar_span ~use_tradehours ~tick_type in
+    dispatch_and_cancel Tws_reqs.req_history con q
   )
 
-let historical_data_exn
+let history_exn
     ?(bar_size = `One_day)
     ?(bar_span = `Year 1)
-    ?(use_rth = true)
-    ?(show = `Trades)
+    ?(use_tradehours = true)
+    ?(tick_type = `Trades)
     ?(until = Time.now ())
     t ~contract =
-  historical_data t ~bar_size ~bar_span ~use_rth ~show ~until ~contract
+  history t ~bar_size ~bar_span ~use_tradehours ~tick_type ~until ~contract
   >>| function
   | Error e -> Error.raise e
   | Ok result -> Tws_result.ok_exn result
