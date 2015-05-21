@@ -637,16 +637,17 @@ let history_exn
 
 let realtime_bars
     ?(bar_size = `Five_secs)
-    ?(show = `Trades)
-    ?(use_rth = true)
+    ?(tick_type = `Trades)
+    ?(use_tradehours = true)
     t ~contract =
   with_connection t ~f:(fun con ->
-    let q = Query.Realtime_bars.create ~contract ~bar_size ~show ~use_rth in
+    let q = Query.Realtime_bars.create
+      ~contract ~bar_size ~tick_type ~use_tradehours in
     Ib.Streaming_request.dispatch Tws_reqs.req_realtime_bars con q
   )
 
-let realtime_bars_exn ?bar_size ?show ?use_rth t ~contract =
-  realtime_bars ?bar_size ?show ?use_rth t ~contract >>| function
+let realtime_bars_exn ?bar_size ?tick_type ?use_tradehours t ~contract =
+  realtime_bars ?bar_size ?tick_type ?use_tradehours t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 

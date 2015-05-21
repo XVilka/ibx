@@ -707,7 +707,7 @@ end = struct
           (symbol_g ()))
       ] ()
     in
-    let show_g () = oneof [
+    let tick_type_g () = oneof [
       always (`Trades);
       always (`Midpoint);
       always (`Bid);
@@ -717,8 +717,8 @@ end = struct
     Query.Realtime_bars.create
       ~contract:(contract_g ())
       ~bar_size:`Five_secs
-      ~show:(show_g ())
-      ~use_rth:(bg ())
+      ~tick_type:(tick_type_g ())
+      ~use_tradehours:(bg ())
 end
 
 module R : sig

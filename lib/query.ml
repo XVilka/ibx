@@ -766,7 +766,7 @@ module Realtime_bars = struct
     let val_type = Val_type.create tws_of_t t_of_tws
   end
 
-  module Show = struct
+  module Tick_type = struct
     type t = [ `Trades | `Midpoint | `Bid | `Ask ] with sexp
 
     let tws_of_t = function
@@ -788,15 +788,15 @@ module Realtime_bars = struct
   type t =
     { contract : Raw_contract.t;
       bar_size : Bar_size.t;
-      show : Show.t;
-      use_rth : bool;
+      tick_type : Tick_type.t;
+      use_tradehours : bool;
     } with sexp, fields
 
-  let create ~contract ~bar_size ~show ~use_rth =
+  let create ~contract ~bar_size ~tick_type ~use_tradehours =
     { contract = Contract.to_raw contract;
       bar_size;
-      show;
-      use_rth;
+      tick_type;
+      use_tradehours;
     }
 
   let ( = ) t1 t2 =
@@ -806,8 +806,8 @@ module Realtime_bars = struct
     Fields.for_all
       ~contract:(use Raw_contract.(=))
       ~bar_size:(use (=))
-      ~show:(use (=))
-      ~use_rth:(use (=))
+      ~tick_type:(use (=))
+      ~use_tradehours:(use (=))
 
   let pickler =
     let contract_spec =
@@ -820,10 +820,10 @@ module Realtime_bars = struct
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~bar_size:(fields_value (required Bar_size.val_type))
-            ~show:(fields_value (required Show.val_type))
-            ~use_rth:(fields_value (required bool)))
-          (fun { contract; bar_size; show; use_rth } ->
-            `Args $ contract $ bar_size $ show $ use_rth ))
+            ~tick_type:(fields_value (required Tick_type.val_type))
+            ~use_tradehours:(fields_value (required bool)))
+          (fun { contract; bar_size; tick_type; use_tradehours } ->
+            `Args $ contract $ bar_size $ tick_type $ use_tradehours ))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -835,8 +835,8 @@ module Realtime_bars = struct
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~bar_size:(fields_value (required Bar_size.val_type))
-          ~show:(fields_value (required Show.val_type))
-          ~use_rth:(fields_value (required bool)))
-      (fun contract bar_size show use_rth ->
-        { contract; bar_size; show; use_rth }))
+          ~tick_type:(fields_value (required Tick_type.val_type))
+          ~use_tradehours:(fields_value (required bool)))
+      (fun contract bar_size tick_type use_tradehours ->
+        { contract; bar_size; tick_type; use_tradehours }))
 end

@@ -239,7 +239,7 @@ module Realtime_bars : sig
     type t = [ `Five_secs ] with sexp
   end
 
-  module Show : sig
+  module Tick_type : sig
     type t = [ `Trades | `Midpoint | `Bid | `Ask ]
   end
 
@@ -248,7 +248,7 @@ module Realtime_bars : sig
   val create
     :  contract:[< Security_type.t ] Contract.t
     -> bar_size:Bar_size.t
-    -> show:Show.t
-    -> use_rth:bool
+    -> tick_type:Tick_type.t
+    -> use_tradehours:bool
     -> t
 end
