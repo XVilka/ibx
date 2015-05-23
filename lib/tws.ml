@@ -506,6 +506,30 @@ let contract_details_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
     | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
+let contract_data t ~contract =
+  let c = Contract.to_raw contract in
+  contract_details t
+    ?expiry:(Raw_contract.expiry c)
+    ?option_right:(Raw_contract.option_right c)
+    ~exchange:(Raw_contract.exchange c)
+    ~currency:(Raw_contract.currency c)
+    ~sec_type:(Raw_contract.sec_type c |> Security_type.t_of_tws)
+    (Raw_contract.symbol c)
+  >>= function
+  | Error _ as e ->
+    return e
+  | Ok pipe ->
+    try_with (fun () ->
+      return (Option.value_exn (Pipe.peek pipe) |> Tws_result.ok_exn)
+    ) >>| fun result ->
+    match result with
+    | Ok _ as x -> x
+    | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
+
+let contract_data_exn t ~contract =
+  contract_data t ~contract >>| Or_error.ok_exn
+
+
 (* +-----------------------------------------------------------------------+
    | Futures and option chains                                             |
    +-----------------------------------------------------------------------+ *)

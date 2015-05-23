@@ -257,6 +257,16 @@ val contract_details_exn
   -> Symbol.t
   -> Contract_data.t Pipe.Reader.t Deferred.t
 
+val contract_data
+  :  t
+  -> contract:[< Security_type.t ] Contract.t
+  -> Contract_data.t Or_error.t Deferred.t
+
+val contract_data_exn
+  :  t
+  -> contract:[< Security_type.t ] Contract.t
+  -> Contract_data.t Deferred.t
+
 
 (** {1 Futures and option chains} *)
 (******************************************************************************)
