@@ -257,6 +257,10 @@ val contract_details_exn
   -> Symbol.t
   -> Contract_data.t Pipe.Reader.t Deferred.t
 
+
+(** {1 Futures and option chains} *)
+(******************************************************************************)
+
 val futures_chain
   :  t
   -> ?con_id:Contract_id.t

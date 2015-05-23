@@ -506,6 +506,10 @@ let contract_details_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
     | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
+(* +-----------------------------------------------------------------------+
+   | Futures and option chains                                             |
+   +-----------------------------------------------------------------------+ *)
+
 let sort_by_expiry chain =
   List.sort chain ~cmp:(fun c1 c2 ->
     let d1 = Option.value_exn (Contract.to_raw c1 |> Raw_contract.expiry) in
