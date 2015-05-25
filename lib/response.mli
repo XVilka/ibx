@@ -443,7 +443,7 @@ end
 (*****************************************************************************)
 
 module Bar : sig
-  type t =
+  type t = private
     { stamp : Time.t;
       op : Price.t;
       hi : Price.t;
@@ -471,7 +471,7 @@ module Bar : sig
 end
 
 module History : sig
-  type t =
+  type t = private
     { start : Time.t;
       stop : Time.t;
       num_bars : int;
@@ -506,7 +506,7 @@ end
 (*****************************************************************************)
 
 module Realtime_bar : sig
-  type t =
+  type t = private
     { stamp : Time.t;
       op : Price.t;
       hi : Price.t;
