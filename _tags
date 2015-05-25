@@ -206,7 +206,4 @@ true: annot, bin_annot
 <examples/*.ml{,i,y}>: package(threads)
 <examples/*.ml{,i,y}>: use_ibx
 # OASIS_STOP
-<lib/*.ml{,i}>: syntax_camlp4o
-<lib_test/*.ml{,i}>: syntax_camlp4o
-<examples/client/*.ml{,i}>: syntax_camlp4o
 <**/*.ml{,i}>: annot, warn_e, warn_r
