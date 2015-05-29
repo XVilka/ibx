@@ -566,12 +566,11 @@ module Tick_string = struct
   let pp ppf t =
     Format.fprintf ppf "type=%s value=%s"
       (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
-      begin match t.tick_type with
+      (match t.tick_type with
       | Type.Last_timestamp ->
         Time.to_string_trimmed ~zone:Time.Zone.local
           (Time.of_float (Float.of_string t.value))
-      | _ -> t.value
-      end
+      | _ -> t.value)
 end
 
 (* +-----------------------------------------------------------------------+
@@ -1015,10 +1014,10 @@ module Contract_data = struct
               else String.split order_types ~on:',';
             valid_exchanges =
               if String.is_empty valid_exchanges then []
-              else begin
+              else (
                 String.split valid_exchanges ~on:','
                 |> List.map ~f:Exchange.t_of_tws
-              end;
+              );
             price_magnifier;
             underlying_id;
             long_name;
