@@ -312,8 +312,8 @@ module Contract_data : sig
       category : string;
       subcategory : string;
       time_zone : Time.Zone.t option;
-      trading_hours : string;
-      liquid_hours : string;
+      trading_hours : Trading_times.t list;
+      liquid_hours : Trading_times.t list;
     } with sexp, fields
   include Response_intf.S with type t := t
 
@@ -332,11 +332,14 @@ module Contract_data : sig
     -> category:string
     -> subcategory:string
     -> time_zone:Time.Zone.t
-    -> trading_hours:string
-    -> liquid_hours:string
+    -> trading_hours:Trading_times.t list
+    -> liquid_hours:Trading_times.t list
     -> t
 
   val contract : t -> [< Security_type.t ] Contract.t
+
+  val regular_trading_times  : t -> Trading_times.t
+  val extended_trading_times : t -> Trading_times.t
 end
 
 (** {1 Execution} *)

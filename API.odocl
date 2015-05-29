@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 443c2e407ab7e24565d5e442254c147f)
+# DO NOT EDIT (digest: bd4832024fda79a398db8ecb566eecd1)
 lib/Account_code
 lib/Client_id
 lib/Config
@@ -30,6 +30,7 @@ lib/Std
 lib/Std_internal
 lib/Submit_order
 lib/Symbol
+lib/Trading_times
 lib/Tws
 lib/Tws_prot
 lib/Tws_reqs

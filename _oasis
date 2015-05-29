@@ -58,6 +58,7 @@ Library ibx
                   Std_internal,
                   Submit_order,
                   Symbol,
+                  Trading_times,
                   Tws,
                   Tws_prot,
                   Tws_reqs,

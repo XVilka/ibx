@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b59d6928eb08c362a6b2e533e7f1491e)
+# DO NOT EDIT (digest: 1926e146b9626fb9ced49df3edbadbc3)
 Account_code
 Client_id
 Config
@@ -30,6 +30,7 @@ Std
 Std_internal
 Submit_order
 Symbol
+Trading_times
 Tws
 Tws_prot
 Tws_reqs

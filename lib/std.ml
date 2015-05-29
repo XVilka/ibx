@@ -50,6 +50,7 @@ module Symbol         = Symbol
 module TAQ            = Tws.TAQ
 module Trade          = Tws.Trade
 module Trade_snapshot = Tws.Trade_snapshot
+module Trading_times  = Trading_times
 module Tws            = Tws
 module Tws_prot       = Tws_prot
 module Tws_reqs       = Tws_reqs
