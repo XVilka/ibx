@@ -30,6 +30,8 @@ type t =
 
 let create ~date ~hours = { date; hours }
 
+let date t = t.date
+
 let start t ~zone = Time.of_date_ofday t.date (List.hd_exn t.hours) ~zone
 let stop t ~zone = Time.of_date_ofday t.date (List.last_exn t.hours) ~zone
 

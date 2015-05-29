@@ -27,5 +27,7 @@ include Twsable.S with type t := t
 
 val create : date:Date.t -> hours:Time.Ofday.t list -> t
 
+val date : t -> Date.t
+
 val start : t -> zone:Time.Zone.t -> Time.t
 val stop  : t -> zone:Time.Zone.t -> Time.t
