@@ -930,7 +930,7 @@ module Contract_data = struct
 
   let unpickler =
     let field_name field = Fieldslib.Field.name field in
-    Unpickler.create ~name:"Response.Contract_details"
+    Unpickler.create ~name:"Response.Contract_data"
       Unpickler.Spec.(
         value (required Symbol.val_type)
           ~name:(field_name Raw_contract.Fields.symbol)
@@ -1036,7 +1036,7 @@ module Contract_data = struct
           })
 
   let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Contract_details"
+    Pickler.create ~name:"Response.Contract_data"
       Pickler.Spec.(
         wrap (empty ()
               (* symbol *)
