@@ -46,8 +46,7 @@ let duration_arg () =
   )
 
 module Currency = struct
-  let of_string x = Currency.t_of_sexp (Sexp.Atom x)
-  let arg_type = Command.Spec.Arg_type.create of_string
+  let arg_type = Command.Spec.Arg_type.create Currency.of_string
 end
 
 let currency_arg () =
