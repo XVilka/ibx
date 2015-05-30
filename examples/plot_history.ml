@@ -30,14 +30,16 @@ let () =
     )
     (fun do_logging host port client_id sma_period currency symbol () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
+        Tws.contract_data_exn tws ~contract:(Contract.stock ~currency symbol)
+        >>= fun data ->
         Tws.history_exn tws ~bar_span:(`Year 1) ~bar_size:`One_day
-          ~contract:(Contract.stock ~currency symbol)
+          ~contract:(Contract_data.contract data)
         >>| fun history ->
         let start, stop = History.(start history, stop history) in
         let start, stop = Time.(sub start Span.day, add stop Span.day) in
         let range = Range.Time (start, stop) in
         let gp = Gp.create () in
-        Gp.set gp ~title:(Symbol.to_string symbol) ~use_grid:true;
+        Gp.set gp ~title:(Contract_data.long_name data) ~use_grid:true;
         [ (* Create a candlestick chart series. *)
           Series.candles_time_ohlc
             (List.map (History.bars history) ~f:(fun bar ->
