@@ -24,31 +24,32 @@ let () =
     ~summary:"Show a candlestick chart of historical prices"
     Command.Spec.(
       Common.common_args ()
-      +> Common.currency_arg ()
-      +> Common.bar_span_arg ()
-      +> Common.bar_size_arg ()
       +> Common.sma_period_arg ()
+      +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
     )
-    (fun do_logging host port client_id currency span size period symbol () ->
+    (fun do_logging host port client_id sma_period currency symbol () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
-        let stock = Contract.stock ~currency symbol in
-        Tws.history_exn tws ~bar_span:span ~bar_size:size ~contract:stock
+        Tws.history_exn tws ~bar_span:(`Year 1) ~bar_size:`One_day
+          ~contract:(Contract.stock ~currency symbol)
         >>| fun history ->
+        let start, stop = History.(start history, stop history) in
+        let start, stop = Time.(sub start Span.day, add stop Span.day) in
+        let range = Range.Time (start, stop) in
         let gp = Gp.create () in
-        Gp.set gp ~use_grid:true;
+        Gp.set gp ~title:(Symbol.to_string symbol) ~use_grid:true;
         [ (* Create a candlestick chart series. *)
           Series.candles_time_ohlc ~title:"Price"
             (List.map (History.bars history) ~f:(fun bar ->
               Bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
              :> (Time.t * (float * float * float * float)) list) |> Option.some;
           (* Create a moving average time series of the closing prices. *)
-          Option.map period ~f:(fun period ->
+          Option.map sma_period ~f:(fun period ->
             let sma = unstage (Filter.sma ~period) in
             Series.lines_timey ~color:`Green ~title:(sprintf "SMA %d" period)
               (List.map (History.bars history) ~f:(fun bar ->
                 Bar.(stamp bar, sma (cl bar :> float)))));
-        ] |> List.filter_opt |> Gp.plot_many gp ~title:(Symbol.to_string symbol);
+        ] |> List.filter_opt |> Gp.plot_many gp ~range ~format:"%b %d'%y";
         Gp.close gp
       )
     )
