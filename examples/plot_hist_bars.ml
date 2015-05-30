@@ -48,7 +48,7 @@ let () =
             Series.lines_timey ~color:`Green ~title:(sprintf "SMA %d" period)
               (List.map (History.bars history) ~f:(fun bar ->
                 Bar.(stamp bar, sma (cl bar :> float)))));
-        ] |> List.filter_map ~f:Fn.id |> Gp.plot_many gp ~title:symbol;
+        ] |> List.filter_opt |> Gp.plot_many gp ~title:symbol;
         Gp.close gp
       )
     )
