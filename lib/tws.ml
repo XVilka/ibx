@@ -966,8 +966,9 @@ let cancel_quotes = cancel_taq_data
 module Quote_snapshot = struct
   type t =
   | Empty of Quote.t
+  | With_ask of Quote.t
   | With_bid of Quote.t
-  | With_bid_and_ask of Quote.t
+  | With_ask_and_bid of Quote.t
 
   let get_snapshot tws ~contract =
     with_connection tws ~f:(fun con ->
@@ -997,17 +998,25 @@ module Quote_snapshot = struct
                   | Empty quote ->
                     let price, size = Tick_price.(price tick, size tick) in
                     With_bid (Quote.update_bid quote ~price ~size)
-                  | With_bid _ | With_bid_and_ask _ as snapshot ->
+                  | With_ask quote ->
+                    (* Received complete snapshot.  Cancel the request. *)
+                    cancel con id; Pipe.close_read ticks;
+                    let price, size = Tick_price.(price tick, size tick) in
+                    With_ask_and_bid (Quote.update_bid quote ~price ~size)
+                  | With_ask_and_bid _ | With_bid _ as snapshot ->
                     snapshot
                   end
                 | T.Ask ->
                   begin match snapshot with
+                  | Empty quote ->
+                    let price, size = Tick_price.(price tick, size tick) in
+                    With_ask (Quote.update_ask quote ~price ~size)
                   | With_bid quote ->
                     (* Received complete snapshot.  Cancel the request. *)
                     cancel con id; Pipe.close_read ticks;
                     let price, size = Tick_price.(price tick, size tick) in
-                    With_bid_and_ask (Quote.update_ask quote ~price ~size)
-                  | Empty _ | With_bid_and_ask _ as snapshot ->
+                    With_ask_and_bid (Quote.update_ask quote ~price ~size)
+                  | With_ask_and_bid _ | With_ask _ as snapshot ->
                     snapshot
                   end
                 | T.Last | T.Low | T.High | T.Close | T.Open ->
@@ -1019,7 +1028,7 @@ module Quote_snapshot = struct
         | Ok Empty _ ->
           let name = Contract.to_string contract in
           Or_error.error_string (sprintf "No quote was received for %s" name)
-        | Ok (With_bid_and_ask quote) ->
+        | Ok (With_ask_and_bid quote) ->
           Ok quote
         | Ok _ -> assert false
     )
