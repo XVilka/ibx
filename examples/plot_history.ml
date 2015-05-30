@@ -39,7 +39,7 @@ let () =
         let gp = Gp.create () in
         Gp.set gp ~title:(Symbol.to_string symbol) ~use_grid:true;
         [ (* Create a candlestick chart series. *)
-          Series.candles_time_ohlc ~title:"Price"
+          Series.candles_time_ohlc
             (List.map (History.bars history) ~f:(fun bar ->
               Bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
              :> (Time.t * (float * float * float * float)) list) |> Option.some;
