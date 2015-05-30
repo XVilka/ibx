@@ -134,6 +134,8 @@ module Tick_price = struct
 
   let create = Fields.create
 
+  let price t = if Price.(t.price = neg one) then Price.nan else t.price
+
   let ( = ) t1 t2 =
     let use op = fun field ->
       op (Field.get field t1) (Field.get field t2)

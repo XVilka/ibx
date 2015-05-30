@@ -942,18 +942,9 @@ let cancel_quotes = cancel_taq_data
 
 module Quote_snapshot = struct
   type t =
-    { ask_size  : Volume.t;
-      bid_size  : Volume.t;
-      ask_price : Price.t;
-      bid_price : Price.t;
-    } with sexp, fields
-
-  module Snapshot_result = struct
-    type s =
-    | Empty
-    | With_bid of t
-    | With_bid_and_ask of t
-  end
+  | Empty of Quote.t
+  | With_bid of Quote.t
+  | With_bid_and_ask of Quote.t
 
   let get_snapshot tws ~contract =
     with_connection tws ~f:(fun con ->
@@ -964,77 +955,61 @@ module Quote_snapshot = struct
       >>= function
       | Error _ as e -> return e
       | Ok (ticks, id) ->
-        let module S = Snapshot_result in
         let module T = Tick_price.Type in
         let cancel = Ib.Streaming_request.cancel Tws_reqs.req_taq_data in
         try_with (fun () ->
-          Pipe.fold_without_pushback ticks ~init:S.Empty ~f:(fun snapshot result ->
-            match result with
-            | Error tws_error ->
-              cancel con id; Pipe.close_read ticks;
-              Tws_error.raise tws_error
-            | Ok `Snapshot_end ->
-              cancel con id; Pipe.close_read ticks;
-              snapshot
-            | Ok (`Tick_price tick) ->
-              match Tick_price.tick_type tick with
-              | T.Bid ->
-                begin match snapshot with
-                | S.Empty ->
-                  let price, size = Tick_price.(price tick, size tick) in
-                  S.With_bid {
-                    bid_price = Price.(if price = neg one then nan else price);
-                    bid_size  = size;
-                    ask_price = Price.nan;
-                    ask_size  = Volume.zero;
-                  }
-                | S.With_bid _ | S.With_bid_and_ask _ as snapshot ->
-                  snapshot
-                end
-              | T.Ask ->
-                begin match snapshot with
-                | S.With_bid snapshot ->
-                  (* Received complete snapshot.  Cancel the request. *)
-                  cancel con id; Pipe.close_read ticks;
-                  let price, size = Tick_price.(price tick, size tick) in
-                  S.With_bid_and_ask { snapshot with
-                    ask_price = Price.(if price = neg one then nan else price);
-                    ask_size  = size;
-                  }
-                | S.Empty | S.With_bid_and_ask _ as snapshot ->
-                  snapshot
-                end
-              | T.Last | T.Low | T.High | T.Close | T.Open ->
+          Pipe.fold_without_pushback ticks ~init:(Empty Quote.empty)
+            ~f:(fun snapshot result ->
+              match result with
+              | Error tws_error ->
+                cancel con id; Pipe.close_read ticks;
+                Tws_error.raise tws_error
+              | Ok `Snapshot_end ->
+                cancel con id; Pipe.close_read ticks;
                 snapshot
-          )
+              | Ok (`Tick_price tick) ->
+                match Tick_price.tick_type tick with
+                | T.Bid ->
+                  begin match snapshot with
+                  | Empty quote ->
+                    let price, size = Tick_price.(price tick, size tick) in
+                    With_bid (Quote.update_bid quote ~price ~size)
+                  | With_bid _ | With_bid_and_ask _ as snapshot ->
+                    snapshot
+                  end
+                | T.Ask ->
+                  begin match snapshot with
+                  | With_bid quote ->
+                    (* Received complete snapshot.  Cancel the request. *)
+                    cancel con id; Pipe.close_read ticks;
+                    let price, size = Tick_price.(price tick, size tick) in
+                    With_bid_and_ask (Quote.update_ask quote ~price ~size)
+                  | Empty _ | With_bid_and_ask _ as snapshot ->
+                    snapshot
+                  end
+                | T.Last | T.Low | T.High | T.Close | T.Open ->
+                  snapshot
+            )
         ) >>| function
         | Error exn ->
           Or_error.of_exn (Monitor.extract_exn exn)
-        | Ok S.Empty ->
+        | Ok Empty _ ->
           let name = Contract.to_string contract in
-          Or_error.error_string (sprintf "No quote snapshot for %s" name)
-        | Ok (S.With_bid_and_ask snapshot) ->
-          Ok snapshot
+          Or_error.error_string (sprintf "No quote was received for %s" name)
+        | Ok (With_bid_and_ask quote) ->
+          Ok quote
         | Ok _ -> assert false
     )
 end
 
-let quote_snapshot = Quote_snapshot.get_snapshot
-let quote_snapshot_exn t ~contract =
-  quote_snapshot t ~contract >>| Or_error.ok_exn
+let latest_quote = Quote_snapshot.get_snapshot
+let latest_quote_exn t ~contract = latest_quote t ~contract >>| Or_error.ok_exn
 
 
 module Trade_snapshot = struct
   type t =
-    { size  : Volume.t;
-      price : Price.t;
-    } with sexp, fields
-
-  module Snapshot_result = struct
-    type s =
-    | Empty
-    | With_trade of t
-  end
+  | Empty
+  | With_trade of Trade.t
 
   let get_snapshot tws ~contract =
     with_connection tws ~f:(fun con ->
@@ -1045,11 +1020,10 @@ module Trade_snapshot = struct
       >>= function
       | Error _ as e -> return e
       | Ok (ticks, id) ->
-        let module S = Snapshot_result in
         let module T = Tick_price.Type in
         let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
         try_with (fun () ->
-          Pipe.fold_without_pushback ticks ~init:S.Empty ~f:(fun snapshot result ->
+          Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
             match result with
             | Error tws_error ->
               cancel con id; Pipe.close_read ticks;
@@ -1061,20 +1035,20 @@ module Trade_snapshot = struct
               match Tick_price.tick_type tick with
               | T.Last ->
                 begin match snapshot with
-                | S.Empty ->
+                | Empty ->
                   (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
                   let price, size = Tick_price.(price tick, size tick) in
-                  S.With_trade { size; price }
-                | S.With_trade _ as snapshot ->
+                  With_trade (Trade.create ~price ~size)
+                | With_trade _ as snapshot ->
                   snapshot
                 end
               | T.Bid ->
                 let price = Tick_price.price tick in
-                if Price.(price = neg one) then begin
+                if Price.is_nan price then begin
                   (* We won't receive a trade.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
-                  S.Empty
+                  Empty
                 end else snapshot
               | T.Ask | T.Open | T.Low | T.High | T.Close ->
                 snapshot
@@ -1082,33 +1056,35 @@ module Trade_snapshot = struct
         ) >>| function
         | Error exn ->
           Or_error.of_exn (Monitor.extract_exn exn)
-        | Ok S.Empty ->
+        | Ok Empty ->
           let name = Contract.to_string contract in
-          Or_error.error_string (sprintf "No trade snapshot for %s" name)
-        | Ok (S.With_trade snapshot) ->
+          Or_error.error_string (sprintf "No trade received for %s" name)
+        | Ok (With_trade snapshot) ->
           Ok snapshot
     )
 end
 
-let trade_snapshot = Trade_snapshot.get_snapshot
-let trade_snapshot_exn t ~contract =
-  trade_snapshot t ~contract >>| Or_error.ok_exn
+let latest_trade = Trade_snapshot.get_snapshot
+let latest_trade_exn t ~contract = latest_trade t ~contract >>| Or_error.ok_exn
 
 
 (* +-----------------------------------------------------------------------+
    | Close snapshot                                                        |
    +-----------------------------------------------------------------------+ *)
 
-module Close_snapshot = struct
+module Close = struct
   type t =
-    { price : Price.t
+    { stamp : Time.t;
+      price : Price.t;
     } with sexp, fields
 
-  module Snapshot_result = struct
-    type s =
-    | Empty
-    | With_close of t
-  end
+  let create ~price = { stamp = Time.now (); price }
+end
+
+module Close_snapshot = struct
+  type s =
+  | Empty
+  | With_close of Close.t
 
   let get_snapshot tws ~contract =
     with_connection tws ~f:(fun con ->
@@ -1119,11 +1095,10 @@ module Close_snapshot = struct
       >>= function
       | Error _ as e -> return e
       | Ok (ticks, id) ->
-        let module S = Snapshot_result in
         let module T = Tick_price.Type in
         let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
         try_with (fun () ->
-          Pipe.fold_without_pushback ticks ~init:S.Empty ~f:(fun snapshot result ->
+          Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
             match result with
             | Error tws_error ->
               cancel con id; Pipe.close_read ticks;
@@ -1135,11 +1110,11 @@ module Close_snapshot = struct
               match Tick_price.tick_type tick with
               | T.Close ->
                 begin match snapshot with
-                | S.Empty ->
-                  (* Received complete snapshot.  Cancel the request. *)
+                | Empty ->
+                  (* Received close snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
-                  S.With_close { price = Tick_price.price tick }
-                | S.With_close _ as snapshot ->
+                  With_close (Close.create ~price:(Tick_price.price tick))
+                | With_close _ as snapshot ->
                   snapshot
                 end
               | T.Bid | T.Ask | T.Open | T.Low | T.High | T.Last ->
@@ -1148,14 +1123,13 @@ module Close_snapshot = struct
         ) >>| function
         | Error exn ->
           Or_error.of_exn (Monitor.extract_exn exn)
-        | Ok S.Empty ->
+        | Ok Empty ->
           let name = Contract.to_string contract in
-          Or_error.error_string (sprintf "No close snapshot for %s" name)
-        | Ok (S.With_close snapshot) ->
+          Or_error.error_string (sprintf "No close was received for %s" name)
+        | Ok (With_close snapshot) ->
           Ok snapshot
     )
 end
 
-let close_snapshot = Close_snapshot.get_snapshot
-let close_snapshot_exn t ~contract =
-  close_snapshot t ~contract >>| Or_error.ok_exn
+let latest_close = Close_snapshot.get_snapshot
+let latest_close_exn t ~contract = latest_close t ~contract >>| Or_error.ok_exn

@@ -73,6 +73,8 @@ module Tick_price : sig
     -> can_auto_execute:bool option
     -> t
 
+  val price : t -> Price.t
+
   val pp : Format.formatter -> t -> unit
 end
 

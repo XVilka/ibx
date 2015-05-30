@@ -3,7 +3,6 @@ open Async.Std
 open Ibx.Std
 
 module Ascii_table = Textutils.Ascii_table
-module Quote = Quote_snapshot
 
 let print_quote_table quotes =
   let get_symbol    (s, _) = s in
@@ -34,7 +33,7 @@ let () =
           let data = Option.value_exn (Pipe.peek details) in
           (* Extract unambiguous contract description. *)
           let contract = Contract_data.contract data in
-          Tws.quote_snapshot_exn tws ~contract
+          Tws.latest_quote_exn tws ~contract
           >>= fun quote -> return (symbol, quote)
         ) >>| fun quotes -> print_quote_table quotes
       )

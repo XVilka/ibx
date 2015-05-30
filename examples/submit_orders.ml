@@ -39,9 +39,9 @@ let run ~timeout =
   in
   let num_shares = Volume.of_int_exn 100 in
   Common.with_tws (fun tws ->
-    Tws.quote_snapshot_exn tws ~contract:ibm
-    >>= fun snapshot ->
-    let ask_price = Quote_snapshot.ask_price snapshot in
+    Tws.latest_quote_exn tws ~contract:ibm
+    >>= fun quote ->
+    let ask_price = Quote.ask_price quote in
     printf "Last ask price %4.2f\n%!" (Price.to_float ask_price);
     Deferred.List.iter ~how:`Parallel [
       Order.buy_market ~quantity:num_shares;

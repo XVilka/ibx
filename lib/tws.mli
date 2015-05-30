@@ -521,55 +521,42 @@ val cancel_taq_data : t -> Query_id.t -> unit
 (** {1 TAQ snapshots} *)
 (******************************************************************************)
 
-module Quote_snapshot : sig
-  type t = private
-    { ask_size  : Volume.t;
-      bid_size  : Volume.t;
-      ask_price : Price.t;
-      bid_price : Price.t;
-    } with sexp, fields
-end
-
-val quote_snapshot
+val latest_quote
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Quote_snapshot.t Or_error.t Deferred.t
+  -> Quote.t Or_error.t Deferred.t
 
-val quote_snapshot_exn
+val latest_quote_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Quote_snapshot.t Deferred.t
+  -> Quote.t Deferred.t
 
-module Trade_snapshot : sig
-  type t = private
-    { size  : Volume.t;
-      price : Price.t;
-    } with sexp, fields
-end
-
-val trade_snapshot
+val latest_trade
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Trade_snapshot.t Or_error.t Deferred.t
+  -> Trade.t Or_error.t Deferred.t
 
-val trade_snapshot_exn
+val latest_trade_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Trade_snapshot.t Deferred.t
+  -> Trade.t Deferred.t
 
 (** {1 Close snapshot} *)
 (******************************************************************************)
 
-module Close_snapshot : sig
-  type t = private { price  : Price.t } with sexp, fields
+module Close : sig
+  type t = private
+    { stamp : Time.t;
+      price : Price.t;
+    } with sexp, fields
 end
 
-val close_snapshot
+val latest_close
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Close_snapshot.t Or_error.t Deferred.t
+  -> Close.t Or_error.t Deferred.t
 
-val close_snapshot_exn
+val latest_close_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Close_snapshot.t Deferred.t
+  -> Close.t Deferred.t
