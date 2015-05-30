@@ -994,7 +994,7 @@ module Quote_snapshot = struct
               | Ok (`Tick_price tick) ->
                 match Tick_price.tick_type tick with
                 | T.Bid ->
-                  begin match snapshot with
+                  (match snapshot with
                   | Empty quote ->
                     let price, size = Tick_price.(price tick, size tick) in
                     With_bid (Quote.update_bid quote ~price ~size)
@@ -1004,10 +1004,9 @@ module Quote_snapshot = struct
                     let price, size = Tick_price.(price tick, size tick) in
                     With_ask_and_bid (Quote.update_bid quote ~price ~size)
                   | With_ask_and_bid _ | With_bid _ as snapshot ->
-                    snapshot
-                  end
+                    snapshot)
                 | T.Ask ->
-                  begin match snapshot with
+                  (match snapshot with
                   | Empty quote ->
                     let price, size = Tick_price.(price tick, size tick) in
                     With_ask (Quote.update_ask quote ~price ~size)
@@ -1017,8 +1016,7 @@ module Quote_snapshot = struct
                     let price, size = Tick_price.(price tick, size tick) in
                     With_ask_and_bid (Quote.update_ask quote ~price ~size)
                   | With_ask_and_bid _ | With_ask _ as snapshot ->
-                    snapshot
-                  end
+                    snapshot)
                 | T.Last | T.Low | T.High | T.Close | T.Open ->
                   snapshot
             )
@@ -1066,15 +1064,14 @@ module Trade_snapshot = struct
             | Ok (`Tick_price tick) ->
               match Tick_price.tick_type tick with
               | T.Last ->
-                begin match snapshot with
+                (match snapshot with
                 | Empty ->
                   (* Received complete snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
                   let price, size = Tick_price.(price tick, size tick) in
                   With_trade (Trade.create ~price ~size)
                 | With_trade _ as snapshot ->
-                  snapshot
-                end
+                  snapshot)
               | T.Bid ->
                 let price = Tick_price.price tick in
                 if Price.is_nan price then begin
@@ -1141,14 +1138,13 @@ module Close_snapshot = struct
             | Ok (`Tick_price tick) ->
               match Tick_price.tick_type tick with
               | T.Close ->
-                begin match snapshot with
+                (match snapshot with
                 | Empty ->
                   (* Received close snapshot.  Cancel the request. *)
                   cancel con id; Pipe.close_read ticks;
                   With_close (Close.create ~price:(Tick_price.price tick))
                 | With_close _ as snapshot ->
-                  snapshot
-                end
+                  snapshot)
               | T.Bid | T.Ask | T.Open | T.Low | T.High | T.Last ->
                 snapshot
           )
