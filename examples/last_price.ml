@@ -8,20 +8,21 @@ let () =
     Command.Spec.(
       Common.common_args ()
       +> Common.currency_arg ()
-      +> anon ("STOCK-SYMBOL" %: string)
+      +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
     )
     (fun do_logging host port client_id currency symbol () ->
       Tws.with_client ~do_logging ~host ~port ~client_id
         ~on_handler_error:(`Call (fun e ->
           eprintf "[Error] Failed to retrieve last price for %s: %s\n%!"
-            symbol (Error.to_string_hum e);
+            (Symbol.to_string symbol) (Error.to_string_hum e);
         ))
         (fun tws ->
-          let stock = Contract.stock ~currency (Symbol.of_string symbol) in
-          Tws.latest_trade_exn tws ~contract:stock
-          >>| fun trade ->
-          printf "[Info] Last price for %s was %4.2f %s\n" symbol
-            (Trade.price trade |> Price.to_float) (Currency.to_string currency);
+          Tws.latest_trade_exn tws ~contract:(Contract.stock ~currency symbol)
+          >>= fun trade ->
+          printf "[Info] Last price for %s was %4.2f %s\n"
+            (Symbol.to_string symbol) (Trade.price trade |> Price.to_float)
+            (Currency.to_string currency);
+          return ()
         )
     )
   |> Command.run

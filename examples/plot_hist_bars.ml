@@ -28,11 +28,11 @@ let () =
       +> Common.bar_span_arg ()
       +> Common.bar_size_arg ()
       +> Common.sma_period_arg ()
-      +> anon ("STOCK-SYMBOL" %: string)
+      +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
     )
     (fun do_logging host port client_id currency span size period symbol () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
-        let stock = Contract.stock ~currency (Symbol.of_string symbol) in
+        let stock = Contract.stock ~currency symbol in
         Tws.history_exn tws ~bar_span:span ~bar_size:size ~contract:stock
         >>| fun history ->
         let gp = Gp.create () in
@@ -48,7 +48,7 @@ let () =
             Series.lines_timey ~color:`Green ~title:(sprintf "SMA %d" period)
               (List.map (History.bars history) ~f:(fun bar ->
                 Bar.(stamp bar, sma (cl bar :> float)))));
-        ] |> List.filter_opt |> Gp.plot_many gp ~title:symbol;
+        ] |> List.filter_opt |> Gp.plot_many gp ~title:(Symbol.to_string symbol);
         Gp.close gp
       )
     )

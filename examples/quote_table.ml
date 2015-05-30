@@ -5,7 +5,7 @@ open Ibx.Std
 module Ascii_table = Textutils.Ascii_table
 
 let print_quote_table quotes =
-  let get_symbol    (s, _) = s in
+  let get_symbol    (s, _) = Symbol.to_string s in
   let get_bid_size  (_, q) = sprintf "%d"    Quote.(bid_size  q :> int) in
   let get_bid_price (_, q) = sprintf "%4.2f" Quote.(bid_price q :> float) in
   let get_ask_price (_, q) = sprintf "%4.2f" Quote.(ask_price q :> float) in
@@ -26,9 +26,9 @@ let () =
     ~summary:"Tabularize the current quotes for a list of symbols"
     (fun do_logging host port client_id () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
+        let symbols = List.map symbols ~f:Symbol.of_string in
         Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
-          Tws.contract_details_exn tws
-            ~currency:`USD ~sec_type:`Stock (Symbol.of_string symbol)
+          Tws.contract_details_exn tws ~currency:`USD ~sec_type:`Stock symbol
           >>= fun details ->
           let data = Option.value_exn (Pipe.peek details) in
           (* Extract unambiguous contract description. *)

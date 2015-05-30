@@ -8,12 +8,11 @@ let () =
       Common.common_args ()
       +> Common.duration_arg ()
       +> Common.currency_arg ()
-      +> anon ("STOCK-SYMBOL" %: string)
+      +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
     )
     (fun do_logging host port client_id duration currency symbol () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
-        let stock = Contract.stock ~currency (Symbol.of_string symbol) in
-        Tws.market_depth_exn tws ~contract:stock
+        Tws.market_depth_exn tws ~contract:(Contract.stock ~currency symbol )
         >>= fun (book_updates, id) ->
         upon (after duration) (fun () ->
           Tws.cancel_market_depth tws id
