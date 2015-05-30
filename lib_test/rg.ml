@@ -1043,14 +1043,20 @@ end = struct
           (symbol_g ()))
       ] ()
     in
-    let trading_times = Trading_times.create
-      ~date:(Date.today ~zone:Time.Zone.local)
-      ~hours:[
-        Time.Ofday.create ~hr:17 ~min:0  ();
-        Time.Ofday.create ~hr:15 ~min:15 ();
-        Time.Ofday.create ~hr:15 ~min:30 ();
-        Time.Ofday.create ~hr:16 ~min:15 ();
-      ]
+    let active_times =
+      Trading_times.create
+        ~date:(Date.today ~zone:Time.Zone.local)
+        ~hours:[
+          Time.Ofday.create ~hr:17 ~min:0  ();
+          Time.Ofday.create ~hr:15 ~min:15 ();
+          Time.Ofday.create ~hr:15 ~min:30 ();
+          Time.Ofday.create ~hr:16 ~min:15 ();
+        ]
+    in
+    let inactive_times =
+      Trading_times.create
+        ~date:(Date.today ~zone:Time.Zone.local)
+        ~hours:[]
     in
     Response.Contract_data.create
       ~contract:(contract_g ())
@@ -1067,8 +1073,8 @@ end = struct
       ~category:(sg ())
       ~subcategory:(sg ())
       ~time_zone:(tzg ())
-      ~trading_hours:[trading_times; trading_times]
-      ~liquid_hours:[trading_times; trading_times]
+      ~trading_hours:[active_times; inactive_times]
+      ~liquid_hours:[active_times; inactive_times ]
 
   let contract_details_g () =
     List.permute ~random_state:(Random.State.make_self_init ())
