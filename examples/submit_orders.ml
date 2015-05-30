@@ -63,15 +63,8 @@ let () =
         >>= fun () ->
         Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
         >>= fun executions ->
-        Pipe.iter_without_pushback executions ~f:(fun exec ->
-          printf "Execution: \
-          exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
-            (Execution.exec_id exec |> Execution_id.to_string)
-            (Execution.time exec |> Time.to_string_trimmed ~zone:Time.Zone.local)
-            (Execution.exchange exec |> Exchange.to_string)
-            (Execution.side exec |> Execution.Side.to_string)
-            (Execution.volume exec :> int)
-            (Execution.price exec :> float))
+        Pipe.iter_without_pushback executions ~f:(fun execution ->
+          Format.fprintf Format.std_formatter "%a" Execution.pp execution)
       )
     )
   |> Command.run

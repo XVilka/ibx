@@ -392,6 +392,8 @@ module Execution : sig
     -> t
 
   val contract : t -> [< Security_type.t ] Contract.t
+
+  val pp : Format.formatter -> t -> unit
 end
 
 module Commission : sig

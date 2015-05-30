@@ -1296,6 +1296,16 @@ module Execution = struct
               $ t.cumulative_volume
               $ t.average_price
               $ t.order_ref)))
+
+  let pp ppf t =
+    Format.fprintf ppf
+      "Execution: exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
+      (t.exec_id  |> Execution_id.to_string)
+      (t.time     |> Time.to_string_trimmed ~zone:Time.Zone.local)
+      (t.exchange |> Exchange.to_string)
+      (t.side     |> Side.to_string)
+      (t.volume   :> int)
+      (t.price    :> float)
 end
 
 module Commission = struct
