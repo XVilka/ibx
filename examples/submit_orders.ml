@@ -31,36 +31,6 @@ let submit_and_wait_for_fill tws ~timeout ~contract ~order =
     Tws.cancel_order_status tws oid
   | `Result () -> ()
 
-let run ~timeout =
-  let ibm = Contract.stock
-    ~exchange:`BATS
-    ~currency:`USD
-    (Symbol.of_string "IBM")
-  in
-  let num_shares = Volume.of_int_exn 100 in
-  Common.with_tws (fun tws ->
-    Tws.latest_quote_exn tws ~contract:ibm
-    >>= fun quote ->
-    let ask_price = Quote.ask_price quote in
-    printf "Last ask price %4.2f\n%!" (Price.to_float ask_price);
-    Deferred.List.iter ~how:`Parallel [
-      Order.buy_market ~quantity:num_shares;
-      Order.buy_limit  ~quantity:num_shares ask_price;
-    ] ~f:(fun order -> submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order)
-    >>= fun () ->
-    Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
-    >>= fun executions ->
-    Pipe.iter_without_pushback executions ~f:(fun exec ->
-      printf "Execution: \
-          exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
-        (Execution.exec_id exec |> Execution_id.to_string)
-        (Execution.time exec |> Time.to_string_trimmed ~zone:Time.Zone.local)
-        (Execution.exchange exec |> Exchange.to_string)
-        (Execution.side exec |> Execution.Side.to_string)
-        (Execution.volume exec :> int)
-        (Execution.price exec :> float))
-    )
-
 let timeout_arg () =
   Command.Spec.(
     flag "-timeout"
@@ -72,6 +42,36 @@ let () =
   Command.async_or_error
     ~summary:"Submit a market buy order"
     Command.Spec.(Common.common_args () +> timeout_arg ())
-    (fun do_log host port client_id timeout () ->
-      run ~do_log ~host ~port ~client_id ~timeout)
+    (fun do_logging host port client_id timeout () ->
+      Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
+        let num_shares = Volume.of_int_exn 100 in
+        let ibm = Contract.stock
+          ~exchange:`BATS
+          ~currency:`USD
+          (Symbol.of_string "IBM")
+        in
+        Tws.latest_quote_exn tws ~contract:ibm
+        >>= fun quote ->
+        let ask_price = Quote.ask_price quote in
+        printf "Last ask price %4.2f\n%!" (Price.to_float ask_price);
+        Deferred.List.iter ~how:`Parallel [
+          Order.buy_market ~quantity:num_shares;
+          Order.buy_limit  ~quantity:num_shares ask_price;
+        ] ~f:(fun order ->
+          submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order
+        )
+        >>= fun () ->
+        Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
+        >>= fun executions ->
+        Pipe.iter_without_pushback executions ~f:(fun exec ->
+          printf "Execution: \
+          exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
+            (Execution.exec_id exec |> Execution_id.to_string)
+            (Execution.time exec |> Time.to_string_trimmed ~zone:Time.Zone.local)
+            (Execution.exchange exec |> Exchange.to_string)
+            (Execution.side exec |> Execution.Side.to_string)
+            (Execution.volume exec :> int)
+            (Execution.price exec :> float))
+      )
+    )
   |> Command.run

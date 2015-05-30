@@ -39,7 +39,7 @@ let with_tws_conn reader ~f =
   >>= fun fd ->
   let writer = Writer.create fd in
   Ib.Connection.create
-    ~enable_logging:true
+    ~do_logging:true
     ~extend_error:(fun e -> Log.Global.error "%s" (Error.to_string_hum e))
     ~extend_status:(fun _ -> assert false)
     ~extend_execution:(fun _ -> assert false)

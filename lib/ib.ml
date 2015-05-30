@@ -195,7 +195,7 @@ module type Connection = sig
   type t
 
   val create
-    :  ?enable_logging:bool
+    :  ?do_logging:bool
     -> extend_error:(Error.t -> unit)
     -> extend_status:(string -> unit)
     -> extend_execution:(Execution.t -> unit)
@@ -310,7 +310,7 @@ module Connection : Connection_internal = struct
         end)
 
   let create
-      ?(enable_logging = false)
+      ?(do_logging = false)
       ~extend_error
       ~extend_status
       ~extend_execution
@@ -344,7 +344,7 @@ module Connection : Connection_internal = struct
         next_order_id = Ivar.create ();
         account_code  = Ivar.create ();
         stop          = Ivar.create ();
-        logfun        = Option.some_if enable_logging logfun;
+        logfun        = Option.some_if do_logging logfun;
         extend_error;
       }
     in

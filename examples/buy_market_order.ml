@@ -6,8 +6,8 @@ let () =
   Command.async_or_error
     ~summary:"Submit a market buy order for AAPL"
     Command.Spec.(Common.common_args ())
-    (fun do_log host port client_id () ->
-      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
+    (fun do_logging host port client_id () ->
+      Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         don't_wait_for (
           Pipe.iter_without_pushback (Tws.executions tws) ~f:(fun exec ->
             printf "%s\n\n%!" (Execution.sexp_of_t exec |> Sexp.to_string_hum))

@@ -30,8 +30,8 @@ let () =
       +> Common.sma_period_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun do_log host port client_id currency span size period symbol () ->
-      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
+    (fun do_logging host port client_id currency span size period symbol () ->
+      Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         let stock = Contract.stock ~currency (Symbol.of_string symbol) in
         Tws.history_exn tws ~bar_span:span ~bar_size:size ~contract:stock
         >>| fun history ->

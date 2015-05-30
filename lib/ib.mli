@@ -30,7 +30,7 @@ module type Connection = sig
   type t
 
   val create
-    :  ?enable_logging:bool
+    :  ?do_logging:bool
     -> extend_error:(Error.t -> unit)
     -> extend_status:(string -> unit)
     -> extend_execution:(Execution.t -> unit)

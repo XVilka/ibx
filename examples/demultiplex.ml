@@ -23,8 +23,8 @@ let () =
   Command.async_or_error
     ~summary:"Print market data for Apple, Microsoft and Google"
     Command.Spec.(Common.common_args () +> Common.duration_arg ())
-    (fun do_log host port client_id duration () ->
-      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
+    (fun do_logging host port client_id duration () ->
+      Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         let print_ticks symbol color =
           let stock = Contract.stock (Symbol.of_string symbol)
             ~currency:`USD ~listed_on:`NASDAQ in

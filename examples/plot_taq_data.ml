@@ -5,8 +5,8 @@ open Gnuplot
 
 let verbose = ref true
 
-let plot_taq_data ~duration ~currency ~symbol =
-  Common.with_tws (fun tws ->
+let plot_taq_data ~client_id ~do_logging ~duration ~currency ~symbol =
+  Tws.with_client_or_error ~client_id ~do_logging (fun tws ->
     let stock = Contract.stock ~currency (Symbol.of_string symbol) in
     Tws.taq_data_exn tws ~contract:stock
     >>= fun (taq_data, id) ->
@@ -46,10 +46,11 @@ let () =
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: string)
     )
-    (fun do_log host port client_id quiet duration currency symbol () ->
+    (fun do_logging host port client_id quiet duration currency symbol () ->
       verbose := not quiet;
       if Time.Span.(duration > minute) then
         return (Or_error.error_string "Maximum duration is 1 minute")
-      else
-        plot_taq_data ~do_log ~host ~port ~client_id ~duration ~currency ~symbol)
+      else plot_taq_data ~do_logging ~host ~port ~client_id ~duration
+        ~currency ~symbol
+    )
   |> Command.run

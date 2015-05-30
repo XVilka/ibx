@@ -24,8 +24,8 @@ let () =
   Command.async_or_error
     Command.Spec.(Common.common_args ())
     ~summary:"Tabularize the current quotes for a list of symbols"
-    (fun do_log host port client_id () ->
-      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
+    (fun do_logging host port client_id () ->
+      Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
           Tws.contract_details_exn tws
             ~currency:`USD ~sec_type:`Stock (Symbol.of_string symbol)

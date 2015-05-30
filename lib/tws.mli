@@ -41,7 +41,7 @@ type t (** A TWS client *)
     The standard port for TWS is 7496 and for the IB Gateway it is 4001.
 *)
 val with_client
-  :  ?enable_logging:bool
+  :  ?do_logging:bool
   -> ?client_id:Client_id.t
   -> host:string
   -> port:int
@@ -52,6 +52,14 @@ val with_client
   ]
   -> (t -> unit Deferred.t)
   -> unit Deferred.t
+
+val with_client_or_error
+  :  ?do_logging:bool
+  -> ?client_id:Client_id.t
+  -> host:string
+  -> port:int
+  -> (t -> unit Deferred.t)
+  -> unit Or_error.t Deferred.t
 
 val is_connected : t -> bool
 

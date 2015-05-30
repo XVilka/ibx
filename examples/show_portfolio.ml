@@ -41,13 +41,14 @@ let () =
   Command.async_or_error
     ~summary:"Show all portfolio positions"
     Command.Spec.(Common.common_args ())
-    (fun do_log host port client_id () ->
-      Common.with_tws ~do_log ~host ~port ~client_id (fun tws ->
-        Tws.portfolio_exn tws
-        >>= fun result ->
-        Pipe.to_list result
-        >>| fun positions ->
-        show_portfolio positions
-      )
+    (fun do_logging host port client_id () ->
+      Tws.with_client_or_error ~do_logging
+        ~host ~port ~client_id (fun tws ->
+          Tws.portfolio_exn tws
+          >>= fun result ->
+          Pipe.to_list result
+          >>| fun positions ->
+          show_portfolio positions
+        )
     )
   |> Command.run

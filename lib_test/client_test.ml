@@ -32,7 +32,7 @@ let with_tws_client handler =
   server_ready
   >>= fun () ->
   Tws.with_client
-    ~enable_logging:true
+    ~do_logging:true
     ~host:"127.0.0.1"
     ~port:server_port
     ~on_handler_error:`Raise

@@ -47,7 +47,7 @@ type t =
     remote_port    : int;
     client_id      : Client_id.t;
     client_version : int;
-    enable_logging : bool;
+    do_logging     : bool;
     mutable con :
       [ `Disconnected
       | `Connecting of unit -> unit
@@ -63,14 +63,14 @@ type t =
   }
 
 let create
-    ?(enable_logging = false)
+    ?(do_logging = false)
     ?(client_id = Client_id.of_int_exn 0)
     ~host ~port () =
   let exec_reader, exec_writer = Pipe.create () in
   let comm_reader, comm_writer = Pipe.create () in
   return
     { client_id;
-      enable_logging;
+      do_logging;
       remote_host     = host;
       remote_port     = port;
       client_version  = Config.client_version;
@@ -124,7 +124,7 @@ let connect t =
     | Ok s ->
       let fd = Socket.fd s in
       Ib.Connection.create
-        ~enable_logging:t.enable_logging
+        ~do_logging:t.do_logging
         ~extend_error:(fun e ->
           Tail.extend t.messages (C.Error e))
         ~extend_status:(fun s ->
@@ -202,7 +202,7 @@ let disconnect t =
     Ib.Connection.close con
 
 let with_client
-    ?enable_logging
+    ?do_logging
     ?client_id
     ~host
     ~port
@@ -215,11 +215,11 @@ let with_client
     | `Raise  -> Error.raise e
     | `Call f -> f e
   in
-  create ?enable_logging ?client_id ~host ~port ()
+  create ?do_logging ?client_id ~host ~port ()
   >>= fun t ->
   Stream.iter (messages t) ~f:(fun clt_msg ->
     begin
-      match clt_msg, t.enable_logging with
+      match clt_msg, t.do_logging with
       | C.Control x, true ->
         Log.Global.sexp ~level:`Info x <:sexp_of< C.Control.t >>
       | C.Status x, true ->
@@ -242,6 +242,27 @@ let with_client
     | Ok () ->
       disconnect t)
   | _ -> return ()
+
+let with_client_or_error
+    ?do_logging
+    ?client_id
+    ~host
+    ~port
+    handler =
+  try_with (fun () ->
+    with_client
+      ?client_id
+      ?do_logging
+      ~host
+      ~port
+      ~on_handler_error:`Raise
+      (fun t -> handler t)
+  )
+  >>| fun result ->
+  match result with
+  | Ok _ as x -> x
+  | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
+
 
 (* +-----------------------------------------------------------------------+
    | Helper functions                                                      |

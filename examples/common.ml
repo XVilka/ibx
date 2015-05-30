@@ -2,28 +2,17 @@ open Core.Std
 open Async.Std
 open Ibx.Std
 
-let with_tws ~do_log ~host ~port ~client_id f =
-  if do_log then begin
-    let basedir = Core.Std.Unix.getcwd () in
-    let logfile = basedir ^/ "ibx.log" in
-    Log.Global.set_level `Debug;
-    Log.Global.set_output [Log.Output.file `Text ~filename:logfile]
-  end;
-  Monitor.try_with (fun () ->
-    Tws.with_client
-      ~client_id:(Client_id.of_int_exn client_id)
-      ~enable_logging:do_log
-      ~host
-      ~port
-      ~on_handler_error:`Raise
-      (fun tws -> f tws)
-  )
-  >>| fun result ->
-  match result with
-  | Ok _ as x -> x
-  | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
+let () =
+  let basedir = Core.Std.Unix.getcwd () in
+  let logfile = basedir ^/ "ibx.log" in
+  Log.Global.set_level `Debug;
+  Log.Global.set_output [Log.Output.file `Text ~filename:logfile]
 ;;
 
+module Client_id = struct
+  let default = Client_id.of_int_exn 0
+  let arg_type = Command.Spec.Arg_type.create Client_id.of_string
+end
 
 let common_args () =
   Command.Spec.(
@@ -34,7 +23,7 @@ let common_args () =
       ~doc:" hostname of TWS or Gateway (default localhost)"
     +> flag "-port" (optional_with_default 4001 int)
       ~doc:" TWS port 7496 or Gateway port 4001 (default 4001)"
-    +> flag "-client-id" (optional_with_default 0 int)
+    +> flag "-client-id" (optional_with_default Client_id.default Client_id.arg_type)
       ~doc:" client id of TWS or Gateway (default 0)"
   )
 
