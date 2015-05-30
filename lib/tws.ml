@@ -234,13 +234,15 @@ let with_client
   connect t >>= fun () ->
   match state t with
   | `Connected ->
-    Monitor.try_with (fun () -> handler t) >>= (function
+    try_with (fun () -> handler t) >>= (function
     | Error exn ->
       disconnect t
-      >>| fun () ->
+      >>= fun () ->
       handle_error (Error.of_exn (Monitor.extract_exn exn));
+      exit 1
     | Ok () ->
-      disconnect t)
+      disconnect t
+    )
   | _ -> return ()
 
 let with_client_or_error
