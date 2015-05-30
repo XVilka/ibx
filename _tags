@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 1e7cf78360d023339ff2983cefae527c)
+# DO NOT EDIT (digest: b2a24ea664f77fabbf0ac9bee9845050)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -114,16 +114,16 @@ true: annot, bin_annot
 <examples/last_price.{native,byte}>: package(textutils)
 <examples/last_price.{native,byte}>: package(threads)
 <examples/last_price.{native,byte}>: use_ibx
-# Executable plot_hist_bars
-<examples/plot_hist_bars.{native,byte}>: package(async)
-<examples/plot_hist_bars.{native,byte}>: package(core)
-<examples/plot_hist_bars.{native,byte}>: package(fieldslib.syntax)
-<examples/plot_hist_bars.{native,byte}>: package(gnuplot)
-<examples/plot_hist_bars.{native,byte}>: package(sexplib.syntax)
-<examples/plot_hist_bars.{native,byte}>: package(str)
-<examples/plot_hist_bars.{native,byte}>: package(textutils)
-<examples/plot_hist_bars.{native,byte}>: package(threads)
-<examples/plot_hist_bars.{native,byte}>: use_ibx
+# Executable plot_history
+<examples/plot_history.{native,byte}>: package(async)
+<examples/plot_history.{native,byte}>: package(core)
+<examples/plot_history.{native,byte}>: package(fieldslib.syntax)
+<examples/plot_history.{native,byte}>: package(gnuplot)
+<examples/plot_history.{native,byte}>: package(sexplib.syntax)
+<examples/plot_history.{native,byte}>: package(str)
+<examples/plot_history.{native,byte}>: package(textutils)
+<examples/plot_history.{native,byte}>: package(threads)
+<examples/plot_history.{native,byte}>: use_ibx
 # Executable plot_taq_data
 <examples/plot_taq_data.{native,byte}>: package(async)
 <examples/plot_taq_data.{native,byte}>: package(core)

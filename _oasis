@@ -123,10 +123,10 @@ Executable "last_price"
   BuildDepends:   ibx
   CompiledObject: best
 
-Executable "plot_hist_bars"
+Executable "plot_history"
   Build$:         flag(examples)
   Path:           examples
-  MainIs:         plot_hist_bars.ml
+  MainIs:         plot_history.ml
   Install:        false
   BuildDepends:   ibx, gnuplot
   CompiledObject: best
