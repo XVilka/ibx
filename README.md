@@ -48,7 +48,7 @@ to log into the demo account.
 ### Examples
 
 This simple program will connect to the IB Gateway running on localhost
-and retrieve the last price for a given stock symbol:
+and retrieve the closing price for a given stock symbol:
 
     :::ocaml
     open Core.Std
@@ -58,49 +58,41 @@ and retrieve the last price for a given stock symbol:
     let host = "localhost"
     let port = 4001
 
-    let print_last_price enable_logging symbol =
-      Tws.with_client ~enable_logging ~host ~port
-        ~on_handler_error:(`Call (fun e ->
-          eprintf "[Error] Failed to retrieve last price for %s:\n" symbol;
-          prerr_endline (Error.to_string_hum e);
-          shutdown 1
-        ))
-        (fun tws ->
-          let stock = Contract.stock ~currency:`USD (Symbol.of_string symbol) in
-          Tws.trade_snapshot_exn tws ~contract:stock
-          >>= fun snapshot ->
-          let price = Price.to_float (Trade_snapshot.price snapshot) in
-          printf "[Info] Last price for %s was %4.2f USD\n" symbol price;
-          return ()
-        )
-
-    let command =
-      Command.async_basic ~summary:"Retrieve last stock price"
+    let () =
+      Command.async
+        ~summary:"Show the closing price of the given stock symbol"
         Command.Spec.(
           empty
-          +> flag "-enable-logging" no_arg ~doc:" enable logging"
-          +> anon ("STOCK-SYMBOL" %: string)
+          +> flag "-currency" ~doc:" currency of the stock price"
+            (optional_with_default `USD (Arg_type.create Currency.of_string))
+          +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
         )
-        (fun enable_logging symbol () ->
-          if enable_logging then Log.Global.set_level `Debug;
-          print_last_price enable_logging symbol
+        (fun currency symbol () ->
+          Tws.with_client ~host ~port ~on_handler_error:(`Call (fun e ->
+            eprintf "[Error] Failed to retrieve closing price for %s: %s\n%!"
+              (Symbol.to_string symbol) (Error.to_string_hum e);
+          ))
+          (fun tws ->
+            Tws.latest_close_exn tws ~contract:(Contract.stock symbol ~currency)
+            >>= fun close ->
+            printf "[Info] Closing price for %s is %4.2f %s\n"
+              (Symbol.to_string symbol) (Close.price close |> Price.to_float)
+              (Currency.to_string currency);
+            return ()
+          )
         )
+      |> Command.run
 
-    let () = Command.run command
 
-Assuming the above program is stored in the file `last_price.ml`,
+Assuming the above program is stored in the file `show_close.ml`,
 you can simply build it by running
 
-    $ ocamlbuild -use-ocamlfind -tag thread -pkg ibx last_price.native
+    $ ocamlbuild -use-ocamlfind -tag thread -pkg ibx show_close.native
 
-and then use it to get the last price of a stock (e.g. Apple Inc.)
+and then use it to get the closing price of a stock (e.g. Apple Inc.)
 as follows:
 
-    $ ./last_price.native AAPL
-
-or alternatively
-
-    $ ./last_price.native -enable-logging AAPL 2> ibx.log
+    $ ./show_close.native AAPL
 
 For more complex examples please refer to the `examples`-directory of this
 distribution. You can build the examples by typing
