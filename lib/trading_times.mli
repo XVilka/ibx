@@ -1,4 +1,4 @@
-(* File: trading_day.mli
+(* File: trading_times.mli
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
