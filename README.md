@@ -103,12 +103,12 @@ distribution. You can build the examples by typing
 in the top-level directory of this distribution. If the compilation of the
 examples was successful, you can type, for instance,
 
-    $ ./plot_history.native AAPL
+    $ ./plot_history.native -sma 100 SPY
 
-in order to plot a candle stick chart of the Apple stock price with simple
-moving averages. Your plot should look similar to this image:
+in order to plot a candle stick chart of the SPDR S&P 500 ETF with a simple
+100-day moving average:
 
-![AAPL SMA](http://ogu.bitbucket.org/aapl_sma.png)
+![SPY SMA](http://ogu.bitbucket.org/spy_sma.png)
 
 The next command accumulates 30 seconds of trade and quote (TAQ) data of
 Google Inc.
