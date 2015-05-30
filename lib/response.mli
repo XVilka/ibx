@@ -483,11 +483,7 @@ module History : sig
   with sexp, fields
   include Response_intf.S with type t := t
 
-  val create
-    :  start:Time.t
-    -> stop:Time.t
-    -> bars:Bar.t list
-    -> t
+  val create : bars:Bar.t list -> t
 
   module Data_frame : sig
     type t = private

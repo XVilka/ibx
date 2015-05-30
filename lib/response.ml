@@ -1545,12 +1545,20 @@ module History = struct
       bars : Bar.t list;
     } with sexp, fields
 
-  let create ~start ~stop ~bars =
-    { start;
-      stop;
-      num_bars = List.length bars;
-      bars;
-    }
+  let create ~bars =
+    let num_bars = List.length bars in
+    if num_bars = 0 then
+      { start = Time.epoch;
+        stop = Time.epoch;
+        num_bars;
+        bars = []
+      }
+    else
+      { start = List.hd_exn bars |> Bar.stamp;
+        stop = List.last_exn bars |> Bar.stamp;
+        num_bars = List.length bars;
+        bars;
+      }
 
   let ( = ) t1 t2 =
     let use op = fun field ->
@@ -1571,7 +1579,7 @@ module History = struct
           ~stop:(fields_value (required Timestamp.val_type))
           ~num_bars:(fields_value (required int))
           ~bars:(fun specs -> Fn.const (specs ++ capture_remaining_message)))
-      (fun start stop num_bars bars_msg ->
+      (fun _start _stop num_bars bars_msg ->
         let num_fields = 9 in
         let bars_msg = Queue.to_array bars_msg in
         let bars = List.map (List.range 0 num_bars) ~f:(fun i ->
@@ -1581,11 +1589,8 @@ module History = struct
           in
           Unpickler.run_exn Bar.unpickler bar_msg)
         in
-        { start;
-          stop;
-          num_bars;
-          bars
-        })
+        create ~bars
+      )
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.History"
