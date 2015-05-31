@@ -44,16 +44,13 @@ let () =
     Command.Spec.(Common.common_args () +> timeout_arg ())
     (fun do_logging host port client_id timeout () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
-        let num_shares = Volume.of_int_exn 100 in
-        let ibm = Contract.stock
-          ~exchange:`BATS
-          ~currency:`USD
-          (Symbol.of_string "IBM")
-        in
+        let symbol = Symbol.of_string "IBM" in
+        let ibm = Contract.stock symbol ~exchange:`BATS ~currency:`USD in
         Tws.latest_quote_exn tws ~contract:ibm
         >>= fun quote ->
         let ask_price = Quote.ask_price quote in
         printf "Last ask price %4.2f\n%!" (Price.to_float ask_price);
+        let num_shares = Volume.of_int_exn 100 in
         Deferred.List.iter ~how:`Parallel [
           Order.buy_market ~quantity:num_shares;
           Order.buy_limit  ~quantity:num_shares ask_price;
