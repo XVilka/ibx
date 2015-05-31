@@ -995,9 +995,13 @@ module Quote_snapshot = struct
                 match Tick_price.tick_type tick with
                 | T.Bid ->
                   (match snapshot with
-                  | Empty quote ->
+                  | Empty quote as empty_quote ->
                     let price, size = Tick_price.(price tick, size tick) in
-                    With_bid (Quote.update_bid quote ~price ~size)
+                    if Price.is_nan price then begin
+                      (* Received invalid price.  Cancel the request. *)
+                      cancel con id; Pipe.close_read ticks;
+                      empty_quote
+                    end else With_bid (Quote.update_bid quote ~price ~size)
                   | With_ask quote ->
                     (* Received complete snapshot.  Cancel the request. *)
                     cancel con id; Pipe.close_read ticks;
@@ -1007,9 +1011,13 @@ module Quote_snapshot = struct
                     snapshot)
                 | T.Ask ->
                   (match snapshot with
-                  | Empty quote ->
+                  | Empty quote as empty_quote ->
                     let price, size = Tick_price.(price tick, size tick) in
-                    With_ask (Quote.update_ask quote ~price ~size)
+                    if Price.is_nan price then begin
+                      (* Received invalid price.  Cancel the request. *)
+                      cancel con id; Pipe.close_read ticks;
+                      empty_quote
+                    end else With_ask (Quote.update_ask quote ~price ~size)
                   | With_bid quote ->
                     (* Received complete snapshot.  Cancel the request. *)
                     cancel con id; Pipe.close_read ticks;
