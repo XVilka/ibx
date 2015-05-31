@@ -24,7 +24,11 @@ open Core.Std
 open Tws_prot
 
 module Action = struct
-  type t = [ `Buy | `Sell | `Sell_short ] with sexp
+  module T = struct
+    type t = [ `Buy | `Sell | `Sell_short ] with sexp
+  end
+  include T
+  include Sexpable.To_stringable (T)
 
   let tws_of_t = function
     | `Buy -> "BUY"
@@ -44,7 +48,11 @@ module Action = struct
 end
 
 module Type = struct
-  type t = [ `Market | `Limit ] with sexp
+  module T = struct
+    type t = [ `Market | `Limit ] with sexp
+  end
+  include T
+  include Sexpable.To_stringable (T)
 
   let tws_of_t = function
     | `Market -> "MKT"
@@ -54,9 +62,6 @@ module Type = struct
     | "MKT" -> `Market
     | "LMT" -> `Limit
     | s -> invalid_argf "Type.t_of_tws: %S" s ()
-
-  let to_string = tws_of_t
-  let of_string = t_of_tws
 
   let val_type = Val_type.create tws_of_t t_of_tws
 end
