@@ -64,7 +64,7 @@ let () =
         Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
         >>= fun executions ->
         Pipe.iter_without_pushback executions ~f:(fun execution ->
-          Format.fprintf Format.std_formatter "%a" Execution.pp execution)
+          Format.printf "@[%a@]@\n%!" Execution.pp execution)
       )
     )
   |> Command.run
