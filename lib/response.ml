@@ -1299,7 +1299,7 @@ module Execution = struct
 
   let pp ppf t =
     Format.fprintf ppf
-      "Execution: exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f\n%!"
+      "Execution: exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f"
       (t.exec_id  |> Execution_id.to_string)
       (t.time     |> Time.to_string_trimmed ~zone:Time.Zone.local)
       (t.exchange |> Exchange.to_string)
