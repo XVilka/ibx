@@ -31,18 +31,10 @@ let submit_and_wait_for_fill tws ~timeout ~contract ~order =
     Tws.cancel_order_status tws oid
   | `Result () -> ()
 
-let timeout_arg () =
-  Command.Spec.(
-    flag "-timeout"
-      (optional_with_default (sec 5.) time_span)
-      ~doc:" timeout on fill (default 5s)"
-  )
-
 let () =
-  Command.async_or_error
-    ~summary:"Submit a market buy order"
-    Command.Spec.(Common.common_args () +> timeout_arg ())
-    (fun do_logging host port client_id timeout () ->
+  Command.async_or_error ~summary:"Submit a market buy order"
+    Command.Spec.(Common.common_args ())
+    (fun do_logging host port client_id () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         let symbol = Symbol.of_string "IBM" in
         let ibm = Contract.stock symbol ~exchange:`BATS ~currency:`USD in
@@ -55,7 +47,7 @@ let () =
           Order.buy_market ~quantity:num_shares;
           Order.buy_limit  ~quantity:num_shares ask_price;
         ] ~f:(fun order ->
-          submit_and_wait_for_fill tws ~timeout ~contract:ibm ~order
+          submit_and_wait_for_fill tws ~timeout:(sec 5.) ~contract:ibm ~order
         )
         >>= fun () ->
         Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
