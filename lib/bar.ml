@@ -28,3 +28,10 @@ let to_raw = Fn.id
 let of_raw = Fn.id
 
 let ( = ) t1 t2 = Raw_bar.(=) (to_raw t1) (to_raw t2)
+
+let pp ppf t =
+  Format.fprintf ppf
+    "Bar<%s> op=%.2f hi=%.2f lo=%.2f cl=%.2f vo=%d wap=%.2f count=%d"
+    (t.stamp |> Time.to_sec_string ~zone:Time.Zone.local)
+    (t.op :> float) (t.hi :> float) (t.lo :> float) (t.cl :> float)
+    (t.vo :> int) (t.wap :> float) (t.count)

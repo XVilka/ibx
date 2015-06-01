@@ -51,3 +51,5 @@ val create
   -> t
 
 val ( = ) : t -> t -> bool
+
+val pp : Format.formatter -> t -> unit
