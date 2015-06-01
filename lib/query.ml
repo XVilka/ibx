@@ -658,7 +658,7 @@ module History = struct
       | "HISTORICAL_VOLATILITY" -> `Historical_volatility
       | "OPTION_IMPLIED_VOLATILITY" -> `Implied_volatility
       | "OPTION_VOLUME" -> `Option_volume
-      | s -> invalid_argf "Show.t_of_tws: %S" s ()
+      | s -> invalid_argf "Tick_type.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
   end
@@ -780,7 +780,7 @@ module Realtime_bars = struct
       | "BID" -> `Bid
       | "ASK" -> `Ask
       | "MIDPOINT" -> `Midpoint
-      | s -> invalid_argf "Show.t_of_tws: %s" s ()
+      | s -> invalid_argf "Tick_type.t_of_tws: %s" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
   end
