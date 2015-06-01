@@ -7,10 +7,11 @@ let verbose = ref true
 
 let plot_taq_data ~client_id ~do_logging ~duration ~currency ~symbol =
   Tws.with_client_or_error ~client_id ~do_logging (fun tws ->
-    Tws.taq_data_exn tws ~contract:(Contract.stock ~currency symbol)
+    Tws.contract_data_exn tws ~contract:(Contract.stock ~currency symbol)
+    >>= fun data ->
+    Tws.taq_data_exn tws ~contract:(Contract_data.contract data)
     >>= fun (taq_data, id) ->
-    upon (Clock.after duration) (fun () ->
-      Tws.cancel_taq_data tws id);
+    upon (Clock.after duration) (fun () -> Tws.cancel_taq_data tws id);
     Pipe.fold taq_data ~init:([], [], []) ~f:(fun (bids, asks, trades) taq ->
       if !verbose then Format.printf "@[%a@]@\n%!" TAQ.pp taq;
       return (match taq with
@@ -29,7 +30,8 @@ let plot_taq_data ~client_id ~do_logging ~duration ~currency ~symbol =
     let asks = List.rev (asks : ('t * Price.t) list :> ('t * float) list) in
     let trades = List.rev (trades : ('t * Price.t) list :> ('t * float) list) in
     let gp = Gp.create () in
-    Gp.plot_many gp ~title:(Symbol.to_string symbol)
+    Gp.plot_many gp ~format:"%H:%M:%S"
+      ~title:(Contract_data.long_name data) ~use_grid:true
       [ Series.steps_timey bids ~title:"Bid Price" ~color:`Green
       ; Series.steps_timey asks ~title:"Ask Price" ~color:`Red
       ; Series.points_timey trades ~title:"Trades" ~color:`Blue ];
