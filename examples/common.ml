@@ -30,8 +30,8 @@ let common_args () =
 let duration_arg () =
   Command.Spec.(
     flag "-duration"
-      (optional_with_default (sec 30.) time_span)
-      ~doc:" duration of the data stream (default 30s)"
+      (optional_with_default (sec 60.) time_span)
+      ~doc:" duration of the data stream (default 60s)"
   )
 
 module Currency = struct
