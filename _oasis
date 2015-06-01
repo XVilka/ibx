@@ -155,6 +155,14 @@ Executable "print_market_depth"
   BuildDepends:   ibx
   CompiledObject: best
 
+Executable "print_realtime_bars"
+  Build$:         flag(examples)
+  Path:           examples
+  MainIs:         print_realtime_bars.ml
+  Install:        false
+  BuildDepends:   ibx
+  CompiledObject: best
+
 Executable "option_chain"
   Build$:         flag(examples)
   Path:           examples

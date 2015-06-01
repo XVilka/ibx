@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: b2a24ea664f77fabbf0ac9bee9845050)
+# DO NOT EDIT (digest: 5123f63e121b712e337da2773b9c37ab)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -153,6 +153,15 @@ true: annot, bin_annot
 <examples/print_market_depth.{native,byte}>: package(textutils)
 <examples/print_market_depth.{native,byte}>: package(threads)
 <examples/print_market_depth.{native,byte}>: use_ibx
+# Executable print_realtime_bars
+<examples/print_realtime_bars.{native,byte}>: package(async)
+<examples/print_realtime_bars.{native,byte}>: package(core)
+<examples/print_realtime_bars.{native,byte}>: package(fieldslib.syntax)
+<examples/print_realtime_bars.{native,byte}>: package(sexplib.syntax)
+<examples/print_realtime_bars.{native,byte}>: package(str)
+<examples/print_realtime_bars.{native,byte}>: package(textutils)
+<examples/print_realtime_bars.{native,byte}>: package(threads)
+<examples/print_realtime_bars.{native,byte}>: use_ibx
 # Executable option_chain
 <examples/option_chain.{native,byte}>: package(async)
 <examples/option_chain.{native,byte}>: package(core)
