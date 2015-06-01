@@ -533,7 +533,7 @@ module Message_generator = struct
             E.Server_response {
               Response.
               tag      = V.Realtime_bar;
-              version  = 1;
+              version  = 3;
               query_id = query.Query.id;
               data     = to_tws pickler x;
             })

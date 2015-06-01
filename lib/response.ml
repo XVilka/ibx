@@ -1660,6 +1660,12 @@ end
    +-----------------------------------------------------------------------+ *)
 
 module Realtime_bar = struct
+  module Stamp = struct
+    let tws_of_t t = Time.to_float t |> Float.to_string
+    let t_of_tws s = Float.of_string s |> Time.of_float
+    let val_type = Val_type.create tws_of_t t_of_tws
+  end
+
   type t =
     { stamp : Time.t;
       op : Price.t;
@@ -1692,7 +1698,7 @@ module Realtime_bar = struct
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
-          ~stamp:(fields_value (required Timestamp.val_type))
+          ~stamp:(fields_value (required Stamp.val_type))
           ~op:(fields_value (required Price.val_type))
           ~hi:(fields_value (required Price.val_type))
           ~lo:(fields_value (required Price.val_type))
@@ -1717,7 +1723,7 @@ module Realtime_bar = struct
         wrap (
           Fields.fold
             ~init:(empty ())
-            ~stamp:(fields_value (required Timestamp.val_type))
+            ~stamp:(fields_value (required Stamp.val_type))
             ~op:(fields_value (required Price.val_type))
             ~hi:(fields_value (required Price.val_type))
             ~lo:(fields_value (required Price.val_type))

@@ -174,7 +174,7 @@ let req_history = Ib.Streaming_request.create
 let req_realtime_bars = Ib.Streaming_request.create
   ~send_header:(Ib.Header.create ~tag:S.Realtime_bars ~version:1)
   ~canc_header:(Ib.Header.create ~tag:S.Cancel_realtime_bars ~version:1)
-  ~recv_header:[Ib.Header.create ~tag:R.Realtime_bar ~version:1]
+  ~recv_header:[Ib.Header.create ~tag:R.Realtime_bar ~version:3]
   ~tws_query:Query.Realtime_bars.pickler
   ~tws_response:[Response.Realtime_bar.unpickler]
   ()
