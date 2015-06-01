@@ -772,7 +772,6 @@ module R : sig
 
   (* Realtime bars *)
 
-  val realtime_bar_g  : Response.Realtime_bar.t gen
   val realtime_bars_g : Response.Realtime_bar.t list gen
 
 end = struct
@@ -1175,25 +1174,7 @@ end = struct
   (* ============================== History ================================ *)
 
   let history_g () =
-    let bar_g () =
-      Response.Bar.create
-        ~stamp:(tmg ())
-        ~op:(price_g ())
-        ~hi:(price_g ())
-        ~lo:(price_g ())
-        ~cl:(price_g ())
-        ~vo:(volume_g ())
-        ~wap:(price_g ())
-        ~has_gaps:(bg ())
-        ~count:(nng ())
-    in
-    Response.History.create
-      ~bars:(List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ()))
-
-  (* =========================== Realtime bars ============================= *)
-
-  let realtime_bar_g () =
-    Response.Realtime_bar.create
+    let bar_g () = Bar.create
       ~stamp:(tmg ())
       ~op:(price_g ())
       ~hi:(price_g ())
@@ -1201,9 +1182,26 @@ end = struct
       ~cl:(price_g ())
       ~vo:(volume_g ())
       ~wap:(price_g ())
+      ~has_gaps:(bg ())
       ~count:(nng ())
+    in
+    Response.History.create
+      ~bars:(List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ()))
+
+  (* =========================== Realtime bars ============================= *)
 
   let realtime_bars_g () =
-    List.init (1 + Random.int bound) ~f:(fun _ -> realtime_bar_g ())
+    let bar_g () = Bar.create
+      ~stamp:(tmg ())
+      ~op:(price_g ())
+      ~hi:(price_g ())
+      ~lo:(price_g ())
+      ~cl:(price_g ())
+      ~vo:(volume_g ())
+      ~wap:(price_g ())
+      ~has_gaps:false
+      ~count:(nng ())
+    in
+    List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ())
 
 end

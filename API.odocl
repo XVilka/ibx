@@ -1,6 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: bd4832024fda79a398db8ecb566eecd1)
+# DO NOT EDIT (digest: 7f9a9df62692c9ef29d7c002a555bf9e)
 lib/Account_code
+lib/Bar
 lib/Client_id
 lib/Config
 lib/Contract
@@ -16,6 +17,8 @@ lib/Price
 lib/Option_right
 lib/Query
 lib/Query_intf
+lib/Raw_bar
+lib/Raw_bar_intf
 lib/Raw_contract
 lib/Raw_contract_intf
 lib/Raw_order

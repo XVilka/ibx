@@ -1,6 +1,7 @@
 # OASIS_START
-# DO NOT EDIT (digest: 1926e146b9626fb9ced49df3edbadbc3)
+# DO NOT EDIT (digest: 79549d5960b93e5f1a3d418dcccb4be2)
 Account_code
+Bar
 Client_id
 Config
 Contract
@@ -16,6 +17,8 @@ Price
 Option_right
 Query
 Query_intf
+Raw_bar
+Raw_bar_intf
 Raw_contract
 Raw_contract_intf
 Raw_order

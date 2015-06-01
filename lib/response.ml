@@ -23,15 +23,6 @@
 open Core.Std
 open Tws_prot
 
-module Timestamp = struct
-  include Time
-  let tws_of_t tm = Time.format tm "%Y%m%d  %H:%M:%S"
-  let t_of_tws s =
-    let unescape = unstage (String.Escaping.unescape ~escape_char:' ') in
-    let s = if Int.(String.length s > 8) then unescape s else s^" 00:00:00" in
-    Time.of_string s
-  let val_type = Val_type.create tws_of_t t_of_tws
-end
 
 (* +-----------------------------------------------------------------------+
    | Connection and server                                                 |
@@ -1132,6 +1123,16 @@ end
    +-----------------------------------------------------------------------+ *)
 
 module Execution = struct
+  module Stamp = struct
+    include Time
+    let tws_of_t tm = Time.format tm "%Y%m%d  %H:%M:%S"
+    let t_of_tws s =
+      let unescape = unstage (String.Escaping.unescape ~escape_char:' ') in
+      let s = if Int.(String.length s > 8) then unescape s else s^" 00:00:00" in
+      Time.of_string s
+    let val_type = Val_type.create tws_of_t t_of_tws
+  end
+
   module Side = struct
     module T = struct
       type t = [ `bought | `sold ] with sexp
@@ -1223,7 +1224,7 @@ module Execution = struct
           ~order_id:(fields_value (required Order_id.val_type))
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~exec_id:(fields_value (required Execution_id.val_type))
-          ~time:(fields_value (required Timestamp.val_type))
+          ~time:(fields_value (required Stamp.val_type))
           ~account_code:(fields_value (required Account_code.val_type))
           ~exchange:(fields_value (required Exchange.val_type))
           ~side:(fields_value (required Side.val_type))
@@ -1267,7 +1268,7 @@ module Execution = struct
             ~order_id:(fields_value (required Order_id.val_type))
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~exec_id:(fields_value (required Execution_id.val_type))
-            ~time:(fields_value (required Timestamp.val_type))
+            ~time:(fields_value (required Stamp.val_type))
             ~account_code:(fields_value (required Account_code.val_type))
             ~exchange:(fields_value (required Exchange.val_type))
             ~side:(fields_value (required Side.val_type))
@@ -1465,90 +1466,6 @@ end
    | History                                                               |
    +-----------------------------------------------------------------------+ *)
 
-module Bar = struct
-  type t =
-    { stamp : Time.t;
-      op : Price.t;
-      hi : Price.t;
-      lo : Price.t;
-      cl : Price.t;
-      vo : Volume.t;
-      wap : Price.t;
-      has_gaps : bool;
-      count : int;
-    } with sexp, fields
-
-  let create = Fields.create
-
-  let ( = ) t1 t2 : bool =
-    let use op = fun field ->
-      op (Field.get field t1) (Field.get field t2)
-    in
-    Fields.for_all
-      ~stamp:(use Time.(=))
-      ~op:(use Price.(=.))
-      ~hi:(use Price.(=.))
-      ~lo:(use Price.(=.))
-      ~cl:(use Price.(=.))
-      ~vo:(use Volume.(=))
-      ~wap:(use Price.(=.))
-      ~has_gaps:(use (=))
-      ~count:(use (=))
-
-  let unpickler =
-    Unpickler.create ~name:"Response.Historical_bar"
-      Unpickler.Spec.(
-        Fields.fold
-          ~init:(empty ())
-          ~stamp:(fields_value (required Timestamp.val_type))
-          ~op:(fields_value (required Price.val_type))
-          ~hi:(fields_value (required Price.val_type))
-          ~lo:(fields_value (required Price.val_type))
-          ~cl:(fields_value (required Price.val_type))
-          ~vo:(fields_value (required Volume.val_type))
-          ~wap:(fields_value (required Price.val_type))
-          ~has_gaps:(fields_value (required string))
-          ~count:(fields_value (required int)))
-      (fun stamp op hi lo cl vo wap has_gaps count ->
-        { stamp;
-          op;
-          hi;
-          lo;
-          cl;
-          vo;
-          wap;
-          has_gaps = Bool.of_string has_gaps;
-          count;
-        })
-
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Historical_bar"
-      Pickler.Spec.(
-        wrap (
-          Fields.fold
-            ~init:(empty ())
-            ~stamp:(fields_value (required Timestamp.val_type))
-            ~op:(fields_value (required Price.val_type))
-            ~hi:(fields_value (required Price.val_type))
-            ~lo:(fields_value (required Price.val_type))
-            ~cl:(fields_value (required Price.val_type))
-            ~vo:(fields_value (required Volume.val_type))
-            ~wap:(fields_value (required Price.val_type))
-            ~has_gaps:(fields_value (required string))
-            ~count:(fields_value (required int)))
-          (fun t ->
-            `Args
-              $ t.stamp
-              $ t.op
-              $ t.hi
-              $ t.lo
-              $ t.cl
-              $ t.vo
-              $ t.wap
-              $ Bool.to_string t.has_gaps
-              $ t.count)))
-end
-
 module History = struct
   type t =
     { start : Time.t;
@@ -1587,8 +1504,8 @@ module History = struct
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
-          ~start:(fields_value (required Timestamp.val_type))
-          ~stop:(fields_value (required Timestamp.val_type))
+          ~start:(fields_value (required string))
+          ~stop:(fields_value (required string))
           ~num_bars:(fields_value (required int))
           ~bars:(fun specs -> Fn.const (specs ++ capture_remaining_message)))
       (fun _start _stop num_bars bars_msg ->
@@ -1599,7 +1516,11 @@ module History = struct
             Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
             |> Queue.of_array
           in
-          Unpickler.run_exn Bar.unpickler bar_msg)
+          let bar_u = Unpickler.create
+            Unpickler.Spec.(Raw_bar.Historical_bar.unpickler_spec ()) Fn.id
+          in
+          Unpickler.run_exn bar_u bar_msg
+          |> Bar.of_raw)
         in
         create ~bars
       )
@@ -1610,19 +1531,21 @@ module History = struct
         wrap (
           Fields.fold
             ~init:(empty ())
-            ~start:(fields_value (required Timestamp.val_type))
-            ~stop:(fields_value (required Timestamp.val_type))
+            ~start:(fields_value (required string))
+            ~stop:(fields_value (required string))
             ~num_bars:(fields_value (required int))
             ~bars:(fields_value tws_data))
           (fun t ->
-            let pickler = Only_in_test.force Bar.pickler in
+            let bar_p = Pickler.create
+              Pickler.Spec.(Raw_bar.Historical_bar.pickler_spec ())
+            in
             let bars_msg =
-              List.map t.bars ~f:(fun bar -> Pickler.run pickler bar)
+              List.map t.bars ~f:(fun bar -> Pickler.run bar_p (Bar.to_raw bar))
               |> String.concat
             in
             `Args
-              $ t.start
-              $ t.stop
+              $ Time.to_string t.start
+              $ Time.to_string t.stop
               $ t.num_bars
               $ bars_msg)))
 
@@ -1660,85 +1583,17 @@ end
    +-----------------------------------------------------------------------+ *)
 
 module Realtime_bar = struct
-  module Stamp = struct
-    let tws_of_t t = Time.to_float t |> Float.to_string
-    let t_of_tws s = Float.of_string s |> Time.of_float
-    let val_type = Val_type.create tws_of_t t_of_tws
-  end
+  type t = Bar.t with sexp
 
-  type t =
-    { stamp : Time.t;
-      op : Price.t;
-      hi : Price.t;
-      lo : Price.t;
-      cl : Price.t;
-      vo : Volume.t;
-      wap : Price.t;
-      count : int;
-    } with sexp, fields
+  let create ~bar = bar
+  let ( = ) = Bar.(=)
 
-  let create = Fields.create
-
-  let ( = ) t1 t2 : bool =
-    let use op = fun field ->
-      op (Field.get field t1) (Field.get field t2)
-    in
-    Fields.for_all
-      ~stamp:(use Time.(=))
-      ~op:(use Price.(=.))
-      ~hi:(use Price.(=.))
-      ~lo:(use Price.(=.))
-      ~cl:(use Price.(=.))
-      ~vo:(use Volume.(=))
-      ~wap:(use Price.(=.))
-      ~count:(use (=))
-
-  let unpickler =
-    Unpickler.create ~name:"Response.Realtime_bar"
-      Unpickler.Spec.(
-        Fields.fold
-          ~init:(empty ())
-          ~stamp:(fields_value (required Stamp.val_type))
-          ~op:(fields_value (required Price.val_type))
-          ~hi:(fields_value (required Price.val_type))
-          ~lo:(fields_value (required Price.val_type))
-          ~cl:(fields_value (required Price.val_type))
-          ~vo:(fields_value (required Volume.val_type))
-          ~wap:(fields_value (required Price.val_type))
-          ~count:(fields_value (required int)))
-      (fun stamp op hi lo cl vo wap count ->
-          { stamp;
-            op;
-            hi;
-            lo;
-            cl;
-            vo;
-            wap;
-            count;
-          })
+  let unpickler = Unpickler.create
+    Unpickler.Spec.(Raw_bar.Realtime_bar.unpickler_spec ())
+    Bar.of_raw
 
   let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Realtime_bar"
+    Pickler.create
       Pickler.Spec.(
-        wrap (
-          Fields.fold
-            ~init:(empty ())
-            ~stamp:(fields_value (required Stamp.val_type))
-            ~op:(fields_value (required Price.val_type))
-            ~hi:(fields_value (required Price.val_type))
-            ~lo:(fields_value (required Price.val_type))
-            ~cl:(fields_value (required Price.val_type))
-            ~vo:(fields_value (required Volume.val_type))
-            ~wap:(fields_value (required Price.val_type))
-            ~count:(fields_value (required int)))
-          (fun t ->
-            `Args
-              $ t.stamp
-              $ t.op
-              $ t.hi
-              $ t.lo
-              $ t.cl
-              $ t.vo
-              $ t.wap
-              $ t.count)))
+        wrap (Raw_bar.Realtime_bar.pickler_spec ()) Bar.to_raw))
 end

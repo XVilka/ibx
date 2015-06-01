@@ -1,4 +1,4 @@
-(* File: std_internal.ml
+(* File: bar.mli
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -20,22 +20,34 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-module Account_update  = Response.Account_update
-module Bar             = Bar
-module Book_update     = Response.Book_update
-module Commission      = Response.Commission
-module Contract_data   = Response.Contract_data
-module Contract_id     = Contract_id
-module Execution       = Response.Execution
-module Execution_id    = Execution_id
-module History         = Response.History
-module Option_right    = Option_right
-module Order_id        = Order_id
-module Order_status    = Response.Order_status
-module Position        = Response.Position
-module Security_id     = Security_id
-module Tick_option     = Response.Tick_option
-module Tick_price      = Response.Tick_price
-module Tick_size       = Response.Tick_size
-module Tick_string     = Response.Tick_string
-module Tws_error       = Response.Tws_error
+open Core.Std
+
+type t = private
+  { stamp : Time.t;
+    op : Price.t;
+    hi : Price.t;
+    lo : Price.t;
+    cl : Price.t;
+    vo : Volume.t;
+    wap : Price.t;
+    has_gaps : bool;
+    count : int;
+  } with sexp, fields
+
+include Raw_bar_intf.S
+  with type raw := Raw_bar.t
+  with type t := t
+
+val create
+  :  stamp:Time.t
+  -> op:Price.t
+  -> hi:Price.t
+  -> lo:Price.t
+  -> cl:Price.t
+  -> vo:Volume.t
+  -> wap:Price.t
+  -> has_gaps:bool
+  -> count:int
+  -> t
+
+val ( = ) : t -> t -> bool

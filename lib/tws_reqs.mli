@@ -95,7 +95,7 @@ val req_history :
 (*****************************************************************************)
 
 val req_realtime_bars :
-  (Query.Realtime_bars.t, Response.Realtime_bar.t) Ib.Streaming_request.t
+  (Query.Realtime_bars.t, Bar.t) Ib.Streaming_request.t
 
 
 (** {1 TAQ data} *)

@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 5123f63e121b712e337da2773b9c37ab)
+# DO NOT EDIT (digest: 1c0479736b5851013f85a07a04c5d5f6)
 # Ignore VCS directories, you can use the same kind of rule outside
 # OASIS_START/STOP if you want to exclude directories that contains
 # useless stuff for the build process
@@ -17,6 +17,7 @@ true: annot, bin_annot
 # Library ibx
 "lib/ibx.cmxs": use_ibx
 "lib/account_code.cmx": for-pack(Ibx)
+"lib/bar.cmx": for-pack(Ibx)
 "lib/client_id.cmx": for-pack(Ibx)
 "lib/config.cmx": for-pack(Ibx)
 "lib/contract.cmx": for-pack(Ibx)
@@ -32,6 +33,8 @@ true: annot, bin_annot
 "lib/option_right.cmx": for-pack(Ibx)
 "lib/query.cmx": for-pack(Ibx)
 "lib/query_intf.cmx": for-pack(Ibx)
+"lib/raw_bar.cmx": for-pack(Ibx)
+"lib/raw_bar_intf.cmx": for-pack(Ibx)
 "lib/raw_contract.cmx": for-pack(Ibx)
 "lib/raw_contract_intf.cmx": for-pack(Ibx)
 "lib/raw_order.cmx": for-pack(Ibx)

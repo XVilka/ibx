@@ -449,34 +449,6 @@ end
 (** {1 History} *)
 (*****************************************************************************)
 
-module Bar : sig
-  type t = private
-    { stamp : Time.t;
-      op : Price.t;
-      hi : Price.t;
-      lo : Price.t;
-      cl : Price.t;
-      vo : Volume.t;
-      wap : Price.t;
-      has_gaps : bool;
-      count : int;
-    }
-  with sexp, fields
-  include Response_intf.S with type t := t
-
-  val create
-    :  stamp:Time.t
-    -> op:Price.t
-    -> hi:Price.t
-    -> lo:Price.t
-    -> cl:Price.t
-    -> vo:Volume.t
-    -> wap:Price.t
-    -> has_gaps:bool
-    -> count:int
-    -> t
-end
-
 module History : sig
   type t = private
     { start : Time.t;
@@ -509,27 +481,7 @@ end
 (*****************************************************************************)
 
 module Realtime_bar : sig
-  type t = private
-    { stamp : Time.t;
-      op : Price.t;
-      hi : Price.t;
-      lo : Price.t;
-      cl : Price.t;
-      vo : Volume.t;
-      wap : Price.t;
-      count : int;
-    }
-  with sexp, fields
+  type t = Bar.t with sexp
   include Response_intf.S with type t := t
-
-  val create
-    :  stamp:Time.t
-    -> op:Price.t
-    -> hi:Price.t
-    -> lo:Price.t
-    -> cl:Price.t
-    -> vo:Volume.t
-    -> wap:Price.t
-    -> count:int
-    -> t
+  val create : bar:Bar.t -> t
 end

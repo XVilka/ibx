@@ -52,6 +52,7 @@ module Pickler : sig
     val int64  : int64       Val_type.t
     val float  : float       Val_type.t
     val bool   : bool        Val_type.t
+    val bools  : bool        Val_type.t
     val time   : Time.t      Val_type.t
     val date   : Date.t      Val_type.t
     val zone   : Time.Zone.t Val_type.t
@@ -96,6 +97,7 @@ module Unpickler : sig
     val int64  : int64       Val_type.t
     val float  : float       Val_type.t
     val bool   : bool        Val_type.t
+    val bools  : bool        Val_type.t
     val time   : Time.t      Val_type.t
     val date   : Date.t      Val_type.t
     val zone   : Time.Zone.t Val_type.t

@@ -18,7 +18,7 @@ let () =
           Tws.cancel_market_depth tws id
         );
         Pipe.iter_without_pushback bars ~f:(fun bar ->
-          printf "%s\n%!" (Realtime_bar.sexp_of_t bar |> Sexp.to_string_hum))
+          printf "%s\n%!" (Bar.sexp_of_t bar |> Sexp.to_string_hum))
       )
     )
   |> Command.run

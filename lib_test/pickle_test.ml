@@ -196,12 +196,6 @@ module Response = struct
     (fun () ->
       let module R = Response.History in
       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.history_g);
-
-    (* ========================== Realtime bars ============================ *)
-
-    (fun () ->
-      let module R = Response.Realtime_bar in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.realtime_bar_g);
   ]
 end
 

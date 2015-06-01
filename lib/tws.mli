@@ -429,7 +429,7 @@ val realtime_bars
   -> ?use_tradehours:bool
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Realtime_bar.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Bar.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val realtime_bars_exn
   :  ?bar_size:[ `Five_secs ]
@@ -437,7 +437,7 @@ val realtime_bars_exn
   -> ?use_tradehours:bool
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Realtime_bar.t Pipe.Reader.t * Query_id.t) Deferred.t
+  -> (Bar.t Pipe.Reader.t * Query_id.t) Deferred.t
 
 val cancel_realtime_bars : t -> Query_id.t -> unit
 

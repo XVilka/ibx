@@ -57,6 +57,7 @@ module Val_type = struct
     | "1" -> true
     | s -> invalid_argf "Val_type.bool_of_tws: %S" s ()
   let bool = create tws_of_bool bool_of_tws
+  let bools = create Bool.to_string Bool.of_string
 
   let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S"
   let time_of_tws = Time.of_string
@@ -115,6 +116,7 @@ module Pickler = struct
       let int64  = int64
       let float  = float
       let bool   = bool
+      let bools  = bools
       let time   = time
       let date   = date
       let zone   = zone
@@ -215,6 +217,7 @@ module Unpickler = struct
       let int64  = int64
       let float  = float
       let bool   = bool
+      let bools  = bools
       let time   = time
       let date   = date
       let zone   = zone
