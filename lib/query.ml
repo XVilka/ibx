@@ -697,9 +697,7 @@ module History = struct
       ~date_format:(use (=))
 
   let pickler =
-    let contract_spec =
-      Raw_contract.Pickler_specs.historical_data_query ()
-    in
+    let contract_spec = Raw_contract.Pickler_specs.history_query () in
     Pickler.create ~name:"Query.History"
       Pickler.Spec.(
         wrap (
@@ -723,9 +721,7 @@ module History = struct
               $ t.date_format))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
-    let contract_spec =
-      Raw_contract.Unpickler_specs.historical_data_query ()
-    in
+    let contract_spec = Raw_contract.Unpickler_specs.history_query () in
     Unpickler.create ~name:"Query.History"
       Unpickler.Spec.(
         Fields.fold

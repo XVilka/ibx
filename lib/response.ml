@@ -792,10 +792,8 @@ module Position = struct
       ~account_code:(use Account_code.(=))
 
   let unpickler =
-    let contract_spec =
-      Raw_contract.Unpickler_specs.portfolio_position_response ()
-    in
-    Unpickler.create ~name:"Response.Portfolio_position"
+    let contract_spec = Raw_contract.Unpickler_specs.position_response () in
+    Unpickler.create ~name:"Response.Position"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -821,9 +819,9 @@ module Position = struct
 
   let pickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Pickler_specs.portfolio_position_response ()
+      Raw_contract.Pickler_specs.position_response ()
     in
-    Pickler.create ~name:"Response.Portfolio_position"
+    Pickler.create ~name:"Response.Position"
       Pickler.Spec.(
         wrap (
           Fields.fold
@@ -1214,9 +1212,7 @@ module Execution = struct
       ~order_ref:(use (=))
 
   let unpickler =
-    let contract_spec =
-      Raw_contract.Unpickler_specs.execution_report_response ()
-    in
+    let contract_spec = Raw_contract.Unpickler_specs.execution_response () in
     Unpickler.create ~name:"Response.Execution"
       Unpickler.Spec.(
         Fields.fold
@@ -1257,9 +1253,7 @@ module Execution = struct
           })
 
   let pickler = Only_in_test.of_thunk (fun () ->
-    let contract_spec =
-      Raw_contract.Pickler_specs.execution_report_response ()
-    in
+    let contract_spec = Raw_contract.Pickler_specs.execution_response () in
     Pickler.create ~name:"Response.Execution"
       Pickler.Spec.(
         wrap (

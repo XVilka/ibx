@@ -191,7 +191,7 @@ module Pickler_specs = struct
         ~combo_legs:(fields_value skipped))
     |> wrap_contract_spec
 
-  let historical_data_query () =
+  let history_query () =
     Pickler.Spec.(
       Fields.fold
         ~init:(empty ())
@@ -233,7 +233,7 @@ module Pickler_specs = struct
         ~combo_legs:(fields_value skipped))
     |> wrap_contract_spec
 
-  let portfolio_position_response () =
+  let position_response () =
     Pickler.Spec.(
       Fields.fold
         ~init:(empty ())
@@ -255,7 +255,7 @@ module Pickler_specs = struct
         ~combo_legs:(fields_value skipped))
     |> wrap_contract_spec
 
-  let execution_report_response () =
+  let execution_response () =
     Pickler.Spec.(
       Fields.fold
         ~init:(empty ())
@@ -453,7 +453,7 @@ module Unpickler_specs = struct
       ++ value (optional Symbol.val_type)
         ~name:(field_name Fields.local_symbol))
 
-  let historical_data_query () =
+  let history_query () =
     Unpickler.Spec.(
       step (fun conv symbol sec_type expiry strike option_right multiplier
         exchange listing_exchange currency local_symbol include_expired ->
@@ -517,7 +517,7 @@ module Unpickler_specs = struct
       ++ value (optional Symbol.val_type)
         ~name:(field_name Fields.local_symbol))
 
-  let portfolio_position_response () =
+  let position_response () =
     Unpickler.Spec.(
       step (fun conv con_id symbol sec_type expiry strike option_right
         multiplier exchange currency local_symbol ->
@@ -548,7 +548,7 @@ module Unpickler_specs = struct
       ++ value (optional Symbol.val_type)
         ~name:(field_name Fields.local_symbol))
 
-  let execution_report_response () =
+  let execution_response () =
     Unpickler.Spec.(
       step (fun conv con_id symbol sec_type expiry strike option_right
         exchange currency local_symbol ->
