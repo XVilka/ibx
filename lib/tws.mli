@@ -182,13 +182,13 @@ val calc_implied_volatility_exn
 val submit_order
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> order:([< Order.Action.t ], [< Order.Type.t ]) Order.t
+  -> order:([< Order.Action.t ], [< Order_type.t ]) Order.t
   -> (Order_status.t Tws_result.t Pipe.Reader.t * Order_id.t) Or_error.t Deferred.t
 
 val submit_order_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> order:([< Order.Action.t ], [< Order.Type.t ]) Order.t
+  -> order:([< Order.Action.t ], [< Order_type.t ]) Order.t
   -> (Order_status.t Pipe.Reader.t * Order_id.t) Deferred.t
 
 val cancel_order_status : t -> Order_id.t -> unit

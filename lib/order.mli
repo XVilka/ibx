@@ -27,14 +27,9 @@ module Action : sig
   include Stringable.S with type t := t
 end
 
-module Type : sig
-  type t = [ `Market | `Limit ] with sexp
-  include Stringable.S with type t := t
-end
-
 type ('a, 'b) t
 constraint 'a = [< Action.t ]
-constraint 'b = [< Type.t ]
+constraint 'b = [< Order_type.t ]
 with sexp
 
 include Raw_order_intf.S
@@ -43,7 +38,7 @@ include Raw_order_intf.S
 
 val ( = ) : ('a, 'b) t -> ('a, 'b) t -> bool
 
-val order_type : ('a, 'b) t -> [> Type.t ]
+val order_type : ('a, 'b) t -> Order_type.t
 val quantity   : ('a, 'b) t -> Volume.t
 
 val buy_limit

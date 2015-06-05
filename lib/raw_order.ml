@@ -47,25 +47,6 @@ module Action = struct
   let val_type = Val_type.create tws_of_t t_of_tws
 end
 
-module Type = struct
-  module T = struct
-    type t = [ `Market | `Limit ] with sexp
-  end
-  include T
-  include Sexpable.To_stringable (T)
-
-  let tws_of_t = function
-    | `Market -> "MKT"
-    | `Limit -> "LMT"
-
-  let t_of_tws = function
-    | "MKT" -> `Market
-    | "LMT" -> `Limit
-    | s -> invalid_argf "Type.t_of_tws: %S" s ()
-
-  let val_type = Val_type.create tws_of_t t_of_tws
-end
-
 module Time_in_force = struct
   type t =
   [ `Day
@@ -363,7 +344,7 @@ type t =
     volatility_type : Volatility_type.t option;
     continuous_update : bool;
     reference_price_type : Reference_price_type.t option;
-    delta_neutral_order_type : Type.t option;
+    delta_neutral_order_type : Order_type.t option;
     delta_neutral_aux_price : Price.t option;
     delta_neutral_contract_id : Contract_id.t option;
     delta_neutral_settling_firm : string option;

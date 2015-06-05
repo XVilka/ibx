@@ -87,7 +87,7 @@ type t =
     override_percentage_constraints : bool;
     volatility : float option;
     volatility_type : Raw_order.Volatility_type.t option;
-    delta_neutral_order_type : Raw_order.Type.t option;
+    delta_neutral_order_type : Order_type.t option;
     delta_neutral_aux_price : Price.t option;
     continuous_update : bool;
     reference_price_type : Raw_order.Reference_price_type.t option;
@@ -343,7 +343,7 @@ let pickler =
           ~override_percentage_constraints:(fields_value (required bool))
           ~volatility:(fields_value (optional float))
           ~volatility_type:(fields_value (optional Raw_order.Volatility_type.val_type))
-          ~delta_neutral_order_type:(fields_value (optional Raw_order.Type.val_type))
+          ~delta_neutral_order_type:(fields_value (optional Order_type.val_type))
           ~delta_neutral_aux_price:(fields_value (optional Price.val_type))
           ~continuous_update:(fields_value (required bool))
           ~reference_price_type:(fields_value (optional Raw_order.Reference_price_type.val_type))
@@ -507,7 +507,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~override_percentage_constraints:(fields_value (required bool))
         ~volatility:(fields_value (optional float))
         ~volatility_type:(fields_value (optional Raw_order.Volatility_type.val_type))
-        ~delta_neutral_order_type:(fields_value (optional Raw_order.Type.val_type))
+        ~delta_neutral_order_type:(fields_value (optional Order_type.val_type))
         ~delta_neutral_aux_price:(fields_value (optional Price.val_type))
         ~continuous_update:(fields_value (required bool))
         ~reference_price_type:(fields_value (optional Raw_order.Reference_price_type.val_type))

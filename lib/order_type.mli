@@ -1,4 +1,4 @@
-(* File: raw_order_intf.ml
+(* File: order_type.mli
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -20,12 +20,34 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-module type S = sig
-  type raw
-  type ('a, 'b) t
-  constraint 'a = [< Raw_order.Action.t ]
-  constraint 'b = [< Order_type.t ]
+open Core.Std
 
-  val of_raw : raw -> ('a, 'b) t
-  val to_raw : ('a, 'b) t -> raw
-end
+type t =
+[ `Auction
+| `Basket
+| `Bracket
+| `Hidden
+| `Iceberg
+| `Limit
+| `Limit_if_touched
+| `Limit_on_close
+| `Limit_on_open
+| `Market
+| `Market_if_touched
+| `Market_on_close
+| `Market_on_open
+| `Market_to_limit
+| `Pegged_to_benchmark
+| `Pegged_to_market
+| `Pegged_to_midpoint
+| `Stop
+| `Stop_limit
+| `TWAP
+| `Trailing_limit_if_touched
+| `Trailing_market_if_touched
+| `Trailing_stop
+| `Trailing_stop_limit
+| `VWAP
+] with sexp
+include Stringable.S with type t := t
+include Twsable.S with type t := t

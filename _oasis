@@ -41,6 +41,7 @@ Library ibx
                   Option_right,
                   Order,
                   Order_id,
+                  Order_type,
                   Pickable,
                   Price,
                   Query,

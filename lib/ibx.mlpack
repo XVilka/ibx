@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 79549d5960b93e5f1a3d418dcccb4be2)
+# DO NOT EDIT (digest: 1aee60c54aa0e2bdac14c3cea1520c4a)
 Account_code
 Bar
 Client_id
@@ -10,11 +10,12 @@ Currency
 Exchange
 Execution_id
 Ib
+Option_right
 Order
 Order_id
+Order_type
 Pickable
 Price
-Option_right
 Query
 Query_intf
 Raw_bar

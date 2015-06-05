@@ -10,7 +10,7 @@ open Ibx.Std
    However, this will be solved in later versions of the library. *)
 
 let submit_and_wait_for_fill tws ~timeout ~contract ~order =
-  let order_type = Order.Type.to_string (Order.order_type order) in
+  let order_type = Order_type.to_string (Order.order_type order) in
   printf "Submit %s buy order for %d shares of %s\n%!"
     order_type
     (Order.quantity order :> int)
