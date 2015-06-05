@@ -217,14 +217,14 @@ val filter_executions
   :  ?time:Time.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> order_action:Order_action.t
+  -> action:Order_action.t
   -> Execution.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
 val filter_executions_exn
   :  ?time:Time.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> order_action:Order_action.t
+  -> action:Order_action.t
   -> Execution.t Pipe.Reader.t Deferred.t
 
 

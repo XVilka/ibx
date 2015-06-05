@@ -50,7 +50,7 @@ let () =
           submit_and_wait_for_fill tws ~timeout:(sec 5.) ~contract:ibm ~order
         )
         >>= fun () ->
-        Tws.filter_executions_exn tws ~contract:ibm ~order_action:`Buy
+        Tws.filter_executions_exn tws ~contract:ibm ~action:`Buy
         >>= fun executions ->
         Pipe.iter_without_pushback executions ~f:(fun execution ->
           Format.printf "@[%a@]@\n%!" Execution.pp execution)

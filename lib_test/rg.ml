@@ -537,7 +537,7 @@ end = struct
       ~client_id:(client_id_g ())
       ~account_code:(account_code_g ())
       ~time:(tmg ())
-      ~order_action:(order_action_g ())
+      ~action:(order_action_g ())
 
   (* ========================== Contract details =========================== *)
 

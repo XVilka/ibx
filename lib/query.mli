@@ -139,7 +139,7 @@ module Executions : sig
     -> client_id:Client_id.t
     -> account_code:Account_code.t
     -> time:Time.t
-    -> order_action:Order_action.t
+    -> action:Order_action.t
     -> t
 end
 

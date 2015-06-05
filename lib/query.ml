@@ -368,10 +368,10 @@ module Executions = struct
       symbol : Symbol.t;
       sec_type : string;
       exchange : Exchange.t;
-      order_action : Order_action.t;
+      action : Order_action.t;
     } with sexp, fields
 
-  let create ~contract ~client_id ~account_code ~time ~order_action =
+  let create ~contract ~client_id ~account_code ~time ~action =
     let contract = Contract.to_raw contract in
     { client_id;
       account_code;
@@ -379,7 +379,7 @@ module Executions = struct
       symbol = Raw_contract.symbol contract;
       sec_type = Raw_contract.sec_type contract;
       exchange = Raw_contract.exchange contract;
-      order_action;
+      action;
     }
 
   let ( = ) t1 t2 =
@@ -393,7 +393,7 @@ module Executions = struct
       ~symbol:(use Symbol.(=))
       ~sec_type:(use (=))
       ~exchange:(use (=))
-      ~order_action:(use (=))
+      ~action:(use (=))
 
   let pickler =
     Pickler.create ~name:"Query.Executions"
@@ -407,7 +407,7 @@ module Executions = struct
             ~symbol:(fields_value (required Symbol.val_type))
             ~sec_type:(fields_value (required string))
             ~exchange:(fields_value (required Exchange.val_type))
-            ~order_action:(fields_value (required Order_action.val_type)))
+            ~action:(fields_value (required Order_action.val_type)))
           (fun t ->
             `Args
               $ t.client_id
@@ -416,7 +416,7 @@ module Executions = struct
               $ t.symbol
               $ t.sec_type
               $ t.exchange
-              $ t.order_action))
+              $ t.action))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:"Query.Executions"
@@ -429,15 +429,15 @@ module Executions = struct
           ~symbol:(fields_value (required Symbol.val_type))
           ~sec_type:(fields_value (required string))
           ~exchange:(fields_value (required Exchange.val_type))
-          ~order_action:(fields_value (required Order_action.val_type)))
-      (fun client_id account_code time symbol sec_type exchange order_action ->
+          ~action:(fields_value (required Order_action.val_type)))
+      (fun client_id account_code time symbol sec_type exchange action ->
         { client_id;
           account_code;
           time;
           symbol;
           sec_type;
           exchange;
-          order_action;
+          action;
         }))
 end
 

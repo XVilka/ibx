@@ -172,7 +172,7 @@ let suite = "Client" >::: [
       let module R = Response.Execution in
       let gen_executions = Lazy.force Gen.executions in
       Tws.filter_executions_exn tws ~contract:(Rg.contract_g ())
-        ~order_action:(Rg.order_action_g ())
+        ~action:(Rg.order_action_g ())
       >>= fun reader ->
       Pipe.read_all reader
       >>| fun result ->

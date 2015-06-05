@@ -469,7 +469,7 @@ let portfolio_exn t = portfolio t >>| Or_error.ok_exn
    | Executions                                                            |
    +-----------------------------------------------------------------------+ *)
 
-let filter_executions ?time t ~contract ~order_action =
+let filter_executions ?time t ~contract ~action =
   with_connection t ~f:(fun con ->
     let q = Query.Executions.create
       ~contract
@@ -478,7 +478,7 @@ let filter_executions ?time t ~contract ~order_action =
          can only call it in a handler of [Tws.with_client]. *)
       ~account_code:(Option.value_exn (account_code t))
       ~time:(Option.value time ~default:(Time.sub (Time.now ()) Time.Span.day))
-      ~order_action
+      ~action
     in
     Ib.Streaming_request.(dispatch Tws_reqs.req_executions con q >>| function
     | Error _ as e -> e
@@ -491,8 +491,8 @@ let filter_executions ?time t ~contract ~order_action =
     )
   )
 
-let filter_executions_exn ?time t ~contract ~order_action =
-  filter_executions ?time t ~contract ~order_action >>| function
+let filter_executions_exn ?time t ~contract ~action =
+  filter_executions ?time t ~contract ~action >>| function
   | Error e -> Error.raise e
   | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 

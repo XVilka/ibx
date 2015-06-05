@@ -39,7 +39,7 @@ type t =
     sec_id_type : Security_id.Type.t option;
     sec_id : Security_id.Id.t option;
     (* ====================== order fields ====================== *)
-    order_action : string;
+    action : string;
     quantity : Volume.t;
     order_kind : string;
     limit_price : Price.t option;
@@ -125,7 +125,7 @@ let create ~contract ~order ~account_code =
     sec_id_type                     = contract.Raw_contract.sec_id_type;
     sec_id                          = contract.Raw_contract.sec_id;
     (* =========================== order fields ============================= *)
-    order_action                    = order.Raw_order.action;
+    action                          = order.Raw_order.action;
     quantity                        = order.Raw_order.quantity;
     order_kind                      = order.Raw_order.order_type;
     limit_price                     = order.Raw_order.limit_price;
@@ -135,7 +135,7 @@ let create ~contract ~order ~account_code =
     account_code;  (* The account code of the current session. *)
     open_close                      = order.Raw_order.open_close;
     origin                          = order.Raw_order.origin;
-    order_ref                 = order.Raw_order.order_ref;
+    order_ref                       = order.Raw_order.order_ref;
     transmit                        = order.Raw_order.transmit;
     parent_id                       = order.Raw_order.parent_id;
     block_order                     = order.Raw_order.block_order;
@@ -210,7 +210,7 @@ let ( = ) t1 t2 : bool =
     ~local_symbol:(use (=))
     ~sec_id_type:(use (=))
     ~sec_id:(use (=))
-    ~order_action:(use (=))
+    ~action:(use (=))
     ~quantity:(use (=))
     ~order_kind:(use (=))
     ~limit_price:(use (Option.equal Price.(=.)))
@@ -295,7 +295,7 @@ let pickler =
           ~local_symbol:(fields_value (optional Symbol.val_type))
           ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
           ~sec_id:(fields_value (optional Security_id.Id.val_type))
-          ~order_action:(fields_value (required string))
+          ~action:(fields_value (required string))
           ~quantity:(fields_value (required Volume.val_type))
           ~order_kind:(fields_value (required string))
           ~limit_price:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
@@ -375,7 +375,7 @@ let pickler =
             $ t.local_symbol
             $ t.sec_id_type
             $ t.sec_id
-            $ t.order_action
+            $ t.action
             $ t.quantity
             $ t.order_kind
             $ t.limit_price
@@ -459,7 +459,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~local_symbol:(fields_value (optional Symbol.val_type))
         ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
         ~sec_id:(fields_value (optional Security_id.Id.val_type))
-        ~order_action:(fields_value (required string))
+        ~action:(fields_value (required string))
         ~quantity:(fields_value (required Volume.val_type))
         ~order_kind:(fields_value (required string))
         ~limit_price:(fields_value (optional Price.val_type ~none_on_default:"0.0"))
@@ -538,7 +538,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
       local_symbol
       sec_id_type
       sec_id
-      order_action
+      action
       quantity
       order_kind
       limit_price
@@ -616,7 +616,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
           local_symbol;
           sec_id_type;
           sec_id;
-          order_action;
+          action;
           quantity;
           order_kind;
           limit_price;
