@@ -126,6 +126,17 @@ module Pickler = struct
       value : 'a -> Buffer.t -> unit;
     }
 
+    let sequence ?(sep=',') val_type = {
+      value = (fun a_list buf ->
+        if List.is_empty a_list then
+          serialize string.Val_type.tws_of_a "" buf
+        else
+          let sep = Char.to_string sep in
+          serialize string.Val_type.tws_of_a
+            (String.concat ~sep (List.map a_list ~f:val_type.Val_type.tws_of_a))
+            buf);
+    }
+
     let required val_type = {
       value = (fun a buf -> serialize val_type.Val_type.tws_of_a a buf);
     }
@@ -227,6 +238,13 @@ module Unpickler = struct
 
     type 'a value = {
       value : name:string -> 'a parse;
+    }
+
+    let sequence ?(sep=',') val_type = {
+      value = (fun ~name msg ->
+        let s, msg = parse name string.Val_type.a_of_tws msg in
+        if String.is_empty s then [], msg else
+          List.map (String.split s ~on:sep ) ~f:val_type.Val_type.a_of_tws, msg)
     }
 
     let required val_type = {

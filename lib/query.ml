@@ -135,6 +135,8 @@ module Market_data = struct
       | "258" -> `Fundamental_ratios
       | "mdoff" -> `Turn_off_market_data
       | s   -> invalid_argf "Tick_kind.t_of_tws: %s" s ()
+
+    let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
@@ -168,12 +170,9 @@ module Market_data = struct
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-            ~tick_generics:(fields_value (required string))
+            ~tick_generics:(fields_value (sequence Tick_kind.val_type))
             ~snapshot:(fields_value (required bool)))
           (fun { contract; tick_generics; snapshot } ->
-            let tick_generics =
-              String.concat (List.map tick_generics ~f:Tick_kind.tws_of_t) ~sep:","
-            in
             `Args $ contract $ tick_generics $ snapshot))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
@@ -185,13 +184,9 @@ module Market_data = struct
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-          ~tick_generics:(fields_value (required string))
+          ~tick_generics:(fields_value (sequence Tick_kind.val_type))
           ~snapshot:(fields_value (required bool)))
       (fun contract tick_generics snapshot ->
-        let tick_generics = match tick_generics with
-          | "" -> []
-          | s  -> List.map (String.split s ~on:',') ~f:Tick_kind.t_of_tws
-        in
         { contract; tick_generics; snapshot }))
 end
 

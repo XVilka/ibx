@@ -948,9 +948,9 @@ module Contract_data = struct
           ~name:(field_name Fields.min_tick)
         ++ value (optional int)
           ~name:(field_name Raw_contract.Fields.multiplier)
-        ++ value (required string)
+        ++ value (sequence string)
           ~name:(field_name Fields.order_types)
-        ++ value (required string)
+        ++ value (sequence Exchange.val_type)
           ~name:(field_name Fields.valid_exchanges)
         ++ value (required int)
           ~name:(field_name Fields.price_magnifier)
@@ -970,9 +970,9 @@ module Contract_data = struct
           ~name:(field_name Fields.subcategory)
         ++ value (optional zone)
           ~name:(field_name Fields.time_zone)
-        ++ value (required string)
+        ++ value (sequence Trading_times.val_type ~sep:';')
           ~name:(field_name Fields.trading_hours)
-        ++ value (required string)
+        ++ value (sequence Trading_times.val_type ~sep:';')
           ~name:(field_name Fields.liquid_hours))
       (fun symbol sec_type expiry strike option_right exchange currency
         local_symbol market_name trading_class con_id min_tick multiplier
@@ -1000,15 +1000,8 @@ module Contract_data = struct
             market_name;
             trading_class;
             min_tick;
-            order_types =
-              if String.is_empty order_types then []
-              else String.split order_types ~on:',';
-            valid_exchanges =
-              if String.is_empty valid_exchanges then []
-              else (
-                String.split valid_exchanges ~on:','
-                |> List.map ~f:Exchange.t_of_tws
-              );
+            order_types;
+            valid_exchanges;
             price_magnifier;
             underlying_id;
             long_name;
@@ -1017,12 +1010,8 @@ module Contract_data = struct
             category;
             subcategory;
             time_zone;
-            trading_hours =
-              String.split trading_hours ~on:';'
-              |> List.map ~f:Trading_times.t_of_tws;
-            liquid_hours =
-              String.split liquid_hours ~on:';'
-              |> List.map ~f:Trading_times.t_of_tws;
+            trading_hours;
+            liquid_hours;
           })
 
   let pickler = Only_in_test.of_thunk (fun () ->
@@ -1056,9 +1045,9 @@ module Contract_data = struct
               (* multiplier *)
               ++ value (optional int)
               (* order types *)
-              ++ value (required string)
+              ++ value (sequence string)
               (* valid exchanges *)
-              ++ value (required string)
+              ++ value (sequence Exchange.val_type)
               (* price magnifier *)
               ++ value (required int)
               (* underlying id *)
@@ -1078,9 +1067,9 @@ module Contract_data = struct
               (* time_zone *)
               ++ value (optional zone)
               (* trading hours *)
-              ++ value (required string)
+              ++ value (sequence Trading_times.val_type ~sep:';')
               (* liquid hours *)
-              ++ value (required string))
+              ++ value (sequence Trading_times.val_type ~sep:';'))
           (fun t ->
             `Args
               $ t.contract.Raw_contract.symbol
@@ -1096,9 +1085,8 @@ module Contract_data = struct
               $ t.contract.Raw_contract.con_id
               $ t.min_tick
               $ t.contract.Raw_contract.multiplier
-              $ (String.concat t.order_types ~sep:",")
-              $ (List.map t.valid_exchanges ~f:Exchange.tws_of_t
-                |> String.concat ~sep:",")
+              $ t.order_types
+              $ t.valid_exchanges
               $ t.price_magnifier
               $ t.underlying_id
               $ t.long_name
@@ -1108,10 +1096,8 @@ module Contract_data = struct
               $ t.category
               $ t.subcategory
               $ t.time_zone
-              $ (List.map t.trading_hours ~f:Trading_times.tws_of_t
-                |> String.concat ~sep:";")
-              $ (List.map t.liquid_hours ~f:Trading_times.tws_of_t
-                |> String.concat ~sep:";")
+              $ t.trading_hours
+              $ t.liquid_hours
           )
       ))
 end

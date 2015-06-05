@@ -59,6 +59,7 @@ module Pickler : sig
 
     type 'a value
 
+    val sequence : ?sep:char -> 'a Val_type.t -> 'a list value
     val required : 'a Val_type.t -> 'a value
     val optional : ?default_on_none:raw_tws -> 'a Val_type.t -> 'a option value
 
@@ -102,9 +103,9 @@ module Unpickler : sig
     val date   : Date.t      Val_type.t
     val zone   : Time.Zone.t Val_type.t
 
-
     type 'a value
 
+    val sequence : ?sep:char -> 'a Val_type.t -> 'a list value
     val required : 'a Val_type.t -> 'a value
     val optional : ?none_on_default:raw_tws -> 'a Val_type.t -> 'a option value
     val optional_with_default : default:'a -> 'a Val_type.t -> 'a value
