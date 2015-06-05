@@ -368,7 +368,7 @@ module Executions = struct
       symbol : Symbol.t;
       sec_type : string;
       exchange : Exchange.t;
-      order_action : Order.Action.t;
+      order_action : Order_action.t;
     } with sexp, fields
 
   let create ~contract ~client_id ~account_code ~time ~order_action =
@@ -407,7 +407,7 @@ module Executions = struct
             ~symbol:(fields_value (required Symbol.val_type))
             ~sec_type:(fields_value (required string))
             ~exchange:(fields_value (required Exchange.val_type))
-            ~order_action:(fields_value (required Raw_order.Action.val_type)))
+            ~order_action:(fields_value (required Order_action.val_type)))
           (fun t ->
             `Args
               $ t.client_id
@@ -429,7 +429,7 @@ module Executions = struct
           ~symbol:(fields_value (required Symbol.val_type))
           ~sec_type:(fields_value (required string))
           ~exchange:(fields_value (required Exchange.val_type))
-          ~order_action:(fields_value (required Raw_order.Action.val_type)))
+          ~order_action:(fields_value (required Order_action.val_type)))
       (fun client_id account_code time symbol sec_type exchange order_action ->
         { client_id;
           account_code;

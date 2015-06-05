@@ -1,4 +1,4 @@
-(* File: order.mli
+(* File: order_action.ml
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -21,35 +21,23 @@
 *)
 
 open Core.Std
+open Tws_prot
 
-type ('a, 'b) t
-constraint 'a = [< Order_action.t ]
-constraint 'b = [< Order_type.t ]
-with sexp
+module T = struct
+  type t = [ `Buy | `Sell | `Sell_short ] with sexp
+end
+include T
+include Sexpable.To_stringable (T)
 
-include Raw_order_intf.S
-  with type raw := Raw_order.t
-  with type ('a, 'b) t := ('a, 'b) t
+let tws_of_t = function
+  | `Buy -> "BUY"
+  | `Sell -> "SELL"
+  | `Sell_short -> "SSHORT"
 
-val ( = ) : ('a, 'b) t -> ('a, 'b) t -> bool
+let t_of_tws = function
+  | "BUY" -> `Buy
+  | "SELL" -> `Sell
+  | "SSHORT" -> `Sell_short
+  | s -> invalid_argf "Order_action.t_of_tws: %S" s ()
 
-val order_type : ('a, 'b) t -> Order_type.t
-val quantity   : ('a, 'b) t -> Volume.t
-
-val buy_limit
-  :  quantity:Volume.t
-  -> Price.t
-  -> ([> `Buy ], [> `Limit ]) t
-
-val sell_limit
-  :  quantity:Volume.t
-  -> Price.t
-  -> ([> `Sell ], [> `Limit ]) t
-
-val buy_market
-  :  quantity:Volume.t
-  -> ([> `Buy  ], [> `Market ]) t
-
-val sell_market
-  :  quantity:Volume.t
-  -> ([> `Sell ], [> `Market ]) t
+let val_type = Val_type.create tws_of_t t_of_tws

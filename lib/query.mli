@@ -101,7 +101,7 @@ module Submit_order : sig
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
-    -> order:([< Order.Action.t ], [< Order_type.t ]) Order.t
+    -> order:([< Order_action.t ], [< Order_type.t ]) Order.t
     -> account_code:Account_code.t
     -> t
 end
@@ -139,7 +139,7 @@ module Executions : sig
     -> client_id:Client_id.t
     -> account_code:Account_code.t
     -> time:Time.t
-    -> order_action:Order.Action.t
+    -> order_action:Order_action.t
     -> t
 end
 

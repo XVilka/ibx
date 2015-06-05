@@ -23,29 +23,6 @@
 open Core.Std
 open Tws_prot
 
-module Action = struct
-  module T = struct
-    type t = [ `Buy | `Sell | `Sell_short ] with sexp
-  end
-  include T
-  include Sexpable.To_stringable (T)
-
-  let tws_of_t = function
-    | `Buy -> "BUY"
-    | `Sell -> "SELL"
-    | `Sell_short -> "SSHORT"
-
-  let t_of_tws = function
-    | "BUY" -> `Buy
-    | "SELL" -> `Sell
-    | "SSHORT" -> `Sell_short
-    | s -> invalid_argf "Action.t_of_tws: %S" s ()
-
-  let to_string t = Sexp.to_string (sexp_of_t t)
-  let of_string s = t_of_sexp (Sexp.Atom s)
-
-  let val_type = Val_type.create tws_of_t t_of_tws
-end
 
 module Time_in_force = struct
   type t =

@@ -22,13 +22,8 @@
 
 open Core.Std
 
-include struct
-  open Raw_order
-  module Action = Action
-end
-
 type ('a, 'b) t = Raw_order.t
-constraint 'a = [< Action.t ]
+constraint 'a = [< Order_action.t ]
 constraint 'b = [< Order_type.t ]
 with sexp
 

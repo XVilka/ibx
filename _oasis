@@ -40,6 +40,7 @@ Library ibx
                   Ib,
                   Option_right,
                   Order,
+                  Order_action,
                   Order_id,
                   Order_type,
                   Pickable,

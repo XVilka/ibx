@@ -59,8 +59,8 @@ module Rg_common : sig
   val option_g : [ `Option ] Contract.t gen
   val contract_g : Security_type.t Contract.t gen
 
-  val order_action_g : Order.Action.t gen
-  val order_g : (Order.Action.t, Order_type.t) Order.t gen
+  val order_action_g : Order_action.t gen
+  val order_g : (Order_action.t, Order_type.t) Order.t gen
 
 end = struct
 

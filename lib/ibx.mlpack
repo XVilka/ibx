@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 1aee60c54aa0e2bdac14c3cea1520c4a)
+# DO NOT EDIT (digest: 41d7eff9e4a302fc6350f78d00ef278a)
 Account_code
 Bar
 Client_id
@@ -12,6 +12,7 @@ Execution_id
 Ib
 Option_right
 Order
+Order_action
 Order_id
 Order_type
 Pickable
