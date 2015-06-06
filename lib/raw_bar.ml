@@ -71,21 +71,11 @@ let wrap_bar_spec bar_spec =
           $ t.count))
 
 module Historical_bar = struct
-  module Stamp = struct
-    include Time
-    let tws_of_t tm = Time.format tm "%Y%m%d  %H:%M:%S"
-    let t_of_tws s =
-      let unescape = unstage (String.Escaping.unescape ~escape_char:' ') in
-      let s = if Int.(String.length s > 8) then unescape s else s^" 00:00:00" in
-      Time.of_string s
-    let val_type = Val_type.create tws_of_t t_of_tws
-  end
-
   let pickler_spec () =
     Pickler.Spec.(
       Fields.fold
         ~init:(empty ())
-        ~stamp:(fields_value (required Stamp.val_type))
+        ~stamp:(fields_value (required time))
         ~op:(fields_value (required Price.val_type))
         ~hi:(fields_value (required Price.val_type))
         ~lo:(fields_value (required Price.val_type))
@@ -101,7 +91,7 @@ module Historical_bar = struct
       step (fun conv stamp op hi lo cl vo wap has_gaps count ->
         conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps ~count)
       )
-      ++ value (required Stamp.val_type)
+      ++ value (required time)
         ~name:(field_name Fields.stamp)
       ++ value (required Price.val_type)
         ~name:(field_name Fields.op)

@@ -64,7 +64,15 @@ module Val_type = struct
   let stamp = create tws_of_stamp stamp_of_tws
 
   let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S"
-  let time_of_tws = Time.of_string
+
+  let unescape = unstage (String.Escaping.unescape ~escape_char:' ')
+  let time_of_date d = Time.(of_date_ofday d Ofday.start_of_day ~zone:Zone.local)
+
+  let time_of_tws s =
+    let len = String.length s in
+    if len = 8 then time_of_date (Date.of_string_iso8601_basic s ~pos:0)
+    else if len = 18 then Time.of_string (unescape s) else Time.of_string s
+
   let time = create tws_of_time time_of_tws
 
   let tws_of_date = Date.to_string_iso8601_basic

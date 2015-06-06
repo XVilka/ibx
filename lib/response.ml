@@ -1107,16 +1107,6 @@ end
    +-----------------------------------------------------------------------+ *)
 
 module Execution = struct
-  module Stamp = struct
-    include Time
-    let tws_of_t tm = Time.format tm "%Y%m%d  %H:%M:%S"
-    let t_of_tws s =
-      let unescape = unstage (String.Escaping.unescape ~escape_char:' ') in
-      let s = if Int.(String.length s > 8) then unescape s else s^" 00:00:00" in
-      Time.of_string s
-    let val_type = Val_type.create tws_of_t t_of_tws
-  end
-
   module Side = struct
     module T = struct
       type t = [ `bought | `sold ] with sexp
@@ -1206,7 +1196,7 @@ module Execution = struct
           ~order_id:(fields_value (required Order_id.val_type))
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~exec_id:(fields_value (required Execution_id.val_type))
-          ~time:(fields_value (required Stamp.val_type))
+          ~time:(fields_value (required time))
           ~account_code:(fields_value (required Account_code.val_type))
           ~exchange:(fields_value (required Exchange.val_type))
           ~side:(fields_value (required Side.val_type))
@@ -1248,7 +1238,7 @@ module Execution = struct
             ~order_id:(fields_value (required Order_id.val_type))
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~exec_id:(fields_value (required Execution_id.val_type))
-            ~time:(fields_value (required Stamp.val_type))
+            ~time:(fields_value (required time))
             ~account_code:(fields_value (required Account_code.val_type))
             ~exchange:(fields_value (required Exchange.val_type))
             ~side:(fields_value (required Side.val_type))
