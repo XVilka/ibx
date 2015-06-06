@@ -123,17 +123,11 @@ module Historical_bar = struct
 end
 
 module Realtime_bar = struct
-  module Stamp = struct
-    let tws_of_t t = Time.to_float t |> Float.to_string
-    let t_of_tws s = Float.of_string s |> Time.of_float
-    let val_type = Val_type.create tws_of_t t_of_tws
-  end
-
   let pickler_spec () =
     Pickler.Spec.(
       Fields.fold
         ~init:(empty ())
-        ~stamp:(fields_value (required Stamp.val_type))
+        ~stamp:(fields_value (required stamp))
         ~op:(fields_value (required Price.val_type))
         ~hi:(fields_value (required Price.val_type))
         ~lo:(fields_value (required Price.val_type))
@@ -149,7 +143,7 @@ module Realtime_bar = struct
       step (fun conv stamp op hi lo cl vo wap count ->
         conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps:false ~count)
       )
-      ++ value (required Stamp.val_type)
+      ++ value (required stamp)
         ~name:(field_name Fields.stamp)
       ++ value (required Price.val_type)
         ~name:(field_name Fields.op)

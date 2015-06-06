@@ -59,6 +59,10 @@ module Val_type = struct
   let bool = create tws_of_bool bool_of_tws
   let bools = create Bool.to_string Bool.of_string
 
+  let tws_of_stamp t = Time.to_float t |> Float.to_string
+  let stamp_of_tws s = Float.of_string s |> Time.of_float
+  let stamp = create tws_of_stamp stamp_of_tws
+
   let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S"
   let time_of_tws = Time.of_string
   let time = create tws_of_time time_of_tws
@@ -117,6 +121,7 @@ module Pickler = struct
       let float  = float
       let bool   = bool
       let bools  = bools
+      let stamp  = stamp
       let time   = time
       let date   = date
       let zone   = zone
@@ -229,6 +234,7 @@ module Unpickler = struct
       let float  = float
       let bool   = bool
       let bools  = bools
+      let stamp  = stamp
       let time   = time
       let date   = date
       let zone   = zone
