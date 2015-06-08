@@ -424,7 +424,11 @@ val history_exn
 (******************************************************************************)
 
 val realtime_bars
-  :  ?bar_size:[ `Five_secs ] (* TWS API supports only 5 second bars. *)
+  :  ?bar_size:[
+  | `Five_secs | `Fifteen_secs | `Thirty_secs
+  | `One_min   | `Two_mins     | `Three_mins
+  | `Five_mins | `Fifteen_mins | `Thirty_mins
+  ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_tradehours:bool
   -> t
@@ -432,7 +436,11 @@ val realtime_bars
   -> (Bar.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val realtime_bars_exn
-  :  ?bar_size:[ `Five_secs ]
+  :  ?bar_size:[
+  | `Five_secs | `Fifteen_secs | `Thirty_secs
+  | `One_min   | `Two_mins     | `Three_mins
+  | `Five_mins | `Fifteen_mins | `Thirty_mins
+  ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_tradehours:bool
   -> t

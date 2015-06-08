@@ -52,4 +52,6 @@ val create
 
 val ( = ) : t -> t -> bool
 
+val aggregate : t -> bar:t -> t
+
 val pp : Format.formatter -> t -> unit

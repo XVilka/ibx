@@ -686,6 +686,17 @@ let history_exn
    | Realtime bars                                                         |
    +-----------------------------------------------------------------------+ *)
 
+let five_secs_bars_multiples = function
+  | `Five_secs    ->   1
+  | `Fifteen_secs ->   3
+  | `Thirty_secs  ->   6
+  | `One_min      ->  12
+  | `Two_mins     ->  24
+  | `Three_mins   ->  36
+  | `Five_mins    ->  60
+  | `Fifteen_mins -> 180
+  | `Thirty_mins  -> 360
+
 let realtime_bars
     ?(bar_size = `Five_secs)
     ?(tick_type = `Trades)
@@ -693,8 +704,37 @@ let realtime_bars
     t ~contract =
   with_connection t ~f:(fun con ->
     let q = Query.Realtime_bars.create
-      ~contract ~bar_size ~tick_type ~use_tradehours in
+      ~contract ~tick_type ~use_tradehours in
     Ib.Streaming_request.dispatch Tws_reqs.req_realtime_bars con q
+    >>= function
+    | Error _ as e -> return e
+    | Ok (bars, id) ->
+      (* The number of five secs bars that make up a bar of the given size. *)
+      let n_bars = five_secs_bars_multiples bar_size in
+      let bars = Pipe.init (fun w ->
+        Deferred.ignore (Pipe.fold bars ~init:(None, n_bars) ~f:(fun state bar ->
+          match bar with
+          | Error _ as e ->
+            don't_wait_for (Pipe.write w e);
+            return state
+          | Ok current ->
+            return (match state with
+            | None, 1 as state ->
+              don't_wait_for (Pipe.write w (Ok current));
+              state
+            | None, n ->
+              Some current, n-1
+            | Some bar, 1 ->
+              let bar = Bar.aggregate bar ~bar:current in
+              don't_wait_for (Pipe.write w (Ok bar));
+              None, n_bars
+            | Some bar, n ->
+              Some (Bar.aggregate bar ~bar:current), n-1
+            )
+        ) : (Bar.t option * int) Deferred.t)
+      )
+      in
+      return (Ok (bars, id))
   )
 
 let realtime_bars_exn ?bar_size ?tick_type ?use_tradehours t ~contract =

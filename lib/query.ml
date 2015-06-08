@@ -783,9 +783,9 @@ module Realtime_bars = struct
       use_tradehours : bool;
     } with sexp, fields
 
-  let create ~contract ~bar_size ~tick_type ~use_tradehours =
+  let create ~contract ~tick_type ~use_tradehours =
     { contract = Contract.to_raw contract;
-      bar_size;
+      bar_size = `Five_secs;
       tick_type;
       use_tradehours;
     }

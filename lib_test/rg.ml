@@ -716,7 +716,6 @@ end = struct
     in
     Query.Realtime_bars.create
       ~contract:(contract_g ())
-      ~bar_size:`Five_secs
       ~tick_type:(tick_type_g ())
       ~use_tradehours:(bg ())
 end
