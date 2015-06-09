@@ -629,15 +629,15 @@ end = struct
     in
     let bar_size_g () = oneof [
       always (`One_sec);
-      always (`Five_secs);
-      always (`Fifteen_secs);
-      always (`Thirty_secs);
+      always (`Five_sec);
+      always (`Fifteen_sec);
+      always (`Thirty_sec);
       always (`One_min);
-      always (`Two_mins);
-      always (`Three_mins);
-      always (`Five_mins);
-      always (`Fifteen_mins);
-      always (`Thirty_mins);
+      always (`Two_min);
+      always (`Three_min);
+      always (`Five_min);
+      always (`Fifteen_min);
+      always (`Thirty_min);
       always (`One_hour);
       always (`One_day);
     ] ()

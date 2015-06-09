@@ -687,18 +687,18 @@ let history_exn
    +-----------------------------------------------------------------------+ *)
 
 let five_secs_bars_multiples = function
-  | `Five_secs    ->   1
-  | `Fifteen_secs ->   3
-  | `Thirty_secs  ->   6
-  | `One_min      ->  12
-  | `Two_mins     ->  24
-  | `Three_mins   ->  36
-  | `Five_mins    ->  60
-  | `Fifteen_mins -> 180
-  | `Thirty_mins  -> 360
+  | `Five_sec    ->   1
+  | `Fifteen_sec ->   3
+  | `Thirty_sec  ->   6
+  | `One_min     ->  12
+  | `Two_min     ->  24
+  | `Three_min   ->  36
+  | `Five_min    ->  60
+  | `Fifteen_min -> 180
+  | `Thirty_min  -> 360
 
 let realtime_bars
-    ?(bar_size = `Five_secs)
+    ?(bar_size = `Five_sec)
     ?(tick_type = `Trades)
     ?(use_tradehours = true)
     t ~contract =

@@ -361,8 +361,8 @@ val cancel_market_depth : t -> Query_id.t -> unit
 
 val history
   :  ?bar_size:[
-  | `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
-  | `One_min | `Two_mins | `Three_mins | `Five_mins | `Fifteen_mins | `Thirty_mins
+  | `One_sec | `Five_sec | `Fifteen_sec | `Thirty_sec
+  | `One_min | `Two_min  | `Three_min   | `Five_min | `Fifteen_min | `Thirty_min
   | `One_hour
   | `One_day
   ] (* defaults to One_day *)
@@ -391,8 +391,8 @@ val history
 
 val history_exn
   :  ?bar_size:[
-  | `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
-  | `One_min | `Two_mins | `Three_mins | `Five_mins | `Fifteen_mins | `Thirty_mins
+  | `One_sec | `Five_sec | `Fifteen_sec | `Thirty_sec
+  | `One_min | `Two_min  | `Three_min   | `Five_min | `Fifteen_min | `Thirty_min
   | `One_hour
   | `One_day
   ] (* defaults to One_day *)
@@ -425,9 +425,9 @@ val history_exn
 
 val realtime_bars
   :  ?bar_size:[
-  | `Five_secs | `Fifteen_secs | `Thirty_secs
-  | `One_min   | `Two_mins     | `Three_mins
-  | `Five_mins | `Fifteen_mins | `Thirty_mins
+  | `Five_sec | `Fifteen_sec | `Thirty_sec
+  | `One_min  | `Two_min     | `Three_min
+  | `Five_min | `Fifteen_min | `Thirty_min
   ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_tradehours:bool
@@ -437,9 +437,9 @@ val realtime_bars
 
 val realtime_bars_exn
   :  ?bar_size:[
-  | `Five_secs | `Fifteen_secs | `Thirty_secs
-  | `One_min   | `Two_mins     | `Three_mins
-  | `Five_mins | `Fifteen_mins | `Thirty_mins
+  | `Five_sec | `Fifteen_sec | `Thirty_sec
+  | `One_min  | `Two_min     | `Three_min
+  | `Five_min | `Fifteen_min | `Thirty_min
   ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_tradehours:bool

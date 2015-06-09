@@ -537,9 +537,8 @@ module History = struct
   module Bar_size = struct
     module T = struct
       type t =
-      [ `One_sec | `Five_secs | `Fifteen_secs | `Thirty_secs
-      | `One_min | `Two_mins | `Three_mins | `Five_mins
-      | `Fifteen_mins | `Thirty_mins
+      [ `One_sec | `Five_sec | `Fifteen_sec | `Thirty_sec
+      | `One_min | `Two_min | `Three_min | `Five_min | `Fifteen_min | `Thirty_min
       | `One_hour
       | `One_day
       ] with sexp
@@ -549,29 +548,29 @@ module History = struct
 
     let tws_of_t = function
       | `One_sec -> "1 sec"
-      | `Five_secs -> "5 secs"
-      | `Fifteen_secs -> "15 secs"
-      | `Thirty_secs -> "30 secs"
+      | `Five_sec -> "5 secs"
+      | `Fifteen_sec -> "15 secs"
+      | `Thirty_sec -> "30 secs"
       | `One_min -> "1 min"
-      | `Two_mins -> "2 mins"
-      | `Three_mins -> "3 mins"
-      | `Five_mins -> "5 mins"
-      | `Fifteen_mins -> "15 mins"
-      | `Thirty_mins -> "30 mins"
+      | `Two_min -> "2 mins"
+      | `Three_min -> "3 mins"
+      | `Five_min -> "5 mins"
+      | `Fifteen_min -> "15 mins"
+      | `Thirty_min -> "30 mins"
       | `One_hour -> "1 hour"
       | `One_day -> "1 day"
 
     let t_of_tws = function
       | "1 sec" -> `One_sec
-      | "5 secs" -> `Five_secs
-      | "15 secs" -> `Fifteen_secs
-      | "30 secs" -> `Thirty_secs
+      | "5 secs" -> `Five_sec
+      | "15 secs" -> `Fifteen_sec
+      | "30 secs" -> `Thirty_sec
       | "1 min" -> `One_min
-      | "2 mins" -> `Two_mins
-      | "3 mins" -> `Three_mins
-      | "5 mins" -> `Five_mins
-      | "15 mins" -> `Fifteen_mins
-      | "30 mins" -> `Thirty_mins
+      | "2 mins" -> `Two_min
+      | "3 mins" -> `Three_min
+      | "5 mins" -> `Five_min
+      | "15 mins" -> `Fifteen_min
+      | "30 mins" -> `Thirty_min
       | "1 hour" -> `One_hour
       | "1 day" -> `One_day
       | s -> invalid_argf "Bar_size.t_of_tws: %S" s ()
@@ -745,13 +744,13 @@ end
 
 module Realtime_bars = struct
   module Bar_size = struct
-    type t = [ `Five_secs ] with sexp
+    type t = [ `Five_sec ] with sexp
 
     let tws_of_t = function
-      | `Five_secs -> "5"
+      | `Five_sec -> "5"
 
     let t_of_tws = function
-      | "5" -> `Five_secs
+      | "5" -> `Five_sec
       | s -> invalid_argf "Bar_size.t_of_tws: %S" s ()
 
     let val_type = Val_type.create tws_of_t t_of_tws
@@ -785,7 +784,7 @@ module Realtime_bars = struct
 
   let create ~contract ~tick_type ~use_tradehours =
     { contract = Contract.to_raw contract;
-      bar_size = `Five_secs;
+      bar_size = `Five_sec;
       tick_type;
       use_tradehours;
     }
