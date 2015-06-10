@@ -537,10 +537,9 @@ module History = struct
   module Bar_size = struct
     module T = struct
       type t =
-      [ `One_sec | `Five_sec | `Fifteen_sec | `Thirty_sec
-      | `One_min | `Two_min | `Three_min | `Five_min | `Fifteen_min | `Thirty_min
-      | `One_hour
-      | `One_day
+      [ `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
+      | `One_min     | `Two_min    | `Three_min   | `Five_min
+      | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
       ] with sexp
     end
     include T
@@ -581,11 +580,11 @@ module History = struct
   module Bar_span = struct
     module T = struct
       type t =
-      [ `Sec of int
-      | `Day of int
-      | `Week of int
+      [ `Sec   of int
+      | `Day   of int
+      | `Week  of int
       | `Month of int
-      | `Year of int
+      | `Year  of int
       ] with sexp
     end
     include T
