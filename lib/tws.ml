@@ -767,6 +767,12 @@ module Trade = struct
       size = Volume.zero
     }
 
+  let update_size t ~size =
+    { t with
+      stamp = Time.now ();
+      size;
+    }
+
   let pp ppf t =
     Format.fprintf ppf "T|%s|%4.2f|%4d"
       (Time.to_string t.stamp)
@@ -939,7 +945,12 @@ module TAQ = struct
                   let quote = Quote.update_bid_size quote ~size in
                   don't_wait_for (Pipe.write w (Ok (Quote quote)));
                   trade, quote
-                | T.Last | T.Volume ->
+                | T.Last ->
+                  let size = Tick_size.size tick in
+                  let trade = Trade.update_size trade ~size in
+                  don't_wait_for (Pipe.write w (Ok (Trade trade)));
+                  trade, quote
+                | T.Volume ->
                   taq
                 )
             ) : (Trade.t * Quote.t) Deferred.t))
