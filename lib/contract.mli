@@ -49,7 +49,7 @@ val currency : 'a t -> Currency.t
 (** The underlying asset is traded in the returned currency. *)
 
 val local_symbol : 'a t -> Symbol.t option
-(** Returns the local exchange of the underlying asset if unknown. *)
+(** Returns the local exchange of the underlying asset or None if unknown. *)
 
 val sec_id : 'a t -> Security_id.t option
 (** Returns the security ID of the underlying asset or None if unknown. *)
