@@ -52,7 +52,7 @@ val local_symbol : 'a t -> Symbol.t option
 (** Returns the local exchange of the underlying asset if unknown. *)
 
 val sec_id : 'a t -> Security_id.t option
-(** Return the security ID of the underlying asset or None if unknown. *)
+(** Returns the security ID of the underlying asset or None if unknown. *)
 
 val underlying : [< `Option | `Fut_opt ] t -> [> `Stock | `Futures ] t
 (** Returns the underlying stock or futures contract of an option. *)
@@ -77,7 +77,7 @@ val multiplier : [< `Futures | `Option | `Fut_opt ] t -> int
 
 val to_string : 'a t -> string
 
-(** Checks equality of tow contracts. *)
+(** Checks equality of two contracts. *)
 val ( = ) : 'a t -> 'a t -> bool
 
 (** Creates a new stock contract. *)
