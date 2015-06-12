@@ -22,15 +22,26 @@
 
 open Core.Std
 
+(* A time bar returned by [History] and [Realtime_bars] queries. *)
 type t = private
-  { stamp : Time.t;
+  { (* Timestamp of the bar. *)
+    stamp : Time.t;
+    (* Opening price of the bar. *)
     op : Price.t;
+    (* Highest price during the time covered by the bar. *)
     hi : Price.t;
+    (* Lowest price during the time covered by the bar. *)
     lo : Price.t;
+    (* Closing price of the bar. *)
     cl : Price.t;
+    (* Traded volume during the time covered by the bar. *)
     vo : Volume.t;
+    (* Weigthed average price during the time covered by the bar. *)
     wap : Price.t;
+    (* Set to true if there are gaps in the data, otherwise false. *)
     has_gaps : bool;
+    (* Contains the number of trades during the time covered by the bar.
+       Only set when the [tick_type] parameter of the query was [`Trades]. *)
     count : int;
   } with sexp, fields
 
@@ -38,6 +49,7 @@ include Raw_bar_intf.S
   with type raw := Raw_bar.t
   with type t := t
 
+(** Creates a new time bar from the given arguments. *)
 val create
   :  stamp:Time.t
   -> op:Price.t
@@ -50,8 +62,12 @@ val create
   -> count:int
   -> t
 
+(** Checks two bars for equality. *)
 val ( = ) : t -> t -> bool
 
+(** [aggregate t ~bar] combines [t] and [bar] into a new bar whose size is the
+    sum of the sizes of these bars, e.g. two 1 min bars become a 2 min bar. *)
 val aggregate : t -> bar:t -> t
 
+(** Pretty printer for bars. *)
 val pp : Format.formatter -> t -> unit
