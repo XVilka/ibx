@@ -39,6 +39,7 @@ let combine t ~bar =
     cl;
     vo = Volume.(t.vo + bar.vo);
     wap = Price.((hi + lo + cl) / of_float 3.);
+    has_gaps = t.has_gaps || bar.has_gaps;
     n_trades = Int.(t.n_trades + bar.n_trades);
   }
 
