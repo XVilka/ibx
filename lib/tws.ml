@@ -725,11 +725,11 @@ let realtime_bars
             | None, n ->
               Some current, n-1
             | Some bar, 1 ->
-              let bar = Bar.aggregate bar ~bar:current in
+              let bar = Bar.combine bar ~bar:current in
               don't_wait_for (Pipe.write w (Ok bar));
               None, n_bars
             | Some bar, n ->
-              Some (Bar.aggregate bar ~bar:current), n-1
+              Some (Bar.combine bar ~bar:current), n-1
             )
         ) : (Bar.t option * int) Deferred.t)
       )

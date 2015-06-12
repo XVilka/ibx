@@ -42,7 +42,7 @@ type t = private
     has_gaps : bool;
     (* Contains the number of trades during the time covered by the bar.
        Only set when the [tick_type] parameter of the query was [`Trades]. *)
-    count : int;
+    n_trades : int;
   } with sexp, fields
 
 include Raw_bar_intf.S
@@ -59,15 +59,15 @@ val create
   -> vo:Volume.t
   -> wap:Price.t
   -> has_gaps:bool
-  -> count:int
+  -> n_trades:int
   -> t
 
 (** Checks two bars for equality. *)
 val ( = ) : t -> t -> bool
 
-(** [aggregate t ~bar] combines [t] and [bar] into a new bar whose size is the
+(** [combine t ~bar] combines [t] and [bar] into a new bar whose size is the
     sum of the sizes of these bars, e.g. two 1 min bars become a 2 min bar. *)
-val aggregate : t -> bar:t -> t
+val combine : t -> bar:t -> t
 
 (** Pretty printer for bars. *)
 val pp : Format.formatter -> t -> unit

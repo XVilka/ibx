@@ -29,7 +29,7 @@ let of_raw = Fn.id
 
 let ( = ) t1 t2 = Raw_bar.(=) (to_raw t1) (to_raw t2)
 
-let aggregate t ~bar =
+let combine t ~bar =
   let hi = Price.max t.hi bar.hi in
   let lo = Price.min t.lo bar.lo in
   let cl = bar.cl in
@@ -39,12 +39,12 @@ let aggregate t ~bar =
     cl;
     vo = Volume.(t.vo + bar.vo);
     wap = Price.((hi + lo + cl) / of_float 3.);
-    count = Int.(t.count + bar.count);
+    n_trades = Int.(t.n_trades + bar.n_trades);
   }
 
 let pp ppf t =
   Format.fprintf ppf
-    "Bar<%s> op=%.2f hi=%.2f lo=%.2f cl=%.2f vo=%d wap=%.2f count=%d"
+    "Bar<%s> op=%.2f hi=%.2f lo=%.2f cl=%.2f vo=%d wap=%.2f trades=%d"
     (t.stamp |> Time.to_sec_string ~zone:Time.Zone.local)
     (t.op :> float) (t.hi :> float) (t.lo :> float) (t.cl :> float)
-    (t.vo :> int) (t.wap :> float) (t.count)
+    (t.vo :> int) (t.wap :> float) (t.n_trades)

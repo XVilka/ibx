@@ -1182,7 +1182,7 @@ end = struct
       ~vo:(volume_g ())
       ~wap:(price_g ())
       ~has_gaps:(bg ())
-      ~count:(nng ())
+      ~n_trades:(nng ())
     in
     Response.History.create
       ~bars:(List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ()))
@@ -1199,7 +1199,7 @@ end = struct
       ~vo:(volume_g ())
       ~wap:(price_g ())
       ~has_gaps:false
-      ~count:(nng ())
+      ~n_trades:(nng ())
     in
     List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ())
 

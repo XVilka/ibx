@@ -32,7 +32,7 @@ type t =
     vo : Volume.t;
     wap : Price.t;
     has_gaps : bool;
-    count : int;
+    n_trades : int;
   }
 with sexp, fields
 
@@ -51,7 +51,7 @@ let ( = ) t1 t2 : bool =
     ~vo:(use Volume.(=))
     ~wap:(use Price.(=.))
     ~has_gaps:(use (=))
-    ~count:(use (=))
+    ~n_trades:(use (=))
 
 let field_name field = Fieldslib.Field.name field
 
@@ -68,7 +68,7 @@ let wrap_bar_spec bar_spec =
           $ t.vo
           $ t.wap
           $ t.has_gaps
-          $ t.count))
+          $ t.n_trades))
 
 module Historical_bar = struct
   let pickler_spec () =
@@ -83,13 +83,13 @@ module Historical_bar = struct
         ~vo:(fields_value (required Volume.val_type))
         ~wap:(fields_value (required Price.val_type))
         ~has_gaps:(fields_value (required bools))
-        ~count:(fields_value (required int)))
+        ~n_trades:(fields_value (required int)))
     |> wrap_bar_spec
 
   let unpickler_spec () =
     Unpickler.Spec.(
-      step (fun conv stamp op hi lo cl vo wap has_gaps count ->
-        conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps ~count)
+      step (fun conv stamp op hi lo cl vo wap has_gaps n_trades ->
+        conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps ~n_trades)
       )
       ++ value (required time)
         ~name:(field_name Fields.stamp)
@@ -108,7 +108,7 @@ module Historical_bar = struct
       ++ value (required bools)
         ~name:(field_name Fields.has_gaps)
       ++ value (required int)
-        ~name:(field_name Fields.count)
+        ~name:(field_name Fields.n_trades)
     )
 end
 
@@ -125,13 +125,13 @@ module Realtime_bar = struct
         ~vo:(fields_value (required Volume.val_type))
         ~wap:(fields_value (required Price.val_type))
         ~has_gaps:(fields_value skipped)
-        ~count:(fields_value (required int)))
+        ~n_trades:(fields_value (required int)))
     |> wrap_bar_spec
 
   let unpickler_spec () =
     Unpickler.Spec.(
-      step (fun conv stamp op hi lo cl vo wap count ->
-        conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps:false ~count)
+      step (fun conv stamp op hi lo cl vo wap n_trades ->
+        conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps:false ~n_trades)
       )
       ++ value (required stamp)
         ~name:(field_name Fields.stamp)
@@ -148,6 +148,6 @@ module Realtime_bar = struct
       ++ value (required Price.val_type)
         ~name:(field_name Fields.wap)
       ++ value (required int)
-        ~name:(field_name Fields.count)
+        ~name:(field_name Fields.n_trades)
     )
 end
