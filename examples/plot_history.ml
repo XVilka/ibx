@@ -30,13 +30,15 @@ let () =
     )
     (fun do_logging host port client_id sma_period currency symbol () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
-        Tws.contract_data_exn tws ~contract:(Contract.stock ~currency symbol)
+        let stock = Contract.stock ~currency symbol in
+        Tws.contract_data_exn tws ~contract:stock
         >>= fun data ->
-        Tws.history_exn tws ~bar_span:(`Year 1) ~bar_size:`One_day
-          ~contract:(Contract_data.contract data)
+        let bar_size = `One_day in
+        Tws.history_exn tws ~contract:stock ~bar_size ~bar_span:(`Year 1)
         >>| fun history ->
-        let start, stop = History.(start history, stop history) in
-        let start, stop = Time.(sub start Span.day, add stop Span.day) in
+        let bar_size = Bar_size.to_span bar_size in
+        let start = Time.sub (History.start history) bar_size in
+        let stop = Time.add (History.stop history) bar_size in
         let range = Range.Time (start, stop) in
         let gp = Gp.create () in
         Gp.set gp ~title:(Contract_data.long_name data) ~use_grid:true;
