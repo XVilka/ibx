@@ -63,3 +63,17 @@ let t_of_tws = function
   | s -> invalid_argf "Bar_size.t_of_tws: %S" s ()
 
 let val_type = Val_type.create tws_of_t t_of_tws
+
+let to_span = function
+  | `One_sec -> Time.Span.second
+  | `Five_sec -> Time.Span.of_sec 5.
+  | `Fifteen_sec -> Time.Span.of_sec 15.
+  | `Thirty_sec -> Time.Span.of_sec 30.
+  | `One_min -> Time.Span.minute
+  | `Two_min -> Time.Span.of_min 2.
+  | `Three_min -> Time.Span.of_min 3.
+  | `Five_min -> Time.Span.of_min 5.
+  | `Fifteen_min -> Time.Span.of_min 15.
+  | `Thirty_min -> Time.Span.of_min 30.
+  | `One_hour -> Time.Span.hour
+  | `One_day -> Time.Span.day

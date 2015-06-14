@@ -30,3 +30,6 @@ type t =
 ] with sexp
 include Stringable.S with type t := t
 include Twsable.S with type t := t
+
+(** [to_span t] converts the bar size specification into a time span. *)
+val to_span : t -> Time.Span.t
