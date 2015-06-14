@@ -30,6 +30,8 @@ Library ibx
   Pack:           true
   Modules:        Account_code,
                   Bar,
+                  Bar_size,
+                  Bar_span,
                   Client_id,
                   Config,
                   Contract,

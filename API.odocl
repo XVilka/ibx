@@ -1,7 +1,9 @@
 # OASIS_START
-# DO NOT EDIT (digest: 958d2ff5c5dea9690f3c2ccf82967aa9)
+# DO NOT EDIT (digest: ff39477e1feb9f4680f2695970a3669b)
 lib/Account_code
 lib/Bar
+lib/Bar_size
+lib/Bar_span
 lib/Client_id
 lib/Config
 lib/Contract
