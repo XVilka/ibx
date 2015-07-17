@@ -101,23 +101,22 @@ distribution. You can build the examples by typing
     $ make
 
 in the top-level directory of this distribution. If the compilation of the
-examples was successful, you can type, for instance,
+examples was successful, you can type
 
-    $ ./plot_history.native -sma 100 SPY
+    $ ./plot_history.native -span "(Month 6)" -sma 100 AAPL
 
-in order to plot a candle stick chart of the SPDR S&P 500 ETF with a simple
-100-day moving average:
+to plot a 6-month candle stick chart of Apple prices with a simple 100-day
+moving average:
 
-![SPY SMA](http://ogu.bitbucket.org/spy_sma.png)
+![AAPL SMA](http://ogu.bitbucket.org/aapl_sma.png)
 
-The next command accumulates 30 seconds of trade and quote (TAQ) data of
-Google Inc.
+The next command accumulates 1 minute of intraday trade and quote (TAQ) data
 
-    $ ./plot_taq_data.native GOOG
+    $ ./plot_taq_data.native AAPL
 
-and generates a plot which should look similar to this image:
+and generates a plot that looks similar to this image:
 
-![GOOG TAQ](http://ogu.bitbucket.org/goog_taq.png)
+![AAPL TAQ](http://ogu.bitbucket.org/aapl_taq.png)
 
 However, please note that these TAQ data plots do not reflect the true market
 history, since Interactive Brokers accumulates market data in time increments
