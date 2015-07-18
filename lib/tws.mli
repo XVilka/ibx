@@ -31,14 +31,15 @@ type t (** A TWS client *)
 (** {1 Connection and server} *)
 (******************************************************************************)
 
-(** [with_client ~host ~port ~on_handler_error handler] connects to the
-    IB connectivity software on ([host], [port]) and runs the [handler]
-    until an exception is thrown or the returned Deferred is determined.
+(** [with_client ~host ~port ~on_handler_error handler] connects to the TWS
+    software on ([host], [port]) and runs the [handler] until an exception
+    is raised or the returned [Deferred.t] is determined.
 
-    [on_handler_error] determines what happens if the [handler] throws an
+    [on_handler_error] determines what happens if the [handler] raises an
     exception.
 
-    The standard port for TWS is 7496 and for the IB Gateway it is 4001.
+    The standard port for the TWS software is 7496.  You can connect IB Gateway
+    on port 4001 as an low-resource alternative compared to TWS.
 *)
 val with_client
   :  ?do_logging:bool
@@ -53,6 +54,8 @@ val with_client
   -> (t -> unit Deferred.t)
   -> unit Deferred.t
 
+(** Same as [with_client], but returns an [Error] if the connection was not
+    successful or an exception was raised in the handler. *)
 val with_client_or_error
   :  ?do_logging:bool
   -> ?client_id:Client_id.t
@@ -61,13 +64,14 @@ val with_client_or_error
   -> (t -> unit Deferred.t)
   -> unit Or_error.t Deferred.t
 
+(** [is_connected t] checks whether the TWS client [t] is connected. *)
 val is_connected : t -> bool
 
-(** [state t] returns the state of the connection. *)
+(** [state t] returns the connection of the TWS client [t]. *)
 val state : t -> [ `Disconnected | `Connecting | `Connected ]
 
-(** [set_server_log_level level] sets the log entry detail [level] of TWS
-    when processing API requests. *)
+(** [set_server_log_level level] sets the log entry detail [level] of the TWS
+    software when processing API requests. *)
 val set_server_log_level
   :  t
   -> level:[
@@ -79,15 +83,24 @@ val set_server_log_level
   ]
   -> unit
 
+(** [server_time t] returns the current time from the TWS server or an [Error]. *)
 val server_time : t -> Time.t Or_error.t Deferred.t
 
+(** Same as [server_time], but raises an exception if an [Error] was returned. *)
 val server_time_exn : t -> Time.t Deferred.t
 
+(** [server_version t] returns the version of the TWS server upon successful
+    connection of the TWS client [t], otherwise [None] is returned. *)
 val server_version : t -> int option
 
+(** [connection_time t] returns the time the client [t] was connected to TWS or
+    [None] when no connection was established. *)
 val connection_time : t -> Time.t option
 
+(** [account_code t] returns the code of the Interactive Brokers account upon
+    successful connection of the TWS client [t], otherwise [None] is returned. *)
 val account_code : t -> Account_code.t option
+
 
 (** {1 Market data} *)
 (******************************************************************************)
