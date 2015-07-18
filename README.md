@@ -5,8 +5,9 @@ IBX - OCaml implementation of the Interactive Brokers TWS API
 
 IBX is a pure OCaml implementation of the
 [Interactive Brokers](http://www.interactivebrokers.com/en/main.php)
-Trader Workstation API (TWS API) built on top of Jane Street's Core
-and Async library.
+Trader Workstation API (TWS API) built on top of Jane Street's
+[Core](https://github.com/janestreet/core) and
+[Async](https://github.com/janestreet/async) library.
 
 __DISCLAIMER:__ This software is not approved by Interactive Brokers or any
 of its affiliates. It comes with absolutely no warranty and the use of
