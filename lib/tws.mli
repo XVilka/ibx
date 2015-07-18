@@ -134,7 +134,7 @@ val market_data
   -> (Market_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 (** Same as [market_data], but raises an exception instead of returning an
-    [Error.t] explicitly. *)
+    [Error] explicitly. *)
 val market_data_exn
   :  ?snapshot:bool (* default is [False]  *)
   -> ?tick_types:Tick_type.t list (* default is the empty list *)
@@ -142,8 +142,8 @@ val market_data_exn
   -> contract:[< Security_type.t ] Contract.t
   -> (Market_data.t Pipe.Reader.t * Query_id.t) Deferred.t
 
-(** [cancel_market_data t query_id] cancels the market data requests
-    corresponding to [query_id]. *)
+(** [cancel_market_data t query_id] cancels the market data request that
+    corresponds to the given [query_id]. *)
 val cancel_market_data : t -> Query_id.t -> unit
 
 (** [option_price t contract volatility price] asks TWS to calculate the option
@@ -261,7 +261,7 @@ val contract_details
   -> Contract_data.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
 (** Same as [contract_details], but raises an exception instead of returning an
-    [Error.t]. *)
+    [Error]. *)
 val contract_details_exn
   :  t
   -> ?con_id:Contract_id.t
