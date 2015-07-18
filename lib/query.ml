@@ -139,7 +139,7 @@ module Market_data = struct
         { contract; tick_types; snapshot }))
 end
 
-module Calc_option_price = struct
+module Option_price = struct
   type t =
     { contract : Raw_contract.t;
       volatility : float;
@@ -191,7 +191,7 @@ module Calc_option_price = struct
         { contract; volatility; underlying_price }))
 end
 
-module Calc_implied_volatility = struct
+module Implied_volatility = struct
   type t =
     { contract : Raw_contract.t;
       option_price : Price.t;

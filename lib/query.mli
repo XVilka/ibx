@@ -56,7 +56,7 @@ module Market_data : sig
     -> t
 end
 
-module Calc_option_price : sig
+module Option_price : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create
@@ -66,7 +66,7 @@ module Calc_option_price : sig
     -> t
 end
 
-module Calc_implied_volatility : sig
+module Implied_volatility : sig
   type t with sexp
   include Query_intf.S with type t := t
   val create

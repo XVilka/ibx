@@ -50,10 +50,10 @@ type t =
 | Cancel_realtime_bars
 | Fundamental_data
 | Cancel_fundamental_data
-| Calc_implied_volatility
-| Calc_option_price
-| Cancel_calc_implied_volatility
-| Cancel_calc_option_price
+| Implied_volatility
+| Option_price
+| Cancel_implied_volatility
+| Cancel_option_price
 with sexp
 include Twsable.S with type t := t
 

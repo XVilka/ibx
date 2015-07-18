@@ -62,12 +62,12 @@ module Query = struct
       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.market_data_g);
 
     (fun () ->
-      let module Q = Query.Calc_option_price in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.calc_option_price_g);
+      let module Q = Query.Option_price in
+      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.option_price_g);
 
     (fun () ->
-      let module Q = Query.Calc_implied_volatility in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.calc_implied_volatility_g);
+      let module Q = Query.Implied_volatility in
+      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.implied_volatility_g);
 
     (* ============================= Orders ================================ *)
 

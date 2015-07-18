@@ -352,14 +352,14 @@ let cancel_market_data t id =
     Ib.Streaming_request.cancel Tws_reqs.req_market_data con id
   )
 
-let calc_option_price t ~contract ~volatility ~underlying_price =
+let option_price t ~contract ~volatility ~underlying_price =
   with_connection t ~f:(fun con ->
-    let q = Query.Calc_option_price.create
+    let q = Query.Option_price.create
       ~contract
       ~volatility
       ~underlying_price
     in
-    dispatch_and_cancel Tws_reqs.req_calc_option_price con q >>| function
+    dispatch_and_cancel Tws_reqs.req_option_price con q >>| function
     | Error _ as x -> x
     | Ok result ->
       match result with
@@ -371,17 +371,17 @@ let calc_option_price t ~contract ~volatility ~underlying_price =
         else Ok opt_price
   )
 
-let calc_option_price_exn t ~contract ~volatility ~underlying_price =
-  calc_option_price t ~contract ~volatility ~underlying_price >>| Or_error.ok_exn
+let option_price_exn t ~contract ~volatility ~underlying_price =
+  option_price t ~contract ~volatility ~underlying_price >>| Or_error.ok_exn
 
-let calc_implied_volatility t ~contract ~option_price ~underlying_price =
+let implied_volatility t ~contract ~option_price ~underlying_price =
   with_connection t ~f:(fun con ->
-    let q = Query.Calc_implied_volatility.create
+    let q = Query.Implied_volatility.create
       ~contract
       ~option_price
       ~underlying_price
     in
-    dispatch_and_cancel Tws_reqs.req_calc_implied_volatility con q >>| function
+    dispatch_and_cancel Tws_reqs.req_implied_volatility con q >>| function
     | Error _ as x -> x
     | Ok result ->
       match result with
@@ -393,8 +393,8 @@ let calc_implied_volatility t ~contract ~option_price ~underlying_price =
         else Ok implied_vol
   )
 
-let calc_implied_volatility_exn t ~contract ~option_price ~underlying_price =
-  calc_implied_volatility t ~contract ~option_price ~underlying_price
+let implied_volatility_exn t ~contract ~option_price ~underlying_price =
+  implied_volatility t ~contract ~option_price ~underlying_price
   >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
