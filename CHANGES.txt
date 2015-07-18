@@ -1,3 +1,23 @@
+2015-06-08: Real-time bars can be requested for longer time frames.
+
+2015-06-01: Unified historical and real-time bars by using a single bar module.
+
+2015-05-29: Parsed trading and liquid hours of the `Contract_data` response
+            into OCaml values.
+
+2015-05-02: New snapshot for closing prices.
+
+2015-04-18: Functions to pull option and futures chains.
+
+2015-04-15: Added new security type for options on futures.
+
+2015-04-13: Fixed bug in time zone parser.
+
+2015-04-10: Added function to compute the days until expiration of option and
+            futures contract.
+
+2015-04-06: Simplified the API for historical data queries.
+
 2014-08-10: Removed `Quickcheck` dependency since the module is deprecated.
 
 2014-06-26: Fixed compatibility issues with latest `core` and `async` package.
