@@ -116,22 +116,40 @@ module Market_data : sig
   val pp : Format.formatter -> t -> unit
 end
 
+(** [market_data t contract] requests streaming market data from TWS for the
+    given [contract].  Streaming market data is written to a [Pipe.t] that is
+    returned together with a query id used to cancel the request via
+    [cancel_market_data] from below.
+
+    When [snapshot] is set to [True] the market data pipe contains only the
+    latest snapshot of the data.
+
+    If futher [tick_types] are supplied the marke data pipe is extended with their
+    current values. *)
 val market_data
-  :  ?snapshot:bool
-  -> ?tick_types:Tick_type.t list
+  :  ?snapshot:bool (* default is [False] *)
+  -> ?tick_types:Tick_type.t list (* default is the empty list *)
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> (Market_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
+(** Same as [market_data], but raises an exception instead of returning an
+    [Error.t] explicitly. *)
 val market_data_exn
-  :  ?snapshot:bool
-  -> ?tick_types:Tick_type.t list
+  :  ?snapshot:bool (* default is [False]  *)
+  -> ?tick_types:Tick_type.t list (* default is the empty list *)
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> (Market_data.t Pipe.Reader.t * Query_id.t) Deferred.t
 
+(** [cancel_market_data t query_id] cancels the market data requests
+    corresponding to [query_id]. *)
 val cancel_market_data : t -> Query_id.t -> unit
 
+(** [option_price t contract volatility price] asks TWS to calculate the option
+    price for the given contract based on the given [volatility] and current
+    [price] of the option's underlying.  An [Error] is returned whenever
+    something goes wrong. *)
 val option_price
   :  t
   -> contract:[ `Option ] Contract.t
@@ -139,6 +157,7 @@ val option_price
   -> underlying_price:Price.t
   -> Price.t Or_error.t Deferred.t
 
+(** Same as [option_price], but raises an exception in case of an [Error]. *)
 val option_price_exn
   :  t
   -> contract:[ `Option ] Contract.t
@@ -146,6 +165,10 @@ val option_price_exn
   -> underlying_price:Price.t
   -> Price.t Deferred.t
 
+(** [implied_volatility t contract option_price under_price] asks TWS to
+    calculate the implied volatility for the given option contract based on the
+    price of the option and the underlying.  An [Error] is returned whenever
+    something goes wrong. *)
 val implied_volatility
   :  t
   -> contract:[ `Option ] Contract.t
@@ -153,6 +176,8 @@ val implied_volatility
   -> underlying_price:Price.t
   -> float Or_error.t Deferred.t
 
+(** Same as [implied_volatility], but raises an exception in case of an
+    [Error]. *)
 val implied_volatility_exn
   :  t
   -> contract:[ `Option ] Contract.t
@@ -216,6 +241,8 @@ val filter_executions_exn
 (** {1 Contract details} *)
 (******************************************************************************)
 
+(** The request returns a pipe containing additional information for all
+    contracts that met the criteria specified by the given parameters. *)
 val contract_details
   :  t
   -> ?con_id:Contract_id.t
@@ -233,6 +260,8 @@ val contract_details
   -> Symbol.t
   -> Contract_data.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
+(** Same as [contract_details], but raises an exception instead of returning an
+    [Error.t]. *)
 val contract_details_exn
   :  t
   -> ?con_id:Contract_id.t
@@ -250,11 +279,14 @@ val contract_details_exn
   -> Symbol.t
   -> Contract_data.t Pipe.Reader.t Deferred.t
 
+(** [contract_data t contract] returns additional information for the given the
+    contract or an [Error]. *)
 val contract_data
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> Contract_data.t Or_error.t Deferred.t
 
+(** Same as [contract_data], but raises an exception in case of an [Error]. *)
 val contract_data_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
@@ -264,6 +296,9 @@ val contract_data_exn
 (** {1 Futures and option chains} *)
 (******************************************************************************)
 
+(** Requests a futures chain for the given contract specifications and returns
+    the chain as a list of futures contracts or an [Error].  It is a special
+    version of [contract_details] from above. *)
 val futures_chain
   :  t
   -> ?con_id:Contract_id.t
@@ -277,6 +312,7 @@ val futures_chain
   -> Symbol.t
   -> [> `Futures ] Contract.t list Or_error.t Deferred.t
 
+(** Same as [futures_chain], but raises an exception in case of an [Error]. *)
 val futures_chain_exn
   :  t
   -> ?con_id:Contract_id.t
@@ -290,6 +326,9 @@ val futures_chain_exn
   -> Symbol.t
   -> [> `Futures ] Contract.t list Deferred.t
 
+(** Requests an option chain for the given contract specifications and returns
+    the chain as a list of option contracts or an [Error].  It is a special
+    version of [contract_details] from above. *)
 val option_chain
   :  t
   -> ?con_id:Contract_id.t
@@ -306,6 +345,7 @@ val option_chain
   -> Symbol.t
   -> [> `Option ] Contract.t list Or_error.t Deferred.t
 
+(** Same as [option_chain], but raises an exception in case of an [Error]. *)
 val option_chain_exn
   :  t
   -> ?con_id:Contract_id.t
@@ -520,25 +560,32 @@ val cancel_taq_data : t -> Query_id.t -> unit
 (** {1 TAQ snapshots} *)
 (******************************************************************************)
 
+(** [latest_quote t contract] returns either the latest quote for the given
+    [contract] or an [Error]. *)
 val latest_quote
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> Quote.t Or_error.t Deferred.t
 
+(** Same as [latest_quote] but raises an exception in case of an [Error]. *)
 val latest_quote_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> Quote.t Deferred.t
 
+(** [latest_trade t contract] returns either the latest trade for the given
+    [contract] or an [Error]. *)
 val latest_trade
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> Trade.t Or_error.t Deferred.t
 
+(** Same as [latest_trade] but raises an exception in case of an [Error]. *)
 val latest_trade_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> Trade.t Deferred.t
+
 
 (** {1 Close snapshot} *)
 (******************************************************************************)
@@ -550,11 +597,14 @@ module Close : sig
     } with sexp, fields
 end
 
+(** [latest_close t contract] returns either the latest closing price for the
+    given [contract] or an [Error]. *)
 val latest_close
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> Close.t Or_error.t Deferred.t
 
+(** Same as [latest_close] but raises an exception in case of an [Error]. *)
 val latest_close_exn
   :  t
   -> contract:[< Security_type.t ] Contract.t
