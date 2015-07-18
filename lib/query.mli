@@ -47,28 +47,11 @@ end
 (*****************************************************************************)
 
 module Market_data : sig
-  module Tick_kind : sig
-    type t =
-    [ `Option_volume
-    | `Option_open_interest
-    | `Historical_volatility
-    | `Implied_volatility
-    | `Index_future_premium
-    | `Misc_stats
-    | `Mark_price             (* used in TWS P&L computations *)
-    | `Auction_values         (* volume, price and imbalance *)
-    | `Realtime_volume
-    | `Shortable
-    | `Inventory
-    | `Fundamental_ratios
-    | `Turn_off_market_data
-    ] with sexp
-  end
   type t with sexp
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
-    -> tick_generics:Tick_kind.t list
+    -> tick_types:Tick_type.t list
     -> snapshot:bool
     -> t
 end

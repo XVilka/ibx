@@ -336,14 +336,14 @@ module Market_data = struct
     | `Tick_string t -> Tick_string.pp ppf t
 end
 
-let market_data ?(snapshot = false) ?(tick_generics = []) t ~contract =
+let market_data ?(snapshot=false) ?(tick_types=[]) t ~contract =
   with_connection t ~f:(fun con ->
-    let q = Query.Market_data.create ~contract ~tick_generics ~snapshot in
+    let q = Query.Market_data.create ~contract ~tick_types ~snapshot in
     Ib.Streaming_request.dispatch Tws_reqs.req_market_data con q
   )
 
-let market_data_exn ?snapshot ?tick_generics t ~contract =
-  market_data ?snapshot ?tick_generics t ~contract >>| function
+let market_data_exn ?snapshot ?tick_types t ~contract =
+  market_data ?snapshot ?tick_types t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 
@@ -899,7 +899,7 @@ module TAQ = struct
   let get_snapshots tws ~contract =
     with_connection tws ~f:(fun con ->
       let q = Query.Market_data.create
-        ~contract ~tick_generics:[] ~snapshot:false
+        ~contract ~tick_types:[] ~snapshot:false
       in
       Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q >>| function
       | Error _ as e -> e
@@ -1024,7 +1024,7 @@ module Quote_snapshot = struct
   let get_snapshot tws ~contract =
     with_connection tws ~f:(fun con ->
       let q = Query.Market_data.create
-        ~contract ~tick_generics:[] ~snapshot:true
+        ~contract ~tick_types:[] ~snapshot:true
       in
       Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
       >>= function
@@ -1105,7 +1105,7 @@ module Trade_snapshot = struct
   let get_snapshot tws ~contract =
     with_connection tws ~f:(fun con ->
       let q = Query.Market_data.create
-        ~contract ~tick_generics:[] ~snapshot:true
+        ~contract ~tick_types:[] ~snapshot:true
       in
       Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
       >>= function
@@ -1180,7 +1180,7 @@ module Close_snapshot = struct
   let get_snapshot tws ~contract =
     with_connection tws ~f:(fun con ->
       let q = Query.Market_data.create
-        ~contract ~tick_generics:[] ~snapshot:true
+        ~contract ~tick_types:[] ~snapshot:true
       in
       Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
       >>= function

@@ -415,27 +415,27 @@ end = struct
           (symbol_g ()))
       ]
     in
-    let tick_generics_g = oneof [
+    let tick_types_g = oneof [
       always ([]);
       always ([
-        `Option_volume;
-        `Option_open_interest;
+        `Auction_values;
+        `Fundamental_ratios;
         `Historical_volatility;
         `Implied_volatility;
         `Index_future_premium;
-        `Misc_stats;
+        `Inventory;
         `Mark_price;
-        `Auction_values;
+        `Misc_stats;
+        `Option_open_interest;
+        `Option_volume;
         `Realtime_volume;
         `Shortable;
-        `Inventory;
-        `Fundamental_ratios;
         `Turn_off_market_data;
       ])
     ] in
     Query.Market_data.create
       ~contract:(contract_g ())
-      ~tick_generics:(tick_generics_g ())
+      ~tick_types:(tick_types_g ())
       ~snapshot:(bg ())
 
   let calc_option_price_g () =

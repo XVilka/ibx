@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: ff39477e1feb9f4680f2695970a3669b)
+# DO NOT EDIT (digest: 568bd57ac0f43c52cd093f3207905202)
 lib/Account_code
 lib/Bar
 lib/Bar_size
@@ -37,6 +37,7 @@ lib/Std
 lib/Std_internal
 lib/Submit_order
 lib/Symbol
+lib/Tick_type
 lib/Trading_times
 lib/Tws
 lib/Tws_prot

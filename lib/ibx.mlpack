@@ -1,5 +1,5 @@
 # OASIS_START
-# DO NOT EDIT (digest: 57737fa24b178547c901abb575ce3b87)
+# DO NOT EDIT (digest: ec89aee4aa06fb02fc668ca01d016c4f)
 Account_code
 Bar
 Bar_size
@@ -37,6 +37,7 @@ Std
 Std_internal
 Submit_order
 Symbol
+Tick_type
 Trading_times
 Tws
 Tws_prot

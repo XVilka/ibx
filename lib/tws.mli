@@ -118,42 +118,14 @@ end
 
 val market_data
   :  ?snapshot:bool
-  -> ?tick_generics:[
-  | `Option_volume
-  | `Option_open_interest
-  | `Historical_volatility
-  | `Implied_volatility
-  | `Index_future_premium
-  | `Misc_stats
-  | `Mark_price
-  | `Auction_values
-  | `Realtime_volume
-  | `Shortable
-  | `Inventory
-  | `Fundamental_ratios
-  | `Turn_off_market_data
-  ] list
+  -> ?tick_types:Tick_type.t list
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> (Market_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val market_data_exn
   :  ?snapshot:bool
-  -> ?tick_generics:[
-  | `Option_volume
-  | `Option_open_interest
-  | `Historical_volatility
-  | `Implied_volatility
-  | `Index_future_premium
-  | `Misc_stats
-  | `Mark_price
-  | `Auction_values
-  | `Realtime_volume
-  | `Shortable
-  | `Inventory
-  | `Fundamental_ratios
-  | `Turn_off_market_data
-  ] list
+  -> ?tick_types:Tick_type.t list
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> (Market_data.t Pipe.Reader.t * Query_id.t) Deferred.t

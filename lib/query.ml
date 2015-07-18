@@ -88,66 +88,15 @@ end)
    +-----------------------------------------------------------------------+ *)
 
 module Market_data = struct
-  module Tick_kind = struct
-    type t =
-    [ `Option_volume
-    | `Option_open_interest
-    | `Historical_volatility
-    | `Implied_volatility
-    | `Index_future_premium
-    | `Misc_stats
-    | `Mark_price
-    | `Auction_values
-    | `Realtime_volume
-    | `Shortable
-    | `Inventory
-    | `Fundamental_ratios
-    | `Turn_off_market_data
-    ] with sexp
-
-    let tws_of_t = function
-      | `Option_volume -> "100"
-      | `Option_open_interest -> "101"
-      | `Historical_volatility -> "104"
-      | `Implied_volatility -> "106"
-      | `Index_future_premium -> "162"
-      | `Misc_stats -> "165"
-      | `Mark_price -> "221"
-      | `Auction_values -> "225"
-      | `Realtime_volume -> "233"
-      | `Shortable -> "236"
-      | `Inventory -> "256"
-      | `Fundamental_ratios -> "258"
-      | `Turn_off_market_data -> "mdoff"
-
-    let t_of_tws = function
-      | "100" -> `Option_volume
-      | "101" -> `Option_open_interest
-      | "104" -> `Historical_volatility
-      | "106" -> `Implied_volatility
-      | "162" -> `Index_future_premium
-      | "165" -> `Misc_stats
-      | "221" -> `Mark_price
-      | "225" -> `Auction_values
-      | "233" -> `Realtime_volume
-      | "236" -> `Shortable
-      | "256" -> `Inventory
-      | "258" -> `Fundamental_ratios
-      | "mdoff" -> `Turn_off_market_data
-      | s   -> invalid_argf "Tick_kind.t_of_tws: %s" s ()
-
-    let val_type = Val_type.create tws_of_t t_of_tws
-  end
-
   type t =
     { contract : Raw_contract.t;
-      tick_generics : Tick_kind.t list;
+      tick_types : Tick_type.t list;
       snapshot : bool;
     } with sexp, fields
 
-  let create ~contract ~tick_generics ~snapshot =
+  let create ~contract ~tick_types ~snapshot =
     { contract = Contract.to_raw contract;
-      tick_generics;
+      tick_types;
       snapshot;
     }
 
@@ -157,7 +106,7 @@ module Market_data = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~tick_generics:(use (=))
+      ~tick_types:(use (=))
       ~snapshot:(use (=))
 
   let pickler =
@@ -170,10 +119,10 @@ module Market_data = struct
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-            ~tick_generics:(fields_value (sequence Tick_kind.val_type))
+            ~tick_types:(fields_value (sequence Tick_type.val_type))
             ~snapshot:(fields_value (required bool)))
-          (fun { contract; tick_generics; snapshot } ->
-            `Args $ contract $ tick_generics $ snapshot))
+          (fun { contract; tick_types; snapshot } ->
+            `Args $ contract $ tick_types $ snapshot))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -184,10 +133,10 @@ module Market_data = struct
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
-          ~tick_generics:(fields_value (sequence Tick_kind.val_type))
+          ~tick_types:(fields_value (sequence Tick_type.val_type))
           ~snapshot:(fields_value (required bool)))
-      (fun contract tick_generics snapshot ->
-        { contract; tick_generics; snapshot }))
+      (fun contract tick_types snapshot ->
+        { contract; tick_types; snapshot }))
 end
 
 module Calc_option_price = struct
