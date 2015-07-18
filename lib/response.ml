@@ -1304,7 +1304,7 @@ module Commission = struct
       ~yield_redemption_date:(use (=))
 
   let unpickler =
-    Unpickler.create ~name:"Response.Commission_report"
+    Unpickler.create ~name:"Response.Commission"
       Unpickler.Spec.(
         Fields.fold
           ~init:(empty ())
@@ -1325,7 +1325,7 @@ module Commission = struct
           })
 
   let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Commission_report"
+    Pickler.create ~name:"Response.Commission"
       Pickler.Spec.(
         wrap (
           Fields.fold
