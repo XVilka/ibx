@@ -124,6 +124,12 @@ of 300 milliseconds; see
 [here](http://support.marketdelta.com/entries/117533-interactive-brokers-ib-data-snapshot-data)
 for more information.
 
+### More Examples
+
+For even more examples, please check out the
+[IBX command line tools](https://bitbucket.org/ogu/ibx-tools).
+
+
 Contact Information
 -------------------
 
