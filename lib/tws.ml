@@ -402,11 +402,18 @@ let implied_volatility_exn t ~contract ~option_price ~underlying_price =
    +-----------------------------------------------------------------------+ *)
 
 let dedup_adjacents ~equal pipe =
-  let last = ref None in
-  Pipe.filter_map pipe ~f:(fun x ->
-    match !last with
-    | None -> last := Some x; !last
-    | Some y -> if equal x y then None else begin last := Some x; !last end)
+  Pipe.init (fun w ->
+    Deferred.ignore (Pipe.fold pipe ~init:None ~f:(fun last x ->
+      return (match last with
+      | None ->
+        don't_wait_for (Pipe.write w x); Some x
+      | Some y as last ->
+        if equal x y then last else (
+          don't_wait_for (Pipe.write w x); Some x
+        )
+      )
+    ) : 'a option Deferred.t)
+  )
 
 let submit_order t ~contract ~order =
   with_connection t ~f:(fun con ->
