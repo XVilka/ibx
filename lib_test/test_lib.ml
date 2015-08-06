@@ -106,11 +106,10 @@ let run name suites =
     | [] ->
       loop_suites suites counter failures
     | test :: remaining_tests ->
-      let message = sprintf "[%d/%d] Running test %s from suite %s"
+      let message = sprintf "[%02d/%02d] Running test %s from suite %s"
         counter num_tests test.test_name suite_name
       in
       Log.Global.info "%s" message;
-      let message = if counter < 10 && num_tests >= 10 then " " ^ message else message in
       print_endline message;
       Monitor.try_with (fun () -> test.run ())
       >>= function
