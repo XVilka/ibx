@@ -51,6 +51,15 @@ let multiplier t = Option.value_exn t.Raw_contract.multiplier
 let include_expired t = t.Raw_contract.include_expired
 let combo_legs t = t.Raw_contract.combo_legs
 
+let sort_by_expiry chain =
+  List.sort chain ~cmp:(fun c1 c2 -> Date.compare (expiry c1) (expiry c2))
+
+let group_by_expiry chain =
+  List.group chain ~break:(fun c1 c2 -> Date.(expiry c1 <> expiry c2))
+
+let sort_by_strike chain =
+  List.sort chain ~cmp:(fun c1 c2 -> Price.compare (strike c1) (strike c2))
+
 let to_string t =
   let expiry_to_string d =
     sprintf "%s%d'%d"
