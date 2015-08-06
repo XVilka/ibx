@@ -78,7 +78,7 @@ let suite = "Client" >::: [
     )
   );
 
-  "calc-option-price" >:: (fun () ->
+  "option-price" >:: (fun () ->
     with_tws_client (fun tws ->
       let module R = Response.Tick_option in
       let gen_tick_option = Lazy.force Gen.tick_option in
@@ -93,7 +93,7 @@ let suite = "Client" >::: [
     )
   );
 
-  "calc-implied-volatility" >:: (fun () ->
+  "implied-volatility" >:: (fun () ->
     with_tws_client (fun tws ->
       let module R = Response.Tick_option in
       let gen_tick_option = Lazy.force Gen.tick_option in
