@@ -296,9 +296,9 @@ val contract_data_exn
 (** {1 Futures and option chains} *)
 (******************************************************************************)
 
-(** Requests a futures chain for the given contract specifications and returns
-    the chain as a list of futures contracts or an [Error].  It is a special
-    version of [contract_details] from above. *)
+(** Returns an unordered futures chain for the given contract specification in
+    a [Pipe.t] or an [Error].  It is a special version of [contract_details]
+    from above. *)
 val futures_chain
   :  t
   -> ?con_id:Contract_id.t
@@ -310,7 +310,7 @@ val futures_chain
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Futures ] Contract.t list Or_error.t Deferred.t
+  -> [> `Futures ] Contract.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
 (** Same as [futures_chain], but raises an exception in case of an [Error]. *)
 val futures_chain_exn
@@ -324,11 +324,11 @@ val futures_chain_exn
   -> ?exchange:Exchange.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Futures ] Contract.t list Deferred.t
+  -> [> `Futures ] Contract.t Pipe.Reader.t Deferred.t
 
-(** Requests an option chain for the given contract specifications and returns
-    the chain as a list of option contracts or an [Error].  It is a special
-    version of [contract_details] from above. *)
+(** Returns an unordered option chain for the given contract specification in
+    a [Pipe.t] or an [Error].  It is a special version of [contract_details]
+    from above. *)
 val option_chain
   :  t
   -> ?con_id:Contract_id.t
@@ -343,7 +343,7 @@ val option_chain
   -> option_right:Option_right.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Option ] Contract.t list Or_error.t Deferred.t
+  -> [> `Option ] Contract.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
 
 (** Same as [option_chain], but raises an exception in case of an [Error]. *)
 val option_chain_exn
@@ -360,7 +360,7 @@ val option_chain_exn
   -> option_right:Option_right.t
   -> currency:Currency.t
   -> Symbol.t
-  -> [> `Option ] Contract.t list Deferred.t
+  -> [> `Option ] Contract.t Pipe.Reader.t Deferred.t
 
 
 (** {1 Market depth} *)
