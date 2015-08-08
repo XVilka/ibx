@@ -325,8 +325,8 @@ val futures_chain_exn
   -> Symbol.t
   -> [> `Futures ] Contract.t list Deferred.t
 
-(** Returns an option chain for the given contract specification in or an
-    [Error].  It is a special version of [contract_details] from above. *)
+(** Returns an option chain for the given contract specification or an [Error].
+    It is a special version of [contract_details] from above. *)
 val option_chain
   :  t
   -> ?con_id:Contract_id.t
