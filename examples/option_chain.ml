@@ -10,11 +10,8 @@ let () =
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         let aapl = Symbol.of_string "AAPL" in
         Tws.option_chain_exn tws ~currency:`USD ~option_right:`Call aapl
-        >>= fun chain_p ->
-        Pipe.to_list chain_p
         >>| fun chain ->
-        List.iter (Contract.sort_option_chain chain) ~f:(fun c ->
-          print_endline (Contract.to_string c))
+        List.iter chain ~f:(fun c -> print_endline (Contract.to_string c))
       )
     )
   |> Command.run
