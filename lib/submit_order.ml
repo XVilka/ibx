@@ -279,7 +279,7 @@ let ( = ) t1 t2 : bool =
 let pickler =
   Pickler.create ~name:"Query.Submit_order"
     Pickler.Spec.(
-      wrap (
+      lift (
         Fields.fold
           ~init:(empty ())
           ~con_id:(fields_value (optional Contract_id.val_type ~default_on_none:"0"))

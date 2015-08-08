@@ -115,7 +115,7 @@ module Market_data = struct
     in
     Pickler.create ~name:"Query.Market_data"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -167,7 +167,7 @@ module Option_price = struct
     in
     Pickler.create ~name:"Query.Option_price"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -219,7 +219,7 @@ module Implied_volatility = struct
     in
     Pickler.create ~name:"Query.Implied_volatility"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -273,7 +273,7 @@ module Updates (Arg : sig val name:string end) = struct
   let pickler =
     Pickler.create ~name:Arg.name
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~subscribe:(fields_value (required bool))
@@ -347,7 +347,7 @@ module Executions = struct
   let pickler =
     Pickler.create ~name:"Query.Executions"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~client_id:(fields_value (required Client_id.val_type))
@@ -458,7 +458,7 @@ module Market_depth = struct
     in
     Pickler.create ~name:"Query.Market_depth"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -560,7 +560,7 @@ module History = struct
     let contract_spec = Raw_contract.Pickler_specs.history_query () in
     Pickler.create ~name:"Query.History"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -671,7 +671,7 @@ module Realtime_bars = struct
     in
     Pickler.create ~name:"Query.Realtime_bars"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))

@@ -114,7 +114,7 @@ module Protocol = struct
       let pickler =
         Pickler.create ~name:"Simulation_server.Server_message"
           Pickler.Spec.(
-            wrap (
+            lift (
               Fields.fold
                 ~init:(empty ())
                 ~tag:(fields_value (required Recv_tag.val_type))

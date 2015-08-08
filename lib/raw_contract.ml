@@ -86,9 +86,9 @@ let ( = ) t1 t2 : bool =
 
 module Pickler_specs = struct
 
-  let wrap_contract_spec contract_spec =
+  let lift_contract_spec contract_spec =
     Pickler.Spec.(
-      wrap contract_spec
+      lift contract_spec
         (fun t ->
           `Args
             $ t.con_id
@@ -126,7 +126,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value skipped)
         ~sec_id:(fields_value skipped)
         ~combo_legs:(fields_value (required int)))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 
   let common_option_calc () =
     Pickler.Spec.(
@@ -147,7 +147,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value skipped)
         ~sec_id:(fields_value skipped)
         ~combo_legs:(fields_value skipped))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 
   let contract_details_query () =
     Pickler.Spec.(
@@ -168,7 +168,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
         ~sec_id:(fields_value (optional Security_id.Id.val_type))
         ~combo_legs:(fields_value skipped))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 
   let market_depth_query () =
     Pickler.Spec.(
@@ -189,7 +189,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value skipped)
         ~sec_id:(fields_value skipped)
         ~combo_legs:(fields_value skipped))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 
   let history_query () =
     Pickler.Spec.(
@@ -210,7 +210,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value skipped)
         ~sec_id:(fields_value skipped)
         ~combo_legs:(fields_value skipped))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 
   let realtime_bars_query () =
     Pickler.Spec.(
@@ -231,7 +231,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value skipped)
         ~sec_id:(fields_value skipped)
         ~combo_legs:(fields_value skipped))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 
   let position_response () =
     Pickler.Spec.(
@@ -253,7 +253,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value skipped)
         ~sec_id:(fields_value skipped)
         ~combo_legs:(fields_value skipped))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 
   let execution_response () =
     Pickler.Spec.(
@@ -274,7 +274,7 @@ module Pickler_specs = struct
         ~sec_id_type:(fields_value skipped)
         ~sec_id:(fields_value skipped)
         ~combo_legs:(fields_value skipped))
-    |> wrap_contract_spec
+    |> lift_contract_spec
 end
 
 module Unpickler_specs = struct

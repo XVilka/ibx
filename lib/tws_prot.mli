@@ -40,7 +40,8 @@ module Pickler : sig
 
     val empty : unit -> [ `Args ] t
 
-    val wrap : 'a t -> ('b -> 'a) -> 'b t
+    (** We may want to use a ['a] pickler to serialize ['b] values. *)
+    val lift : 'a t -> ('b -> 'a) -> 'b t
 
     val (++) : 'a t -> 'b t -> ('a * 'b) t
 

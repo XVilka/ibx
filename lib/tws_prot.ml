@@ -116,7 +116,7 @@ module Pickler = struct
 
     let ($) x y = (x, y)
 
-    let wrap t f = {
+    let lift t f = {
       f = Fn.compose t.f f;
     }
 

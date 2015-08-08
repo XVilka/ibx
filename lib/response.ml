@@ -50,7 +50,7 @@ module Tws_error = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tws_error"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~error_code:(fields_value (required int))
@@ -82,7 +82,7 @@ module Server_time = struct
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Server_time"
-      Pickler.Spec.(wrap (value (required int64))
+      Pickler.Spec.(lift (value (required int64))
                       (fun tm -> Int64.of_float (Time.to_float tm))))
 end
 
@@ -152,7 +152,7 @@ module Tick_price = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_price"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~tick_type:(fields_value (required Type.val_type))
@@ -212,7 +212,7 @@ module Tick_size = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_size"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~tick_type:(fields_value (required Type.val_type))
@@ -306,7 +306,7 @@ module Tick_option = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_option"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~tick_type:(fields_value (required Type.val_type))
@@ -549,7 +549,7 @@ module Tick_string = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_string"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~tick_type:(fields_value (required Type.val_type))
@@ -664,7 +664,7 @@ module Order_status = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Order_status"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~state:(fields_value (required State.val_type))
@@ -728,7 +728,7 @@ module Account_update = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Account_update"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~key:(fields_value (required string))
@@ -823,7 +823,7 @@ module Position = struct
     in
     Pickler.create ~name:"Response.Position"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -1017,7 +1017,7 @@ module Contract_data = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Contract_data"
       Pickler.Spec.(
-        wrap (empty ()
+        lift (empty ()
               (* symbol *)
               ++ value (required Symbol.val_type)
               (* contract type *)
@@ -1232,7 +1232,7 @@ module Execution = struct
     let contract_spec = Raw_contract.Pickler_specs.execution_response () in
     Pickler.create ~name:"Response.Execution"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~order_id:(fields_value (required Order_id.val_type))
@@ -1327,7 +1327,7 @@ module Commission = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Commission"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~exec_id:(fields_value (required Execution_id.val_type))
@@ -1420,7 +1420,7 @@ module Book_update = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Book_update"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~position:(fields_value (required int))
@@ -1498,7 +1498,7 @@ module History = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.History"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~start:(fields_value (required string))
@@ -1565,5 +1565,5 @@ module Realtime_bar = struct
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create
       Pickler.Spec.(
-        wrap (Raw_bar.Realtime_bar.pickler_spec ()) Bar.to_raw))
+        lift (Raw_bar.Realtime_bar.pickler_spec ()) Bar.to_raw))
 end

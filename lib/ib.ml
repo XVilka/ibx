@@ -108,7 +108,7 @@ module Client_header = struct
   let pickler =
     Pickler.create ~name:"Ib.Client_header"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~client_version:(fields_value (required int))
@@ -145,7 +145,7 @@ module Query = struct
   let pickler =
     Pickler.create ~name:"Ib.Query"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~tag:(fields_value (required Send_tag.val_type))
@@ -171,7 +171,7 @@ module Response = struct
   let pickler =
     Pickler.create ~name:"Ib.Response"
       Pickler.Spec.(
-        wrap (
+        lift (
           Fields.fold
             ~init:(empty ())
             ~tag:(fields_value (required Recv_tag.val_type))

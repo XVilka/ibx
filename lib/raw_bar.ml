@@ -55,9 +55,9 @@ let ( = ) t1 t2 : bool =
 
 let field_name field = Fieldslib.Field.name field
 
-let wrap_bar_spec bar_spec =
+let lift_bar_spec bar_spec =
   Pickler.Spec.(
-    wrap bar_spec
+    lift bar_spec
       (fun t ->
         `Args
           $ t.stamp
@@ -84,7 +84,7 @@ module Historical_bar = struct
         ~wap:(fields_value (required Price.val_type))
         ~has_gaps:(fields_value (required bools))
         ~n_trades:(fields_value (required int)))
-    |> wrap_bar_spec
+    |> lift_bar_spec
 
   let unpickler_spec () =
     Unpickler.Spec.(
@@ -126,7 +126,7 @@ module Realtime_bar = struct
         ~wap:(fields_value (required Price.val_type))
         ~has_gaps:(fields_value skipped)
         ~n_trades:(fields_value (required int)))
-    |> wrap_bar_spec
+    |> lift_bar_spec
 
   let unpickler_spec () =
     Unpickler.Spec.(
