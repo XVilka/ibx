@@ -54,11 +54,20 @@ let combo_legs t = t.Raw_contract.combo_legs
 let sort_by_expiry chain =
   List.sort chain ~cmp:(fun c1 c2 -> Date.compare (expiry c1) (expiry c2))
 
+let sort_futures_chain = sort_by_expiry
+
 let group_by_expiry chain =
   List.group chain ~break:(fun c1 c2 -> Date.(expiry c1 <> expiry c2))
 
 let sort_by_strike chain =
   List.sort chain ~cmp:(fun c1 c2 -> Price.compare (strike c1) (strike c2))
+
+let sort_option_chain chain =
+  let flat_map ~f = Fn.flip List.(>>=) f in
+  sort_by_expiry chain
+  |> group_by_expiry
+  |> List.map ~f:sort_by_strike
+  |> flat_map ~f:Fn.id
 
 let to_string t =
   let expiry_to_string d =

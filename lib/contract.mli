@@ -66,20 +66,15 @@ val option_right : [< `Option | `Fut_opt ] t -> Option_right.t
 val expiry : [< `Futures | `Option | `Fut_opt ] t -> Date.t
 (** Returns the expiry date of futures and option contracts. *)
 
-val sort_by_expiry
-  :  [> `Futures | `Option | `Fut_opt ] t list
-  -> [> `Futures | `Option | `Fut_opt ] t list
-(** Sorts a futures or option chain by expiry. *)
+val sort_futures_chain
+  :  [< `Futures | `Fut_opt ] t list
+  -> [> `Futures | `Fut_opt ] t list
+(** Sorts a futures chain in ascending order by expiry. *)
 
-val group_by_expiry
-  :  [> `Option | `Fut_opt ] t list
-  -> [> `Option | `Fut_opt ] t list list
-(** Groups an option chain by expiry. *)
-
-val sort_by_strike
-  :  [> `Option | `Fut_opt ] t list
+val sort_option_chain
+  :  [< `Option | `Fut_opt ] t list
   -> [> `Option | `Fut_opt ] t list
-(** Sorts an option chain by strike price. *)
+(** Sorts an option chain in ascending order by expiry and strike price. *)
 
 val days_to_expiry
   :  [< `Futures | `Option | `Fut_opt ] t
