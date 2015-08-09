@@ -591,10 +591,11 @@ let futures_chain_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
     ?exchange ~currency symbol >>| Or_error.ok_exn
 
 let option_chain t ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-    ?include_expired ?exchange ?expiry ?strike ~option_right ~currency symbol =
+    ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option)
+    ~option_right ~currency symbol =
   contract_details t
     ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
-    ?exchange ?expiry ?strike ~option_right ~currency ~sec_type:`Option symbol
+    ?exchange ?expiry ?strike ~option_right ~currency ~sec_type symbol
   >>= function
   | Error _ as e ->
     return e
@@ -611,11 +612,12 @@ let option_chain t ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
     | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
 
 let option_chain_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
-    ?sec_id ?include_expired ?exchange ?expiry ?strike ~option_right ~currency
-    symbol =
+    ?sec_id ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option)
+    ~option_right ~currency symbol =
   option_chain t
     ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
-    ?exchange ?expiry ?strike ~option_right ~currency symbol >>| Or_error.ok_exn
+    ?exchange ?expiry ?strike ~option_right ~currency ~sec_type symbol
+  >>| Or_error.ok_exn
 
 
 (* +-----------------------------------------------------------------------+

@@ -144,7 +144,7 @@ module Contract_details : sig
     -> ?option_right:Option_right.t
     -> ?expiry:Date.t
     -> ?strike:Price.t
-    -> sec_type:Security_type.t
+    -> sec_type:[< Security_type.t ]
     -> currency:Currency.t
     -> Symbol.t
     -> t
