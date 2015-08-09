@@ -29,7 +29,7 @@ type t =
     sec_type : string;
     expiry : Date.t option;
     strike : Price.t option;
-    option_right : Option_right.t option;
+    right : Option_right.t option;
     multiplier : int option;
     exchange : Exchange.t;
     listing_exchange : Exchange.t option;
@@ -42,7 +42,7 @@ type t =
   }
 with sexp, fields
 
-let create ?con_id ?expiry ?strike ?option_right ?multiplier ?listing_exchange
+let create ?con_id ?expiry ?strike ?right ?multiplier ?listing_exchange
     ?local_symbol ?sec_id_type ?sec_id ?(include_expired=false)
     ?(exchange=`SMART) ~currency ~sec_type symbol =
   { con_id;
@@ -50,7 +50,7 @@ let create ?con_id ?expiry ?strike ?option_right ?multiplier ?listing_exchange
     sec_type;
     expiry;
     strike;
-    option_right;
+    right;
     multiplier;
     exchange;
     listing_exchange;
@@ -72,7 +72,7 @@ let ( = ) t1 t2 : bool =
     ~sec_type:(use (=))
     ~expiry:(use (=))
     ~strike:(use (Option.equal Price.(=.)))
-    ~option_right:(use (=))
+    ~right:(use (=))
     ~multiplier:(use (=))
     ~exchange:(use (=))
     ~listing_exchange:(use (=))
@@ -96,7 +96,7 @@ module Pickler_specs = struct
             $ t.sec_type
             $ t.expiry
             $ t.strike
-            $ t.option_right
+            $ t.right
             $ t.multiplier
             $ t.exchange
             $ t.listing_exchange
@@ -116,7 +116,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type))
-        ~option_right:(fields_value (optional Option_right.val_type))
+        ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value (optional Exchange.val_type))
@@ -137,7 +137,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type))
-        ~option_right:(fields_value (optional Option_right.val_type))
+        ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value (optional Exchange.val_type))
@@ -158,7 +158,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type))
-        ~option_right:(fields_value (optional Option_right.val_type))
+        ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value skipped)
@@ -179,7 +179,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type))
-        ~option_right:(fields_value (optional Option_right.val_type))
+        ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value skipped)
@@ -200,7 +200,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type))
-        ~option_right:(fields_value (optional Option_right.val_type))
+        ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value (optional Exchange.val_type))
@@ -221,7 +221,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type))
-        ~option_right:(fields_value (optional Option_right.val_type))
+        ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value (optional Exchange.val_type))
@@ -242,8 +242,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type ~default_on_none:"0"))
-        ~option_right:(fields_value (optional Option_right.val_type
-                                       ~default_on_none:"0"))
+        ~right:(fields_value (optional Option_right.val_type ~default_on_none:"0"))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value skipped)
@@ -264,7 +263,7 @@ module Pickler_specs = struct
         ~sec_type:(fields_value (required string))
         ~expiry:(fields_value (optional date))
         ~strike:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
-        ~option_right:(fields_value (optional Option_right.val_type))
+        ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value skipped)
         ~exchange:(fields_value (required Exchange.val_type))
         ~listing_exchange:(fields_value skipped)
@@ -283,11 +282,11 @@ module Unpickler_specs = struct
 
   let market_data_query () =
     Unpickler.Spec.(
-      step (fun conv con_id symbol sec_type expiry strike option_right
+      step (fun conv con_id symbol sec_type expiry strike right
         multiplier exchange listing_exchange currency local_symbol
         _combo_legs ->
           let contract = create
-            ?con_id ~sec_type ?expiry ?strike ?option_right ?multiplier
+            ?con_id ~sec_type ?expiry ?strike ?right ?multiplier
             ~exchange ?listing_exchange ~currency ?local_symbol symbol
           in
           conv contract
@@ -303,7 +302,7 @@ module Unpickler_specs = struct
       ++ value (optional Price.val_type)
         ~name:(field_name Fields.strike)
       ++ value (optional Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -319,10 +318,10 @@ module Unpickler_specs = struct
 
   let option_price_query () =
     Unpickler.Spec.(
-      step (fun conv con_id symbol sec_type expiry strike option_right
+      step (fun conv con_id symbol sec_type expiry strike right
         multiplier exchange listing_exchange currency local_symbol ->
           let contract = create
-            ?con_id ~expiry ~strike ~option_right ?multiplier ~exchange
+            ?con_id ~expiry ~strike ~right ?multiplier ~exchange
             ?listing_exchange ~currency ?local_symbol ~sec_type
             symbol
           in
@@ -339,7 +338,7 @@ module Unpickler_specs = struct
       ++ value (required Price.val_type)
         ~name:(field_name Fields.strike)
       ++ value (required Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -353,10 +352,10 @@ module Unpickler_specs = struct
 
   let implied_volatility_query () =
     Unpickler.Spec.(
-      step (fun conv con_id symbol sec_type expiry strike option_right
+      step (fun conv con_id symbol sec_type expiry strike right
         multiplier exchange listing_exchange currency local_symbol ->
           let contract = create
-            ?con_id ~expiry ~strike ~option_right ?multiplier ~exchange
+            ?con_id ~expiry ~strike ~right ?multiplier ~exchange
             ?listing_exchange ~currency ?local_symbol ~sec_type
             symbol
           in
@@ -373,7 +372,7 @@ module Unpickler_specs = struct
       ++ value (required Price.val_type)
         ~name:(field_name Fields.strike)
       ++ value (required Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -387,11 +386,11 @@ module Unpickler_specs = struct
 
   let contract_details_query () =
     Unpickler.Spec.(
-      step (fun conv con_id symbol sec_type expiry strike option_right
+      step (fun conv con_id symbol sec_type expiry strike right
         multiplier exchange currency local_symbol include_expired
         sec_id_type sec_id ->
           let contract = create
-            ?con_id ~sec_type ?expiry ?strike ?option_right ?multiplier
+            ?con_id ~sec_type ?expiry ?strike ?right ?multiplier
             ~exchange ~currency ?local_symbol ~include_expired
             ?sec_id_type ?sec_id symbol
           in
@@ -408,7 +407,7 @@ module Unpickler_specs = struct
       ++ value (optional Price.val_type)
         ~name:(field_name Fields.strike)
       ++ value (optional Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -426,10 +425,10 @@ module Unpickler_specs = struct
 
   let market_depth_query () =
     Unpickler.Spec.(
-      step (fun conv symbol sec_type expiry strike option_right
+      step (fun conv symbol sec_type expiry strike right
         multiplier exchange currency local_symbol ->
           let contract = create
-            ~sec_type ?expiry ?strike ?option_right ?multiplier
+            ~sec_type ?expiry ?strike ?right ?multiplier
             ~exchange ~currency ?local_symbol symbol
           in
           conv contract
@@ -443,7 +442,7 @@ module Unpickler_specs = struct
       ++ value (optional Price.val_type)
         ~name:(field_name Fields.strike)
       ++ value (optional Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -455,10 +454,10 @@ module Unpickler_specs = struct
 
   let history_query () =
     Unpickler.Spec.(
-      step (fun conv symbol sec_type expiry strike option_right multiplier
+      step (fun conv symbol sec_type expiry strike right multiplier
         exchange listing_exchange currency local_symbol include_expired ->
           let contract = create
-            ~sec_type ?expiry ?strike ?option_right ?multiplier ~exchange
+            ~sec_type ?expiry ?strike ?right ?multiplier ~exchange
             ?listing_exchange ~currency ?local_symbol ~include_expired symbol
           in
           conv contract
@@ -472,7 +471,7 @@ module Unpickler_specs = struct
       ++ value (optional Price.val_type)
         ~name:(field_name Fields.strike)
       ++ value (optional Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -488,10 +487,10 @@ module Unpickler_specs = struct
 
   let realtime_bars_query () =
     Unpickler.Spec.(
-      step (fun conv symbol sec_type expiry strike option_right
+      step (fun conv symbol sec_type expiry strike right
         multiplier exchange listing_exchange currency local_symbol ->
           let contract = create
-            ~sec_type ?expiry ?strike ?option_right ?multiplier ~exchange
+            ~sec_type ?expiry ?strike ?right ?multiplier ~exchange
             ?listing_exchange ~currency ?local_symbol symbol
           in
           conv contract
@@ -505,7 +504,7 @@ module Unpickler_specs = struct
       ++ value (optional Price.val_type)
         ~name:(field_name Fields.strike)
       ++ value (optional Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -519,10 +518,10 @@ module Unpickler_specs = struct
 
   let position_response () =
     Unpickler.Spec.(
-      step (fun conv con_id symbol sec_type expiry strike option_right
+      step (fun conv con_id symbol sec_type expiry strike right
         multiplier exchange currency local_symbol ->
           let contract = create
-            ?con_id ~sec_type ?expiry ?strike ?option_right ?multiplier
+            ?con_id ~sec_type ?expiry ?strike ?right ?multiplier
             ~exchange ~currency ?local_symbol symbol
           in
           conv contract
@@ -538,7 +537,7 @@ module Unpickler_specs = struct
       ++ value (optional Price.val_type ~none_on_default:"0")
         ~name:(field_name Fields.strike)
       ++ value (optional Option_right.val_type ~none_on_default:"0")
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (optional int)
         ~name:(field_name Fields.multiplier)
       ++ value (required Exchange.val_type)
@@ -550,10 +549,10 @@ module Unpickler_specs = struct
 
   let execution_response () =
     Unpickler.Spec.(
-      step (fun conv con_id symbol sec_type expiry strike option_right
+      step (fun conv con_id symbol sec_type expiry strike right
         exchange currency local_symbol ->
           let contract = create
-            ?con_id ~sec_type ?expiry ?strike ?option_right ~exchange
+            ?con_id ~sec_type ?expiry ?strike ?right ~exchange
             ~currency ?local_symbol symbol
           in
           conv contract
@@ -569,7 +568,7 @@ module Unpickler_specs = struct
       ++ value (optional Price.val_type ~none_on_default:"0.0")
         ~name:(field_name Fields.strike)
       ++ value (optional Option_right.val_type)
-        ~name:(field_name Fields.option_right)
+        ~name:(field_name Fields.right)
       ++ value (required Exchange.val_type)
         ~name:(field_name Fields.exchange)
       ++ value (required Currency.val_type)

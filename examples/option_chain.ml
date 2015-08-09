@@ -9,7 +9,7 @@ let () =
     (fun do_logging host port client_id () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         let aapl = Symbol.of_string "AAPL" in
-        Tws.option_chain_exn tws ~currency:`USD ~option_right:`Call aapl
+        Tws.option_chain_exn tws ~currency:`USD ~right:`Call aapl
         >>| fun chain ->
         List.iter chain ~f:(fun c -> print_endline (Contract.to_string c))
       )

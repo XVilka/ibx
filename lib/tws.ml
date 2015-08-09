@@ -508,12 +508,12 @@ let filter_executions_exn ?time t ~contract ~action =
    +-----------------------------------------------------------------------+ *)
 
 let contract_details t ?con_id ?multiplier ?listing_exchange ?local_symbol
-    ?sec_id ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
+    ?sec_id ?include_expired ?exchange ?right ?expiry ?strike ~currency
     ~sec_type symbol =
   with_connection t ~f:(fun con ->
     let q = Query.Contract_details.create
       ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-      ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
+      ?include_expired ?exchange ?right ?expiry ?strike ~currency
       ~sec_type symbol
     in
     Ib.Streaming_request.(dispatch Tws_reqs.req_contract_details con q >>| function
@@ -528,11 +528,11 @@ let contract_details t ?con_id ?multiplier ?listing_exchange ?local_symbol
   )
 
 let contract_details_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
-    ?sec_id ?include_expired ?exchange ?option_right ?expiry ?strike ~currency
+    ?sec_id ?include_expired ?exchange ?right ?expiry ?strike ~currency
     ~sec_type symbol =
   contract_details t
     ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
-    ?exchange ?option_right ?expiry ?strike ~currency ~sec_type symbol >>| function
+    ?exchange ?right ?expiry ?strike ~currency ~sec_type symbol >>| function
     | Error e -> Error.raise e
     | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
 
@@ -540,7 +540,7 @@ let contract_data t ~contract =
   let c = Contract.to_raw contract in
   contract_details t
     ?expiry:(Raw_contract.expiry c)
-    ?option_right:(Raw_contract.option_right c)
+    ?right:(Raw_contract.right c)
     ~exchange:(Raw_contract.exchange c)
     ~currency:(Raw_contract.currency c)
     ~sec_type:(Raw_contract.sec_type c |> Security_type.t_of_tws)
@@ -591,11 +591,11 @@ let futures_chain_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
     ?exchange ~currency symbol >>| Or_error.ok_exn
 
 let option_chain t ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-    ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option)
-    ~option_right ~currency symbol =
+    ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option) ~right
+    ~currency symbol =
   contract_details t
     ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
-    ?exchange ?expiry ?strike ~option_right ~currency ~sec_type symbol
+    ?exchange ?expiry ?strike ~right ~currency ~sec_type symbol
   >>= function
   | Error _ as e ->
     return e
@@ -613,10 +613,10 @@ let option_chain t ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
 
 let option_chain_exn t ?con_id ?multiplier ?listing_exchange ?local_symbol
     ?sec_id ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option)
-    ~option_right ~currency symbol =
+    ~right ~currency symbol =
   option_chain t
     ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id ?include_expired
-    ?exchange ?expiry ?strike ~option_right ~currency ~sec_type symbol
+    ?exchange ?expiry ?strike ~right ~currency ~sec_type symbol
   >>| Or_error.ok_exn
 
 

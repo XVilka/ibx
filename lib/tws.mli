@@ -252,7 +252,7 @@ val contract_details
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
-  -> ?option_right:Option_right.t
+  -> ?right:Option_right.t
   -> ?expiry:Date.t
   -> ?strike:Price.t
   -> currency:Currency.t
@@ -271,7 +271,7 @@ val contract_details_exn
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool
   -> ?exchange:Exchange.t
-  -> ?option_right:Option_right.t
+  -> ?right:Option_right.t
   -> ?expiry:Date.t
   -> ?strike:Price.t
   -> currency:Currency.t
@@ -339,7 +339,7 @@ val option_chain
   -> ?expiry:Date.t
   -> ?strike:Price.t
   -> ?sec_type:[ `Option | `Fut_opt ] (* Defaults to [Option]. *)
-  -> option_right:Option_right.t
+  -> right:Option_right.t
   -> currency:Currency.t
   -> Symbol.t
   -> [> `Option | `Fut_opt ] Contract.t list Or_error.t Deferred.t
@@ -357,7 +357,7 @@ val option_chain_exn
   -> ?expiry:Date.t
   -> ?strike:Price.t
   -> ?sec_type:[ `Option | `Fut_opt ] (* Defaults to [Option]. *)
-  -> option_right:Option_right.t
+  -> right:Option_right.t
   -> currency:Currency.t
   -> Symbol.t
   -> [> `Option | `Fut_opt ] Contract.t list Deferred.t

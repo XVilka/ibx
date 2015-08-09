@@ -43,7 +43,7 @@ let sec_id t = Option.map t.Raw_contract.sec_id_type ~f:(function
   | `SEDOL -> `SEDOL (Option.value_exn t.Raw_contract.sec_id)
   | `RIC   -> `RIC   (Option.value_exn t.Raw_contract.sec_id))
 
-let option_right t = Option.value_exn t.Raw_contract.option_right
+let right  t = Option.value_exn t.Raw_contract.right
 let strike t = Option.value_exn t.Raw_contract.strike
 let expiry t = Option.value_exn t.Raw_contract.expiry
 let days_to_expiry t ~zone = Date.diff (expiry t) (Date.today ~zone)
@@ -88,7 +88,7 @@ let to_string t =
       (Symbol.to_string t.Raw_contract.symbol)
       (Option.value_exn t.Raw_contract.expiry |> expiry_to_string)
       (Option.value_exn t.Raw_contract.strike |> Price.to_float |> Float.to_int)
-      (Option.value_exn t.Raw_contract.option_right |> Option_right.to_string)
+      (Option.value_exn t.Raw_contract.right  |> Option_right.to_string)
 
 let stock ?con_id ?listed_on ?local_symbol ?sec_id ?exchange ~currency symbol =
   of_raw (
@@ -137,7 +137,7 @@ let futures ?con_id ?multiplier ?local_symbol ?sec_id ?include_expired ?exchange
   )
 
 let option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
-    ~option_right ~expiry ~strike symbol =
+    ~right ~expiry ~strike symbol =
   of_raw (
     Raw_contract.create
       ?con_id
@@ -151,12 +151,12 @@ let option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
       ~sec_type:"OPT"
       ~expiry
       ~strike
-      ~option_right
+      ~right
       symbol
   )
 
 let futures_option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
-    ~option_right ~expiry ~strike symbol =
+    ~right ~expiry ~strike symbol =
   of_raw (
     Raw_contract.create
       ?con_id
@@ -170,7 +170,7 @@ let futures_option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
       ~sec_type:"FOP"
       ~expiry
       ~strike
-      ~option_right
+      ~right
       symbol
   )
 

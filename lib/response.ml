@@ -931,7 +931,7 @@ module Contract_data = struct
         ++ value (optional Price.val_type)
           ~name:(field_name Raw_contract.Fields.strike)
         ++ value (optional Option_right.val_type)
-          ~name:(field_name Raw_contract.Fields.option_right)
+          ~name:(field_name Raw_contract.Fields.right)
         ++ value (required Exchange.val_type)
           ~name:(field_name Raw_contract.Fields.exchange)
         ++ value (required Currency.val_type)
@@ -974,11 +974,11 @@ module Contract_data = struct
           ~name:(field_name Fields.trading_hours)
         ++ value (sequence Trading_times.val_type ~sep:';')
           ~name:(field_name Fields.liquid_hours))
-      (fun symbol sec_type expiry strike option_right exchange currency
-        local_symbol market_name trading_class con_id min_tick multiplier
-        order_types valid_exchanges price_magnifier underlying_id long_name
-        listing_exchange contract_month industry category subcategory
-        time_zone trading_hours liquid_hours ->
+      (fun symbol sec_type expiry strike right exchange currency local_symbol
+        market_name trading_class con_id min_tick multiplier order_types
+        valid_exchanges price_magnifier underlying_id long_name listing_exchange
+        contract_month industry category subcategory time_zone trading_hours
+        liquid_hours ->
           { contract =
               { Raw_contract.
                 con_id;
@@ -986,7 +986,7 @@ module Contract_data = struct
                 sec_type;
                 expiry;
                 strike;
-                option_right;
+                right;
                 multiplier;
                 exchange;
                 listing_exchange;
@@ -1076,7 +1076,7 @@ module Contract_data = struct
               $ t.contract.Raw_contract.sec_type
               $ t.contract.Raw_contract.expiry
               $ t.contract.Raw_contract.strike
-              $ t.contract.Raw_contract.option_right
+              $ t.contract.Raw_contract.right
               $ t.contract.Raw_contract.exchange
               $ t.contract.Raw_contract.currency
               $ t.contract.Raw_contract.local_symbol

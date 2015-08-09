@@ -60,7 +60,7 @@ val underlying : [< `Option | `Fut_opt ] t -> [> `Stock | `Futures ] t
 val strike : [< `Option | `Fut_opt ] t -> Price.t
 (** Returns the strike price of an option contract. *)
 
-val option_right : [< `Option | `Fut_opt ] t -> Option_right.t
+val right : [< `Option | `Fut_opt ] t -> Option_right.t
 (** Returns the right (Put or Call) of an option contract. *)
 
 val expiry : [< `Futures | `Option | `Fut_opt ] t -> Date.t
@@ -130,7 +130,7 @@ val option
   -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
   -> currency:Currency.t
-  -> option_right:Option_right.t
+  -> right:Option_right.t
   -> expiry:Date.t
   -> strike:Price.t
   -> Symbol.t
@@ -144,7 +144,7 @@ val futures_option
   -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t
   -> currency:Currency.t
-  -> option_right:Option_right.t
+  -> right:Option_right.t
   -> expiry:Date.t
   -> strike:Price.t
   -> Symbol.t

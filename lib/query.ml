@@ -400,8 +400,8 @@ module Contract_details = struct
   let create ~contract = Contract.to_raw contract
 
   let create ?con_id ?multiplier ?listing_exchange ?local_symbol ?sec_id
-      ?include_expired ?exchange ?option_right ?expiry ?strike ~sec_type
-      ~currency symbol =
+      ?include_expired ?exchange ?right ?expiry ?strike ~sec_type ~currency
+      symbol =
     Raw_contract.create
       ?con_id
       ?multiplier
@@ -412,7 +412,7 @@ module Contract_details = struct
       ?exchange
       ?expiry
       ?strike
-      ?option_right
+      ?right
       ~currency
       ~sec_type:(Security_type.tws_of_t sec_type)
       symbol

@@ -141,7 +141,7 @@ module Contract_details : sig
     -> ?sec_id:Security_id.t
     -> ?include_expired:bool
     -> ?exchange:Exchange.t
-    -> ?option_right:Option_right.t
+    -> ?right:Option_right.t
     -> ?expiry:Date.t
     -> ?strike:Price.t
     -> sec_type:[< Security_type.t ]
