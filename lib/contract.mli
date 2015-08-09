@@ -136,7 +136,7 @@ val option
   -> Symbol.t
   -> [> `Option ] t
 
-(** Creates a new futures contract. *)
+(** Creates a new futures option contract. *)
 val futures_option
   :  ?con_id:Contract_id.t
   -> ?multiplier:int
