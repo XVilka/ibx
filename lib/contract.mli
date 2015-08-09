@@ -88,7 +88,7 @@ val to_string : 'a t -> string
 (** Checks equality of two contracts. *)
 val ( = ) : 'a t -> 'a t -> bool
 
-(** Creates a new stock contract. *)
+(** Creates a new stock or ETF contract. *)
 val stock
   :  ?con_id:Contract_id.t
   -> ?listed_on:Exchange.t

@@ -22,34 +22,34 @@
 
 open Core.Std
 
-(* A time bar returned by [History] and [Realtime_bars] queries. *)
+(* A bar contained in [History] and [Realtime_bars] responses. *)
 type t = private
-  { (* Timestamp of the bar. *)
-    stamp : Time.t;
-    (* Opening price of the bar. *)
+  { stamp : Time.t;
+    (* Timestamp of the bar. *)
     op : Price.t;
-    (* Highest price during the time covered by the bar. *)
+    (* The opening price of the bar. *)
     hi : Price.t;
-    (* Lowest price during the time covered by the bar. *)
+    (* The highest price during the time covered by the bar. *)
     lo : Price.t;
-    (* Closing price of the bar. *)
+    (* The lowest price during the time covered by the bar. *)
     cl : Price.t;
-    (* Traded volume during the time covered by the bar. *)
+    (* The closing price of the bar. *)
     vo : Volume.t;
-    (* Weigthed average price during the time covered by the bar. *)
+    (* The volume during the time covered by the bar. *)
     wap : Price.t;
-    (* Set to true if there are gaps in the data, otherwise false. *)
+    (* The weigthed average price during the time covered by the bar. *)
     has_gaps : bool;
-    (* Contains the number of trades during the time covered by the bar.
-       Only set when the [tick_type] parameter of the query was [`Trades]. *)
+    (* Determines whether or not there are gaps in the data. *)
     n_trades : int;
+    (* The number of trades during the time covered by the bar.  Only set when
+       the [tick_type] was [Trades]. *)
   } with sexp, fields
 
 include Raw_bar_intf.S
   with type raw := Raw_bar.t
   with type t := t
 
-(** Creates a new time bar from the given arguments. *)
+(** Creates a new bar from the given arguments. *)
 val create
   :  stamp:Time.t
   -> op:Price.t
