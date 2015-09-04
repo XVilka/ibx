@@ -27,13 +27,12 @@ let common_args () =
       ~doc:" client id of TWS or Gateway (default 0)"
   )
 
-let duration_arg () =
+let period_arg () =
   Command.Spec.(
-    flag "-duration"
+    flag "-period"
       (optional_with_default (sec 60.) time_span)
-      ~doc:" duration of the data stream (default 60s)"
+      ~doc:" the time period of the data stream (default 60s)"
   )
-
 module Currency = struct
   let arg_type = Command.Spec.Arg_type.create Currency.of_string
 end
@@ -44,13 +43,13 @@ let currency_arg () =
       ~doc:" contract's currency"
   )
 
-module Bar_span = struct
-  let arg_type = Command.Spec.Arg_type.create Bar_span.of_string
+module Duration = struct
+  let arg_type = Command.Spec.Arg_type.create Duration.of_string
 end
 
-let bar_span_arg () =
+let duration_arg () =
   Command.Spec.(
-    flag "-span" (optional_with_default (`Year 1) Bar_span.arg_type)
+    flag "-duration" (optional_with_default (`Year 1) Duration.arg_type)
       ~doc:" the time covered by the historical data request"
   )
 

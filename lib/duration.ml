@@ -1,4 +1,4 @@
-(* File: bar_span.ml
+(* File: duration.ml
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 

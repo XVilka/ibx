@@ -186,8 +186,8 @@ module History : sig
     :  contract:[< Security_type.t ] Contract.t
     -> until:Time.t
     -> bar_size:Bar_size.t
-    -> bar_span:Bar_span.t
-    -> use_tradehours:bool
+    -> duration:Duration.t
+    -> use_rth:bool
     -> tick_type:Tick_type.t
     -> t
 end
@@ -205,6 +205,6 @@ module Realtime_bars : sig
   val create
     :  contract:[< Security_type.t ] Contract.t
     -> tick_type:Tick_type.t
-    -> use_tradehours:bool
+    -> use_rth:bool
     -> t
 end

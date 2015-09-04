@@ -390,14 +390,14 @@ val history
   | `One_min     | `Two_min    | `Three_min   | `Five_min
   | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
   ] (* defaults to One_day *)
-  -> ?bar_span:[
+  -> ?duration:[
   | `Sec   of int
   | `Day   of int
   | `Week  of int
   | `Month of int
   | `Year  of int
   ] (* defaults to 1 Year *)
-  -> ?use_tradehours:bool
+  -> ?use_rth:bool
   -> ?tick_type:[
   | `Trades
   | `Midpoint
@@ -419,14 +419,14 @@ val history_exn
   | `One_min     | `Two_min    | `Three_min   | `Five_min
   | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
   ] (* defaults to One_day *)
-  -> ?bar_span:[
+  -> ?duration:[
   | `Sec   of int
   | `Day   of int
   | `Week  of int
   | `Month of int
   | `Year  of int
   ] (* defaults to 1 Year *)
-  -> ?use_tradehours:bool
+  -> ?use_rth:bool
   -> ?tick_type:[
   | `Trades
   | `Midpoint
@@ -453,7 +453,7 @@ val realtime_bars
   | `Five_min | `Fifteen_min | `Thirty_min
   ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
-  -> ?use_tradehours:bool
+  -> ?use_rth:bool
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> (Bar.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
@@ -465,7 +465,7 @@ val realtime_bars_exn
   | `Five_min | `Fifteen_min | `Thirty_min
   ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
-  -> ?use_tradehours:bool
+  -> ?use_rth:bool
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> (Bar.t Pipe.Reader.t * Query_id.t) Deferred.t

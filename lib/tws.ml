@@ -634,25 +634,25 @@ let cancel_market_depth t id =
 
 let history
     ?(bar_size = `One_day)
-    ?(bar_span = `Year 1)
-    ?(use_tradehours = true)
+    ?(duration = `Year 1)
+    ?(use_rth = true)
     ?(tick_type = `Trades)
     ?(until = Time.now ())
     t ~contract =
   with_connection t ~f:(fun con ->
     let q = Query.History.create
-      ~contract ~until ~bar_size ~bar_span ~use_tradehours ~tick_type in
+      ~contract ~until ~bar_size ~duration ~use_rth ~tick_type in
     dispatch_and_cancel Tws_reqs.req_history con q
   )
 
 let history_exn
     ?(bar_size = `One_day)
-    ?(bar_span = `Year 1)
-    ?(use_tradehours = true)
+    ?(duration = `Year 1)
+    ?(use_rth = true)
     ?(tick_type = `Trades)
     ?(until = Time.now ())
     t ~contract =
-  history t ~bar_size ~bar_span ~use_tradehours ~tick_type ~until ~contract
+  history t ~bar_size ~duration ~use_rth ~tick_type ~until ~contract
   >>| function
   | Error e -> Error.raise e
   | Ok result -> Tws_result.ok_exn result
@@ -675,11 +675,11 @@ let five_secs_bars_multiples = function
 let realtime_bars
     ?(bar_size = `Five_sec)
     ?(tick_type = `Trades)
-    ?(use_tradehours = true)
+    ?(use_rth = true)
     t ~contract =
   with_connection t ~f:(fun con ->
     let q = Query.Realtime_bars.create
-      ~contract ~tick_type ~use_tradehours in
+      ~contract ~tick_type ~use_rth in
     Ib.Streaming_request.dispatch Tws_reqs.req_realtime_bars con q
     >>= function
     | Error _ as e -> return e
@@ -712,8 +712,8 @@ let realtime_bars
       return (Ok (bars, id))
   )
 
-let realtime_bars_exn ?bar_size ?tick_type ?use_tradehours t ~contract =
-  realtime_bars ?bar_size ?tick_type ?use_tradehours t ~contract >>| function
+let realtime_bars_exn ?bar_size ?tick_type ?use_rth t ~contract =
+  realtime_bars ?bar_size ?tick_type ?use_rth t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
 

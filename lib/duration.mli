@@ -1,4 +1,4 @@
-(* File: bar_span.mli
+(* File: duration.mli
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -22,7 +22,7 @@
 
 open Core.Std
 
-(** The time span of a historical bar request. *)
+(** The duration of a historical bar request. *)
 type t =
 [ `Sec   of int
 | `Day   of int

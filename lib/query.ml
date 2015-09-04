@@ -527,18 +527,18 @@ module History = struct
     { contract : Raw_contract.t;
       until : Time.t;
       bar_size : Bar_size.t;
-      bar_span : Bar_span.t;
-      use_tradehours : bool;
+      duration : Duration.t;
+      use_rth : bool;
       tick_type : Tick_type.t;
       date_format : string;
     } with sexp, fields
 
-  let create ~contract ~until ~bar_size ~bar_span ~use_tradehours ~tick_type =
+  let create ~contract ~until ~bar_size ~duration ~use_rth ~tick_type =
     { contract = Contract.to_raw contract;
       until;
       bar_size;
-      bar_span;
-      use_tradehours;
+      duration;
+      use_rth;
       tick_type;
       date_format = "1";
     }
@@ -551,8 +551,8 @@ module History = struct
       ~contract:(use Raw_contract.(=))
       ~until:(use Time.(=))
       ~bar_size:(use (=))
-      ~bar_span:(use (=))
-      ~use_tradehours:(use (=))
+      ~duration:(use (=))
+      ~use_rth:(use (=))
       ~tick_type:(use (=))
       ~date_format:(use (=))
 
@@ -566,8 +566,8 @@ module History = struct
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~until:(fields_value (required time))
             ~bar_size:(fields_value (required Bar_size.val_type))
-            ~bar_span:(fields_value (required Bar_span.val_type))
-            ~use_tradehours:(fields_value (required bool))
+            ~duration:(fields_value (required Duration.val_type))
+            ~use_rth:(fields_value (required bool))
             ~tick_type:(fields_value (required Tick_type.val_type))
             ~date_format:(fields_value (required string)))
           (fun t ->
@@ -575,8 +575,8 @@ module History = struct
               $ t.contract
               $ t.until
               $ t.bar_size
-              $ t.bar_span
-              $ t.use_tradehours
+              $ t.duration
+              $ t.use_rth
               $ t.tick_type
               $ t.date_format))
 
@@ -589,16 +589,16 @@ module History = struct
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~until:(fields_value (required time))
           ~bar_size:(fields_value (required Bar_size.val_type))
-          ~bar_span:(fields_value (required Bar_span.val_type))
-          ~use_tradehours:(fields_value (required bool))
+          ~duration:(fields_value (required Duration.val_type))
+          ~use_rth:(fields_value (required bool))
           ~tick_type:(fields_value (required Tick_type.val_type))
           ~date_format:(fields_value (required string)))
-      (fun contract until bar_size bar_span use_tradehours tick_type date_format ->
+      (fun contract until bar_size duration use_rth tick_type date_format ->
         { contract;
           until;
           bar_size;
-          bar_span;
-          use_tradehours;
+          duration;
+          use_rth;
           tick_type;
           date_format;
         }))
@@ -645,14 +645,14 @@ module Realtime_bars = struct
     { contract : Raw_contract.t;
       bar_size : Bar_size.t;
       tick_type : Tick_type.t;
-      use_tradehours : bool;
+      use_rth : bool;
     } with sexp, fields
 
-  let create ~contract ~tick_type ~use_tradehours =
+  let create ~contract ~tick_type ~use_rth =
     { contract = Contract.to_raw contract;
       bar_size = `Five_sec;
       tick_type;
-      use_tradehours;
+      use_rth;
     }
 
   let ( = ) t1 t2 =
@@ -663,7 +663,7 @@ module Realtime_bars = struct
       ~contract:(use Raw_contract.(=))
       ~bar_size:(use (=))
       ~tick_type:(use (=))
-      ~use_tradehours:(use (=))
+      ~use_rth:(use (=))
 
   let pickler =
     let contract_spec =
@@ -677,9 +677,9 @@ module Realtime_bars = struct
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~bar_size:(fields_value (required Bar_size.val_type))
             ~tick_type:(fields_value (required Tick_type.val_type))
-            ~use_tradehours:(fields_value (required bool)))
-          (fun { contract; bar_size; tick_type; use_tradehours } ->
-            `Args $ contract $ bar_size $ tick_type $ use_tradehours ))
+            ~use_rth:(fields_value (required bool)))
+          (fun { contract; bar_size; tick_type; use_rth } ->
+            `Args $ contract $ bar_size $ tick_type $ use_rth ))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -692,7 +692,7 @@ module Realtime_bars = struct
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~bar_size:(fields_value (required Bar_size.val_type))
           ~tick_type:(fields_value (required Tick_type.val_type))
-          ~use_tradehours:(fields_value (required bool)))
-      (fun contract bar_size tick_type use_tradehours ->
-        { contract; bar_size; tick_type; use_tradehours }))
+          ~use_rth:(fields_value (required bool)))
+      (fun contract bar_size tick_type use_rth ->
+        { contract; bar_size; tick_type; use_rth }))
 end

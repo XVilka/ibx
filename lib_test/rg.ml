@@ -642,7 +642,7 @@ end = struct
       always (`One_day);
     ] ()
     in
-    let bar_span_g () = oneof [
+    let duration_g () = oneof [
       always (`Sec (1 + nng ()));
       always (`Day (1 + nng ()));
       always (`Week (1 + nng ()));
@@ -665,8 +665,8 @@ end = struct
       ~contract:(contract_g ())
       ~until:(tmg ())
       ~bar_size:(bar_size_g ())
-      ~bar_span:(bar_span_g ())
-      ~use_tradehours:(bg ())
+      ~duration:(duration_g ())
+      ~use_rth:(bg ())
       ~tick_type:(tick_type_g ())
 
   (* =========================== Realtime bars ============================= *)
@@ -717,7 +717,7 @@ end = struct
     Query.Realtime_bars.create
       ~contract:(contract_g ())
       ~tick_type:(tick_type_g ())
-      ~use_tradehours:(bg ())
+      ~use_rth:(bg ())
 end
 
 module R : sig
@@ -733,7 +733,6 @@ module R : sig
   val tick_size_g   : Response.Tick_size.t gen
   val tick_option_g : Response.Tick_option.t gen
   val tick_string_g : Response.Tick_string.t gen
-  (* val efp_tick_g : Response.Tick_efp.t gen *)
 
   val market_data_g : Tws.Market_data.t list gen
 

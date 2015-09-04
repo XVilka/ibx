@@ -24,18 +24,18 @@ let () =
     ~summary:"Show a candlestick chart of historical prices"
     Command.Spec.(
       Common.common_args ()
-      +> Common.bar_span_arg ()
+      +> Common.duration_arg ()
       +> Common.sma_period_arg ()
       +> Common.currency_arg ()
       +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
     )
-    (fun do_logging host port client_id bar_span sma_period currency symbol () ->
+    (fun do_logging host port client_id duration sma_period currency symbol () ->
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         let stock = Contract.stock ~currency symbol in
         Tws.contract_data_exn tws ~contract:stock
         >>= fun data ->
         let bar_size = `One_day in
-        Tws.history_exn tws ~contract:stock ~bar_size ~bar_span
+        Tws.history_exn tws ~contract:stock ~bar_size ~duration
         >>| fun history ->
         let bar_size = Bar_size.to_span bar_size in
         let start = Time.sub (History.start history) bar_size in

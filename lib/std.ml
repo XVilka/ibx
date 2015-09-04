@@ -24,12 +24,12 @@ include Std_internal
 
 module Account_code   = Account_code
 module Bar_size       = Bar_size
-module Bar_span       = Bar_span
 module Client_id      = Client_id
 module Close          = Tws.Close
 module Config         = Config
 module Contract       = Contract
 module Currency       = Currency
+module Duration       = Duration
 module Exchange       = Exchange
 module Ib             = Ib
 module Market_data    = Tws.Market_data
