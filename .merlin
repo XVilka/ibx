@@ -1,0 +1,10 @@
+S lib
+S lib_test
+S examples
+
+PKG async
+PKG core
+PKG gnuplot
+PKG textutils
+
+B _build/**
