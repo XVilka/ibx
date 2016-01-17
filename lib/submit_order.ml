@@ -105,7 +105,7 @@ type t =
     algo_strategy : string option;
     request_pre_trade_information : bool;
   }
-with sexp, fields
+[@@deriving sexp, fields]
 
 let create ~contract ~order ~account_code =
   let contract = Contract.to_raw contract in

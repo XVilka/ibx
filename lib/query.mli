@@ -30,15 +30,15 @@ open Std_internal
 
 module Server_log_level : sig
   module Level : sig
-    type t = [ `System | `Error | `Warning | `Information | `Detail ] with sexp
+    type t = [ `System | `Error | `Warning | `Information | `Detail ] [@@deriving sexp]
   end
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create : level:Level.t -> t
 end
 
 module Server_time : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create : unit -> t
 end
@@ -47,7 +47,7 @@ end
 (*****************************************************************************)
 
 module Market_data : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
@@ -57,7 +57,7 @@ module Market_data : sig
 end
 
 module Option_price : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  contract:[ `Option ] Contract.t
@@ -67,7 +67,7 @@ module Option_price : sig
 end
 
 module Implied_volatility : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  contract:[ `Option ] Contract.t
@@ -80,7 +80,7 @@ end
 (*****************************************************************************)
 
 module Submit_order : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
@@ -93,7 +93,7 @@ end
 (*****************************************************************************)
 
 module Account_updates : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  subscribe:bool
@@ -102,7 +102,7 @@ module Account_updates : sig
 end
 
 module Positions : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  subscribe:bool
@@ -114,7 +114,7 @@ end
 (*****************************************************************************)
 
 module Executions : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
 
   val create
@@ -130,7 +130,7 @@ end
 (*****************************************************************************)
 
 module Contract_details : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
 
   val create
@@ -154,7 +154,7 @@ end
 (*****************************************************************************)
 
 module Market_depth : sig
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
@@ -176,11 +176,11 @@ module History : sig
     | `Historical_volatility
     | `Implied_volatility
     | `Option_volume
-    ] with sexp
+    ] [@@deriving sexp]
     include Stringable.S with type t := t
   end
 
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
@@ -200,7 +200,7 @@ module Realtime_bars : sig
     type t = [ `Trades | `Midpoint | `Bid | `Ask ]
   end
 
-  type t with sexp
+  type t [@@deriving sexp]
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t

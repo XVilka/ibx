@@ -25,7 +25,7 @@ open Tws_prot
 open Std_internal
 
 module Unit (Arg : sig val name:string end) = struct
-  type t = unit with sexp
+  type t = unit [@@deriving sexp]
   let create () = ()
   let ( = ) t1 t2 = (t1 = t2)
   let pickler =
@@ -43,7 +43,7 @@ end
 
 module Server_log_level = struct
   module Level = struct
-    type t = [ `System | `Error | `Warning | `Information | `Detail ] with sexp
+    type t = [ `System | `Error | `Warning | `Information | `Detail ] [@@deriving sexp]
 
     let tws_of_t = function
       | `System -> "1"
@@ -63,7 +63,7 @@ module Server_log_level = struct
     let val_type = Val_type.create tws_of_t t_of_tws
   end
 
-  type t = Level.t with sexp
+  type t = Level.t [@@deriving sexp]
 
   let create ~level = level
 
@@ -92,7 +92,7 @@ module Market_data = struct
     { contract : Raw_contract.t;
       tick_types : Tick_type.t list;
       snapshot : bool;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~tick_types ~snapshot =
     { contract = Contract.to_raw contract;
@@ -144,7 +144,7 @@ module Option_price = struct
     { contract : Raw_contract.t;
       volatility : float;
       underlying_price : Price.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~volatility ~underlying_price =
     { contract = Contract.to_raw contract;
@@ -196,7 +196,7 @@ module Implied_volatility = struct
     { contract : Raw_contract.t;
       option_price : Price.t;
       underlying_price : Price.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~option_price ~underlying_price =
     { contract = Contract.to_raw contract;
@@ -258,7 +258,7 @@ module Updates (Arg : sig val name:string end) = struct
   type t =
     { subscribe : bool;
       account_code : Account_code.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -318,7 +318,7 @@ module Executions = struct
       sec_type : string;
       exchange : Exchange.t;
       action : Order_action.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~client_id ~account_code ~time ~action =
     let contract = Contract.to_raw contract in
@@ -395,7 +395,7 @@ end
    +-----------------------------------------------------------------------+ *)
 
 module Contract_details = struct
-  type t = Raw_contract.t with sexp
+  type t = Raw_contract.t [@@deriving sexp]
 
   let create ~contract = Contract.to_raw contract
 
@@ -437,7 +437,7 @@ module Market_depth = struct
   type t =
     { contract : Raw_contract.t;
       num_rows : int;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~num_rows =
     { contract = Contract.to_raw contract;
@@ -494,7 +494,7 @@ module History = struct
       | `Historical_volatility
       | `Implied_volatility
       | `Option_volume
-      ] with sexp
+      ] [@@deriving sexp]
     end
     include T
     include Sexpable.To_stringable (T)
@@ -531,7 +531,7 @@ module History = struct
       use_rth : bool;
       tick_type : Tick_type.t;
       date_format : string;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~until ~bar_size ~duration ~use_rth ~tick_type =
     { contract = Contract.to_raw contract;
@@ -610,7 +610,7 @@ end
 
 module Realtime_bars = struct
   module Bar_size = struct
-    type t = [ `Five_sec ] with sexp
+    type t = [ `Five_sec ] [@@deriving sexp]
 
     let tws_of_t = function
       | `Five_sec -> "5"
@@ -623,7 +623,7 @@ module Realtime_bars = struct
   end
 
   module Tick_type = struct
-    type t = [ `Trades | `Midpoint | `Bid | `Ask ] with sexp
+    type t = [ `Trades | `Midpoint | `Bid | `Ask ] [@@deriving sexp]
 
     let tws_of_t = function
       | `Trades -> "TRADES"
@@ -646,7 +646,7 @@ module Realtime_bars = struct
       bar_size : Bar_size.t;
       tick_type : Tick_type.t;
       use_rth : bool;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~tick_type ~use_rth =
     { contract = Contract.to_raw contract;

@@ -22,7 +22,7 @@
 
 open Core.Std
 
-type 'a t = Raw_contract.t constraint 'a = [< Security_type.t] with sexp
+type 'a t = Raw_contract.t constraint 'a = [< Security_type.t] [@@deriving sexp]
 
 let to_raw = Fn.id
 let of_raw = Fn.id

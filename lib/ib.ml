@@ -43,7 +43,7 @@ module Header = struct
   type 'a t =
     { tag : 'a;
       version : int;
-    } with sexp
+    } [@@deriving sexp]
 
   let create ~tag ~version = { tag; version }
 
@@ -65,14 +65,14 @@ module Ibx_error = struct
   | Unknown_response_handler of Query_id.t * Recv_tag.t * [ `Version of int ]
   | Unpickler_mismatch of Sexp.t * Recv_tag.t Header.t list
   | Uncaught_exn of Sexp.t
-  with sexp
-  exception Ibx of t with sexp
+  [@@deriving sexp]
+  exception Ibx of t [@@deriving sexp]
   let raise t = raise (Ibx t)
   let to_error t = Error.of_thunk (fun () -> Sexp.to_string_hum (sexp_of_t t))
 end
 
 module Ibx_result = struct
-  type 'a t = ('a, Ibx_error.t) Result.t with sexp
+  type 'a t = ('a, Ibx_error.t) Result.t [@@deriving sexp]
 
   let make_try_with try_with (>>|) constructor f =
     try_with f >>| function
@@ -103,7 +103,7 @@ module Client_header = struct
   type t =
     { client_version : int;
       client_id      : Client_id.t;
-    } with fields, sexp
+    } [@@deriving fields, sexp]
 
   let pickler =
     Pickler.create ~name:"Ib.Client_header"
@@ -121,7 +121,7 @@ module Server_header = struct
   type t =
     { server_version  : int;
       connection_time : Time.t;
-    } with fields, sexp
+    } [@@deriving fields, sexp]
 
   let unpickler =
     Unpickler.create ~name:"Ib.Server_header"
@@ -140,7 +140,7 @@ module Query = struct
       version : int;
       id      : Query_id.t option;
       data    : string;
-    } with fields, sexp
+    } [@@deriving fields, sexp]
 
   let pickler =
     Pickler.create ~name:"Ib.Query"
@@ -157,7 +157,7 @@ module Query = struct
 end
 
 module Response_data = struct
-  type t = ([ `Cancel | `Response of string Queue.t ]) Ibx_result.t with sexp
+  type t = ([ `Cancel | `Response of string Queue.t ]) Ibx_result.t [@@deriving sexp]
 end
 
 module Response = struct
@@ -166,7 +166,7 @@ module Response = struct
       version  : int;
       query_id : Query_id.t option;
       data     : Response_data.t;
-    } with fields, sexp
+    } [@@deriving fields, sexp]
 
   let pickler =
     Pickler.create ~name:"Ib.Response"
@@ -224,7 +224,7 @@ module type Connection = sig
     | Eof
     | Version_failure of int
     | Server_header of [ `Version of int ] * Time.t * Account_code.t
-    with sexp
+    [@@deriving sexp]
   end
 
   val try_connect
@@ -673,7 +673,7 @@ module Connection : Connection_internal = struct
     | Eof
     | Version_failure of int
     | Server_header of [ `Version of int ] * Time.t * Account_code.t
-    with sexp
+    [@@deriving sexp]
   end
 
   let try_connect t ~client_version ~client_id =

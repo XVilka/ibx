@@ -34,7 +34,7 @@ type t =
     has_gaps : bool;
     n_trades : int;
   }
-with sexp, fields
+[@@deriving sexp, fields]
 
 let create = Fields.create
 

@@ -30,14 +30,14 @@ module Client_msg = struct
     | Connecting of [ `Client_version of int ] * Host_and_port.t
     | Connected  of [ `Server_version of int ] * Time.t
     | Disconnected
-    with sexp
+    [@@deriving sexp]
   end
 
   type t =
   | Control of Control.t
   | Status  of string
   | Error   of Error.t
-  with sexp
+  [@@deriving sexp]
 end
 
 module Query_id = Ib.Streaming_request.Id
@@ -85,11 +85,11 @@ let create
       comm_writer;
     }
 
-exception Not_connected_yet with sexp
+exception Not_connected_yet [@@deriving sexp]
 
-exception Eof_from_client with sexp
+exception Eof_from_client [@@deriving sexp]
 
-exception Server_version_too_small of int * [ `Min of int ] with sexp
+exception Server_version_too_small of int * [ `Min of int ] [@@deriving sexp]
 
 let ignore_errors f = don't_wait_for (Monitor.try_with f >>| ignore)
 
@@ -221,11 +221,11 @@ let with_client
     begin
       match clt_msg, t.do_logging with
       | C.Control x, true ->
-        Log.Global.sexp ~level:`Info x <:sexp_of< C.Control.t >>
+        Log.Global.sexp ~level:`Info x [%sexp_of: C.Control.t ]
       | C.Status x, true ->
-        Log.Global.sexp ~level:`Info x <:sexp_of< string >>
+        Log.Global.sexp ~level:`Info x [%sexp_of: string ]
       | C.Error e, true ->
-        Log.Global.sexp ~level:`Error e <:sexp_of< Error.t >>;
+        Log.Global.sexp ~level:`Error e [%sexp_of: Error.t ];
         handle_error e
       | C.Error e, false ->
         handle_error e
@@ -320,7 +320,7 @@ module Market_data = struct
   | `Tick_size   of Tick_size.t
   | `Tick_option of Tick_option.t
   | `Tick_string of Tick_string.t
-  ] with sexp
+  ] [@@deriving sexp]
 
   let ( = ) t1 t2 = match t1, t2 with
     | `Tick_price  x, `Tick_price  y -> Tick_price. (=) x y
@@ -731,7 +731,7 @@ module Trade = struct
     { stamp : Time.t;
       price : Price.t;
       size  : Volume.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~price ~size =
     { stamp = Time.now (); price; size }
@@ -765,7 +765,7 @@ module Quote = struct
     | Bid_size of Volume.t
     | Ask_price_and_size of Price.t * Volume.t
     | Bid_price_and_size of Price.t * Volume.t
-    with sexp
+    [@@deriving sexp]
 
     let ask_size ~size_change =
       if Volume.(size_change <> zero) then
@@ -803,7 +803,7 @@ module Quote = struct
       ask_size : Volume.t;
       bid_size : Volume.t;
       change : Change.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let empty =
     { stamp = Time.epoch;
@@ -865,7 +865,7 @@ module TAQ = struct
   type t =
   | Trade of Trade.t
   | Quote of Quote.t
-  with sexp
+  [@@deriving sexp]
 
   let pp ppf = function
     | Trade trade -> Trade.pp ppf trade
@@ -1142,7 +1142,7 @@ module Close = struct
   type t =
     { stamp : Time.t;
       price : Price.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~price = { stamp = Time.now (); price }
 end

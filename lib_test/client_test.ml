@@ -104,7 +104,7 @@ let suite = "Client" >::: [
       >>| fun implied_vol ->
       let gen_implied_vol = R.implied_vol gen_tick_option in
       assert (Float.(=.) gen_implied_vol implied_vol);
-      Log.Global.sexp ~level:`Debug implied_vol <:sexp_of< float >>
+      Log.Global.sexp ~level:`Debug implied_vol [%sexp_of: float ]
     )
   );
 

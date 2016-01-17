@@ -45,13 +45,13 @@ module Protocol = struct
           version : int;
           id      : Query_id.t option;
           data    : string Queue.t;
-        } with sexp
+        } [@@deriving sexp]
     end
 
     type t =
     | Client_header of int * Client_id.t
     | Client_query  of Query.t
-    with sexp
+    [@@deriving sexp]
 
     let client_header_of_tws raw_msg =
       match raw_msg with
@@ -61,7 +61,7 @@ module Protocol = struct
           Client_id.of_string client_id
         )
       | _ ->
-        failwiths "wrong client header format" raw_msg <:sexp_of< string list >>
+        failwiths "wrong client header format" raw_msg [%sexp_of: string list ]
 
     let client_query_of_tws ~query_has_id raw_msg =
       let query =
@@ -75,7 +75,7 @@ module Protocol = struct
               data = Queue.of_list data;
             }
           | _ ->
-            failwiths "wrong query format" raw_msg <:sexp_of< string list >>
+            failwiths "wrong query format" raw_msg [%sexp_of: string list ]
         else
           match raw_msg with
           | tag :: version :: data ->
@@ -86,7 +86,7 @@ module Protocol = struct
               data = Queue.of_list data;
             }
           | _ ->
-            failwiths "wrong query format" raw_msg <:sexp_of< string list >>
+            failwiths "wrong query format" raw_msg [%sexp_of: string list ]
       in
       Client_query query
 
@@ -109,7 +109,7 @@ module Protocol = struct
           version  : int;
           query_id : Query_id.t option;
           data     : string;
-        } with fields, sexp
+        } [@@deriving fields, sexp]
 
       let pickler =
         Pickler.create ~name:"Simulation_server.Server_message"
@@ -134,7 +134,7 @@ module Protocol = struct
     type t =
     | Server_header of int * Time.t
     | Server_response of Response.t
-    with sexp
+    [@@deriving sexp]
 
     let to_tws = function
       | Server_header (version, conn_time) ->

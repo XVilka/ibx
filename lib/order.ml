@@ -25,7 +25,7 @@ open Core.Std
 type ('a, 'b) t = Raw_order.t
 constraint 'a = [< Order_action.t ]
 constraint 'b = [< Order_type.t ]
-with sexp
+[@@deriving sexp]
 
 let to_raw = Fn.id
 let of_raw = Fn.id

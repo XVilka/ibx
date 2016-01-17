@@ -43,7 +43,7 @@ type t = private
     n_trades : int;
     (* The number of trades during the time covered by the bar.  Only set when
        the [tick_type] was [Trades]. *)
-  } with sexp, fields
+  } [@@deriving sexp, fields]
 
 include Raw_bar_intf.S
   with type raw := Raw_bar.t

@@ -31,7 +31,7 @@ module Time_in_force = struct
   | `Immediate_or_cancel
   | `Fill_or_kill
   | `Good_till_date_time
-  ] with sexp
+  ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Day -> "DAY"
@@ -56,7 +56,7 @@ module Oca_type = struct
   [ `cancel_with_block
   | `reduce_with_block
   | `reduce_non_block
-  ] with sexp
+  ] [@@deriving sexp]
 
 
   let tws_of_t = function
@@ -82,7 +82,7 @@ module Stop_trigger_method = struct
   | `Bid_ask
   | `Last_bid_ask
   | `Midpoint
-  ] with sexp
+  ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Default -> "0"
@@ -117,7 +117,7 @@ module Rule80A = struct
   | `Individual_PT
   | `Agency_PT
   | `Agent_other_member_PT
-  ] with sexp
+  ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Individual -> "I"
@@ -146,7 +146,7 @@ module Rule80A = struct
 end
 
 module Open_close = struct
-  type t = [ `Open | `Close ] with sexp
+  type t = [ `Open | `Close ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Open -> "O"
@@ -161,7 +161,7 @@ module Open_close = struct
 end
 
 module Origin = struct
-  type t = [ `Customer | `Firm ] with sexp
+  type t = [ `Customer | `Firm ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Customer -> "0"
@@ -176,7 +176,7 @@ module Origin = struct
 end
 
 module Auction_strategy = struct
-  type t = [ `Match | `Improvement | `Transparent ] with sexp
+  type t = [ `Match | `Improvement | `Transparent ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Match -> "1"
@@ -193,7 +193,7 @@ module Auction_strategy = struct
 end
 
 module Volatility_type = struct
-  type t = [ `daily | `annual ] with sexp
+  type t = [ `daily | `annual ] [@@deriving sexp]
 
   let tws_of_t = function
     | `daily -> "1"
@@ -208,7 +208,7 @@ module Volatility_type = struct
 end
 
 module Reference_price_type = struct
-  type t = [ `average | `bid_or_ask ] with sexp
+  type t = [ `average | `bid_or_ask ] [@@deriving sexp]
 
   let tws_of_t = function
     | `average -> "1"
@@ -223,7 +223,7 @@ module Reference_price_type = struct
 end
 
 module Hedge_type = struct
-  type t = [ `Delta | `Beta | `Fx | `Pair ] with sexp
+  type t = [ `Delta | `Beta | `Fx | `Pair ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Delta -> "D"
@@ -242,7 +242,7 @@ module Hedge_type = struct
 end
 
 module Clearing_intent = struct
-  type t = [ `Default | `IB | `Away | `Post_trade_allocation ] with sexp
+  type t = [ `Default | `IB | `Away | `Post_trade_allocation ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Default -> ""
@@ -354,7 +354,7 @@ type t =
     request_pre_trade_information : bool;
     not_held : bool;
   }
-with sexp, fields
+[@@deriving sexp, fields]
 
 let create
     ?limit_price

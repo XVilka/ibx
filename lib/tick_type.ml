@@ -38,7 +38,7 @@ module T = struct
   | `Realtime_volume
   | `Shortable
   | `Turn_off_market_data
-  ] with sexp
+  ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

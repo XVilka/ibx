@@ -6,10 +6,10 @@ module Ascii_table = Textutils.Ascii_table
 
 let print_quote_table quotes =
   let get_symbol    (s, _) = Symbol.to_string s in
-  let get_bid_size  (_, q) = sprintf "%d"    Quote.(bid_size  q :> int) in
-  let get_bid_price (_, q) = sprintf "%4.2f" Quote.(bid_price q :> float) in
-  let get_ask_price (_, q) = sprintf "%4.2f" Quote.(ask_price q :> float) in
-  let get_ask_size  (_, q) = sprintf "%d"    Quote.(ask_size  q :> int) in
+  let get_bid_size  (_, q) = sprintf "%d"    Quote.((bid_size  q :> int)) in
+  let get_bid_price (_, q) = sprintf "%4.2f" Quote.((bid_price q :> float)) in
+  let get_ask_price (_, q) = sprintf "%4.2f" Quote.((ask_price q :> float)) in
+  let get_ask_size  (_, q) = sprintf "%d"    Quote.((ask_size  q :> int)) in
   Ascii_table.(output ~oc:stdout [
     Column.create "Symbol"    get_symbol ~align:Align.left;
     Column.create "Bid size"  get_bid_size;

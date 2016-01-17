@@ -57,7 +57,7 @@ type t =
 | Option_price
 | Cancel_implied_volatility
 | Cancel_option_price
-with sexp
+[@@deriving sexp]
 
 let tws_of_t = function
   | Market_data -> "1"

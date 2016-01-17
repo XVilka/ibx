@@ -23,7 +23,7 @@
 open Core.Std
 
 type 'a t
-constraint 'a = [< Security_type.t ] with sexp
+constraint 'a = [< Security_type.t ] [@@deriving sexp]
 (** A contract belonging to a security type like stock, futures, option etc. *)
 
 include Raw_contract_intf.S

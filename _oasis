@@ -76,8 +76,8 @@ Library ibx
                   Volume
   BuildDepends:   core  (>= 112.17.00),
                   async (>= 112.17.00),
-                  sexplib.syntax,
-                  fieldslib.syntax,
+                  ppx_sexp_conv,
+                  ppx_fields_conv,
                   textutils,
                   threads,
                   str

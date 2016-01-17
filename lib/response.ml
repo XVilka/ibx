@@ -32,7 +32,7 @@ module Tws_error = struct
   type t =
     { error_code : int;
       error_msg : string;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -70,7 +70,7 @@ module Tws_error = struct
 end
 
 module Server_time = struct
-  type t = Time.t with sexp
+  type t = Time.t [@@deriving sexp]
 
   let create ~time = time
   let ( = ) t1 t2 = (t1 = t2)
@@ -92,7 +92,7 @@ end
 
 module Tick_price = struct
   module Type = struct
-    type t = Bid | Ask | Last | High | Low | Close | Open with sexp
+    type t = Bid | Ask | Last | High | Low | Close | Open [@@deriving sexp]
 
     let tws_of_t = function
       | Bid -> "1"
@@ -121,7 +121,7 @@ module Tick_price = struct
       price : Price.t;
       size : Volume.t;
       can_auto_execute : bool option;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -173,7 +173,7 @@ end
 
 module Tick_size = struct
   module Type = struct
-    type t = Bid | Ask | Last | Volume with sexp
+    type t = Bid | Ask | Last | Volume [@@deriving sexp]
 
     let tws_of_t = function
       | Bid -> "0"
@@ -194,7 +194,7 @@ module Tick_size = struct
   type t =
     { tick_type : Type.t;
       size : Volume.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -227,7 +227,7 @@ end
 
 module Tick_option = struct
   module Type = struct
-    type t = Bid | Ask | Last | Model | Custom with sexp
+    type t = Bid | Ask | Last | Model | Custom [@@deriving sexp]
 
     let tws_of_t = function
       | Bid -> "10"
@@ -257,7 +257,7 @@ module Tick_option = struct
       vega : float;
       theta : float;
       under_price : Price.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -404,7 +404,7 @@ module Tick_string = struct
     | Ask_yield
     | Last_yield
     | Cust_option_comp
-    with sexp
+    [@@deriving sexp]
 
     let tws_of_t = function
       | Bid_size -> "0"
@@ -525,7 +525,7 @@ module Tick_string = struct
   type t =
     { tick_type : Type.t;
       value : string;
-    } with fields, sexp
+    } [@@deriving fields, sexp]
 
   let create = Fields.create
 
@@ -580,7 +580,7 @@ module Order_status = struct
     | `Cancelled
     | `Filled
     | `Inactive
-    ] with sexp
+    ] [@@deriving sexp]
 
     let tws_of_t = function
       | `Pending_submit -> "PendingSubmit"
@@ -615,7 +615,7 @@ module Order_status = struct
       client_id : Client_id.t;
       why_held : string option;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -699,7 +699,7 @@ module Account_update = struct
       value : string;
       currency : string option;
       account_code : Account_code.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -748,7 +748,7 @@ module Position = struct
       unrealized_pnl : Price.t;
       realized_pnl : Price.t;
       account_code : Account_code.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~size ~market_price ~market_value ~average_cost
       ~unrealized_pnl ~realized_pnl ~account_code =
@@ -868,7 +868,7 @@ module Contract_data = struct
       time_zone : Time.Zone.t option;
       trading_hours : Trading_times.t list;
       liquid_hours : Trading_times.t list;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~contract ~market_name ~trading_class ~min_tick ~order_types
       ~valid_exchanges ~price_magnifier ~underlying_id ~long_name ~contract_month
@@ -1109,7 +1109,7 @@ end
 module Execution = struct
   module Side = struct
     module T = struct
-      type t = [ `bought | `sold ] with sexp
+      type t = [ `bought | `sold ] [@@deriving sexp]
     end
     include T
     include Sexpable.To_stringable (T)
@@ -1142,7 +1142,7 @@ module Execution = struct
       cumulative_volume : Volume.t;
       average_price : Price.t;
       order_ref : string option;
-    } with fields, sexp
+    } [@@deriving fields, sexp]
 
   let create ~order_id ~contract ~exec_id ~time ~account_code ~exchange ~side
       ~volume ~price ~permanent_id ~client_id ~liquidation ~cumulative_volume
@@ -1287,7 +1287,7 @@ module Commission = struct
       realized_pnl : Price.t;
       yield : float;
       yield_redemption_date : int option;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -1352,7 +1352,7 @@ end
 
 module Book_update = struct
   module Operation = struct
-    type t = Insert | Update | Delete with sexp
+    type t = Insert | Update | Delete [@@deriving sexp]
 
     let tws_of_t = function
       | Insert -> "0"
@@ -1369,7 +1369,7 @@ module Book_update = struct
   end
 
   module Side = struct
-    type t = Ask | Bid with sexp
+    type t = Ask | Bid [@@deriving sexp]
 
     let tws_of_t = function
       | Ask -> "0"
@@ -1389,7 +1389,7 @@ module Book_update = struct
       side : Side.t;
       price : Price.t;
       size : Volume.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -1442,7 +1442,7 @@ module History = struct
       stop : Time.t;
       num_bars : int;
       bars : Bar.t list;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   let create ~bars =
     let num_bars = List.length bars in
@@ -1527,7 +1527,7 @@ module History = struct
         lo : float array;
         cl : float array;
         vo : int   array;
-      } with sexp, fields
+      } [@@deriving sexp, fields]
   end
 
   let unpack_bars t =
@@ -1553,7 +1553,7 @@ end
    +-----------------------------------------------------------------------+ *)
 
 module Realtime_bar = struct
-  type t = Bar.t with sexp
+  type t = Bar.t [@@deriving sexp]
 
   let create ~bar = bar
   let ( = ) = Bar.(=)

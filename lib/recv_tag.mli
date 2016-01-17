@@ -55,7 +55,7 @@ type t =
 | Delta_neutral_validation
 | Snapshot_end
 | Commission
-with sexp
+[@@deriving sexp]
 include Twsable.S with type t := t
 include Unpickable.S with type t := t
 

@@ -26,7 +26,7 @@ open Tws_prot
 type t =
   { date  : Date.t;
     hours : Time.Ofday.t list;
-  } with sexp
+  } [@@deriving sexp]
 
 let create ~date ~hours = { date; hours }
 

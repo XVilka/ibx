@@ -22,7 +22,7 @@
 
 open Core.Std
 
-type raw_tws = string with sexp
+type raw_tws = string [@@deriving sexp]
 
 module Val_type = struct
   type 'a t = {

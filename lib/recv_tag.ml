@@ -58,7 +58,7 @@ type t =
 | Delta_neutral_validation
 | Snapshot_end
 | Commission
-with sexp
+[@@deriving sexp]
 
 let tws_of_t = function
   | Tick_price -> "1"

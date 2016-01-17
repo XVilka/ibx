@@ -32,7 +32,7 @@ module Tws_error : sig
     { error_code : int;
       error_msg : string;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create : error_code:int -> error_msg:string -> t
@@ -44,7 +44,7 @@ module Tws_error : sig
 end
 
 module Server_time : sig
-  type t = Time.t with sexp
+  type t = Time.t [@@deriving sexp]
   include Response_intf.S with type t := t
 
   val create : time:Time.t -> t
@@ -55,7 +55,7 @@ end
 
 module Tick_price : sig
   module Type : sig
-    type t = Bid | Ask | Last | High | Low | Close | Open with sexp
+    type t = Bid | Ask | Last | High | Low | Close | Open [@@deriving sexp]
   end
   type t = private
     { tick_type : Type.t;
@@ -63,7 +63,7 @@ module Tick_price : sig
       size : Volume.t;
       can_auto_execute : bool option;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -80,13 +80,13 @@ end
 
 module Tick_size : sig
   module Type : sig
-    type t = Bid | Ask | Last | Volume with sexp
+    type t = Bid | Ask | Last | Volume [@@deriving sexp]
   end
   type t = private
     { tick_type : Type.t;
       size : Volume.t;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create : tick_type:Type.t -> size:Volume.t -> t
@@ -95,7 +95,7 @@ end
 
 module Tick_option : sig
   module Type : sig
-    type t = Bid | Ask | Last | Model | Custom with sexp
+    type t = Bid | Ask | Last | Model | Custom [@@deriving sexp]
   end
   type t = private
     { tick_type : Type.t;
@@ -108,7 +108,7 @@ module Tick_option : sig
       theta : float;
       under_price : Price.t;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -183,13 +183,13 @@ module Tick_string : sig
     | Ask_yield
     | Last_yield
     | Cust_option_comp
-    with sexp
+    [@@deriving sexp]
   end
   type t = private
     { tick_type : Type.t;
       value : string;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create : tick_type:Type.t -> value:string -> t
@@ -209,7 +209,7 @@ module Order_status : sig
     | `Cancelled
     | `Filled
     | `Inactive
-    ] with sexp
+    ] [@@deriving sexp]
   end
   type t = private
     { state : State.t;
@@ -222,7 +222,7 @@ module Order_status : sig
       client_id : Client_id.t;
       why_held : string option;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -248,7 +248,7 @@ module Account_update : sig
       currency : string option;
       account_code : Account_code.t;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -270,7 +270,7 @@ module Position : sig
       realized_pnl : Price.t;
       account_code : Account_code.t;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -316,7 +316,7 @@ module Contract_data : sig
       time_zone : Time.Zone.t option;
       trading_hours : Trading_times.t list;
       liquid_hours : Trading_times.t list;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -349,7 +349,7 @@ end
 
 module Execution : sig
   module Side : sig
-    type t = [ `bought | `sold ] with sexp
+    type t = [ `bought | `sold ] [@@deriving sexp]
     include Stringable.S with type t := t
   end
 
@@ -370,7 +370,7 @@ module Execution : sig
       average_price : Price.t;
       order_ref : string option;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -404,7 +404,7 @@ module Commission : sig
       realized_pnl : Price.t;
       yield : float;
       yield_redemption_date : int option;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -422,10 +422,10 @@ end
 
 module Book_update : sig
   module Operation : sig
-    type t = Insert | Update | Delete with sexp
+    type t = Insert | Update | Delete [@@deriving sexp]
   end
   module Side : sig
-    type t = Ask | Bid with sexp
+    type t = Ask | Bid [@@deriving sexp]
   end
   type t = private
     { position : int;
@@ -434,7 +434,7 @@ module Book_update : sig
       price : Price.t;
       size : Volume.t;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create
@@ -456,7 +456,7 @@ module History : sig
       num_bars : int;
       bars : Bar.t list;
     }
-  with sexp, fields
+  [@@deriving sexp, fields]
   include Response_intf.S with type t := t
 
   val create : bars:Bar.t list -> t
@@ -469,7 +469,7 @@ module History : sig
         lo : float array;
         cl : float array;
         vo : int   array;
-      } with fields, sexp
+      } [@@deriving fields, sexp]
   end
 
   (** [unpack_bars t] unpacks bars into a data frame that stores prices and
@@ -481,7 +481,7 @@ end
 (*****************************************************************************)
 
 module Realtime_bar : sig
-  type t = Bar.t with sexp
+  type t = Bar.t [@@deriving sexp]
   include Response_intf.S with type t := t
   val create : bar:Bar.t -> t
 end

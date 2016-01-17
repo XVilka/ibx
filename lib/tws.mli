@@ -111,7 +111,7 @@ module Market_data : sig
   | `Tick_size   of Tick_size.t
   | `Tick_option of Tick_option.t
   | `Tick_string of Tick_string.t
-  ] with sexp
+  ] [@@deriving sexp]
   include Response_intf.Wrapper.S with type t := t
   val pp : Format.formatter -> t -> unit
 end
@@ -481,7 +481,7 @@ module Trade : sig
     { stamp : Time.t;
       price : Price.t;
       size  : Volume.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   val pp : Format.formatter -> t -> unit
 end
@@ -508,7 +508,7 @@ module Quote : sig
     | Bid_size of Volume.t
     | Ask_price_and_size of Price.t * Volume.t
     | Bid_price_and_size of Price.t * Volume.t
-    with sexp
+    [@@deriving sexp]
   end
 
   type t = private
@@ -518,7 +518,7 @@ module Quote : sig
       ask_size : Volume.t;
       bid_size : Volume.t;
       change : Change.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 
   val pp : Format.formatter -> t -> unit
 end
@@ -539,7 +539,7 @@ module TAQ : sig
   type t =
   | Trade of Trade.t
   | Quote of Quote.t
-  with sexp
+  [@@deriving sexp]
 
   val pp : Format.formatter -> t -> unit
 end
@@ -594,7 +594,7 @@ module Close : sig
   type t = private
     { stamp : Time.t;
       price : Price.t;
-    } with sexp, fields
+    } [@@deriving sexp, fields]
 end
 
 (** [latest_close t contract] returns either the latest closing price for the

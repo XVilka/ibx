@@ -30,7 +30,7 @@ module T = struct
   | `Week  of int
   | `Month of int
   | `Year  of int
-  ] with sexp
+  ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

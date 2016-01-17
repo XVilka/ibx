@@ -22,7 +22,7 @@
 
 open Core.Std
 
-type t with sexp
+type t [@@deriving sexp]
 include Twsable.S with type t := t
 
 val create : date:Date.t -> hours:Time.Ofday.t list -> t

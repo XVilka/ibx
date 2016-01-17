@@ -40,7 +40,7 @@ type t =
     sec_id : Security_id.Id.t option;
     combo_legs : int;
   }
-with sexp, fields
+[@@deriving sexp, fields]
 
 let create ?con_id ?expiry ?strike ?right ?multiplier ?listing_exchange
     ?local_symbol ?sec_id_type ?sec_id ?(include_expired=false)

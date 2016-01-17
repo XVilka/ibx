@@ -59,7 +59,7 @@ module type Connection = sig
     | Eof
     | Version_failure of int
     | Server_header of [ `Version of int ] * Time.t * Account_code.t
-    with sexp
+    [@@deriving sexp]
   end
 
   val try_connect

@@ -30,7 +30,7 @@ type t =
 | `Option
 | `Fut_opt
 | `Forex
-] with sexp
+] [@@deriving sexp]
 include Stringable.S with type t := t
 val tws_of_t : [< t ] -> raw_tws
 val t_of_tws : raw_tws -> [> t]

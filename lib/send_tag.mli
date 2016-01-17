@@ -54,7 +54,7 @@ type t =
 | Option_price
 | Cancel_implied_volatility
 | Cancel_option_price
-with sexp
+[@@deriving sexp]
 include Twsable.S with type t := t
 
 val corresponding_query_has_id : t -> bool

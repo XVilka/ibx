@@ -1,5 +1,5 @@
 (* OASIS_START *)
-(* DO NOT EDIT (digest: 6c5beac1a1cb858e808fe21c7aae1cd3) *)
+(* DO NOT EDIT (digest: 90c1773e387bbe9ca8941f9f9bc11f1d) *)
 
 This is the INSTALL file for the ibx distribution.
 
@@ -15,8 +15,8 @@ In order to compile this package, you will need:
 * findlib (>= 1.3.1)
 * core (>= 112.17.00) for library ibx
 * async (>= 112.17.00) for library ibx
-* sexplib for library ibx
-* fieldslib for library ibx
+* ppx_sexp_conv for library ibx
+* ppx_fields_conv for library ibx
 * textutils for library ibx
 * gnuplot for executable plot_history, executable plot_taq_data
 
