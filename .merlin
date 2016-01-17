@@ -5,6 +5,8 @@ S examples
 PKG async
 PKG core
 PKG gnuplot
+PKG ppx_sexp_conv
 PKG textutils
+PKG ppx_fields_conv
 
 B _build/**
