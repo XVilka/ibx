@@ -5,7 +5,7 @@ open Gnuplot
 
 let verbose = ref true
 
-let plot_taq_data ~client_id ~do_logging ~period ~currency ~symbol =
+let plot_taq_data ~client_id ~do_logging ~period ~currency ~zone ~symbol =
   Tws.with_client_or_error ~client_id ~do_logging (fun tws ->
     Tws.contract_data_exn tws ~contract:(Contract.stock ~currency symbol)
     >>= fun data ->
@@ -29,7 +29,6 @@ let plot_taq_data ~client_id ~do_logging ~period ~currency ~symbol =
     let bids = List.rev (bids : ('t * Price.t) list :> ('t * float) list) in
     let asks = List.rev (asks : ('t * Price.t) list :> ('t * float) list) in
     let trades = List.rev (trades : ('t * Price.t) list :> ('t * float) list) in
-    let zone = Time.Zone.local in
     let gp = Gp.create () in
     Gp.plot_many gp ~format:"%H:%M:%S"
       ~title:(Contract_data.long_name data) ~use_grid:true
@@ -46,13 +45,14 @@ let () =
       +> flag "-quiet" no_arg ~doc:" quiet mode"
       +> Common.period_arg ()
       +> Common.currency_arg ()
+      +> Common.timezone_arg ()
       +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
     )
-    (fun do_logging host port client_id quiet period currency symbol () ->
+    (fun do_logging host port client_id quiet period currency zone symbol () ->
       verbose := not quiet;
       if Time.Span.(period > minute) then
         return (Or_error.error_string "Maximum period is 1 minute")
-      else plot_taq_data ~do_logging ~host ~port ~client_id ~period
-        ~currency ~symbol
+      else plot_taq_data
+        ~do_logging ~host ~port ~client_id ~period ~currency ~zone ~symbol
     )
   |> Command.run

@@ -68,3 +68,13 @@ let sma_period_arg () =
     flag "-sma" (optional int)
       ~doc:" the look-back period of the simple moving average"
   )
+
+module Timezone = struct
+  let arg_type = Command.Spec.Arg_type.create Time.Zone.find_exn
+end
+
+let timezone_arg () =
+  Command.Spec.(
+    flag "-zone" (optional_with_default Time.Zone.local Timezone.arg_type)
+      ~doc:" the time zone in which the symbol is traded"
+  )
