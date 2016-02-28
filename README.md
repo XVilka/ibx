@@ -37,7 +37,7 @@ It can also be found [online](http://ogu.bitbucket.org/ibx/api/).
 
 Before you start, please install the Interactive Brokers Trader Workstation
 [TWS](http://www.interactivebrokers.com/en/p.php?f=tws) or its low-resource alternative
-[IB Gateway](https://www.interactivebrokers.com/en/?f=%2Fen%2Fsoftware%2Fibapi.php)
+[IB Gateway](https://www.interactivebrokers.com/en/?f=%2Fen%2Fcontrol%2Fsystemstandalone-ibGateway.php%3Fos%3Dunix)
 and make sure that the software allows for incoming API connections. How this is
 done for TWS can be watched [here](http://www.youtube.com/watch?v=53tmypRq5wI).
 For more detailed information please refer to the Interactive Brokers
