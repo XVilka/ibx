@@ -11,7 +11,7 @@ let print_quote_table quotes =
   let get_ask_price (_, q) = sprintf "%4.2f" Quote.((ask_price q :> float)) in
   let get_ask_size  (_, q) = sprintf "%d"    Quote.((ask_size  q :> int)) in
   Ascii_table.(output ~oc:stdout [
-    Column.create "Symbol"    get_symbol ~align:Align.left;
+    Column.create "Symbol"    get_symbol ~align:Align.Left;
     Column.create "Bid size"  get_bid_size;
     Column.create "Bid price" get_bid_price;
     Column.create "Ask price" get_ask_price;
