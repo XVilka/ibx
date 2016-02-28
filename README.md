@@ -104,7 +104,7 @@ distribution. You can build the examples by typing
 in the top-level directory of this distribution. If the compilation of the
 examples was successful, you can type
 
-    $ ./plot_history.native -span "(Month 6)" -sma 100 AAPL
+    $ ./plot_history.native -duration "(Month 6)" -sma 100 AAPL
 
 to plot a 6-month candle stick chart of Apple prices with a simple 100-day
 moving average:
