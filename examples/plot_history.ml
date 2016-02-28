@@ -40,18 +40,19 @@ let () =
         let bar_size = Bar_size.to_span bar_size in
         let start = Time.sub (History.start history) bar_size in
         let stop = Time.add (History.stop history) bar_size in
-        let range = Range.Time (start, stop) in
+        let zone = Time.Zone.local in
+        let range = Range.Time (start, stop, zone) in
         let gp = Gp.create () in
         Gp.set gp ~title:(Contract_data.long_name data) ~use_grid:true;
         [ (* Create a candlestick chart series. *)
-          Series.candles_time_ohlc
+          Series.candles_time_ohlc ~zone:Time.Zone.local
             (List.map (History.bars history) ~f:(fun bar ->
               Bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
              :> (Time.t * (float * float * float * float)) list) |> Option.some;
           (* Create a moving average time series of the closing prices. *)
           Option.map sma_period ~f:(fun period ->
             let sma = unstage (Filter.sma ~period) in
-            Series.lines_timey ~color:`Green ~title:(sprintf "SMA %d" period)
+            Series.lines_timey ~zone ~color:`Green ~title:(sprintf "SMA %d" period)
               (List.map (History.bars history) ~f:(fun bar ->
                 Bar.(stamp bar, sma (cl bar :> float)))));
         ] |> List.filter_opt |> Gp.plot_many gp ~range ~format:"%b %d'%y";
