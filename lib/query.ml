@@ -305,7 +305,7 @@ end)
 module Executions = struct
   module Time = struct
     include Time
-    let tws_of_t tm = Time.format tm "%Y%m%d-%H:%M:%S"
+    let tws_of_t tm = Time.format tm "%Y%m%d-%H:%M:%S" ~zone:Time.Zone.local
     let t_of_tws s = Time.of_string (String.tr ~target:'-' ~replacement:' ' s)
     let val_type = Val_type.create tws_of_t t_of_tws
   end

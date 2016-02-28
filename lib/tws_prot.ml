@@ -63,7 +63,7 @@ module Val_type = struct
   let stamp_of_tws s = Float.of_string s |> Time.of_float
   let stamp = create tws_of_stamp stamp_of_tws
 
-  let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S"
+  let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S" ~zone:Time.Zone.local
 
   let unescape = unstage (String.Escaping.unescape ~escape_char:' ')
   let time_of_date d = Time.(of_date_ofday d Ofday.start_of_day ~zone:Zone.local)
