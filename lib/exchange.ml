@@ -57,6 +57,7 @@ type t =
 | `DRCTEDGE
 | `DTB
 | `ECBOT
+| `EDGX
 | `EDGEA
 | `ELX
 | `FTA
@@ -82,6 +83,7 @@ type t =
 | `LSE
 | `MATIF
 | `MEFF
+| `MERCURY
 | `MEXDER
 | `MEXI
 | `MIAX
@@ -163,6 +165,7 @@ let tws_of_t = function
   | `DTB -> "DTB"
   | `ECBOT -> "ECBOT"
   | `EDGEA -> "EDGEA"
+  | `EDGX -> "EDGX"
   | `ELX -> "ELX"
   | `FTA -> "FTA"
   | `FWB -> "FWB"
@@ -187,6 +190,7 @@ let tws_of_t = function
   | `LSE -> "LSE"
   | `MATIF -> "MATIF"
   | `MEFF -> "MEFF"
+  | `MERCURY -> "MERCURY"
   | `MEXDER -> "MEXDER"
   | `MEXI -> "MEXI"
   | `MIAX -> "MIAX"
@@ -267,6 +271,7 @@ let t_of_tws = function
   | "DTB" -> `DTB
   | "ECBOT" -> `ECBOT
   | "EDGEA" -> `EDGEA
+  | "EDGX" -> `EDGX
   | "ELX" -> `ELX
   | "FTA" -> `FTA
   | "FWB" -> `FWB
@@ -291,6 +296,7 @@ let t_of_tws = function
   | "LSE" -> `LSE
   | "MATIF" -> `MATIF
   | "MEFF" -> `MEFF
+  | "MERCURY" -> `MERCURY
   | "MEXDER" -> `MEXDER
   | "MEXI" -> `MEXI
   | "MIAX" -> `MIAX
