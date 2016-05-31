@@ -285,7 +285,7 @@ let dispatch_and_cancel req con query =
   >>= function
   | Error _ as e -> return e
   | Ok (reader, id) ->
-    Pipe.read_at_most reader ~num_values:1
+    Pipe.read' reader ~max_queue_length:1
     >>| fun read_result ->
     Exn.protectx read_result ~f:(function
     | `Eof -> Or_error.of_exn Eof_from_client

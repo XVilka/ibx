@@ -770,7 +770,7 @@ module Position = struct
     let size = Volume.to_float t.size in
     let market_value = (t.market_value :> float) in
     let average_cost = (t.average_cost :> float) in
-    Float.(match sign size with
+    Float.(match robust_sign size with
     | Sign.Zero -> zero
     | Sign.Pos  ->     (market_value / (average_cost * size) - one)
     | Sign.Neg  -> neg (market_value / (average_cost * size) - one)

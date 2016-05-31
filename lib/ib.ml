@@ -293,7 +293,7 @@ module Connection : Connection_internal = struct
     let id = Query_id.default in
     let tag = header.Header.tag in
     let version = header.Header.version in
-    Hashtbl.replace t.open_queries ~key:(id, tag, version) ~data:(fun response ->
+    Hashtbl.set t.open_queries ~key:(id, tag, version) ~data:(fun response ->
       match response.Response.data with
       | Error err ->
         return (`Die err)
@@ -565,7 +565,7 @@ module Connection : Connection_internal = struct
         let tag = h.Response_handler.tag in
         let version = h.Response_handler.version in
         let run = h.Response_handler.run in
-        Hashtbl.replace t.open_queries ~key:(id, tag, version) ~data:run
+        Hashtbl.set t.open_queries ~key:(id, tag, version) ~data:run
       );
       Ok ()
 
@@ -612,7 +612,7 @@ module Connection : Connection_internal = struct
         | `Keep ->
           `Continue
         | `Replace handler ->
-          Hashtbl.replace t.open_queries ~key ~data:handler;
+          Hashtbl.set t.open_queries ~key ~data:handler;
           `Continue
         | `Die err ->
           `Stop err
@@ -655,7 +655,7 @@ module Connection : Connection_internal = struct
           | Ibx_error.Ibx err -> err
           | exn -> Ibx_error.Uncaught_exn (Exn.sexp_of_t exn)
         in
-        Hashtbl.iter t.open_queries
+        Hashtbl.iteri t.open_queries
           ~f:(fun ~key:(id, tag, version) ~data:response_handler ->
             don't_wait_for (Deferred.ignore (
               response_handler

@@ -24,7 +24,7 @@ open Core.Std
 open Async.Std
 
 let command =
-  Command.async_basic ~summary:"Run test suite."
+  Command.async ~summary:"Run test suite."
     Command.Spec.(
       empty
       +> flag "-d" no_arg ~doc:" log debug messages"
