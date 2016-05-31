@@ -51,7 +51,7 @@ let suite = "Client" >::: [
         (module R : Response_intf.S with type t = R.t)
         ~expected:gen_server_time
         ~actual:server_time;
-      Log.Global.sexp ~level:`Debug server_time R.sexp_of_t
+      Log.Global.sexp ~level:`Debug (R.sexp_of_t server_time)
     )
   );
 
@@ -73,7 +73,7 @@ let suite = "Client" >::: [
               (module W : Response_intf.Wrapper.S with type t = W.t)
               ~expected:gen_tick
               ~actual:tick;
-          Log.Global.sexp ~level:`Debug tick W.sexp_of_t)
+          Log.Global.sexp ~level:`Debug (W.sexp_of_t tick))
       ) ~finally:(fun _ -> Tws.cancel_market_data tws id)
     )
   );
@@ -89,7 +89,7 @@ let suite = "Client" >::: [
       >>| fun opt_price ->
       let gen_opt_price = R.option_price gen_tick_option in
       assert (Price.(=.) gen_opt_price opt_price);
-      Log.Global.sexp ~level:`Debug opt_price Price.sexp_of_t
+      Log.Global.sexp ~level:`Debug (Price.sexp_of_t opt_price)
     )
   );
 
@@ -104,7 +104,7 @@ let suite = "Client" >::: [
       >>| fun implied_vol ->
       let gen_implied_vol = R.implied_vol gen_tick_option in
       assert (Float.(=.) gen_implied_vol implied_vol);
-      Log.Global.sexp ~level:`Debug implied_vol [%sexp_of: float ]
+      Log.Global.sexp ~level:`Debug (Float.sexp_of_t implied_vol)
     )
   );
 
@@ -126,7 +126,7 @@ let suite = "Client" >::: [
               (module R : Response_intf.S with type t = R.t)
               ~expected:gen_order_state
               ~actual:order_state;
-          Log.Global.sexp ~level:`Debug order_state R.sexp_of_t)
+            Log.Global.sexp ~level:`Debug (R.sexp_of_t order_state))
       ) ~finally:(fun _ -> Tws.cancel_order_status tws oid)
     )
   );
@@ -145,7 +145,8 @@ let suite = "Client" >::: [
             (module R : Response_intf.S with type t = R.t)
             ~expected:gen_account_update
             ~actual:account_update;
-          Log.Global.sexp ~level:`Debug account_update R.sexp_of_t)
+          Log.Global.sexp ~level:`Debug (R.sexp_of_t account_update)
+        )
     )
   );
 
@@ -163,7 +164,7 @@ let suite = "Client" >::: [
             (module R : Response_intf.S with type t = R.t)
             ~expected:gen_position
             ~actual:position;
-          Log.Global.sexp ~level:`Debug position R.sexp_of_t)
+          Log.Global.sexp ~level:`Debug (R.sexp_of_t position))
     )
   );
 
@@ -182,7 +183,7 @@ let suite = "Client" >::: [
             (module R : Response_intf.S with type t = R.t)
             ~expected:gen_execution
             ~actual:execution;
-        Log.Global.sexp ~level:`Debug execution R.sexp_of_t)
+          Log.Global.sexp ~level:`Debug (R.sexp_of_t execution))
     )
   );
 
@@ -201,7 +202,7 @@ let suite = "Client" >::: [
             (module R : Response_intf.S with type t = R.t)
             ~expected:gen_contract_data
             ~actual:contract_data;
-          Log.Global.sexp ~level:`Debug contract_data R.sexp_of_t)
+          Log.Global.sexp ~level:`Debug (R.sexp_of_t contract_data))
     )
   );
 
@@ -223,7 +224,7 @@ let suite = "Client" >::: [
               (module R : Response_intf.S with type t = R.t)
               ~expected:gen_book_update
               ~actual:book_update;
-            Log.Global.sexp ~level:`Debug book_update R.sexp_of_t)
+            Log.Global.sexp ~level:`Debug (R.sexp_of_t book_update))
       ) ~finally:(fun _ -> Tws.cancel_market_depth tws id)
     )
   );
@@ -238,7 +239,7 @@ let suite = "Client" >::: [
         (module R : Response_intf.S with type t = R.t)
         ~expected:gen_history
         ~actual:history;
-      Log.Global.sexp ~level:`Debug history R.sexp_of_t
+      Log.Global.sexp ~level:`Debug (R.sexp_of_t history)
     )
   );
 
@@ -260,7 +261,7 @@ let suite = "Client" >::: [
               (module R : Response_intf.S with type t = R.t)
               ~expected:gen_realtime_bar
               ~actual:realtime_bar;
-            Log.Global.sexp ~level:`Debug realtime_bar R.sexp_of_t)
+            Log.Global.sexp ~level:`Debug (R.sexp_of_t realtime_bar))
       ) ~finally:(fun _ -> Tws.cancel_realtime_bars tws id)
     )
   );

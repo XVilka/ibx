@@ -221,11 +221,11 @@ let with_client
     begin
       match clt_msg, t.do_logging with
       | C.Control x, true ->
-        Log.Global.sexp ~level:`Info x [%sexp_of: C.Control.t ]
+        Log.Global.sexp ~level:`Info ([%sexp_of: C.Control.t] x)
       | C.Status x, true ->
-        Log.Global.sexp ~level:`Info x [%sexp_of: string ]
+        Log.Global.sexp ~level:`Info ([%sexp_of: string] x)
       | C.Error e, true ->
-        Log.Global.sexp ~level:`Error e [%sexp_of: Error.t ];
+        Log.Global.sexp ~level:`Error ([%sexp_of: Error.t] e);
         handle_error e
       | C.Error e, false ->
         handle_error e
