@@ -1,3 +1,13 @@
+2016-05-31: Add missing exchanges EDGX and MERCURY.
+
+2016-01-17: Migrate from camlp4 to ppx.
+
+2015-09-04: Renamings: Bar_span -> Duration and use_tradehours -> use_rth.
+
+2015-08-09: Add functionality to query option chains for futures contracts.
+
+2015-08-06: Add sort and group functions for option and futures chains.
+
 2015-06-08: Real-time bars can be requested for longer time frames.
 
 2015-06-01: Unified historical and real-time bars by using a single bar module.
