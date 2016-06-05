@@ -74,8 +74,8 @@ Library ibx
                   Twsable,
                   Unpickable,
                   Volume
-  BuildDepends:   core  (>= 113.33.03),
-                  async (>= 113.33.03),
+  BuildDepends:   core  (>= 113.33.00),
+                  async (>= 113.33.00),
                   ppx_sexp_conv,
                   ppx_fields_conv,
                   textutils,
