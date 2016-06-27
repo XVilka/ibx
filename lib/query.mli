@@ -136,7 +136,7 @@ module Contract_details : sig
   val create
     :  ?con_id:Contract_id.t
     -> ?multiplier:int
-    -> ?listing_exchange:Exchange.t
+    -> ?prim_exch:Exchange.t
     -> ?local_symbol:Symbol.t
     -> ?sec_id:Security_id.t
     -> ?include_expired:bool

@@ -42,7 +42,7 @@ val symbol : 'a t -> Symbol.t
 val exchange : 'a t -> Exchange.t
 (** Returns the exchange of the order destination. *)
 
-val listed_on : 'a t -> Exchange.t option
+val prim_exch : 'a t -> Exchange.t option
 (** Returns the listing exchange of the underlying asset or None if unknown. *)
 
 val currency : 'a t -> Currency.t
@@ -91,7 +91,7 @@ val ( = ) : 'a t -> 'a t -> bool
 (** Creates a new stock or ETF contract. *)
 val stock
   :  ?con_id:Contract_id.t
-  -> ?listed_on:Exchange.t
+  -> ?prim_exch:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?exchange:Exchange.t

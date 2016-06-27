@@ -271,7 +271,7 @@ end = struct
     [ always (
       Contract.stock
         ?con_id:(og contract_id_g ())
-        ?listed_on:(og exchange_g ())
+        ?prim_exch:(og exchange_g ())
         ?local_symbol:(og symbol_g ())
         ?sec_id:(og security_id_g ())
         ?exchange:(og exchange_g ())
@@ -384,7 +384,7 @@ end = struct
       [ always (
         Contract.stock
           ?con_id:(og contract_id_g ())
-          ?listed_on:(og exchange_g ())
+          ?prim_exch:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?sec_id:None
           ?exchange:(og exchange_g ())
@@ -481,7 +481,7 @@ end = struct
       [ always (
         Contract.stock
           ?con_id:(og contract_id_g ())
-          ?listed_on:(og exchange_g ())
+          ?prim_exch:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?sec_id:(og security_id_g ())
           ?exchange:(og exchange_g ())
@@ -596,7 +596,7 @@ end = struct
       [ always (
         Contract.stock
           ?con_id:None
-          ?listed_on:(og exchange_g ())
+          ?prim_exch:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?sec_id:None
           ?exchange:(og exchange_g ())
@@ -676,7 +676,7 @@ end = struct
       [ always (
         Contract.stock
           ?con_id:None
-          ?listed_on:(og exchange_g ())
+          ?prim_exch:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?sec_id:None
           ?exchange:(og exchange_g ())
@@ -961,7 +961,7 @@ end = struct
       [ always (
         Contract.stock
           ?con_id:(og contract_id_g ())
-          ?listed_on:None
+          ?prim_exch:None
           ?local_symbol:(og symbol_g ())
           ?sec_id:None
           ?exchange:(og exchange_g ())
@@ -1013,7 +1013,7 @@ end = struct
       [ always (
         Contract.stock
           ?con_id:(og contract_id_g ())
-          ?listed_on:(og exchange_g ())
+          ?prim_exch:(og exchange_g ())
           ?local_symbol:(og symbol_g ())
           ?exchange:(og exchange_g ())
           ~currency:(currency_g ())
@@ -1084,7 +1084,7 @@ end = struct
       [ always (
         Contract.stock
           ?con_id:(og contract_id_g ())
-          ?listed_on:None
+          ?prim_exch:None
           ?local_symbol:(og symbol_g ())
           ?sec_id:None
           ?exchange:(og exchange_g ())

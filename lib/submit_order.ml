@@ -33,7 +33,7 @@ type t =
     right : Option_right.t option;
     multiplier : int option;
     exchange : Exchange.t;
-    listing_exchange : Exchange.t option;
+    prim_exch : Exchange.t option;
     currency : Currency.t;
     local_symbol : Symbol.t option;
     sec_id_type : Security_id.Type.t option;
@@ -119,7 +119,7 @@ let create ~contract ~order ~account_code =
     right                           = contract.Raw_contract.right;
     multiplier                      = contract.Raw_contract.multiplier;
     exchange                        = contract.Raw_contract.exchange;
-    listing_exchange                = contract.Raw_contract.listing_exchange;
+    prim_exch                = contract.Raw_contract.prim_exch;
     currency                        = contract.Raw_contract.currency;
     local_symbol                    = contract.Raw_contract.local_symbol;
     sec_id_type                     = contract.Raw_contract.sec_id_type;
@@ -205,7 +205,7 @@ let ( = ) t1 t2 : bool =
     ~right:(use (=))
     ~multiplier:(use (=))
     ~exchange:(use (=))
-    ~listing_exchange:(use (=))
+    ~prim_exch:(use (=))
     ~currency:(use (=))
     ~local_symbol:(use (=))
     ~sec_id_type:(use (=))
@@ -290,7 +290,7 @@ let pickler =
           ~right:(fields_value (optional Option_right.val_type))
           ~multiplier:(fields_value (optional int))
           ~exchange:(fields_value (required Exchange.val_type))
-          ~listing_exchange:(fields_value (optional Exchange.val_type))
+          ~prim_exch:(fields_value (optional Exchange.val_type))
           ~currency:(fields_value (required Currency.val_type))
           ~local_symbol:(fields_value (optional Symbol.val_type))
           ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
@@ -370,7 +370,7 @@ let pickler =
             $ t.right
             $ t.multiplier
             $ t.exchange
-            $ t.listing_exchange
+            $ t.prim_exch
             $ t.currency
             $ t.local_symbol
             $ t.sec_id_type
@@ -454,7 +454,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
         ~right:(fields_value (optional Option_right.val_type))
         ~multiplier:(fields_value (optional int))
         ~exchange:(fields_value (required Exchange.val_type))
-        ~listing_exchange:(fields_value (optional Exchange.val_type))
+        ~prim_exch:(fields_value (optional Exchange.val_type))
         ~currency:(fields_value (required Currency.val_type))
         ~local_symbol:(fields_value (optional Symbol.val_type))
         ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
@@ -533,7 +533,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
       right
       multiplier
       exchange
-      listing_exchange
+      prim_exch
       currency
       local_symbol
       sec_id_type
@@ -611,7 +611,7 @@ let unpickler = Only_in_test.of_thunk (fun () ->
           right;
           multiplier;
           exchange;
-          listing_exchange;
+          prim_exch;
           currency;
           local_symbol;
           sec_id_type;

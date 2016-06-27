@@ -247,7 +247,7 @@ val contract_details
   :  t
   -> ?con_id:Contract_id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
+  -> ?prim_exch:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool
@@ -266,7 +266,7 @@ val contract_details_exn
   :  t
   -> ?con_id:Contract_id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
+  -> ?prim_exch:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool
@@ -302,7 +302,7 @@ val futures_chain
   :  t
   -> ?con_id:Contract_id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
+  -> ?prim_exch:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool
@@ -316,7 +316,7 @@ val futures_chain_exn
   :  t
   -> ?con_id:Contract_id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
+  -> ?prim_exch:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool
@@ -331,7 +331,7 @@ val option_chain
   :  t
   -> ?con_id:Contract_id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
+  -> ?prim_exch:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool
@@ -349,7 +349,7 @@ val option_chain_exn
   :  t
   -> ?con_id:Contract_id.t
   -> ?multiplier:int
-  -> ?listing_exchange:Exchange.t
+  -> ?prim_exch:Exchange.t
   -> ?local_symbol:Symbol.t
   -> ?sec_id:Security_id.t
   -> ?include_expired:bool

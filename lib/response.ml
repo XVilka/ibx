@@ -959,7 +959,7 @@ module Contract_data = struct
         ++ value (required string)
           ~name:(field_name Fields.long_name)
         ++ value (optional Exchange.val_type)
-          ~name:(field_name Raw_contract.Fields.listing_exchange)
+          ~name:(field_name Raw_contract.Fields.prim_exch)
         ++ value (required string)
           ~name:(field_name Fields.contract_month)
         ++ value (required string)
@@ -976,7 +976,7 @@ module Contract_data = struct
           ~name:(field_name Fields.liquid_hours))
       (fun symbol sec_type expiry strike right exchange currency local_symbol
         market_name trading_class con_id min_tick multiplier order_types
-        valid_exchanges price_magnifier underlying_id long_name listing_exchange
+        valid_exchanges price_magnifier underlying_id long_name prim_exch
         contract_month industry category subcategory time_zone trading_hours
         liquid_hours ->
           { contract =
@@ -989,7 +989,7 @@ module Contract_data = struct
                 right;
                 multiplier;
                 exchange;
-                listing_exchange;
+                prim_exch;
                 currency;
                 local_symbol;
                 include_expired = false;
@@ -1090,7 +1090,7 @@ module Contract_data = struct
               $ t.price_magnifier
               $ t.underlying_id
               $ t.long_name
-              $ t.contract.Raw_contract.listing_exchange
+              $ t.contract.Raw_contract.prim_exch
               $ t.contract_month
               $ t.industry
               $ t.category

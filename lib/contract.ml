@@ -33,7 +33,7 @@ let sec_type t = Security_type.t_of_tws t.Raw_contract.sec_type
 let con_id t = t.Raw_contract.con_id
 let symbol t = t.Raw_contract.symbol
 let exchange t = t.Raw_contract.exchange
-let listed_on t = t.Raw_contract.listing_exchange
+let prim_exch t = t.Raw_contract.prim_exch
 let currency t = t.Raw_contract.currency
 let local_symbol t = t.Raw_contract.local_symbol
 
@@ -90,11 +90,11 @@ let to_string t =
       (Option.value_exn t.Raw_contract.strike |> Price.to_float |> Float.to_int)
       (Option.value_exn t.Raw_contract.right  |> Option_right.to_string)
 
-let stock ?con_id ?listed_on ?local_symbol ?sec_id ?exchange ~currency symbol =
+let stock ?con_id ?prim_exch ?local_symbol ?sec_id ?exchange ~currency symbol =
   of_raw (
     Raw_contract.create
       ?con_id
-      ?listing_exchange:listed_on
+      ?prim_exch:prim_exch
       ?local_symbol
       ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
       ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
@@ -108,7 +108,7 @@ let index ?con_id ?local_symbol ?sec_id ?exchange ~currency symbol =
   of_raw (
     Raw_contract.create
       ?con_id
-      ?listing_exchange:None
+      ?prim_exch:None
       ?local_symbol
       ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
       ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
@@ -124,7 +124,7 @@ let futures ?con_id ?multiplier ?local_symbol ?sec_id ?include_expired ?exchange
     Raw_contract.create
       ?con_id
       ?multiplier
-      ?listing_exchange:None
+      ?prim_exch:None
       ?local_symbol
       ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
       ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
@@ -142,7 +142,7 @@ let option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
     Raw_contract.create
       ?con_id
       ?multiplier
-      ?listing_exchange:None
+      ?prim_exch:None
       ?local_symbol
       ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
       ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
@@ -161,7 +161,7 @@ let futures_option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
     Raw_contract.create
       ?con_id
       ?multiplier
-      ?listing_exchange:None
+      ?prim_exch:None
       ?local_symbol
       ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
       ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
@@ -178,7 +178,7 @@ let forex ?con_id ?local_symbol ?sec_id ?(exchange=`IDEALPRO) ~currency symbol =
   of_raw (
     Raw_contract.create
       ?con_id
-      ?listing_exchange:None
+      ?prim_exch:None
       ?local_symbol
       ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
       ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)

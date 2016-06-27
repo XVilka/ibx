@@ -27,7 +27,7 @@ let () =
       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
         let print_ticks symbol color =
           let stock = Contract.stock (Symbol.of_string symbol)
-            ~currency:`USD ~listed_on:`NASDAQ in
+            ~currency:`USD ~prim_exch:`NASDAQ in
           Tws.market_data_exn tws ~contract:stock
           >>= fun (ticks, id) ->
           upon (Clock.after period) (fun () -> Tws.cancel_market_data tws id);
