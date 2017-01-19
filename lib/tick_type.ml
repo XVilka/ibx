@@ -25,20 +25,20 @@ open Tws_prot
 
 module T = struct
   type t =
-  [ `Auction_values (* Volume, price and imbalance *)
-  | `Fundamental_ratios
-  | `Historical_volatility
-  | `Implied_volatility
-  | `Index_future_premium
-  | `Inventory
-  | `Mark_price (* Used in TWS P&L computations *)
-  | `Misc_stats
-  | `Option_open_interest
-  | `Option_volume
-  | `Realtime_volume
-  | `Shortable
-  | `Turn_off_market_data
-  ] [@@deriving sexp]
+    [ `Auction_values (* Volume, price and imbalance *)
+    | `Fundamental_ratios
+    | `Historical_volatility
+    | `Implied_volatility
+    | `Index_future_premium
+    | `Inventory
+    | `Mark_price (* Used in TWS P&L computations *)
+    | `Misc_stats
+    | `Option_open_interest
+    | `Option_volume
+    | `Realtime_volume
+    | `Shortable
+    | `Turn_off_market_data
+    ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

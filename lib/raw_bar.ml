@@ -59,16 +59,16 @@ let lift_bar_spec bar_spec =
   Pickler.Spec.(
     lift bar_spec
       (fun t ->
-        `Args
-          $ t.stamp
-          $ t.op
-          $ t.hi
-          $ t.lo
-          $ t.cl
-          $ t.vo
-          $ t.wap
-          $ t.has_gaps
-          $ t.n_trades))
+         `Args
+         $ t.stamp
+         $ t.op
+         $ t.hi
+         $ t.lo
+         $ t.cl
+         $ t.vo
+         $ t.wap
+         $ t.has_gaps
+         $ t.n_trades))
 
 module Historical_bar = struct
   let pickler_spec () =

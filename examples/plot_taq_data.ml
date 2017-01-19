@@ -15,13 +15,13 @@ let plot_taq_data ~client_id ~do_logging ~period ~currency ~zone ~symbol =
     Pipe.fold taq_data ~init:([], [], []) ~f:(fun (bids, asks, trades) taq ->
       if !verbose then Format.printf "@[%a@]@\n%!" TAQ.pp taq;
       return (match taq with
-      | TAQ.Trade trade ->
-        bids, asks,
-        Trade.(stamp trade, price trade) :: trades
-      | TAQ.Quote quote ->
-        Quote.(stamp quote, bid_price quote) :: bids,
-        Quote.(stamp quote, ask_price quote) :: asks,
-        trades
+        | TAQ.Trade trade ->
+          bids, asks,
+          Trade.(stamp trade, price trade) :: trades
+        | TAQ.Quote quote ->
+          Quote.(stamp quote, bid_price quote) :: bids,
+          Quote.(stamp quote, ask_price quote) :: asks,
+          trades
       )
     )
     >>| fun (bids, asks, trades) ->
@@ -49,10 +49,10 @@ let () =
       +> anon ("STOCK-SYMBOL" %: Arg_type.create Symbol.of_string)
     )
     (fun do_logging host port client_id quiet period currency zone symbol () ->
-      verbose := not quiet;
-      if Time.Span.(period > minute) then
-        return (Or_error.error_string "Maximum period is 1 minute")
-      else plot_taq_data
-        ~do_logging ~host ~port ~client_id ~period ~currency ~zone ~symbol
+       verbose := not quiet;
+       if Time.Span.(period > minute) then
+         return (Or_error.error_string "Maximum period is 1 minute")
+       else plot_taq_data
+           ~do_logging ~host ~port ~client_id ~period ~currency ~zone ~symbol
     )
   |> Command.run

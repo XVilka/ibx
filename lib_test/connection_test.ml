@@ -192,10 +192,10 @@ module Request = struct
     "missing-response-handler" >:: (fun () ->
       let wrong_recv_tag = Recv_tag.Snapshot_end in
       let buggy_req = Ib.Request.create
-        ~send_header:(Ib.Header.create ~tag:Send_tag.Server_time ~version:1)
-        ~recv_header:(Ib.Header.create ~tag:wrong_recv_tag ~version:1)
-        ~tws_query:Query.Server_time.pickler
-        ~tws_response:Response.Server_time.unpickler
+          ~send_header:(Ib.Header.create ~tag:Send_tag.Server_time ~version:1)
+          ~recv_header:(Ib.Header.create ~tag:wrong_recv_tag ~version:1)
+          ~tws_query:Query.Server_time.pickler
+          ~tws_response:Response.Server_time.unpickler
       in
       unix_pipe ()
       >>= fun (r, w) ->
@@ -289,12 +289,12 @@ end
 module Streaming_request = struct
 
   let req_tick_size = Ib.Streaming_request.create
-    ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
-    ~canc_header:(Ib.Header.create ~tag:Send_tag.Cancel_market_data ~version:1)
-    ~recv_header:[Ib.Header.create ~tag:Recv_tag.Tick_size ~version:6]
-    ~tws_query:Query.Market_data.pickler
-    ~tws_response:[Response.Tick_size.unpickler]
-    ()
+      ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
+      ~canc_header:(Ib.Header.create ~tag:Send_tag.Cancel_market_data ~version:1)
+      ~recv_header:[Ib.Header.create ~tag:Recv_tag.Tick_size ~version:6]
+      ~tws_query:Query.Market_data.pickler
+      ~tws_response:[Response.Tick_size.unpickler]
+      ()
 
   let tick_size con =
     Ib.Streaming_request.dispatch req_tick_size con (Rg.Q.market_data_g ())

@@ -26,12 +26,12 @@ open Tws_prot
 
 module Time_in_force = struct
   type t =
-  [ `Day
-  | `Good_till_cancel
-  | `Immediate_or_cancel
-  | `Fill_or_kill
-  | `Good_till_date_time
-  ] [@@deriving sexp]
+    [ `Day
+    | `Good_till_cancel
+    | `Immediate_or_cancel
+    | `Fill_or_kill
+    | `Good_till_date_time
+    ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Day -> "DAY"
@@ -53,10 +53,10 @@ end
 
 module Oca_type = struct
   type t =
-  [ `cancel_with_block
-  | `reduce_with_block
-  | `reduce_non_block
-  ] [@@deriving sexp]
+    [ `cancel_with_block
+    | `reduce_with_block
+    | `reduce_non_block
+    ] [@@deriving sexp]
 
 
   let tws_of_t = function
@@ -75,14 +75,14 @@ end
 
 module Stop_trigger_method = struct
   type t =
-  [ `Default
-  | `Double_bid_ask
-  | `Last
-  | `Double_last
-  | `Bid_ask
-  | `Last_bid_ask
-  | `Midpoint
-  ] [@@deriving sexp]
+    [ `Default
+    | `Double_bid_ask
+    | `Last
+    | `Double_last
+    | `Bid_ask
+    | `Last_bid_ask
+    | `Midpoint
+    ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Default -> "0"
@@ -108,16 +108,16 @@ end
 
 module Rule80A = struct
   type t =
-  [ `Individual
-  | `Agency
-  | `Agent_other_member
-  | `Individual_PTIA
-  | `Agency_PTIA
-  | `Agent_other_member_PTIA
-  | `Individual_PT
-  | `Agency_PT
-  | `Agent_other_member_PT
-  ] [@@deriving sexp]
+    [ `Individual
+    | `Agency
+    | `Agent_other_member
+    | `Individual_PTIA
+    | `Agency_PTIA
+    | `Agent_other_member_PTIA
+    | `Individual_PT
+    | `Agency_PT
+    | `Agent_other_member_PT
+    ] [@@deriving sexp]
 
   let tws_of_t = function
     | `Individual -> "I"

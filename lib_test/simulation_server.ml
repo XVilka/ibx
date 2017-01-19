@@ -49,8 +49,8 @@ module Protocol = struct
     end
 
     type t =
-    | Client_header of int * Client_id.t
-    | Client_query  of Query.t
+      | Client_header of int * Client_id.t
+      | Client_query  of Query.t
     [@@deriving sexp]
 
     let client_header_of_tws raw_msg =
@@ -122,7 +122,7 @@ module Protocol = struct
                 ~query_id:(fields_value (skipped_if_none Query_id.val_type))
                 ~data:(fields_value tws_data))
               (fun { tag; version; query_id; data } ->
-                `Args $ tag $ version $ query_id $ data))
+                 `Args $ tag $ version $ query_id $ data))
     end
 
     module Server_header = struct
@@ -132,8 +132,8 @@ module Protocol = struct
     end
 
     type t =
-    | Server_header of int * Time.t
-    | Server_response of Response.t
+      | Server_header of int * Time.t
+      | Server_response of Response.t
     [@@deriving sexp]
 
     let to_tws = function
@@ -222,8 +222,8 @@ module Protocol = struct
         type 'a t = [ `Eof | `Ok of 'a ] Deferred.t
 
         let bind t f = t >>= function
-          | `Eof  -> Deferred.return `Eof
-          | `Ok a -> f a
+        | `Eof  -> Deferred.return `Eof
+        | `Ok a -> f a
 
         let map = `Custom (fun t ~f ->
           t >>= function
@@ -282,17 +282,17 @@ module Message_generator = struct
     | Client_message.Client_header (_client_version, _client_id) ->
       [ E.Server_header (Ibx.Std.Config.server_version, Time.now ())
       ; E.Server_response {
-        Response.
-        tag      = V.Managed_accounts;
-        version  = 1;
-        query_id = None;
-        data     = (Account_code.to_string account_code) ^@ "" }
+          Response.
+          tag      = V.Managed_accounts;
+          version  = 1;
+          query_id = None;
+          data     = (Account_code.to_string account_code) ^@ "" }
       ; E.Server_response {
-        Response.
-        tag      = V.Next_order_id;
-        version  = 1;
-        query_id = None;
-        data     = "1" ^@ "" }
+          Response.
+          tag      = V.Next_order_id;
+          version  = 1;
+          query_id = None;
+          data     = "1" ^@ "" }
       ]
 
     | Client_message.Client_query query ->
@@ -304,11 +304,11 @@ module Message_generator = struct
         | S.Server_time ->
           let pickler = Only_in_test.force R.Server_time.pickler in
           [ E.Server_response {
-            Response.
-            tag      = V.Server_time;
-            version  = 1;
-            query_id = None;
-            data     = to_tws pickler (Lazy.force Gen.server_time) }
+              Response.
+              tag      = V.Server_time;
+              version  = 1;
+              query_id = None;
+              data     = to_tws pickler (Lazy.force Gen.server_time) }
           ]
 
         | S.Set_server_log_level -> []
@@ -371,11 +371,11 @@ module Message_generator = struct
         | S.Implied_volatility ->
           let pickler = Only_in_test.force R.Tick_option.pickler in
           [ E.Server_response {
-            Response.
-            tag      = V.Tick_option;
-            version  = 6;
-            query_id = query.Query.id;
-            data     = to_tws pickler (Lazy.force Gen.tick_option) }
+              Response.
+              tag      = V.Tick_option;
+              version  = 6;
+              query_id = query.Query.id;
+              data     = to_tws pickler (Lazy.force Gen.tick_option) }
           ]
 
         | S.Cancel_option_price
@@ -409,24 +409,24 @@ module Message_generator = struct
         | S.Account_data ->
           List.append
             (List.map (Lazy.force Gen.account_updates) ~f:(fun x ->
-              let pickler = Only_in_test.force R.Account_update.pickler in
-              E.Server_response {
-                Response.
-                tag      = V.Account_update;
-                version  = 2;
-                query_id = None;
-                data     = to_tws pickler x;
-              }))
+               let pickler = Only_in_test.force R.Account_update.pickler in
+               E.Server_response {
+                 Response.
+                 tag      = V.Account_update;
+                 version  = 2;
+                 query_id = None;
+                 data     = to_tws pickler x;
+               }))
             (List.map (Lazy.force Gen.positions) ~f:(fun x ->
-              let pickler = Only_in_test.force R.Position.pickler in
-              E.Server_response {
-                Response.
-                tag      = V.Position;
-                version  = 7;
-                query_id = None;
-                data     = to_tws pickler x;
-              })) @
-            [ E.Server_response {
+               let pickler = Only_in_test.force R.Position.pickler in
+               E.Server_response {
+                 Response.
+                 tag      = V.Position;
+                 version  = 7;
+                 query_id = None;
+                 data     = to_tws pickler x;
+               })) @
+          [ E.Server_response {
               Response.
               tag      = V.Account_download_end;
               version  = 1;
@@ -446,7 +446,7 @@ module Message_generator = struct
               query_id = query.Query.id;
               data     = to_tws pickler x;
             }) @
-            [ E.Server_response {
+          [ E.Server_response {
               Response.
               tag      = V.Executions_end;
               version  = 1;
@@ -466,7 +466,7 @@ module Message_generator = struct
               query_id = query.Query.id;
               data     = to_tws pickler x
             }) @
-            [ E.Server_response {
+          [ E.Server_response {
               Response.
               tag      = V.Contract_data_end;
               version  = 1;
@@ -516,11 +516,11 @@ module Message_generator = struct
         | S.History ->
           let pickler = Only_in_test.force History.pickler in
           [ E.Server_response {
-            Response.
-            tag      = V.History;
-            version  = 3;
-            query_id = query.Query.id;
-            data     = to_tws pickler (Lazy.force Gen.history) }
+              Response.
+              tag      = V.History;
+              version  = 3;
+              query_id = query.Query.id;
+              data     = to_tws pickler (Lazy.force Gen.history) }
           ]
 
         | S.Cancel_history -> []

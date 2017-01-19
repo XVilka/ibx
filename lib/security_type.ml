@@ -25,13 +25,13 @@ open Tws_prot
 
 module T = struct
   type t =
-  [ `Stock
-  | `Index
-  | `Futures
-  | `Option
-  | `Fut_opt
-  | `Forex
-  ] [@@deriving sexp]
+    [ `Stock
+    | `Index
+    | `Futures
+    | `Option
+    | `Fut_opt
+    | `Forex
+    ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

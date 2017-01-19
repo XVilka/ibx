@@ -361,85 +361,85 @@ let pickler =
           ~algo_strategy:(fields_value (optional string))
           ~request_pre_trade_information:(fields_value (required bool)))
         (fun t ->
-          `Args
-            $ t.con_id
-            $ t.symbol
-            $ t.sec_type
-            $ t.expiry
-            $ t.strike
-            $ t.right
-            $ t.multiplier
-            $ t.exchange
-            $ t.prim_exch
-            $ t.currency
-            $ t.local_symbol
-            $ t.sec_id_type
-            $ t.sec_id
-            $ t.action
-            $ t.quantity
-            $ t.order_kind
-            $ t.limit_price
-            $ t.stop_price
-            $ t.time_in_force
-            $ t.oca_group_name
-            $ t.account_code
-            $ t.open_close
-            $ t.origin
-            $ t.order_ref
-            $ t.transmit
-            $ t.parent_id
-            $ t.block_order
-            $ t.sweep_to_fill
-            $ t.display_size
-            $ t.stop_trigger_method
-            $ t.outside_regular_trading_hours
-            $ t.hidden
-            $ t.shares_allocation
-            $ t.discretionary_amount
-            $ t.good_after_date_time
-            $ t.good_till_date_time
-            $ t.financial_advisor_group
-            $ t.financial_advisor_method
-            $ t.financial_advisor_percentage
-            $ t.financial_advisor_profile
-            $ t.short_sale_slot
-            $ t.designated_location
-            $ t.exemption_code
-            $ t.oca_type
-            $ t.rule80A
-            $ t.settling_firm
-            $ t.all_or_none
-            $ t.minimum_quantity
-            $ t.percent_offset
-            $ t.electronic_trade_only
-            $ t.firm_quote_only
-            $ t.nbbo_price_cap
-            $ t.auction_strategy
-            $ t.starting_price
-            $ t.stock_reference_price
-            $ t.delta
-            $ t.lower_stock_price_range
-            $ t.upper_stock_price_range
-            $ t.override_percentage_constraints
-            $ t.volatility
-            $ t.volatility_type
-            $ t.delta_neutral_order_type
-            $ t.delta_neutral_aux_price
-            $ t.continuous_update
-            $ t.reference_price_type
-            $ t.trailing_stop_price
-            $ t.trailing_percent
-            $ t.scale_initial_level_size
-            $ t.scale_subsequent_level_size
-            $ t.scale_price_increment
-            $ t.hedge_type
-            $ t.opt_out_smart_routing
-            $ t.clearing_account
-            $ t.clearing_intent
-            $ t.not_held
-            $ t.underlying_combo
-            $ t.algo_strategy
-            $ t.request_pre_trade_information))
+           `Args
+           $ t.con_id
+           $ t.symbol
+           $ t.sec_type
+           $ t.expiry
+           $ t.strike
+           $ t.right
+           $ t.multiplier
+           $ t.exchange
+           $ t.prim_exch
+           $ t.currency
+           $ t.local_symbol
+           $ t.sec_id_type
+           $ t.sec_id
+           $ t.action
+           $ t.quantity
+           $ t.order_kind
+           $ t.limit_price
+           $ t.stop_price
+           $ t.time_in_force
+           $ t.oca_group_name
+           $ t.account_code
+           $ t.open_close
+           $ t.origin
+           $ t.order_ref
+           $ t.transmit
+           $ t.parent_id
+           $ t.block_order
+           $ t.sweep_to_fill
+           $ t.display_size
+           $ t.stop_trigger_method
+           $ t.outside_regular_trading_hours
+           $ t.hidden
+           $ t.shares_allocation
+           $ t.discretionary_amount
+           $ t.good_after_date_time
+           $ t.good_till_date_time
+           $ t.financial_advisor_group
+           $ t.financial_advisor_method
+           $ t.financial_advisor_percentage
+           $ t.financial_advisor_profile
+           $ t.short_sale_slot
+           $ t.designated_location
+           $ t.exemption_code
+           $ t.oca_type
+           $ t.rule80A
+           $ t.settling_firm
+           $ t.all_or_none
+           $ t.minimum_quantity
+           $ t.percent_offset
+           $ t.electronic_trade_only
+           $ t.firm_quote_only
+           $ t.nbbo_price_cap
+           $ t.auction_strategy
+           $ t.starting_price
+           $ t.stock_reference_price
+           $ t.delta
+           $ t.lower_stock_price_range
+           $ t.upper_stock_price_range
+           $ t.override_percentage_constraints
+           $ t.volatility
+           $ t.volatility_type
+           $ t.delta_neutral_order_type
+           $ t.delta_neutral_aux_price
+           $ t.continuous_update
+           $ t.reference_price_type
+           $ t.trailing_stop_price
+           $ t.trailing_percent
+           $ t.scale_initial_level_size
+           $ t.scale_subsequent_level_size
+           $ t.scale_price_increment
+           $ t.hedge_type
+           $ t.opt_out_smart_routing
+           $ t.clearing_account
+           $ t.clearing_intent
+           $ t.not_held
+           $ t.underlying_combo
+           $ t.algo_strategy
+           $ t.request_pre_trade_information))
 
 let unpickler = Only_in_test.of_thunk (fun () ->
   Unpickler.create ~name:"Query.Submit_order"
@@ -603,82 +603,82 @@ let unpickler = Only_in_test.of_thunk (fun () ->
       underlying_combo
       algo_strategy
       request_pre_trade_information ->
-        { con_id;
-          symbol;
-          sec_type;
-          expiry;
-          strike;
-          right;
-          multiplier;
-          exchange;
-          prim_exch;
-          currency;
-          local_symbol;
-          sec_id_type;
-          sec_id;
-          action;
-          quantity;
-          order_kind;
-          limit_price;
-          stop_price;
-          time_in_force;
-          oca_group_name;
-          account_code;
-          open_close;
-          origin;
-          order_ref;
-          transmit;
-          parent_id;
-          block_order;
-          sweep_to_fill;
-          display_size;
-          stop_trigger_method;
-          outside_regular_trading_hours;
-          hidden;
-          shares_allocation;
-          discretionary_amount;
-          good_after_date_time;
-          good_till_date_time;
-          financial_advisor_group;
-          financial_advisor_method;
-          financial_advisor_percentage;
-          financial_advisor_profile;
-          short_sale_slot;
-          designated_location;
-          exemption_code;
-          oca_type;
-          rule80A;
-          settling_firm;
-          all_or_none;
-          minimum_quantity;
-          percent_offset;
-          electronic_trade_only;
-          firm_quote_only;
-          nbbo_price_cap;
-          auction_strategy;
-          starting_price;
-          stock_reference_price;
-          delta;
-          lower_stock_price_range;
-          upper_stock_price_range;
-          override_percentage_constraints;
-          volatility;
-          volatility_type;
-          delta_neutral_order_type;
-          delta_neutral_aux_price;
-          continuous_update;
-          reference_price_type;
-          trailing_stop_price;
-          trailing_percent;
-          scale_initial_level_size;
-          scale_subsequent_level_size;
-          scale_price_increment;
-          hedge_type;
-          opt_out_smart_routing;
-          clearing_account;
-          clearing_intent;
-          not_held;
-          underlying_combo;
-          algo_strategy;
-          request_pre_trade_information;
-        }))
+      { con_id;
+        symbol;
+        sec_type;
+        expiry;
+        strike;
+        right;
+        multiplier;
+        exchange;
+        prim_exch;
+        currency;
+        local_symbol;
+        sec_id_type;
+        sec_id;
+        action;
+        quantity;
+        order_kind;
+        limit_price;
+        stop_price;
+        time_in_force;
+        oca_group_name;
+        account_code;
+        open_close;
+        origin;
+        order_ref;
+        transmit;
+        parent_id;
+        block_order;
+        sweep_to_fill;
+        display_size;
+        stop_trigger_method;
+        outside_regular_trading_hours;
+        hidden;
+        shares_allocation;
+        discretionary_amount;
+        good_after_date_time;
+        good_till_date_time;
+        financial_advisor_group;
+        financial_advisor_method;
+        financial_advisor_percentage;
+        financial_advisor_profile;
+        short_sale_slot;
+        designated_location;
+        exemption_code;
+        oca_type;
+        rule80A;
+        settling_firm;
+        all_or_none;
+        minimum_quantity;
+        percent_offset;
+        electronic_trade_only;
+        firm_quote_only;
+        nbbo_price_cap;
+        auction_strategy;
+        starting_price;
+        stock_reference_price;
+        delta;
+        lower_stock_price_range;
+        upper_stock_price_range;
+        override_percentage_constraints;
+        volatility;
+        volatility_type;
+        delta_neutral_order_type;
+        delta_neutral_aux_price;
+        continuous_update;
+        reference_price_type;
+        trailing_stop_price;
+        trailing_percent;
+        scale_initial_level_size;
+        scale_subsequent_level_size;
+        scale_price_increment;
+        hedge_type;
+        opt_out_smart_routing;
+        clearing_account;
+        clearing_intent;
+        not_held;
+        underlying_combo;
+        algo_strategy;
+        request_pre_trade_information;
+      }))

@@ -25,17 +25,17 @@ let () =
     Command.Spec.(Common.common_args ())
     ~summary:"Tabularize the current quotes for a list of symbols"
     (fun do_logging host port client_id () ->
-      Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
-        let symbols = List.map symbols ~f:Symbol.of_string in
-        Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
-          Tws.contract_details_exn tws ~currency:`USD ~sec_type:`Stock symbol
-          >>= fun details ->
-          let data = Option.value_exn (Pipe.peek details) in
-          (* Extract unambiguous contract description. *)
-          let contract = Contract_data.contract data in
-          Tws.latest_quote_exn tws ~contract
-          >>= fun quote -> return (symbol, quote)
-        ) >>| fun quotes -> print_quote_table quotes
-      )
+       Tws.with_client_or_error ~do_logging ~host ~port ~client_id (fun tws ->
+         let symbols = List.map symbols ~f:Symbol.of_string in
+         Deferred.List.map symbols ~how:`Parallel ~f:(fun symbol ->
+           Tws.contract_details_exn tws ~currency:`USD ~sec_type:`Stock symbol
+           >>= fun details ->
+           let data = Option.value_exn (Pipe.peek details) in
+           (* Extract unambiguous contract description. *)
+           let contract = Contract_data.contract data in
+           Tws.latest_quote_exn tws ~contract
+           >>= fun quote -> return (symbol, quote)
+         ) >>| fun quotes -> print_quote_table quotes
+       )
     )
   |> Command.run

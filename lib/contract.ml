@@ -119,7 +119,7 @@ let index ?con_id ?local_symbol ?sec_id ?exchange ~currency symbol =
   )
 
 let futures ?con_id ?multiplier ?local_symbol ?sec_id ?include_expired ?exchange
-  ~currency ~expiry symbol =
+    ~currency ~expiry symbol =
   of_raw (
     Raw_contract.create
       ?con_id

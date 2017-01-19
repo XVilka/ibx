@@ -25,10 +25,10 @@ open Tws_prot
 
 module T = struct
   type t =
-  [ `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
-  | `One_min     | `Two_min    | `Three_min   | `Five_min
-  | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
-  ] [@@deriving sexp]
+    [ `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
+    | `One_min     | `Two_min    | `Three_min   | `Five_min
+    | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
+    ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

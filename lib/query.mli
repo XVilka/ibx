@@ -168,15 +168,15 @@ end
 module History : sig
   module Tick_type : sig
     type t =
-    [ `Trades
-    | `Midpoint
-    | `Bid
-    | `Ask
-    | `Bid_ask
-    | `Historical_volatility
-    | `Implied_volatility
-    | `Option_volume
-    ] [@@deriving sexp]
+      [ `Trades
+      | `Midpoint
+      | `Bid
+      | `Ask
+      | `Bid_ask
+      | `Historical_volatility
+      | `Implied_volatility
+      | `Option_volume
+      ] [@@deriving sexp]
     include Stringable.S with type t := t
   end
 

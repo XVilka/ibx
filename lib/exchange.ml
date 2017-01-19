@@ -24,111 +24,111 @@ open Core.Std
 open Tws_prot
 
 type t =
-[ `AEB
-| `ALPHA
-| `AMEX
-| `ARCA
-| `ARCAEDGE
-| `ASX
-| `BATECH
-| `BATEDE
-| `BATEEN
-| `BATEUK
-| `BATS
-| `BEX
-| `BM
-| `BOX
-| `BTRADE
-| `BVME
-| `BYX
-| `CBOE
-| `CBOE2
-| `CBSX
-| `CDE
-| `CFE
-| `CHIXCH
-| `CHIXDE
-| `CHIXEN
-| `CHIXJ
-| `CHIXUK
-| `CHX
-| `CME
-| `CSFBALGO
-| `DRCTEDGE
-| `DTB
-| `ECBOT
-| `EDGX
-| `EDGEA
-| `ELX
-| `FTA
-| `FWB
-| `GEMINI
-| `GLOBEX
-| `HKFE
-| `HKMEX
-| `IBCFD
-| `IBIS
-| `IBSX
-| `ICEUS
-| `IDEAL
-| `IDEALPRO
-| `IDEM
-| `IEX
-| `ISE
-| `ISLAND
-| `JEFFALGO
-| `KSE
-| `LAVA
-| `LIFFE
-| `LSE
-| `MATIF
-| `MEFF
-| `MERCURY
-| `MEXDER
-| `MEXI
-| `MIAX
-| `MIBSX
-| `MONEP
-| `NASDAQ
-| `NASDAQBX
-| `NASDAQOM
-| `NFX
-| `NSX
-| `NYBOT
-| `NYMEX
-| `NYSE
-| `OMEGA
-| `OMS
-| `ONE
-| `PHLX
-| `PINK
-| `PSE
-| `PSX
-| `PURE
-| `SBF
-| `SBVM
-| `SEHK
-| `SELECT
-| `SFB
-| `SGX
-| `SMART
-| `SNFE
-| `SOFFEX
-| `SWB
-| `SWX
-| `TGATE
-| `TPLUS2
-| `TRADEGATE
-| `TRQXCH
-| `TRQXDE
-| `TRQXEN
-| `TSE
-| `TSEJ
-| `VENTURE
-| `VIRTX
-| `VSE
-| `VWAP
-] [@@deriving sexp]
+  [ `AEB
+  | `ALPHA
+  | `AMEX
+  | `ARCA
+  | `ARCAEDGE
+  | `ASX
+  | `BATECH
+  | `BATEDE
+  | `BATEEN
+  | `BATEUK
+  | `BATS
+  | `BEX
+  | `BM
+  | `BOX
+  | `BTRADE
+  | `BVME
+  | `BYX
+  | `CBOE
+  | `CBOE2
+  | `CBSX
+  | `CDE
+  | `CFE
+  | `CHIXCH
+  | `CHIXDE
+  | `CHIXEN
+  | `CHIXJ
+  | `CHIXUK
+  | `CHX
+  | `CME
+  | `CSFBALGO
+  | `DRCTEDGE
+  | `DTB
+  | `ECBOT
+  | `EDGX
+  | `EDGEA
+  | `ELX
+  | `FTA
+  | `FWB
+  | `GEMINI
+  | `GLOBEX
+  | `HKFE
+  | `HKMEX
+  | `IBCFD
+  | `IBIS
+  | `IBSX
+  | `ICEUS
+  | `IDEAL
+  | `IDEALPRO
+  | `IDEM
+  | `IEX
+  | `ISE
+  | `ISLAND
+  | `JEFFALGO
+  | `KSE
+  | `LAVA
+  | `LIFFE
+  | `LSE
+  | `MATIF
+  | `MEFF
+  | `MERCURY
+  | `MEXDER
+  | `MEXI
+  | `MIAX
+  | `MIBSX
+  | `MONEP
+  | `NASDAQ
+  | `NASDAQBX
+  | `NASDAQOM
+  | `NFX
+  | `NSX
+  | `NYBOT
+  | `NYMEX
+  | `NYSE
+  | `OMEGA
+  | `OMS
+  | `ONE
+  | `PHLX
+  | `PINK
+  | `PSE
+  | `PSX
+  | `PURE
+  | `SBF
+  | `SBVM
+  | `SEHK
+  | `SELECT
+  | `SFB
+  | `SGX
+  | `SMART
+  | `SNFE
+  | `SOFFEX
+  | `SWB
+  | `SWX
+  | `TGATE
+  | `TPLUS2
+  | `TRADEGATE
+  | `TRQXCH
+  | `TRQXDE
+  | `TRQXEN
+  | `TSE
+  | `TSEJ
+  | `VENTURE
+  | `VIRTX
+  | `VSE
+  | `VWAP
+  ] [@@deriving sexp]
 
 let tws_of_t = function
   | `AEB -> "AEB"

@@ -23,9 +23,9 @@
 open Core.Std
 
 type ('a, 'b) t
-constraint 'a = [< Order_action.t ]
-constraint 'b = [< Order_type.t ]
-[@@deriving sexp]
+  constraint 'a = [< Order_action.t ]
+  constraint 'b = [< Order_type.t ]
+  [@@deriving sexp]
 
 include Raw_order_intf.S
   with type raw := Raw_order.t

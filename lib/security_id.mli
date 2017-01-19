@@ -34,11 +34,11 @@ module Id : sig
 end
 
 type t =
-[ `ISIN  of Id.t
-| `RIC   of Id.t
-| `CUSIP of Id.t
-| `SEDOL of Id.t
-] [@@deriving sexp]
+  [ `ISIN  of Id.t
+  | `RIC   of Id.t
+  | `CUSIP of Id.t
+  | `SEDOL of Id.t
+  ] [@@deriving sexp]
 include Stringable.S with type t := t
 
 val isin  : Id.t -> t

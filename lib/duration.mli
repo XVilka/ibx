@@ -24,11 +24,11 @@ open Core.Std
 
 (** The duration of a historical bar request. *)
 type t =
-[ `Sec   of int
-| `Day   of int
-| `Week  of int
-| `Month of int
-| `Year  of int
-] [@@deriving sexp]
+  [ `Sec   of int
+  | `Day   of int
+  | `Week  of int
+  | `Month of int
+  | `Year  of int
+  ] [@@deriving sexp]
 include Stringable.S with type t := t
 include Twsable.S with type t := t

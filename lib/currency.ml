@@ -24,26 +24,26 @@ open Core.Std
 open Tws_prot
 
 type t =
-[ `USD
-| `AUD
-| `CAD
-| `CHF
-| `CNH
-| `DKK
-| `EUR
-| `GBP
-| `HKD
-| `HUF
-| `ILS
-| `JPY
-| `MXN
-| `NOK
-| `NZD
-| `RUB
-| `SEK
-| `SGD
-| `KRW
-] [@@deriving sexp]
+  [ `USD
+  | `AUD
+  | `CAD
+  | `CHF
+  | `CNH
+  | `DKK
+  | `EUR
+  | `GBP
+  | `HKD
+  | `HUF
+  | `ILS
+  | `JPY
+  | `MXN
+  | `NOK
+  | `NZD
+  | `RUB
+  | `SEK
+  | `SGD
+  | `KRW
+  ] [@@deriving sexp]
 
 let tws_of_t = function
   | `USD -> "USD"

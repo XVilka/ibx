@@ -64,16 +64,16 @@ let suite = "Client" >::: [
       Pipe.read_exactly reader ~num_values:(List.length gen_market_data)
       >>| fun read_result ->
       Exn.protectx read_result ~f:(function
-      | `Eof
-      | `Fewer _ -> assert false
-      | `Exactly result ->
-        List.iter2_exn gen_market_data (Queue.to_list result)
-          ~f:(fun gen_tick tick ->
-            assert_wrapper_equal
-              (module W : Response_intf.Wrapper.S with type t = W.t)
-              ~expected:gen_tick
-              ~actual:tick;
-          Log.Global.sexp ~level:`Debug (W.sexp_of_t tick))
+        | `Eof
+        | `Fewer _ -> assert false
+        | `Exactly result ->
+          List.iter2_exn gen_market_data (Queue.to_list result)
+            ~f:(fun gen_tick tick ->
+              assert_wrapper_equal
+                (module W : Response_intf.Wrapper.S with type t = W.t)
+                ~expected:gen_tick
+                ~actual:tick;
+              Log.Global.sexp ~level:`Debug (W.sexp_of_t tick))
       ) ~finally:(fun _ -> Tws.cancel_market_data tws id)
     )
   );
@@ -117,16 +117,16 @@ let suite = "Client" >::: [
       Pipe.read_exactly reader ~num_values:(List.length gen_order_states)
       >>| fun read_result ->
       Exn.protectx read_result ~f:(function
-      | `Eof
-      | `Fewer _ -> assert false
-      | `Exactly result ->
-        List.iter2_exn gen_order_states (Queue.to_list result)
-          ~f:(fun gen_order_state order_state ->
-            assert_response_equal
-              (module R : Response_intf.S with type t = R.t)
-              ~expected:gen_order_state
-              ~actual:order_state;
-            Log.Global.sexp ~level:`Debug (R.sexp_of_t order_state))
+        | `Eof
+        | `Fewer _ -> assert false
+        | `Exactly result ->
+          List.iter2_exn gen_order_states (Queue.to_list result)
+            ~f:(fun gen_order_state order_state ->
+              assert_response_equal
+                (module R : Response_intf.S with type t = R.t)
+                ~expected:gen_order_state
+                ~actual:order_state;
+              Log.Global.sexp ~level:`Debug (R.sexp_of_t order_state))
       ) ~finally:(fun _ -> Tws.cancel_order_status tws oid)
     )
   );
@@ -215,16 +215,16 @@ let suite = "Client" >::: [
       Pipe.read_exactly reader ~num_values:(List.length gen_book_updates)
       >>| fun read_result ->
       Exn.protectx read_result ~f:(function
-      | `Eof
-      | `Fewer _ -> assert false
-      | `Exactly result ->
-        List.iter2_exn gen_book_updates (Queue.to_list result)
-          ~f:(fun gen_book_update book_update ->
-            assert_response_equal
-              (module R : Response_intf.S with type t = R.t)
-              ~expected:gen_book_update
-              ~actual:book_update;
-            Log.Global.sexp ~level:`Debug (R.sexp_of_t book_update))
+        | `Eof
+        | `Fewer _ -> assert false
+        | `Exactly result ->
+          List.iter2_exn gen_book_updates (Queue.to_list result)
+            ~f:(fun gen_book_update book_update ->
+              assert_response_equal
+                (module R : Response_intf.S with type t = R.t)
+                ~expected:gen_book_update
+                ~actual:book_update;
+              Log.Global.sexp ~level:`Debug (R.sexp_of_t book_update))
       ) ~finally:(fun _ -> Tws.cancel_market_depth tws id)
     )
   );
@@ -252,16 +252,16 @@ let suite = "Client" >::: [
       Pipe.read_exactly reader ~num_values:(List.length gen_realtime_bars)
       >>| fun read_result ->
       Exn.protectx read_result ~f:(function
-      | `Eof
-      | `Fewer _ -> assert false
-      | `Exactly result ->
-        List.iter2_exn gen_realtime_bars (Queue.to_list result)
-          ~f:(fun gen_realtime_bar realtime_bar ->
-            assert_response_equal
-              (module R : Response_intf.S with type t = R.t)
-              ~expected:gen_realtime_bar
-              ~actual:realtime_bar;
-            Log.Global.sexp ~level:`Debug (R.sexp_of_t realtime_bar))
+        | `Eof
+        | `Fewer _ -> assert false
+        | `Exactly result ->
+          List.iter2_exn gen_realtime_bars (Queue.to_list result)
+            ~f:(fun gen_realtime_bar realtime_bar ->
+              assert_response_equal
+                (module R : Response_intf.S with type t = R.t)
+                ~expected:gen_realtime_bar
+                ~actual:realtime_bar;
+              Log.Global.sexp ~level:`Debug (R.sexp_of_t realtime_bar))
       ) ~finally:(fun _ -> Tws.cancel_realtime_bars tws id)
     )
   );

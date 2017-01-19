@@ -129,60 +129,60 @@ end
 module Tick_string : sig
   module Type : sig
     type t =
-    | Bid_size
-    | Bid_price
-    | Ask_price
-    | Ask_size
-    | Last_price
-    | Last_size
-    | High_price
-    | Low_price
-    | Volume
-    | Close_price
-    | Bid_option
-    | Ask_option
-    | Last_option
-    | Model_option
-    | Open_price
-    | Low_13_week
-    | High_13_week
-    | Low_26_week
-    | High_26_week
-    | Low_52_week
-    | High_52_week
-    | Avg_volume
-    | Open_interest
-    | Historical_volatility
-    | Implied_volatility
-    | Option_bid_exch
-    | Option_ask_exch
-    | Call_open_interest
-    | Put_open_interest
-    | Call_volume
-    | Put_volume
-    | Index_future_premium
-    | Bid_exch
-    | Ask_exch
-    | Auction_volume
-    | Auction_price
-    | Auction_imbalance
-    | Mark_price
-    | Bid_efp
-    | Ask_efp
-    | Last_efp
-    | Open_efp
-    | High_efp
-    | Low_efp
-    | Close_efp
-    | Last_timestamp
-    | Shortable
-    | Fundamental_ratios
-    | Realtime_volume
-    | Halted
-    | Bid_yield
-    | Ask_yield
-    | Last_yield
-    | Cust_option_comp
+      | Bid_size
+      | Bid_price
+      | Ask_price
+      | Ask_size
+      | Last_price
+      | Last_size
+      | High_price
+      | Low_price
+      | Volume
+      | Close_price
+      | Bid_option
+      | Ask_option
+      | Last_option
+      | Model_option
+      | Open_price
+      | Low_13_week
+      | High_13_week
+      | Low_26_week
+      | High_26_week
+      | Low_52_week
+      | High_52_week
+      | Avg_volume
+      | Open_interest
+      | Historical_volatility
+      | Implied_volatility
+      | Option_bid_exch
+      | Option_ask_exch
+      | Call_open_interest
+      | Put_open_interest
+      | Call_volume
+      | Put_volume
+      | Index_future_premium
+      | Bid_exch
+      | Ask_exch
+      | Auction_volume
+      | Auction_price
+      | Auction_imbalance
+      | Mark_price
+      | Bid_efp
+      | Ask_efp
+      | Last_efp
+      | Open_efp
+      | High_efp
+      | Low_efp
+      | Close_efp
+      | Last_timestamp
+      | Shortable
+      | Fundamental_ratios
+      | Realtime_volume
+      | Halted
+      | Bid_yield
+      | Ask_yield
+      | Last_yield
+      | Cust_option_comp
     [@@deriving sexp]
   end
   type t = private
@@ -202,14 +202,14 @@ end
 module Order_status : sig
   module State : sig
     type t =
-    [ `Pending_submit
-    | `Pending_cancel
-    | `Pre_submitted
-    | `Submitted
-    | `Cancelled
-    | `Filled
-    | `Inactive
-    ] [@@deriving sexp]
+      [ `Pending_submit
+      | `Pending_cancel
+      | `Pre_submitted
+      | `Submitted
+      | `Cancelled
+      | `Filled
+      | `Inactive
+      ] [@@deriving sexp]
   end
   type t = private
     { state : State.t;

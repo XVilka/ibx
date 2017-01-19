@@ -48,72 +48,72 @@ module Query = struct
     (* ====================== Connection and server ======================== *)
 
     (fun () ->
-      let module Q = Query.Server_log_level in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.server_log_level_g);
+       let module Q = Query.Server_log_level in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.server_log_level_g);
 
     (fun () ->
-      let module Q = Query.Server_time in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.server_time_g);
+       let module Q = Query.Server_time in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.server_time_g);
 
     (* =========================== Market data ============================= *)
 
     (fun () ->
-      let module Q = Query.Market_data in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.market_data_g);
+       let module Q = Query.Market_data in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.market_data_g);
 
     (fun () ->
-      let module Q = Query.Option_price in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.option_price_g);
+       let module Q = Query.Option_price in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.option_price_g);
 
     (fun () ->
-      let module Q = Query.Implied_volatility in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.implied_volatility_g);
+       let module Q = Query.Implied_volatility in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.implied_volatility_g);
 
     (* ============================= Orders ================================ *)
 
     (fun () ->
-      let module Q = Query.Submit_order in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.submit_order_g);
+       let module Q = Query.Submit_order in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.submit_order_g);
 
     (* ====================== Account and portfolio ======================== *)
 
     (fun () ->
-      let module Q = Query.Account_updates in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.account_updates);
+       let module Q = Query.Account_updates in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.account_updates);
 
     (fun () ->
-      let module Q = Query.Positions in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.positions);
+       let module Q = Query.Positions in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.positions);
 
     (* ============================ Executions ============================= *)
 
     (fun () ->
-      let module Q = Query.Executions in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.executions_g);
+       let module Q = Query.Executions in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.executions_g);
 
     (* ========================= Contract details ========================== *)
 
     (fun () ->
-      let module Q = Query.Contract_details in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.contract_details_g);
+       let module Q = Query.Contract_details in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.contract_details_g);
 
     (* =========================== Market depth ============================ *)
 
     (fun () ->
-      let module Q = Query.Market_depth in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.market_depth_g);
+       let module Q = Query.Market_depth in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.market_depth_g);
 
     (* ============================= History ============================= *)
 
     (fun () ->
-      let module Q = Query.History in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.history_g);
+       let module Q = Query.History in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.history_g);
 
     (* ========================== Realtime bars ============================ *)
 
     (fun () ->
-      let module Q = Query.Realtime_bars in
-      gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.realtime_bars_g);
+       let module Q = Query.Realtime_bars in
+       gen_test (module Q : Query_intf.S with type t = Q.t) Rg.Q.realtime_bars_g);
   ]
 end
 
@@ -132,70 +132,70 @@ module Response = struct
     (* ====================== Connection and server ======================== *)
 
     (fun () ->
-      let module R = Response.Tws_error in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tws_error_g);
+       let module R = Response.Tws_error in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tws_error_g);
 
     (fun () ->
-      let module R = Response.Server_time in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.server_time_g);
+       let module R = Response.Server_time in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.server_time_g);
 
     (* =========================== Market data ============================= *)
 
     (fun () ->
-      let module R = Response.Tick_price in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_price_g);
+       let module R = Response.Tick_price in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_price_g);
 
     (fun () ->
-      let module R = Response.Tick_size in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_size_g);
+       let module R = Response.Tick_size in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_size_g);
 
     (fun () ->
-      let module R = Response.Tick_option in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_option_g);
+       let module R = Response.Tick_option in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_option_g);
 
     (fun () ->
-      let module R = Response.Tick_string in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_string_g);
+       let module R = Response.Tick_string in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.tick_string_g);
 
     (* ============================= Orders ================================ *)
 
     (fun () ->
-      let module R = Response.Order_status in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.order_status_g);
+       let module R = Response.Order_status in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.order_status_g);
 
     (* ======================= Account and Portfolio ======================= *)
 
     (fun () ->
-      let module R = Response.Account_update in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.account_update_g);
+       let module R = Response.Account_update in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.account_update_g);
 
     (fun () ->
-      let module R = Response.Position in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.position_g);
+       let module R = Response.Position in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.position_g);
 
     (* =========================== Contract data =========================== *)
 
     (fun () ->
-      let module R = Response.Contract_data in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.contract_data_g);
+       let module R = Response.Contract_data in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.contract_data_g);
 
     (* =========================== Executions ============================== *)
 
     (fun () ->
-      let module R = Response.Execution in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.execution_g);
+       let module R = Response.Execution in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.execution_g);
 
     (* =========================== Market depth ============================ *)
 
     (fun () ->
-      let module R = Response.Book_update in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.book_update_g);
+       let module R = Response.Book_update in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.book_update_g);
 
     (* ============================= History =============================== *)
 
     (fun () ->
-      let module R = Response.History in
-      gen_test (module R : Response_intf.S with type t = R.t) Rg.R.history_g);
+       let module R = Response.History in
+       gen_test (module R : Response_intf.S with type t = R.t) Rg.R.history_g);
   ]
 end
 

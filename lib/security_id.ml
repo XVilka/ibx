@@ -43,11 +43,11 @@ end
 
 module T = struct
   type t =
-  [ `ISIN  of Id.t
-  | `RIC   of Id.t
-  | `CUSIP of Id.t
-  | `SEDOL of Id.t
-  ] [@@deriving sexp]
+    [ `ISIN  of Id.t
+    | `RIC   of Id.t
+    | `CUSIP of Id.t
+    | `SEDOL of Id.t
+    ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

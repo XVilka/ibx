@@ -47,9 +47,9 @@ val with_client
   -> host:string
   -> port:int
   -> on_handler_error:[
-  | `Raise
-  | `Ignore
-  | `Call of (Error.t -> unit)
+    | `Raise
+    | `Ignore
+    | `Call of (Error.t -> unit)
   ]
   -> (t -> unit Deferred.t)
   -> unit Deferred.t
@@ -75,11 +75,11 @@ val state : t -> [ `Disconnected | `Connecting | `Connected ]
 val set_server_log_level
   :  t
   -> level:[
-  | `System
-  | `Error
-  | `Warning
-  | `Information
-  | `Detail
+    | `System
+    | `Error
+    | `Warning
+    | `Information
+    | `Detail
   ]
   -> unit
 
@@ -107,11 +107,11 @@ val account_code : t -> Account_code.t option
 
 module Market_data : sig
   type t =
-  [ `Tick_price  of Tick_price.t
-  | `Tick_size   of Tick_size.t
-  | `Tick_option of Tick_option.t
-  | `Tick_string of Tick_string.t
-  ] [@@deriving sexp]
+    [ `Tick_price  of Tick_price.t
+    | `Tick_size   of Tick_size.t
+    | `Tick_option of Tick_option.t
+    | `Tick_string of Tick_string.t
+    ] [@@deriving sexp]
   include Response_intf.Wrapper.S with type t := t
   val pp : Format.formatter -> t -> unit
 end
@@ -386,27 +386,27 @@ val cancel_market_depth : t -> Query_id.t -> unit
 
 val history
   :  ?bar_size:[
-  | `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
-  | `One_min     | `Two_min    | `Three_min   | `Five_min
-  | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
+    | `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
+    | `One_min     | `Two_min    | `Three_min   | `Five_min
+    | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
   ] (* defaults to One_day *)
   -> ?duration:[
-  | `Sec   of int
-  | `Day   of int
-  | `Week  of int
-  | `Month of int
-  | `Year  of int
+    | `Sec   of int
+    | `Day   of int
+    | `Week  of int
+    | `Month of int
+    | `Year  of int
   ] (* defaults to 1 Year *)
   -> ?use_rth:bool
   -> ?tick_type:[
-  | `Trades
-  | `Midpoint
-  | `Bid
-  | `Ask
-  | `Bid_ask
-  | `Historical_volatility
-  | `Implied_volatility
-  | `Option_volume
+    | `Trades
+    | `Midpoint
+    | `Bid
+    | `Ask
+    | `Bid_ask
+    | `Historical_volatility
+    | `Implied_volatility
+    | `Option_volume
   ]
   -> ?until:Time.t
   -> t
@@ -415,27 +415,27 @@ val history
 
 val history_exn
   :  ?bar_size:[
-  | `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
-  | `One_min     | `Two_min    | `Three_min   | `Five_min
-  | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
+    | `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
+    | `One_min     | `Two_min    | `Three_min   | `Five_min
+    | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
   ] (* defaults to One_day *)
   -> ?duration:[
-  | `Sec   of int
-  | `Day   of int
-  | `Week  of int
-  | `Month of int
-  | `Year  of int
+    | `Sec   of int
+    | `Day   of int
+    | `Week  of int
+    | `Month of int
+    | `Year  of int
   ] (* defaults to 1 Year *)
   -> ?use_rth:bool
   -> ?tick_type:[
-  | `Trades
-  | `Midpoint
-  | `Bid
-  | `Ask
-  | `Bid_ask
-  | `Historical_volatility
-  | `Implied_volatility
-  | `Option_volume
+    | `Trades
+    | `Midpoint
+    | `Bid
+    | `Ask
+    | `Bid_ask
+    | `Historical_volatility
+    | `Implied_volatility
+    | `Option_volume
   ]
   -> ?until:Time.t
   -> t
@@ -448,9 +448,9 @@ val history_exn
 
 val realtime_bars
   :  ?bar_size:[
-  | `Five_sec | `Fifteen_sec | `Thirty_sec
-  | `One_min  | `Two_min     | `Three_min
-  | `Five_min | `Fifteen_min | `Thirty_min
+    | `Five_sec | `Fifteen_sec | `Thirty_sec
+    | `One_min  | `Two_min     | `Three_min
+    | `Five_min | `Fifteen_min | `Thirty_min
   ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_rth:bool
@@ -460,9 +460,9 @@ val realtime_bars
 
 val realtime_bars_exn
   :  ?bar_size:[
-  | `Five_sec | `Fifteen_sec | `Thirty_sec
-  | `One_min  | `Two_min     | `Three_min
-  | `Five_min | `Fifteen_min | `Thirty_min
+    | `Five_sec | `Fifteen_sec | `Thirty_sec
+    | `One_min  | `Two_min     | `Three_min
+    | `Five_min | `Fifteen_min | `Thirty_min
   ]
   -> ?tick_type:[ `Trades | `Midpoint | `Bid | `Ask ]
   -> ?use_rth:bool
@@ -501,13 +501,13 @@ val cancel_trades : t -> Query_id.t -> unit
 module Quote : sig
   module Change : sig
     type t =
-    | Unknown
-    | Ask_price of Price.t
-    | Bid_price of Price.t
-    | Ask_size of Volume.t
-    | Bid_size of Volume.t
-    | Ask_price_and_size of Price.t * Volume.t
-    | Bid_price_and_size of Price.t * Volume.t
+      | Unknown
+      | Ask_price of Price.t
+      | Bid_price of Price.t
+      | Ask_size of Volume.t
+      | Bid_size of Volume.t
+      | Ask_price_and_size of Price.t * Volume.t
+      | Bid_price_and_size of Price.t * Volume.t
     [@@deriving sexp]
   end
 
@@ -537,8 +537,8 @@ val cancel_quotes : t -> Query_id.t -> unit
 
 module TAQ : sig
   type t =
-  | Trade of Trade.t
-  | Quote of Quote.t
+    | Trade of Trade.t
+    | Quote of Quote.t
   [@@deriving sexp]
 
   val pp : Format.formatter -> t -> unit

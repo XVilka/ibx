@@ -80,8 +80,8 @@ module Server_log_level = struct
 end
 
 module Server_time = Unit (struct
-  let name = "Query.Server_time"
-end)
+    let name = "Query.Server_time"
+  end)
 
 (* +-----------------------------------------------------------------------+
    | Market data                                                           |
@@ -122,7 +122,7 @@ module Market_data = struct
             ~tick_types:(fields_value (sequence Tick_type.val_type))
             ~snapshot:(fields_value (required bool)))
           (fun { contract; tick_types; snapshot } ->
-            `Args $ contract $ tick_types $ snapshot))
+             `Args $ contract $ tick_types $ snapshot))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -136,7 +136,7 @@ module Market_data = struct
           ~tick_types:(fields_value (sequence Tick_type.val_type))
           ~snapshot:(fields_value (required bool)))
       (fun contract tick_types snapshot ->
-        { contract; tick_types; snapshot }))
+         { contract; tick_types; snapshot }))
 end
 
 module Option_price = struct
@@ -174,7 +174,7 @@ module Option_price = struct
             ~volatility:(fields_value (required float))
             ~underlying_price:(fields_value (required Price.val_type)))
           (fun { contract; volatility; underlying_price } ->
-            `Args $ contract $ volatility $ underlying_price))
+             `Args $ contract $ volatility $ underlying_price))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -188,7 +188,7 @@ module Option_price = struct
           ~volatility:(fields_value (required float))
           ~underlying_price:(fields_value (required Price.val_type)))
       (fun contract volatility underlying_price ->
-        { contract; volatility; underlying_price }))
+         { contract; volatility; underlying_price }))
 end
 
 module Implied_volatility = struct
@@ -226,7 +226,7 @@ module Implied_volatility = struct
             ~option_price:(fields_value (required Price.val_type))
             ~underlying_price:(fields_value (required Price.val_type)))
           (fun { contract; option_price; underlying_price } ->
-            `Args $ contract $ option_price $ underlying_price))
+             `Args $ contract $ option_price $ underlying_price))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -240,7 +240,7 @@ module Implied_volatility = struct
           ~option_price:(fields_value (required Price.val_type))
           ~underlying_price:(fields_value (required Price.val_type)))
       (fun contract option_price underlying_price ->
-        { contract; option_price; underlying_price }))
+         { contract; option_price; underlying_price }))
 end
 
 
@@ -278,7 +278,7 @@ module Updates (Arg : sig val name:string end) = struct
             ~init:(empty ())
             ~subscribe:(fields_value (required bool))
             ~account_code:(fields_value (required Account_code.val_type)))
-      (fun t -> `Args $ t.subscribe $ t.account_code))
+          (fun t -> `Args $ t.subscribe $ t.account_code))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:Arg.name
@@ -291,12 +291,12 @@ module Updates (Arg : sig val name:string end) = struct
 end
 
 module Account_updates = Updates (struct
-  let name = "Query.Account_updates"
-end)
+    let name = "Query.Account_updates"
+  end)
 
 module Positions = Updates (struct
-  let name = "Query.Positions"
-end)
+    let name = "Query.Positions"
+  end)
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |
@@ -358,14 +358,14 @@ module Executions = struct
             ~exchange:(fields_value (required Exchange.val_type))
             ~action:(fields_value (required Order_action.val_type)))
           (fun t ->
-            `Args
-              $ t.client_id
-              $ t.account_code
-              $ t.time
-              $ t.symbol
-              $ t.sec_type
-              $ t.exchange
-              $ t.action))
+             `Args
+             $ t.client_id
+             $ t.account_code
+             $ t.time
+             $ t.symbol
+             $ t.sec_type
+             $ t.exchange
+             $ t.action))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     Unpickler.create ~name:"Query.Executions"
@@ -380,14 +380,14 @@ module Executions = struct
           ~exchange:(fields_value (required Exchange.val_type))
           ~action:(fields_value (required Order_action.val_type)))
       (fun client_id account_code time symbol sec_type exchange action ->
-        { client_id;
-          account_code;
-          time;
-          symbol;
-          sec_type;
-          exchange;
-          action;
-        }))
+         { client_id;
+           account_code;
+           time;
+           symbol;
+           sec_type;
+           exchange;
+           action;
+         }))
 end
 
 (* +-----------------------------------------------------------------------+
@@ -486,15 +486,15 @@ module History = struct
   module Tick_type = struct
     module T = struct
       type t =
-      [ `Trades
-      | `Midpoint
-      | `Bid
-      | `Ask
-      | `Bid_ask
-      | `Historical_volatility
-      | `Implied_volatility
-      | `Option_volume
-      ] [@@deriving sexp]
+        [ `Trades
+        | `Midpoint
+        | `Bid
+        | `Ask
+        | `Bid_ask
+        | `Historical_volatility
+        | `Implied_volatility
+        | `Option_volume
+        ] [@@deriving sexp]
     end
     include T
     include Sexpable.To_stringable (T)
@@ -571,14 +571,14 @@ module History = struct
             ~tick_type:(fields_value (required Tick_type.val_type))
             ~date_format:(fields_value (required string)))
           (fun t ->
-            `Args
-              $ t.contract
-              $ t.until
-              $ t.bar_size
-              $ t.duration
-              $ t.use_rth
-              $ t.tick_type
-              $ t.date_format))
+             `Args
+             $ t.contract
+             $ t.until
+             $ t.bar_size
+             $ t.duration
+             $ t.use_rth
+             $ t.tick_type
+             $ t.date_format))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec = Raw_contract.Unpickler_specs.history_query () in
@@ -594,14 +594,14 @@ module History = struct
           ~tick_type:(fields_value (required Tick_type.val_type))
           ~date_format:(fields_value (required string)))
       (fun contract until bar_size duration use_rth tick_type date_format ->
-        { contract;
-          until;
-          bar_size;
-          duration;
-          use_rth;
-          tick_type;
-          date_format;
-        }))
+         { contract;
+           until;
+           bar_size;
+           duration;
+           use_rth;
+           tick_type;
+           date_format;
+         }))
 end
 
 (* +-----------------------------------------------------------------------+
@@ -679,7 +679,7 @@ module Realtime_bars = struct
             ~tick_type:(fields_value (required Tick_type.val_type))
             ~use_rth:(fields_value (required bool)))
           (fun { contract; bar_size; tick_type; use_rth } ->
-            `Args $ contract $ bar_size $ tick_type $ use_rth ))
+             `Args $ contract $ bar_size $ tick_type $ use_rth ))
 
   let unpickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -694,5 +694,5 @@ module Realtime_bars = struct
           ~tick_type:(fields_value (required Tick_type.val_type))
           ~use_rth:(fields_value (required bool)))
       (fun contract bar_size tick_type use_rth ->
-        { contract; bar_size; tick_type; use_rth }))
+         { contract; bar_size; tick_type; use_rth }))
 end

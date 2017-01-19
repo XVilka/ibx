@@ -111,25 +111,25 @@ end = struct
   let account_code_g () = Account_code.of_string (sg ())
 
   let currency_g () = oneof [
-     always (`USD);
-     always (`AUD);
-     always (`CAD);
-     always (`CHF);
-     always (`CNH);
-     always (`DKK);
-     always (`EUR);
-     always (`GBP);
-     always (`HKD);
-     always (`HUF);
-     always (`ILS);
-     always (`JPY);
-     always (`MXN);
-     always (`NOK);
-     always (`NZD);
-     always (`RUB);
-     always (`SEK);
-     always (`SGD);
-     always (`KRW);
+    always (`USD);
+    always (`AUD);
+    always (`CAD);
+    always (`CHF);
+    always (`CNH);
+    always (`DKK);
+    always (`EUR);
+    always (`GBP);
+    always (`HKD);
+    always (`HUF);
+    always (`ILS);
+    always (`JPY);
+    always (`MXN);
+    always (`NOK);
+    always (`NZD);
+    always (`RUB);
+    always (`SEK);
+    always (`SGD);
+    always (`KRW);
   ] ()
 
   let price_g  () = Price.of_float (pfg ())
@@ -268,39 +268,39 @@ end = struct
       (symbol_g ())
 
   let contract_g () = oneof
-    [ always (
-      Contract.stock
-        ?con_id:(og contract_id_g ())
-        ?prim_exch:(og exchange_g ())
-        ?local_symbol:(og symbol_g ())
-        ?sec_id:(og security_id_g ())
-        ?exchange:(og exchange_g ())
-        ~currency:(currency_g ())
-        (symbol_g ()))
-    ; always (
-      Contract.futures
-        ?con_id:(og contract_id_g ())
-        ?multiplier:(og nng ())
-        ?local_symbol:(og symbol_g ())
-        ?sec_id:(og security_id_g ())
-        ?include_expired:(og bg ())
-        ?exchange:(og exchange_g ())
-        ~currency:(currency_g ())
-        ~expiry:(expiry_g ())
-        (symbol_g ()))
-    ; always (
-      Contract.option
-        ?con_id:(og contract_id_g ())
-        ?multiplier:(og nng ())
-        ?local_symbol:(og symbol_g ())
-        ?sec_id:(og security_id_g ())
-        ?exchange:(og exchange_g ())
-        ~currency:(currency_g ())
-        ~right:(option_right_g ())
-        ~expiry:(expiry_g ())
-        ~strike:(price_g ())
-        (symbol_g ()))
-    ] ()
+      [ always (
+          Contract.stock
+            ?con_id:(og contract_id_g ())
+            ?prim_exch:(og exchange_g ())
+            ?local_symbol:(og symbol_g ())
+            ?sec_id:(og security_id_g ())
+            ?exchange:(og exchange_g ())
+            ~currency:(currency_g ())
+            (symbol_g ()))
+      ; always (
+          Contract.futures
+            ?con_id:(og contract_id_g ())
+            ?multiplier:(og nng ())
+            ?local_symbol:(og symbol_g ())
+            ?sec_id:(og security_id_g ())
+            ?include_expired:(og bg ())
+            ?exchange:(og exchange_g ())
+            ~currency:(currency_g ())
+            ~expiry:(expiry_g ())
+            (symbol_g ()))
+      ; always (
+          Contract.option
+            ?con_id:(og contract_id_g ())
+            ?multiplier:(og nng ())
+            ?local_symbol:(og symbol_g ())
+            ?sec_id:(og security_id_g ())
+            ?exchange:(og exchange_g ())
+            ~currency:(currency_g ())
+            ~right:(option_right_g ())
+            ~expiry:(expiry_g ())
+            ~strike:(price_g ())
+            (symbol_g ()))
+      ] ()
 
   let order_action_g () = oneof [
     always (`Buy);
@@ -381,39 +381,39 @@ end = struct
 
   let market_data_g () =
     let contract_g = oneof
-      [ always (
-        Contract.stock
-          ?con_id:(og contract_id_g ())
-          ?prim_exch:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?include_expired:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ]
+        [ always (
+            Contract.stock
+              ?con_id:(og contract_id_g ())
+              ?prim_exch:(og exchange_g ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?include_expired:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ]
     in
     let tick_types_g = oneof [
       always ([]);
@@ -478,39 +478,39 @@ end = struct
 
   let submit_order_g () =
     let contract_g () = oneof
-      [ always (
-        Contract.stock
-          ?con_id:(og contract_id_g ())
-          ?prim_exch:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:(og security_id_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:(og security_id_g ())
-          ?include_expired:(og bg ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:(og security_id_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ] ()
+        [ always (
+            Contract.stock
+              ?con_id:(og contract_id_g ())
+              ?prim_exch:(og exchange_g ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:(og security_id_g ())
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:(og security_id_g ())
+              ?include_expired:(og bg ())
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:(og security_id_g ())
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ] ()
     in
     Query.Submit_order.create
       ~contract:(contract_g ())
@@ -559,31 +559,31 @@ end = struct
 
   let market_depth_g () =
     let contract_g = oneof
-      [ always (
-        Contract.stock
-          ~local_symbol:(symbol_g ())
-          ~exchange:(exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ~multiplier:(nng ())
-          ~local_symbol:(symbol_g ())
-          ~exchange:(exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ~multiplier:(nng ())
-          ~local_symbol:(symbol_g ())
-          ~exchange:(exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ]
+        [ always (
+            Contract.stock
+              ~local_symbol:(symbol_g ())
+              ~exchange:(exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ~multiplier:(nng ())
+              ~local_symbol:(symbol_g ())
+              ~exchange:(exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ~multiplier:(nng ())
+              ~local_symbol:(symbol_g ())
+              ~exchange:(exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ]
     in
     Query.Market_depth.create
       ~contract:(contract_g ())
@@ -593,39 +593,39 @@ end = struct
 
   let history_g () =
     let contract_g () = oneof
-      [ always (
-        Contract.stock
-          ?con_id:None
-          ?prim_exch:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?con_id:None
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?include_expired:(og bg ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?con_id:None
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ] ()
+        [ always (
+            Contract.stock
+              ?con_id:None
+              ?prim_exch:(og exchange_g ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ?con_id:None
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?include_expired:(og bg ())
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ?con_id:None
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ] ()
     in
     let bar_size_g () = oneof [
       always (`One_sec);
@@ -673,39 +673,39 @@ end = struct
 
   let realtime_bars_g () =
     let contract_g () = oneof
-      [ always (
-        Contract.stock
-          ?con_id:None
-          ?prim_exch:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?con_id:None
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?include_expired:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?con_id:None
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ] ()
+        [ always (
+            Contract.stock
+              ?con_id:None
+              ?prim_exch:(og exchange_g ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ?con_id:None
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?include_expired:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ?con_id:None
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ] ()
     in
     let tick_type_g () = oneof [
       always (`Trades);
@@ -906,13 +906,13 @@ end = struct
     List.permute ~random_state:(Random.State.make_self_init ())
       (List.concat
          [ List.init (1 + Random.int bound) ~f:(fun _ ->
-           `Tick_price (tick_price_g ()))
+             `Tick_price (tick_price_g ()))
          ; List.init (1 + Random.int bound) ~f:(fun _ ->
-           `Tick_size (tick_size_g ()))
+             `Tick_size (tick_size_g ()))
          ; List.init (1 + Random.int bound) ~f:(fun _ ->
-           `Tick_option (tick_option_g ()))
+             `Tick_option (tick_option_g ()))
          ; List.init (1 + Random.int bound) ~f:(fun _ ->
-           `Tick_string (tick_string_g ()))
+             `Tick_string (tick_string_g ()))
          ])
 
   (* ============================== Orders ================================= *)
@@ -958,39 +958,39 @@ end = struct
 
   let position_g () =
     let contract_g () = oneof
-      [ always (
-        Contract.stock
-          ?con_id:(og contract_id_g ())
-          ?prim_exch:None
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?include_expired:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ] ()
+        [ always (
+            Contract.stock
+              ?con_id:(og contract_id_g ())
+              ?prim_exch:None
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?include_expired:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ] ()
     in
     Response.Position.create
       ~contract:(contract_g ())
@@ -1010,35 +1010,35 @@ end = struct
 
   let contract_data_g () =
     let contract_g () = oneof
-      [ always (
-        Contract.stock
-          ?con_id:(og contract_id_g ())
-          ?prim_exch:(og exchange_g ())
-          ?local_symbol:(og symbol_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?con_id:(og contract_id_g ())
-          ?multiplier:(og nng ())
-          ?local_symbol:(og symbol_g ())
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ] ()
+        [ always (
+            Contract.stock
+              ?con_id:(og contract_id_g ())
+              ?prim_exch:(og exchange_g ())
+              ?local_symbol:(og symbol_g ())
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ?con_id:(og contract_id_g ())
+              ?multiplier:(og nng ())
+              ?local_symbol:(og symbol_g ())
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ] ()
     in
     let active_times =
       Trading_times.create
@@ -1081,39 +1081,39 @@ end = struct
 
   let execution_g () =
     let contract_g () = oneof
-      [ always (
-        Contract.stock
-          ?con_id:(og contract_id_g ())
-          ?prim_exch:None
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.futures
-          ?con_id:(og contract_id_g ())
-          ?multiplier:None
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?include_expired:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~expiry:(expiry_g ())
-          (symbol_g ()))
-      ; always (
-        Contract.option
-          ?con_id:(og contract_id_g ())
-          ?multiplier:None
-          ?local_symbol:(og symbol_g ())
-          ?sec_id:None
-          ?exchange:(og exchange_g ())
-          ~currency:(currency_g ())
-          ~right:(option_right_g ())
-          ~expiry:(expiry_g ())
-          ~strike:(price_g ())
-          (symbol_g ()))
-      ] ()
+        [ always (
+            Contract.stock
+              ?con_id:(og contract_id_g ())
+              ?prim_exch:None
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.futures
+              ?con_id:(og contract_id_g ())
+              ?multiplier:None
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?include_expired:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~expiry:(expiry_g ())
+              (symbol_g ()))
+        ; always (
+            Contract.option
+              ?con_id:(og contract_id_g ())
+              ?multiplier:None
+              ?local_symbol:(og symbol_g ())
+              ?sec_id:None
+              ?exchange:(og exchange_g ())
+              ~currency:(currency_g ())
+              ~right:(option_right_g ())
+              ~expiry:(expiry_g ())
+              ~strike:(price_g ())
+              (symbol_g ()))
+        ] ()
     in
     let exec_id_g = always (Execution_id.of_string (sg ())) in
     let side_g () = oneof [
@@ -1173,15 +1173,15 @@ end = struct
 
   let history_g () =
     let bar_g () = Bar.create
-      ~stamp:(tmg ())
-      ~op:(price_g ())
-      ~hi:(price_g ())
-      ~lo:(price_g ())
-      ~cl:(price_g ())
-      ~vo:(volume_g ())
-      ~wap:(price_g ())
-      ~has_gaps:(bg ())
-      ~n_trades:(nng ())
+        ~stamp:(tmg ())
+        ~op:(price_g ())
+        ~hi:(price_g ())
+        ~lo:(price_g ())
+        ~cl:(price_g ())
+        ~vo:(volume_g ())
+        ~wap:(price_g ())
+        ~has_gaps:(bg ())
+        ~n_trades:(nng ())
     in
     Response.History.create
       ~bars:(List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ()))
@@ -1190,15 +1190,15 @@ end = struct
 
   let realtime_bars_g () =
     let bar_g () = Bar.create
-      ~stamp:(tmg ())
-      ~op:(price_g ())
-      ~hi:(price_g ())
-      ~lo:(price_g ())
-      ~cl:(price_g ())
-      ~vo:(volume_g ())
-      ~wap:(price_g ())
-      ~has_gaps:false
-      ~n_trades:(nng ())
+        ~stamp:(tmg ())
+        ~op:(price_g ())
+        ~hi:(price_g ())
+        ~lo:(price_g ())
+        ~cl:(price_g ())
+        ~vo:(volume_g ())
+        ~wap:(price_g ())
+        ~has_gaps:false
+        ~n_trades:(nng ())
     in
     List.init (1 + Random.int bound) ~f:(fun _ -> bar_g ())
 

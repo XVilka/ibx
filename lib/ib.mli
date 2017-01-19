@@ -46,19 +46,19 @@ module type Connection = sig
   val set_server_log_level
     :  t
     -> level:[
-    | `System
-    | `Error
-    | `Warning
-    | `Information
-    | `Detail
+      | `System
+      | `Error
+      | `Warning
+      | `Information
+      | `Detail
     ]
     -> unit
 
   module Handshake_result : sig
     type t =
-    | Eof
-    | Version_failure of int
-    | Server_header of [ `Version of int ] * Time.t * Account_code.t
+      | Eof
+      | Version_failure of int
+      | Server_header of [ `Version of int ] * Time.t * Account_code.t
     [@@deriving sexp]
   end
 

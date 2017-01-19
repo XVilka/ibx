@@ -107,7 +107,7 @@ let run name suites =
       loop_suites suites counter failures
     | test :: remaining_tests ->
       let message = sprintf "[%02d/%02d] Running test %s from suite %s"
-        counter num_tests test.test_name suite_name
+          counter num_tests test.test_name suite_name
       in
       Log.Global.info "%s" message;
       print_endline message;

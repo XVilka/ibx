@@ -25,12 +25,12 @@ open Tws_prot
 
 module T = struct
   type t =
-  [ `Sec   of int
-  | `Day   of int
-  | `Week  of int
-  | `Month of int
-  | `Year  of int
-  ] [@@deriving sexp]
+    [ `Sec   of int
+    | `Day   of int
+    | `Week  of int
+    | `Month of int
+    | `Year  of int
+    ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

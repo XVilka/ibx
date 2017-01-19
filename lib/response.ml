@@ -56,7 +56,7 @@ module Tws_error = struct
             ~error_code:(fields_value (required int))
             ~error_msg:(fields_value (required string)))
           (fun { error_code; error_msg } ->
-            `Args $ error_code $ error_msg)))
+             `Args $ error_code $ error_msg)))
 
   let to_string_hum t =
     let module F = Format in
@@ -147,7 +147,7 @@ module Tick_price = struct
           ~size:(fields_value (required Volume.val_type))
           ~can_auto_execute:(fields_value (optional bool ~none_on_default:"-1")))
       (fun tick_type price size can_auto_execute ->
-        { tick_type; price; size; can_auto_execute })
+         { tick_type; price; size; can_auto_execute })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_price"
@@ -167,8 +167,8 @@ module Tick_price = struct
       (t.price :> float)
       (t.size :> int)
       (Option.value_map t.can_auto_execute ~default:"n/a" ~f:(function
-        | true  -> "can_auto_execute"
-        | false -> "no_auto_execute"))
+         | true  -> "can_auto_execute"
+         | false -> "no_auto_execute"))
 end
 
 module Tick_size = struct
@@ -291,17 +291,17 @@ module Tick_option = struct
           ~theta:(fields_value (required float))
           ~under_price:(fields_value (required Price.val_type)))
       (fun tick_type implied_vol delta option_price pv_dividend gamma vega theta under_price ->
-          let abs = Float.abs in
-          { tick_type;
-            implied_vol = if implied_vol < 0. then Float.nan else implied_vol;
-            delta = if abs delta > 1. then Float.nan else delta;
-            option_price = if Price.(option_price < zero) then Price.nan else option_price;
-            pv_dividend = if pv_dividend < 0. then Float.nan else pv_dividend;
-            gamma = if abs gamma > 1. then Float.nan else gamma;
-            vega = if abs vega > 1. then Float.nan else vega;
-            theta = if abs theta > 1. then Float.nan else theta;
-            under_price = if Price.(under_price < zero) then Price.nan else under_price;
-          })
+         let abs = Float.abs in
+         { tick_type;
+           implied_vol = if implied_vol < 0. then Float.nan else implied_vol;
+           delta = if abs delta > 1. then Float.nan else delta;
+           option_price = if Price.(option_price < zero) then Price.nan else option_price;
+           pv_dividend = if pv_dividend < 0. then Float.nan else pv_dividend;
+           gamma = if abs gamma > 1. then Float.nan else gamma;
+           vega = if abs vega > 1. then Float.nan else vega;
+           theta = if abs theta > 1. then Float.nan else theta;
+           under_price = if Price.(under_price < zero) then Price.nan else under_price;
+         })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Tick_option"
@@ -319,16 +319,16 @@ module Tick_option = struct
             ~theta:(fields_value (required float))
             ~under_price:(fields_value (required Price.val_type)))
           (fun t ->
-            `Args
-              $ t.tick_type
-              $ (if Float.is_nan t.implied_vol then -1. else t.implied_vol)
-              $ (if Float.is_nan t.delta then -2. else t.delta)
-              $ (if Price.is_nan t.option_price then Price.(neg one) else t.option_price)
-              $ (if Float.is_nan t.pv_dividend then -1. else t.pv_dividend)
-              $ (if Float.is_nan t.gamma then -2. else t.gamma)
-              $ (if Float.is_nan t.vega then -2. else t.vega)
-              $ (if Float.is_nan t.theta then -2. else t.theta)
-              $ (if Price.is_nan t.under_price then Price.(neg one) else t.under_price))))
+             `Args
+             $ t.tick_type
+             $ (if Float.is_nan t.implied_vol then -1. else t.implied_vol)
+             $ (if Float.is_nan t.delta then -2. else t.delta)
+             $ (if Price.is_nan t.option_price then Price.(neg one) else t.option_price)
+             $ (if Float.is_nan t.pv_dividend then -1. else t.pv_dividend)
+             $ (if Float.is_nan t.gamma then -2. else t.gamma)
+             $ (if Float.is_nan t.vega then -2. else t.vega)
+             $ (if Float.is_nan t.theta then -2. else t.theta)
+             $ (if Price.is_nan t.under_price then Price.(neg one) else t.under_price))))
 
   let pp ppf t =
     let float_to_string x = sprintf "%4.2f" x in
@@ -350,60 +350,60 @@ end
 module Tick_string = struct
   module Type = struct
     type t =
-    | Bid_size
-    | Bid_price
-    | Ask_price
-    | Ask_size
-    | Last_price
-    | Last_size
-    | High_price
-    | Low_price
-    | Volume
-    | Close_price
-    | Bid_option
-    | Ask_option
-    | Last_option
-    | Model_option
-    | Open_price
-    | Low_13_week
-    | High_13_week
-    | Low_26_week
-    | High_26_week
-    | Low_52_week
-    | High_52_week
-    | Avg_volume
-    | Open_interest
-    | Historical_volatility
-    | Implied_volatility
-    | Option_bid_exch
-    | Option_ask_exch
-    | Call_open_interest
-    | Put_open_interest
-    | Call_volume
-    | Put_volume
-    | Index_future_premium
-    | Bid_exch
-    | Ask_exch
-    | Auction_volume
-    | Auction_price
-    | Auction_imbalance
-    | Mark_price
-    | Bid_efp
-    | Ask_efp
-    | Last_efp
-    | Open_efp
-    | High_efp
-    | Low_efp
-    | Close_efp
-    | Last_timestamp
-    | Shortable
-    | Fundamental_ratios
-    | Realtime_volume
-    | Halted
-    | Bid_yield
-    | Ask_yield
-    | Last_yield
-    | Cust_option_comp
+      | Bid_size
+      | Bid_price
+      | Ask_price
+      | Ask_size
+      | Last_price
+      | Last_size
+      | High_price
+      | Low_price
+      | Volume
+      | Close_price
+      | Bid_option
+      | Ask_option
+      | Last_option
+      | Model_option
+      | Open_price
+      | Low_13_week
+      | High_13_week
+      | Low_26_week
+      | High_26_week
+      | Low_52_week
+      | High_52_week
+      | Avg_volume
+      | Open_interest
+      | Historical_volatility
+      | Implied_volatility
+      | Option_bid_exch
+      | Option_ask_exch
+      | Call_open_interest
+      | Put_open_interest
+      | Call_volume
+      | Put_volume
+      | Index_future_premium
+      | Bid_exch
+      | Ask_exch
+      | Auction_volume
+      | Auction_price
+      | Auction_imbalance
+      | Mark_price
+      | Bid_efp
+      | Ask_efp
+      | Last_efp
+      | Open_efp
+      | High_efp
+      | Low_efp
+      | Close_efp
+      | Last_timestamp
+      | Shortable
+      | Fundamental_ratios
+      | Realtime_volume
+      | Halted
+      | Bid_yield
+      | Ask_yield
+      | Last_yield
+      | Cust_option_comp
     [@@deriving sexp]
 
     let tws_of_t = function
@@ -560,10 +560,10 @@ module Tick_string = struct
     Format.fprintf ppf "type=%s value=%s"
       (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
       (match t.tick_type with
-      | Type.Last_timestamp ->
-        Time.to_string_trimmed ~zone:Time.Zone.local
-          (Time.of_float (Float.of_string t.value))
-      | _ -> t.value)
+       | Type.Last_timestamp ->
+         Time.to_string_trimmed ~zone:Time.Zone.local
+           (Time.of_float (Float.of_string t.value))
+       | _ -> t.value)
 end
 
 (* +-----------------------------------------------------------------------+
@@ -573,14 +573,14 @@ end
 module Order_status = struct
   module State = struct
     type t =
-    [ `Pending_submit
-    | `Pending_cancel
-    | `Pre_submitted
-    | `Submitted
-    | `Cancelled
-    | `Filled
-    | `Inactive
-    ] [@@deriving sexp]
+      [ `Pending_submit
+      | `Pending_cancel
+      | `Pre_submitted
+      | `Submitted
+      | `Cancelled
+      | `Filled
+      | `Inactive
+      ] [@@deriving sexp]
 
     let tws_of_t = function
       | `Pending_submit -> "PendingSubmit"
@@ -650,16 +650,16 @@ module Order_status = struct
           ~why_held:(fields_value (optional string)))
       (fun state filled remaining avg_fill_price permanent_id parent_id
         last_fill_price client_id why_held ->
-          { state;
-            filled;
-            remaining;
-            avg_fill_price;
-            permanent_id;
-            parent_id;
-            last_fill_price;
-            client_id;
-            why_held;
-          })
+        { state;
+          filled;
+          remaining;
+          avg_fill_price;
+          permanent_id;
+          parent_id;
+          last_fill_price;
+          client_id;
+          why_held;
+        })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Order_status"
@@ -677,16 +677,16 @@ module Order_status = struct
             ~client_id:(fields_value (required Client_id.val_type))
             ~why_held:(fields_value (optional string)))
           (fun t ->
-            `Args
-              $ t.state
-              $ t.filled
-              $ t.remaining
-              $ t.avg_fill_price
-              $ t.permanent_id
-              $ t.parent_id
-              $ t.last_fill_price
-              $ t.client_id
-              $ t.why_held)))
+             `Args
+             $ t.state
+             $ t.filled
+             $ t.remaining
+             $ t.avg_fill_price
+             $ t.permanent_id
+             $ t.parent_id
+             $ t.last_fill_price
+             $ t.client_id
+             $ t.why_held)))
 end
 
 (* +-----------------------------------------------------------------------+
@@ -723,7 +723,7 @@ module Account_update = struct
           ~currency:(fields_value (optional string))
           ~account_code:(fields_value (required Account_code.val_type)))
       (fun key value currency account_code ->
-        { key; value; currency; account_code })
+         { key; value; currency; account_code })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Account_update"
@@ -771,9 +771,9 @@ module Position = struct
     let market_value = (t.market_value :> float) in
     let average_cost = (t.average_cost :> float) in
     Float.(match robust_sign size with
-    | Sign.Zero -> zero
-    | Sign.Pos  ->     (market_value / (average_cost * size) - one)
-    | Sign.Neg  -> neg (market_value / (average_cost * size) - one)
+      | Sign.Zero -> zero
+      | Sign.Pos  ->     (market_value / (average_cost * size) - one)
+      | Sign.Neg  -> neg (market_value / (average_cost * size) - one)
     )
   ;;
 
@@ -807,15 +807,15 @@ module Position = struct
           ~account_code:(fields_value (required Account_code.val_type)))
       (fun contract size market_price market_value average_cost
         unrealized_pnl realized_pnl account_code ->
-          { contract;
-            size;
-            market_price;
-            market_value;
-            average_cost;
-            unrealized_pnl;
-            realized_pnl;
-            account_code;
-          })
+        { contract;
+          size;
+          market_price;
+          market_value;
+          average_cost;
+          unrealized_pnl;
+          realized_pnl;
+          account_code;
+        })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     let contract_spec =
@@ -835,15 +835,15 @@ module Position = struct
             ~realized_pnl:(fields_value (required Price.val_type))
             ~account_code:(fields_value (required Account_code.val_type)))
           (fun t ->
-            `Args
-              $ t.contract
-              $ t.size
-              $ t.market_price
-              $ t.market_value
-              $ t.average_cost
-              $ t.unrealized_pnl
-              $ t.realized_pnl
-              $ t.account_code)))
+             `Args
+             $ t.contract
+             $ t.size
+             $ t.market_price
+             $ t.market_value
+             $ t.average_cost
+             $ t.unrealized_pnl
+             $ t.realized_pnl
+             $ t.account_code)))
 end
 
 (* +-----------------------------------------------------------------------+
@@ -979,40 +979,40 @@ module Contract_data = struct
         valid_exchanges price_magnifier underlying_id long_name prim_exch
         contract_month industry category subcategory time_zone trading_hours
         liquid_hours ->
-          { contract =
-              { Raw_contract.
-                con_id;
-                symbol;
-                sec_type;
-                expiry;
-                strike;
-                right;
-                multiplier;
-                exchange;
-                prim_exch;
-                currency;
-                local_symbol;
-                include_expired = false;
-                sec_id_type = None;
-                sec_id = None;
-                combo_legs = 0;
-              };
-            market_name;
-            trading_class;
-            min_tick;
-            order_types;
-            valid_exchanges;
-            price_magnifier;
-            underlying_id;
-            long_name;
-            contract_month;
-            industry;
-            category;
-            subcategory;
-            time_zone;
-            trading_hours;
-            liquid_hours;
-          })
+        { contract =
+            { Raw_contract.
+              con_id;
+              symbol;
+              sec_type;
+              expiry;
+              strike;
+              right;
+              multiplier;
+              exchange;
+              prim_exch;
+              currency;
+              local_symbol;
+              include_expired = false;
+              sec_id_type = None;
+              sec_id = None;
+              combo_legs = 0;
+            };
+          market_name;
+          trading_class;
+          min_tick;
+          order_types;
+          valid_exchanges;
+          price_magnifier;
+          underlying_id;
+          long_name;
+          contract_month;
+          industry;
+          category;
+          subcategory;
+          time_zone;
+          trading_hours;
+          liquid_hours;
+        })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Contract_data"
@@ -1071,33 +1071,33 @@ module Contract_data = struct
               (* liquid hours *)
               ++ value (sequence Trading_times.val_type ~sep:';'))
           (fun t ->
-            `Args
-              $ t.contract.Raw_contract.symbol
-              $ t.contract.Raw_contract.sec_type
-              $ t.contract.Raw_contract.expiry
-              $ t.contract.Raw_contract.strike
-              $ t.contract.Raw_contract.right
-              $ t.contract.Raw_contract.exchange
-              $ t.contract.Raw_contract.currency
-              $ t.contract.Raw_contract.local_symbol
-              $ t.market_name
-              $ t.trading_class
-              $ t.contract.Raw_contract.con_id
-              $ t.min_tick
-              $ t.contract.Raw_contract.multiplier
-              $ t.order_types
-              $ t.valid_exchanges
-              $ t.price_magnifier
-              $ t.underlying_id
-              $ t.long_name
-              $ t.contract.Raw_contract.prim_exch
-              $ t.contract_month
-              $ t.industry
-              $ t.category
-              $ t.subcategory
-              $ t.time_zone
-              $ t.trading_hours
-              $ t.liquid_hours
+             `Args
+             $ t.contract.Raw_contract.symbol
+             $ t.contract.Raw_contract.sec_type
+             $ t.contract.Raw_contract.expiry
+             $ t.contract.Raw_contract.strike
+             $ t.contract.Raw_contract.right
+             $ t.contract.Raw_contract.exchange
+             $ t.contract.Raw_contract.currency
+             $ t.contract.Raw_contract.local_symbol
+             $ t.market_name
+             $ t.trading_class
+             $ t.contract.Raw_contract.con_id
+             $ t.min_tick
+             $ t.contract.Raw_contract.multiplier
+             $ t.order_types
+             $ t.valid_exchanges
+             $ t.price_magnifier
+             $ t.underlying_id
+             $ t.long_name
+             $ t.contract.Raw_contract.prim_exch
+             $ t.contract_month
+             $ t.industry
+             $ t.category
+             $ t.subcategory
+             $ t.time_zone
+             $ t.trading_hours
+             $ t.liquid_hours
           )
       ))
 end
@@ -1211,22 +1211,22 @@ module Execution = struct
       (fun order_id contract exec_id time account_code exchange side
         volume price permanent_id client_id liquidation cumulative_volume
         average_price order_ref ->
-          { order_id;
-            contract;
-            exec_id;
-            time;
-            account_code;
-            exchange;
-            side;
-            volume;
-            price;
-            permanent_id;
-            client_id;
-            liquidation;
-            cumulative_volume;
-            average_price;
-            order_ref;
-          })
+        { order_id;
+          contract;
+          exec_id;
+          time;
+          account_code;
+          exchange;
+          side;
+          volume;
+          price;
+          permanent_id;
+          client_id;
+          liquidation;
+          cumulative_volume;
+          average_price;
+          order_ref;
+        })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     let contract_spec = Raw_contract.Pickler_specs.execution_response () in
@@ -1251,22 +1251,22 @@ module Execution = struct
             ~average_price:(fields_value (required Price.val_type))
             ~order_ref:(fields_value (optional string)))
           (fun t ->
-            `Args
-              $ t.order_id
-              $ t.contract
-              $ t.exec_id
-              $ t.time
-              $ t.account_code
-              $ t.exchange
-              $ t.side
-              $ t.volume
-              $ t.price
-              $ t.permanent_id
-              $ t.client_id
-              $ t.liquidation
-              $ t.cumulative_volume
-              $ t.average_price
-              $ t.order_ref)))
+             `Args
+             $ t.order_id
+             $ t.contract
+             $ t.exec_id
+             $ t.time
+             $ t.account_code
+             $ t.exchange
+             $ t.side
+             $ t.volume
+             $ t.price
+             $ t.permanent_id
+             $ t.client_id
+             $ t.liquidation
+             $ t.cumulative_volume
+             $ t.average_price
+             $ t.order_ref)))
 
   let pp ppf t =
     Format.fprintf ppf
@@ -1316,13 +1316,13 @@ module Commission = struct
           ~yield_redemption_date:(fields_value (optional int)))
       (fun exec_id commission currency realized_pnl
         yield yield_redemption_date ->
-          { exec_id;
-            commission;
-            currency;
-            realized_pnl;
-            yield;
-            yield_redemption_date;
-          })
+        { exec_id;
+          commission;
+          currency;
+          realized_pnl;
+          yield;
+          yield_redemption_date;
+        })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Commission"
@@ -1337,13 +1337,13 @@ module Commission = struct
             ~yield:(fields_value (required float))
             ~yield_redemption_date:(fields_value (optional int)))
           (fun t ->
-            `Args
-              $ t.exec_id
-              $ t.commission
-              $ t.currency
-              $ t.realized_pnl
-              $ t.yield
-              $ t.yield_redemption_date)))
+             `Args
+             $ t.exec_id
+             $ t.commission
+             $ t.currency
+             $ t.realized_pnl
+             $ t.yield
+             $ t.yield_redemption_date)))
 end
 
 (* +-----------------------------------------------------------------------+
@@ -1415,7 +1415,7 @@ module Book_update = struct
           ~price:(fields_value (required Price.val_type))
           ~size:(fields_value (required Volume.val_type)))
       (fun position operation side price size ->
-        { position; operation; side; price; size })
+         { position; operation; side; price; size })
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Book_update"
@@ -1429,7 +1429,7 @@ module Book_update = struct
             ~price:(fields_value (required Price.val_type))
             ~size:(fields_value (required Volume.val_type)))
           (fun t ->
-            `Args $ t.position $ t.operation $ t.side $ t.price $ t.size)))
+             `Args $ t.position $ t.operation $ t.side $ t.price $ t.size)))
 end
 
 (* +-----------------------------------------------------------------------+
@@ -1479,20 +1479,20 @@ module History = struct
           ~num_bars:(fields_value (required int))
           ~bars:(fun specs -> Fn.const (specs ++ capture_remaining_message)))
       (fun _start _stop num_bars bars_msg ->
-        let num_fields = 9 in
-        let bars_msg = Queue.to_array bars_msg in
-        let bars = List.map (List.range 0 num_bars) ~f:(fun i ->
-          let bar_msg =
-            Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
-            |> Queue.of_array
-          in
-          let bar_u = Unpickler.create
-            Unpickler.Spec.(Raw_bar.Historical_bar.unpickler_spec ()) Fn.id
-          in
-          Unpickler.run_exn bar_u bar_msg
-          |> Bar.of_raw)
-        in
-        create ~bars
+         let num_fields = 9 in
+         let bars_msg = Queue.to_array bars_msg in
+         let bars = List.map (List.range 0 num_bars) ~f:(fun i ->
+           let bar_msg =
+             Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
+             |> Queue.of_array
+           in
+           let bar_u = Unpickler.create
+               Unpickler.Spec.(Raw_bar.Historical_bar.unpickler_spec ()) Fn.id
+           in
+           Unpickler.run_exn bar_u bar_msg
+           |> Bar.of_raw)
+         in
+         create ~bars
       )
 
   let pickler = Only_in_test.of_thunk (fun () ->
@@ -1506,18 +1506,18 @@ module History = struct
             ~num_bars:(fields_value (required int))
             ~bars:(fields_value tws_data))
           (fun t ->
-            let bar_p = Pickler.create
-              Pickler.Spec.(Raw_bar.Historical_bar.pickler_spec ())
-            in
-            let bars_msg =
-              List.map t.bars ~f:(fun bar -> Pickler.run bar_p (Bar.to_raw bar))
-              |> String.concat
-            in
-            `Args
-              $ Time.to_string t.start
-              $ Time.to_string t.stop
-              $ t.num_bars
-              $ bars_msg)))
+             let bar_p = Pickler.create
+                 Pickler.Spec.(Raw_bar.Historical_bar.pickler_spec ())
+             in
+             let bars_msg =
+               List.map t.bars ~f:(fun bar -> Pickler.run bar_p (Bar.to_raw bar))
+               |> String.concat
+             in
+             `Args
+             $ Time.to_string t.start
+             $ Time.to_string t.stop
+             $ t.num_bars
+             $ bars_msg)))
 
   module Data_frame = struct
     type t =
@@ -1559,8 +1559,8 @@ module Realtime_bar = struct
   let ( = ) = Bar.(=)
 
   let unpickler = Unpickler.create
-    Unpickler.Spec.(Raw_bar.Realtime_bar.unpickler_spec ())
-    Bar.of_raw
+      Unpickler.Spec.(Raw_bar.Realtime_bar.unpickler_spec ())
+      Bar.of_raw
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create

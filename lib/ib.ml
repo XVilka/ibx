@@ -57,14 +57,14 @@ end
 
 module Ibx_error = struct
   type t =
-  | Connection_closed
-  | Unexpected_eof
-  | Read_error of Sexp.t
-  | Parse_error of Sexp.t
-  | Tws_error of string
-  | Unknown_response_handler of Query_id.t * Recv_tag.t * [ `Version of int ]
-  | Unpickler_mismatch of Sexp.t * Recv_tag.t Header.t list
-  | Uncaught_exn of Sexp.t
+    | Connection_closed
+    | Unexpected_eof
+    | Read_error of Sexp.t
+    | Parse_error of Sexp.t
+    | Tws_error of string
+    | Unknown_response_handler of Query_id.t * Recv_tag.t * [ `Version of int ]
+    | Unpickler_mismatch of Sexp.t * Recv_tag.t Header.t list
+    | Uncaught_exn of Sexp.t
   [@@deriving sexp]
   exception Ibx of t [@@deriving sexp]
   let raise t = raise (Ibx t)
@@ -79,17 +79,19 @@ module Ibx_result = struct
     | Ok _ as x -> x
     | Error exn -> Error (constructor (Exn.sexp_of_t exn))
 
-  let try_with_read f = make_try_with
-    Monitor.try_with
-    (>>|)
-    (fun e -> Ibx_error.Read_error e)
-    f
+  let try_with_read f =
+    make_try_with
+      Monitor.try_with
+      (>>|)
+      (fun e -> Ibx_error.Read_error e)
+      f
 
-  let try_with_unpickle f = make_try_with
-    Result.try_with
-    (|>)
-    (fun e -> Ibx_error.Parse_error e)
-    f
+  let try_with_unpickle f =
+    make_try_with
+      Result.try_with
+      (|>)
+      (fun e -> Ibx_error.Parse_error e)
+      f
 
   let or_error = function
     | Ok _ as x -> x
@@ -114,7 +116,7 @@ module Client_header = struct
             ~client_version:(fields_value (required int))
             ~client_id:(fields_value (required Client_id.val_type)))
           (fun { client_version; client_id } ->
-            `Args $ client_version $ client_id))
+             `Args $ client_version $ client_id))
 end
 
 module Server_header = struct
@@ -131,7 +133,7 @@ module Server_header = struct
           ~server_version:(fields_value (required int))
           ~connection_time:(fields_value (required time)))
       (fun server_version connection_time ->
-        { server_version; connection_time })
+         { server_version; connection_time })
 end
 
 module Query = struct
@@ -153,7 +155,7 @@ module Query = struct
             ~id:(fields_value (skipped_if_none Query_id.val_type))
             ~data:(fields_value tws_data))
           (fun { tag; version; id; data } ->
-            `Args $ tag $ version $ id $ data))
+             `Args $ tag $ version $ id $ data))
 end
 
 module Response_data = struct
@@ -179,16 +181,16 @@ module Response = struct
             ~query_id:(fields_value (skipped_if_none Query_id.val_type))
             ~data:(fields_value tws_data))
           (fun { tag; version; query_id; data } ->
-            let tws_data =
-              match data with
-              | Error _
-              | Ok `Cancel -> assert false
-              | Ok (`Response data) ->
-                Queue.to_list data
-                |> String.concat ~sep:"\000"
-                |> Fn.flip (^) "\000"
-            in
-            `Args $ tag $ version $ query_id $ tws_data))
+             let tws_data =
+               match data with
+               | Error _
+               | Ok `Cancel -> assert false
+               | Ok (`Response data) ->
+                 Queue.to_list data
+                 |> String.concat ~sep:"\000"
+                 |> Fn.flip (^) "\000"
+             in
+             `Args $ tag $ version $ query_id $ tws_data))
 end
 
 module type Connection = sig
@@ -210,20 +212,18 @@ module type Connection = sig
 
   val set_server_log_level
     :  t
-    -> level:[
-    | `System
-    | `Error
-    | `Warning
-    | `Information
-    | `Detail
-    ]
+    -> level:[ `System
+             | `Error
+             | `Warning
+             | `Information
+             | `Detail ]
     -> unit
 
   module Handshake_result : sig
     type t =
-    | Eof
-    | Version_failure of int
-    | Server_header of [ `Version of int ] * Time.t * Account_code.t
+      | Eof
+      | Version_failure of int
+      | Server_header of [ `Version of int ] * Time.t * Account_code.t
     [@@deriving sexp]
   end
 
@@ -506,9 +506,9 @@ module Connection : Connection_internal = struct
       type 'a t = [ `Eof | `Ok of 'a ] Ibx_result.t Deferred.t
 
       let bind t f = t >>= function
-        | Error _ as e -> Deferred.return e
-        | Ok `Eof as x -> Deferred.return x
-        | Ok (`Ok a)   -> f a
+      | Error _ as e -> Deferred.return e
+      | Ok `Eof as x -> Deferred.return x
+      | Ok (`Ok a)   -> f a
 
       let map = `Custom (fun t ~f ->
         t >>= function
@@ -574,8 +574,8 @@ module Connection : Connection_internal = struct
     | Error `Closed as x -> x
     | Ok writer ->
       begin match query with
-      | None -> ()
-      | Some query -> send_query ?logfun:t.logfun writer query
+        | None -> ()
+        | Some query -> send_query ?logfun:t.logfun writer query
       end;
       List.iter recv_header ~f:(fun header ->
         let tag = header.Header.tag in
@@ -624,31 +624,31 @@ module Connection : Connection_internal = struct
         [ choice (Ivar.read t.stop) (fun () -> `Stop);
           choice (read_response t.reader) (fun x  -> `Read x);
         ] >>> function
-        | `Stop -> ()
-        | `Read read_result ->
-          match Deferred.peek (Ivar.read t.stop) with
-          | Some () -> ()
-          | None ->
-            match read_result with
-            | Error err -> Ibx_error.raise err
-            | Ok `Eof -> Ibx_error.raise Ibx_error.Unexpected_eof
-            | Ok (`Ok response) ->
-              begin
-                match t.logfun with
-                | None -> ()
-                | Some f -> f (`Recv response)
-              end;
-              handle_response t response
-              >>> function
-              | `Continue -> loop ()
-              | `Stop err -> Ibx_error.raise err
+      | `Stop -> ()
+      | `Read read_result ->
+        match Deferred.peek (Ivar.read t.stop) with
+        | Some () -> ()
+        | None ->
+          match read_result with
+          | Error err -> Ibx_error.raise err
+          | Ok `Eof -> Ibx_error.raise Ibx_error.Unexpected_eof
+          | Ok (`Ok response) ->
+            begin
+              match t.logfun with
+              | None -> ()
+              | Some f -> f (`Recv response)
+            end;
+            handle_response t response
+            >>> function
+            | `Continue -> loop ()
+            | `Stop err -> Ibx_error.raise err
     in
     let monitor = Monitor.create ~name:"Connection loop" () in
     Stream.iter
       (Stream.interleave (Stream.of_list (
-        [ Monitor.detach_and_get_error_stream (Writer.monitor t.writer)
-        ; Monitor.detach_and_get_error_stream monitor
-        ])))
+         [ Monitor.detach_and_get_error_stream (Writer.monitor t.writer)
+         ; Monitor.detach_and_get_error_stream monitor
+         ])))
       ~f:(fun exn ->
         don't_wait_for (close t);
         let error = match Monitor.extract_exn exn with
@@ -670,9 +670,9 @@ module Connection : Connection_internal = struct
 
   module Handshake_result = struct
     type t =
-    | Eof
-    | Version_failure of int
-    | Server_header of [ `Version of int ] * Time.t * Account_code.t
+      | Eof
+      | Version_failure of int
+      | Server_header of [ `Version of int ] * Time.t * Account_code.t
     [@@deriving sexp]
   end
 
@@ -683,32 +683,32 @@ module Connection : Connection_internal = struct
       client_id;
     } in
     begin match writer t with
-    | Error `Closed ->
-      return (Error Ibx_error.Connection_closed)
-    | Ok writer ->
-      send_tws writer Client_header.pickler client_header;
-      read_tws t.reader Server_header.unpickler ~len:2
-      >>= function
-      | Error err ->
-        don't_wait_for (close t);
-        return (Error err)
-      | Ok `Eof ->
-        don't_wait_for (close t);
-        return (Ok Handshake_result.Eof)
-      | Ok (`Ok header) ->
-        let server_version = header.Server_header.server_version in
-        if not (server_version >= Config.server_version) then
-          return (Ok (Handshake_result.Version_failure server_version))
-        else begin
-          handle_incoming t;  (* Start handling incoming messages. *)
-          Ivar.read t.account_code
-          >>| fun account_code ->
-          Ok (Handshake_result.Server_header (
-            `Version server_version,
-            header.Server_header.connection_time,
-            account_code
-          ))
-        end
+      | Error `Closed ->
+        return (Error Ibx_error.Connection_closed)
+      | Ok writer ->
+        send_tws writer Client_header.pickler client_header;
+        read_tws t.reader Server_header.unpickler ~len:2
+        >>= function
+        | Error err ->
+          don't_wait_for (close t);
+          return (Error err)
+        | Ok `Eof ->
+          don't_wait_for (close t);
+          return (Ok Handshake_result.Eof)
+        | Ok (`Ok header) ->
+          let server_version = header.Server_header.server_version in
+          if not (server_version >= Config.server_version) then
+            return (Ok (Handshake_result.Version_failure server_version))
+          else begin
+            handle_incoming t;  (* Start handling incoming messages. *)
+            Ivar.read t.account_code
+            >>| fun account_code ->
+            Ok (Handshake_result.Server_header (
+              `Version server_version,
+              header.Server_header.connection_time,
+              account_code
+            ))
+          end
     end >>| Ibx_result.or_error
 end
 
