@@ -31,7 +31,7 @@ Usage
 ### Documentation
 
 The _still incomplete_ API-documentation of this distribution can be built with `make doc`.
-It can also be found [online](http://ogu.bitbucket.org/ibx/api/).
+It can also be found [online](http://ogu.bitbucket.io/ibx/api/).
 
 ### Prerequisites
 
@@ -109,7 +109,7 @@ examples was successful, you can type
 to plot a 6-month candle stick chart of Apple prices with a simple 100-day
 moving average:
 
-![AAPL SMA](http://ogu.bitbucket.org/aapl_sma.png)
+![AAPL SMA](http://ogu.bitbucket.io/aapl_sma.png)
 
 The next command accumulates 1 minute of intraday trade and quote (TAQ) data
 
@@ -117,13 +117,11 @@ The next command accumulates 1 minute of intraday trade and quote (TAQ) data
 
 and generates a plot that looks similar to this image:
 
-![AAPL TAQ](http://ogu.bitbucket.org/aapl_taq.png)
+![AAPL TAQ](http://ogu.bitbucket.io/aapl_taq.png)
 
 However, please note that these TAQ data plots do not reflect the true market
 history, since Interactive Brokers accumulates market data in time increments
-of 300 milliseconds; see
-[here](http://support.marketdelta.com/entries/117533-interactive-brokers-ib-data-snapshot-data)
-for more information.
+of 300 milliseconds.
 
 ### More Examples
 
