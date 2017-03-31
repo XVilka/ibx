@@ -22,8 +22,8 @@
 
 (** Core building blocks for IBX applications, e.g. TWS clients *)
 
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Response
 
 module type Connection = sig

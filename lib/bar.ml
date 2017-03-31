@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
+open Core
 
 include Raw_bar
 
@@ -46,6 +46,6 @@ let combine t ~bar =
 let pp ppf t =
   Format.fprintf ppf
     "Bar<%s> op=%.2f hi=%.2f lo=%.2f cl=%.2f vo=%d wap=%.2f trades=%d"
-    (t.stamp |> Time.to_sec_string ~zone:Time.Zone.local)
+    (t.stamp |> Time.to_sec_string ~zone:(Lazy.force Time.Zone.local))
     (t.op :> float) (t.hi :> float) (t.lo :> float) (t.cl :> float)
     (t.vo :> int) (t.wap :> float) (t.n_trades)

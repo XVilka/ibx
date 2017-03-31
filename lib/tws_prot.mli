@@ -22,7 +22,7 @@
 
 (** A small pickler/unpickler library for the TWS protocol *)
 
-open Core.Std
+open Core
 
 (** Type of a raw TWS messages. *)
 type raw_tws = string [@@deriving sexp]

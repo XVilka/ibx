@@ -22,7 +22,7 @@
 
 (** TWS queries *)
 
-open Core.Std
+open Core
 open Std_internal
 
 (** {1 Connection and server} *)

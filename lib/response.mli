@@ -22,7 +22,7 @@
 
 (** TWS responses *)
 
-open Core.Std
+open Core
 
 (** {1 Connection and server} *)
 (*****************************************************************************)

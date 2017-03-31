@@ -1,5 +1,5 @@
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Ibx.Std
 
 (* NOTE: Before running this program multiple times under the same

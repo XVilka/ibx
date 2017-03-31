@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
+open Core
 open Tws_prot
 open Std_internal
 
@@ -305,7 +305,7 @@ module Positions = Updates (struct
 module Executions = struct
   module Time = struct
     include Time
-    let tws_of_t tm = Time.format tm "%Y%m%d-%H:%M:%S" ~zone:Time.Zone.local
+    let tws_of_t tm = Time.format tm "%Y%m%d-%H:%M:%S" ~zone:(Lazy.force Time.Zone.local)
     let t_of_tws s = Time.of_string (String.tr ~target:'-' ~replacement:' ' s)
     let val_type = Val_type.create tws_of_t t_of_tws
   end

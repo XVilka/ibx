@@ -20,8 +20,8 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Std_internal
 
 module Client_msg = struct
@@ -403,7 +403,7 @@ let implied_volatility_exn t ~contract ~option_price ~underlying_price =
    +-----------------------------------------------------------------------+ *)
 
 let dedup_adjacents ~equal pipe =
-  Pipe.init (fun w ->
+  Pipe.create_reader ~close_on_exception:true (fun w ->
     Deferred.ignore (Pipe.fold pipe ~init:None ~f:(fun last x ->
       return (match last with
         | None ->
@@ -687,7 +687,7 @@ let realtime_bars
     | Ok (bars, id) ->
       (* The number of five secs bars that make up a bar of the given size. *)
       let n_bars = five_secs_bars_multiples bar_size in
-      let bars = Pipe.init (fun w ->
+      let bars = Pipe.create_reader ~close_on_exception:true (fun w ->
         Deferred.ignore (Pipe.fold bars ~init:(None, n_bars) ~f:(fun state bar ->
           match bar with
           | Error _ as e ->
@@ -880,7 +880,7 @@ module TAQ = struct
       Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q >>| function
       | Error _ as e -> e
       | Ok (ticks, id) ->
-        let taq_data = Pipe.init (fun w ->
+        let taq_data = Pipe.create_reader ~close_on_exception:true (fun w ->
           Deferred.ignore (
             Pipe.fold ticks ~init:(Trade.empty, Quote.empty)
               ~f:(fun ((trade, quote) as taq) tick ->

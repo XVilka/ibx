@@ -1,13 +1,6 @@
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Ibx.Std
-
-let () =
-  let basedir = Core.Std.Unix.getcwd () in
-  let logfile = basedir ^/ "ibx.log" in
-  Log.Global.set_level `Debug;
-  Log.Global.set_output [Log.Output.file `Text ~filename:logfile]
-;;
 
 module Client_id = struct
   let default = Client_id.of_int_exn 0
@@ -75,6 +68,6 @@ end
 
 let timezone_arg () =
   Command.Spec.(
-    flag "-zone" (optional_with_default Time.Zone.local Timezone.arg_type)
-      ~doc:" the time zone in which the symbol is traded"
+    flag "-zone" ~doc:" the time zone in which the symbol is traded"
+      (optional_with_default (Lazy.force Time.Zone.local) Timezone.arg_type)
   )

@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
+open Core
 
 type raw_tws = string [@@deriving sexp]
 
@@ -59,14 +59,24 @@ module Val_type = struct
   let bool = create tws_of_bool bool_of_tws
   let bools = create Bool.to_string Bool.of_string
 
-  let tws_of_stamp t = Time.to_float t |> Float.to_string
-  let stamp_of_tws s = Float.of_string s |> Time.of_float
+  let tws_of_stamp t =
+    Time.to_span_since_epoch t
+    |> Time.Span.to_proportional_float
+    |> Float.to_string
+
+  let stamp_of_tws s =
+    Float.of_string s
+    |> Unix.localtime
+    |> Time.of_tm ~zone:(Lazy.force Time.Zone.local)
+
   let stamp = create tws_of_stamp stamp_of_tws
 
-  let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S" ~zone:Time.Zone.local
+  let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S"
+      ~zone:(Lazy.force Time.Zone.local)
 
   let unescape = unstage (String.Escaping.unescape ~escape_char:' ')
-  let time_of_date d = Time.(of_date_ofday d Ofday.start_of_day ~zone:Zone.local)
+  let time_of_date d =
+    Time.(of_date_ofday d Ofday.start_of_day ~zone:(Lazy.force Zone.local))
 
   let time_of_tws s =
     let len = String.length s in
@@ -322,7 +332,8 @@ module Unpickler = struct
   let run t msg =
     match Or_error.try_with (fun () -> t.f msg) with
     | Ok _ as x -> x
-    | Error err -> Error (Option.value_map t.name ~default:err ~f:(Error.tag err))
+    | Error e ->
+      Error (Option.value_map t.name ~default:e ~f:(fun tag -> Error.tag e ~tag))
 
   let run_exn t msg = Or_error.ok_exn (run t msg)
 end

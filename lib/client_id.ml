@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
+open Core
 open Tws_prot
 
 include Unique_id.Int63 (struct end)

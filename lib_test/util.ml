@@ -1,4 +1,4 @@
-open Core.Std
+open Core
 
 (* Slightly modifies the split_n function in core_list.ml in Core. *)
 let rev_split_n l_orig n =

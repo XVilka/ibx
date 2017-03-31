@@ -20,8 +20,8 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
-open Async.Std
+open Core
+open Async
 
 let command =
   Command.async ~summary:"Run test suite."
@@ -30,7 +30,7 @@ let command =
       +> flag "-d" no_arg ~doc:" log debug messages"
     )
     (fun debug () ->
-       let cwd = Core.Std.Unix.getcwd () in
+       Unix.getcwd () >>= fun cwd ->
        let logfile = cwd ^/ "ibx.log" in
        Log.Global.set_output [Log.Output.file `Text ~filename:logfile];
        if debug then Log.Global.set_level `Debug;

@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
+open Core
 open Ibx.Std
 
 module Rg_common : sig
@@ -86,13 +86,14 @@ end = struct
   let pfg () = Random.float 100. +. 20.
 
   let tmg () =
-    Time.now ()
-    |> Time.to_float
+    Time.to_span_since_epoch (Time.now ())
+    |> Time.Span.to_proportional_float
     |> Float.modf
     |> Float.Parts.integral
-    |> Time.of_float
+    |> Unix.localtime
+    |> Time.of_tm ~zone:(Lazy.force Time.Zone.local)
 
-  let tzg () = Time.Zone.local
+  let tzg () = (Lazy.force Time.Zone.local)
 
   let always x () = x
 
@@ -231,7 +232,7 @@ end = struct
     always (`MIBSX);
   ] ()
 
-  let expiry_g   () = Date.of_tm (Core.Std.Unix.localtime (Core.Std.Unix.time ()))
+  let expiry_g   () = Date.of_tm (Unix.localtime (Unix.time ()))
 
   let option_right_g () = oneof [
     always (`Call);
@@ -1040,9 +1041,10 @@ end = struct
               (symbol_g ()))
         ] ()
     in
+    let zone = Lazy.force Time.Zone.local in
     let active_times =
       Trading_times.create
-        ~date:(Date.today ~zone:Time.Zone.local)
+        ~date:(Date.today ~zone)
         ~hours:[
           Time.Ofday.create ~hr:17 ~min:0  ();
           Time.Ofday.create ~hr:15 ~min:15 ();
@@ -1052,7 +1054,7 @@ end = struct
     in
     let inactive_times =
       Trading_times.create
-        ~date:(Date.today ~zone:Time.Zone.local)
+        ~date:(Date.today ~zone)
         ~hours:[]
     in
     Response.Contract_data.create

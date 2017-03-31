@@ -20,8 +20,8 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Ibx.Std
 open Test_lib
 

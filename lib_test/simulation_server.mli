@@ -20,6 +20,6 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Async.Std
+open Async
 
 val start_on_port : int -> unit Deferred.t

@@ -8,7 +8,7 @@ Description:      IBX is a pure OCaml implementation of the Interactive Brokers
 Authors:          Oliver Gu <gu.oliver@yahoo.com>
 Maintainers:      Oliver Gu <gu.oliver@yahoo.com>
 License:          LGPL-2.1+ with OCaml linking exception
-OCamlVersion:     >= 4.02.3
+OCamlVersion:     >= 4.03.0
 FindlibVersion:   >= 1.3.2
 Homepage:         https://bitbucket.org/ogu/ibx
 Plugins:          META (0.4), StdFiles (0.4), DevFiles (0.4)
@@ -74,8 +74,8 @@ Library ibx
                   Twsable,
                   Unpickable,
                   Volume
-  BuildDepends:   core  (>= 113.33.00),
-                  async (>= 113.33.00),
+  BuildDepends:   core (>= 114.35.00),
+                  async (>= 114.35.00),
                   ppx_sexp_conv,
                   ppx_fields_conv,
                   textutils,

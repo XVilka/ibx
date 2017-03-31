@@ -20,8 +20,8 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Ibx.Std
 open Tws_prot
 
@@ -221,7 +221,7 @@ module Protocol = struct
       module M = struct
         type 'a t = [ `Eof | `Ok of 'a ] Deferred.t
 
-        let bind t f = t >>= function
+        let bind t ~f = t >>= function
         | `Eof  -> Deferred.return `Eof
         | `Ok a -> f a
 

@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
+open Core
 open Tws_prot
 
 
@@ -78,12 +78,17 @@ module Server_time = struct
   let unpickler =
     Unpickler.create ~name:"Response.Server_time"
       Unpickler.Spec.(value (required int64) ~name:"time")
-      (fun long_int -> Time.of_float (Int64.to_float long_int))
+      (fun long_int ->
+         Int64.to_float long_int
+         |> Unix.localtime
+         |> Time.of_tm ~zone:(Lazy.force Time.Zone.local))
 
   let pickler = Only_in_test.of_thunk (fun () ->
     Pickler.create ~name:"Response.Server_time"
-      Pickler.Spec.(lift (value (required int64))
-                      (fun tm -> Int64.of_float (Time.to_float tm))))
+      Pickler.Spec.(lift (value (required int64)) (fun tm ->
+        Time.to_span_since_epoch tm
+        |> Time.Span.to_proportional_float
+        |> Int64.of_float)))
 end
 
 (* +-----------------------------------------------------------------------+
@@ -561,8 +566,10 @@ module Tick_string = struct
       (Type.sexp_of_t t.tick_type |> Sexp.to_string_hum)
       (match t.tick_type with
        | Type.Last_timestamp ->
-         Time.to_string_trimmed ~zone:Time.Zone.local
-           (Time.of_float (Float.of_string t.value))
+         Float.of_string t.value
+         |> Unix.localtime
+         |> Time.of_tm ~zone:(Lazy.force Time.Zone.local)
+         |> Time.to_string_trimmed ~zone:(Lazy.force Time.Zone.local)
        | _ -> t.value)
 end
 
@@ -1272,7 +1279,7 @@ module Execution = struct
     Format.fprintf ppf
       "Execution: exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f"
       (t.exec_id  |> Execution_id.to_string)
-      (t.time     |> Time.to_string_trimmed ~zone:Time.Zone.local)
+      (t.time     |> Time.to_string_trimmed ~zone:(Lazy.force Time.Zone.local))
       (t.exchange |> Exchange.to_string)
       (t.side     |> Side.to_string)
       (t.volume   :> int)

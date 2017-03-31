@@ -22,8 +22,8 @@
 
 (* Parts of this module are inspired by Async's Rpc module. *)
 
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Std_internal
 open Tws_prot
 
@@ -505,7 +505,7 @@ module Connection : Connection_internal = struct
     module M = struct
       type 'a t = [ `Eof | `Ok of 'a ] Ibx_result.t Deferred.t
 
-      let bind t f = t >>= function
+      let bind t ~f = t >>= function
       | Error _ as e -> Deferred.return e
       | Ok `Eof as x -> Deferred.return x
       | Ok (`Ok a)   -> f a

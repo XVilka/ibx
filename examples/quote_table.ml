@@ -1,5 +1,5 @@
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Ibx.Std
 
 module Ascii_table = Textutils.Ascii_table

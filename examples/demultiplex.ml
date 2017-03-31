@@ -1,5 +1,5 @@
-open Core.Std
-open Async.Std
+open Core
+open Async
 open Ibx.Std
 
 module Console = Textutils.Console
@@ -7,7 +7,7 @@ module Console = Textutils.Console
 let make_tick_printer ~id ~symbol ~color = stage (fun tick ->
   Format.fprintf
     Format.str_formatter "@[<h 0>\\<%s\\>@ id=%s@ symbol=%s@ %a@]"
-    (Time.to_string_trimmed ~zone:Time.Zone.local (Time.now ()))
+    (Time.to_string_trimmed ~zone:(Lazy.force Time.Zone.local) (Time.now ()))
     (Query_id.to_string id)
     symbol Market_data.pp tick;
   Format.close_box ();

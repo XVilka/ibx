@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Core.Std
+open Core
 
 type t = [ `Buy | `Sell | `Sell_short ] [@@deriving sexp]
 include Stringable.S with type t := t
