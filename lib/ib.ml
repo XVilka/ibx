@@ -89,7 +89,7 @@ module Ibx_result = struct
   let try_with_unpickle f =
     make_try_with
       Result.try_with
-      (|>)
+      (fun x f -> x |> f)
       (fun e -> Ibx_error.Parse_error e)
       f
 

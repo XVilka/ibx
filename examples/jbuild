@@ -1,0 +1,17 @@
+(executables
+ ((names
+   (buy_market_order
+    demultiplex
+    futures_chain
+    last_price
+    option_chain
+    plot_history
+    plot_taq_data
+    print_account_updates
+    print_market_depth
+    print_realtime_bars
+    quote_table
+    server_time
+    show_portfolio
+    submit_orders))
+  (libraries (async core gnuplot ibx textutils))))

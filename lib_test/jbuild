@@ -1,0 +1,4 @@
+(executables
+ ((names (test_runner))
+  (libraries (async core ibx textutils))
+  (preprocess (pps (ppx_jane ppx_driver.runner)))))

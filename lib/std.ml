@@ -34,6 +34,7 @@ module Exchange       = Exchange
 module Ib             = Ib
 module Market_data    = Tws.Market_data
 module Order          = Order
+module Order_action   = Order_action
 module Order_type     = Order_type
 module Price          = Price
 module Query          = Query
