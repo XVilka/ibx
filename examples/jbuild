@@ -14,4 +14,10 @@
     server_time
     show_portfolio
     submit_orders))
-  (libraries (async core gnuplot ibx textutils))))
+  (libraries (async
+              core
+              gnuplot
+              ibx
+              textutils))))
+
+(jbuild_version 1)
