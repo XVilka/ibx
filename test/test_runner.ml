@@ -30,7 +30,7 @@ let command =
       +> flag "-d" no_arg ~doc:" log debug messages"
     )
     (fun debug () ->
-       Unix.getcwd () >>= fun cwd ->
+       let%bind cwd = Unix.getcwd () in
        let logfile = cwd ^/ "ibx.log" in
        Log.Global.set_output [Log.Output.file `Text ~filename:logfile];
        if debug then Log.Global.set_level `Debug;

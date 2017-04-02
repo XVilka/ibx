@@ -5,7 +5,8 @@
               ibx
               textutils))
   (preprocess (pps (ppx_sexp_conv
-                    ppx_fields_conv)))))
+                    ppx_fields_conv
+                    ppx_let)))))
 
 (alias
  ((name runtest)
