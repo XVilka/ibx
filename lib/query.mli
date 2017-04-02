@@ -185,8 +185,8 @@ module History : sig
   val create
     :  contract:[< Security_type.t ] Contract.t
     -> until:Time.t
-    -> bar_size:Bar_size.t
-    -> duration:Duration.t
+    -> bar_size:Bar.Size.t
+    -> duration:Bar.Duration.t
     -> use_rth:bool
     -> tick_type:Tick_type.t
     -> t

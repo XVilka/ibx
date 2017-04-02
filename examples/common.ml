@@ -36,18 +36,18 @@ let currency_arg () =
       ~doc:" contract's currency"
   )
 
-module Duration = struct
-  let arg_type = Command.Spec.Arg_type.create Duration.of_string
+module Bar_Duration = struct
+  let arg_type = Command.Spec.Arg_type.create Bar.Duration.of_string
 end
 
-let duration_arg () =
+let bar_duration_arg () =
   Command.Spec.(
-    flag "-duration" (optional_with_default (`Year 1) Duration.arg_type)
+    flag "-duration" (optional_with_default (`Year 1) Bar_Duration.arg_type)
       ~doc:" the time covered by the historical data request"
   )
 
 module Bar_size = struct
-  let arg_type = Command.Spec.Arg_type.create Bar_size.of_string
+  let arg_type = Command.Spec.Arg_type.create Bar.Size.of_string
 end
 
 let bar_size_arg () =

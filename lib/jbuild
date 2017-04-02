@@ -2,4 +2,4 @@
  ((name ibx)
   (public_name ibx)
   (libraries (async core str))
-  (preprocess (pps (ppx_jane ppx_driver.runner)))))
+  (preprocess (pps (ppx_sexp_conv ppx_fields_conv)))))

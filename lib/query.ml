@@ -526,8 +526,8 @@ module History = struct
   type t =
     { contract : Raw_contract.t;
       until : Time.t;
-      bar_size : Bar_size.t;
-      duration : Duration.t;
+      bar_size : Bar.Size.t;
+      duration : Bar.Duration.t;
       use_rth : bool;
       tick_type : Tick_type.t;
       date_format : string;
@@ -565,8 +565,8 @@ module History = struct
             ~init:(empty ())
             ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
             ~until:(fields_value (required time))
-            ~bar_size:(fields_value (required Bar_size.val_type))
-            ~duration:(fields_value (required Duration.val_type))
+            ~bar_size:(fields_value (required Bar.Size.val_type))
+            ~duration:(fields_value (required Bar.Duration.val_type))
             ~use_rth:(fields_value (required bool))
             ~tick_type:(fields_value (required Tick_type.val_type))
             ~date_format:(fields_value (required string)))
@@ -588,8 +588,8 @@ module History = struct
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
           ~until:(fields_value (required time))
-          ~bar_size:(fields_value (required Bar_size.val_type))
-          ~duration:(fields_value (required Duration.val_type))
+          ~bar_size:(fields_value (required Bar.Size.val_type))
+          ~duration:(fields_value (required Bar.Duration.val_type))
           ~use_rth:(fields_value (required bool))
           ~tick_type:(fields_value (required Tick_type.val_type))
           ~date_format:(fields_value (required string)))

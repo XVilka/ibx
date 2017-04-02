@@ -24,7 +24,7 @@ let () =
     ~summary:"Show a candlestick chart of historical prices"
     Command.Spec.(
       Common.common_args ()
-      +> Common.duration_arg ()
+      +> Common.bar_duration_arg ()
       +> Common.sma_period_arg ()
       +> Common.currency_arg ()
       +> Common.timezone_arg ()
