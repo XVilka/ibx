@@ -23,7 +23,7 @@ open Core
 open Tws_prot
 
 let tws_of_t x =
-  let s = Float.to_string x in
+  let s = Float.to_string_round_trippable x in
   let n = String.length s in
   if s.[n-1] = '.' then s^"0" else s
 
