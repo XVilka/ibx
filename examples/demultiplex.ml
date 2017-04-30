@@ -1,6 +1,6 @@
 open Core
 open Async
-open Ibx.Std
+open Ibx
 
 module Console = Textutils.Console
 

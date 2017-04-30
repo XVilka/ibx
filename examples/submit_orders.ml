@@ -1,6 +1,6 @@
 open Core
 open Async
-open Ibx.Std
+open Ibx
 
 (* NOTE: Before running this program multiple times under the same
    TWS session, please deactivate the checkbox 'Download open orders on

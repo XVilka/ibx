@@ -23,7 +23,7 @@
 (** TWS queries *)
 
 open Core
-open Std_internal
+open Ibx_internal
 
 (** {1 Connection and server} *)
 (*****************************************************************************)

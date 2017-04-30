@@ -1,6 +1,6 @@
 open Core
 open Async
-open Ibx.Std
+open Ibx
 
 module Client_id = struct
   let default = Client_id.of_int_exn 0

@@ -23,7 +23,7 @@
 open Core
 open Async
 open Test_lib
-open Ibx.Std
+open Ibx
 
 let server_port  = 10_000
 let server_ready = Simulation_server.start_on_port server_port

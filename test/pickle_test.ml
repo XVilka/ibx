@@ -22,7 +22,7 @@
 
 open Core
 open Async
-open Ibx.Std
+open Ibx
 open Test_lib
 open Tws_prot
 

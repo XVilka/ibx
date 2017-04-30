@@ -1,6 +1,6 @@
 open Core
 open Async
-open Ibx.Std
+open Ibx
 
 let () =
   Command.async_or_error ~summary:"Print market depth"

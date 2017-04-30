@@ -22,7 +22,7 @@
 
 open Core
 open Async
-open Ibx.Std
+open Ibx
 open Tws_prot
 
 module Protocol = struct
@@ -30,7 +30,7 @@ module Protocol = struct
   (* NOTE: The client version is used as a message tag to distinguish the
      client header from client queries, because the TWS protocol does not
      specify an extra message tag for the client header. *)
-  let client_header_tag = Int.to_string Ibx.Std.Config.client_version
+  let client_header_tag = Int.to_string Ibx.Config.client_version
   let account_code = Account_code.of_string "DU15133";
 
   module Query_id = struct
@@ -277,10 +277,10 @@ module Message_generator = struct
     let module S = Send_tag in
     let module V = Recv_tag in
     let module E = Server_message in
-    let module R = Ibx.Std.Response in
+    let module R = Ibx.Response in
     match clt_msg with
     | Client_message.Client_header (_client_version, _client_id) ->
-      [ E.Server_header (Ibx.Std.Config.server_version, Time.now ())
+      [ E.Server_header (Ibx.Config.server_version, Time.now ())
       ; E.Server_response {
           Response.
           tag      = V.Managed_accounts;

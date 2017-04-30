@@ -21,7 +21,7 @@
 *)
 
 open Core
-open Ibx.Std
+open Ibx
 
 module Rg_common : sig
 

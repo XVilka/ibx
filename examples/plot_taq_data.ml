@@ -1,6 +1,6 @@
 open Core
 open Async
-open Ibx.Std
+open Ibx
 open Gnuplot
 
 let verbose = ref true

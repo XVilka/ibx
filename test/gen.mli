@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-open Ibx.Std
+open Ibx
 
 val account_updates  : Account_update.t list Lazy.t
 val book_updates     : Book_update.t list Lazy.t

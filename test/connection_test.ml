@@ -22,7 +22,7 @@
 
 open Core
 open Async
-open Ibx.Std
+open Ibx
 open Test_lib
 
 module H = Ib.Connection.Handshake_result
@@ -50,7 +50,7 @@ let with_tws_conn reader ~f =
 
 let connect con =
   Ib.Connection.try_connect con
-    ~client_version:Ibx.Std.Config.client_version
+    ~client_version:Ibx.Config.client_version
     ~client_id:(Client_id.of_int_exn 1)
   >>| fun handshake_result ->
   match handshake_result with
@@ -60,7 +60,7 @@ let connect con =
 let (^@) s t = s^"\000"^t;;
 
 let send_server_header w =
-  let server_version = Int.to_string Ibx.Std.Config.server_version in
+  let server_version = Int.to_string Ibx.Config.server_version in
   Writer.write w (server_version ^@ "20121107 18:08:49 CET" ^@ "");
   Writer.write w ("15" ^@ "1" ^@ "DU15133" ^@ "")
 
@@ -68,7 +68,7 @@ module Handshake = struct
 
   let try_handshake con =
     Ib.Connection.try_connect con
-      ~client_version:Ibx.Std.Config.client_version
+      ~client_version:Ibx.Config.client_version
       ~client_id:(Client_id.of_int_exn 1)
 
   let suite = "Handshake" >::: [
@@ -109,7 +109,7 @@ module Handshake = struct
       >>= fun (r, w) ->
       Monitor.protect (fun () ->
         with_tws_conn r ~f:(fun con ->
-          let too_small_version = Int.to_string (Ibx.Std.Config.server_version-1) in
+          let too_small_version = Int.to_string (Ibx.Config.server_version-1) in
           Writer.write w (too_small_version ^@ "20121107 18:08:49 CET" ^@ "");
           try_handshake con
           >>= function
@@ -132,7 +132,7 @@ module Handshake = struct
       >>= fun (r, w) ->
       Monitor.protect (fun () ->
         with_tws_conn r ~f:(fun con ->
-          let server_version = Int.to_string Ibx.Std.Config.server_version in
+          let server_version = Int.to_string Ibx.Config.server_version in
           let server_time = Time.to_string (Time.now ()) in
           let account_code = "DU15133" in
           Writer.write w (server_version ^@ server_time ^@ "");

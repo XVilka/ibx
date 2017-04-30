@@ -22,7 +22,7 @@
 
 open Core
 open Async
-open Ibx.Std
+open Ibx
 
 type test (** Type of a test. *)
 
