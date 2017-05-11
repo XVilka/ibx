@@ -43,7 +43,7 @@ module Val_type = struct
   let int64  = create Int64.to_string Int64.of_string
 
   let tws_of_float x =
-    let s = Float.to_string_round_trippable x in
+    let s = Float.to_string x in
     let n = String.length s in
     if s.[n-1] = '.' then s^"0" else s
   let float_of_tws = Float.of_string
@@ -62,7 +62,7 @@ module Val_type = struct
   let tws_of_stamp t =
     Time.to_span_since_epoch t
     |> Time.Span.to_proportional_float
-    |> Float.to_string_round_trippable
+    |> Float.to_string
 
   let stamp_of_tws s =
     Float.of_string s
