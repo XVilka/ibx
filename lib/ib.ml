@@ -24,7 +24,6 @@
 
 open Core
 open Async
-open Ibx_internal
 open Tws_prot
 
 module Tws_error = Response.Tws_error

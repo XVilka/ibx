@@ -23,7 +23,6 @@
 (** TWS queries *)
 
 open Core
-open Ibx_internal
 
 (** {1 Connection and server} *)
 (*****************************************************************************)

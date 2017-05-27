@@ -22,7 +22,7 @@
 
 open Core
 open Async
-open Ibx_internal
+open Response
 
 module Query_id : Unique_id
 

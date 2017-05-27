@@ -22,7 +22,6 @@
 
 open Core
 open Tws_prot
-open Ibx_internal
 
 module Unit (Arg : sig val name:string end) = struct
   type t = unit [@@deriving sexp]
