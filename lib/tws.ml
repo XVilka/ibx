@@ -346,7 +346,7 @@ let market_data ?(snapshot=false) ?(tick_types=[]) t ~contract =
 let market_data_exn ?snapshot ?tick_types t ~contract =
   market_data ?snapshot ?tick_types t ~contract >>| function
   | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
 
 let cancel_market_data t id =
   with_connection_unit t ~f:(fun con ->
@@ -364,8 +364,7 @@ let option_price t ~contract ~volatility ~underlying_price =
     | Error _ as x -> x
     | Ok result ->
       match result with
-      | Error tws_error ->
-        Error (Tws_error.to_error tws_error)
+      | Error _ as e -> e
       | Ok opt_price ->
         if Price.is_nan opt_price then
           Error (Error.of_string "missing option price")
@@ -386,8 +385,7 @@ let implied_volatility t ~contract ~option_price ~underlying_price =
     | Error _ as x -> x
     | Ok result ->
       match result with
-      | Error tws_error ->
-        Error (Tws_error.to_error tws_error)
+      | Error _ as e -> e
       | Ok implied_vol ->
         if Float.is_nan implied_vol then
           Error (Error.of_string "missing implied volatility")
@@ -429,7 +427,7 @@ let submit_order t ~contract ~order =
     | Error _ as e -> e
     | Ok (pipe, id) ->
       let equal t1 t2 = match t1, t2 with
-        | Error e1, Error e2 -> Tws_error.(=) e1 e2
+        | Error e1, Error e2 -> e1 = e2
         | Ok x1, Ok x2 -> Order_status.(=) x1 x2
         | _, _ -> false
       in
@@ -440,7 +438,7 @@ let submit_order t ~contract ~order =
 let submit_order_exn t ~contract ~order =
   submit_order t ~contract ~order >>| function
   | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
 
 let cancel_order_status t oid =
   with_connection_unit t ~f:(fun con ->
@@ -502,7 +500,7 @@ let filter_executions ?time t ~contract ~action =
 let filter_executions_exn ?time t ~contract ~action =
   filter_executions ?time t ~contract ~action >>| function
   | Error e -> Error.raise e
-  | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
+  | Ok pipe -> Pipe.map pipe ~f:Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
    | Contract details                                                      |
@@ -535,7 +533,7 @@ let contract_details_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id ?include_expired
     ?exchange ?right ?expiry ?strike ~currency ~sec_type symbol >>| function
   | Error e -> Error.raise e
-  | Ok pipe -> Pipe.map pipe ~f:Tws_result.ok_exn
+  | Ok pipe -> Pipe.map pipe ~f:Or_error.ok_exn
 
 let contract_data t ~contract =
   let c = Contract.to_raw contract in
@@ -551,7 +549,7 @@ let contract_data t ~contract =
     return e
   | Ok pipe ->
     try_with ~extract_exn:true (fun () ->
-      return (Option.value_exn (Pipe.peek pipe) |> Tws_result.ok_exn)
+      return (Option.value_exn (Pipe.peek pipe) |> Or_error.ok_exn)
     ) >>| Or_error.of_exn_result
 
 let contract_data_exn t ~contract =
@@ -563,7 +561,7 @@ let contract_data_exn t ~contract =
    +-----------------------------------------------------------------------+ *)
 
 let extract_chain_exn details =
-  List.map details ~f:(fun x -> Contract_data.contract (Tws_result.ok_exn x))
+  List.map details ~f:(fun x -> Contract_data.contract (Or_error.ok_exn x))
 
 let futures_chain t ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?include_expired ?exchange ~currency symbol =
@@ -622,7 +620,7 @@ let market_depth ?(num_rows = 10) t ~contract =
 let market_depth_exn ?num_rows t ~contract =
   market_depth ?num_rows t ~contract >>| function
   | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
 
 let cancel_market_depth t id =
   with_connection_unit t ~f:(fun con ->
@@ -656,7 +654,7 @@ let history_exn
   history t ~bar_size ~duration ~use_rth ~tick_type ~until ~contract
   >>| function
   | Error e -> Error.raise e
-  | Ok result -> Tws_result.ok_exn result
+  | Ok result -> Or_error.ok_exn result
 
 (* +-----------------------------------------------------------------------+
    | Realtime bars                                                         |
@@ -716,7 +714,7 @@ let realtime_bars
 let realtime_bars_exn ?bar_size ?tick_type ?use_rth t ~contract =
   realtime_bars ?bar_size ?tick_type ?use_rth t ~contract >>| function
   | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
 
 let cancel_realtime_bars t id =
   with_connection_unit t ~f:(fun con ->
@@ -941,7 +939,7 @@ let taq_data = TAQ.get_snapshots
 let taq_data_exn t ~contract =
   taq_data t ~contract >>| function
   | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
 
 let cancel_taq_data t id =
   with_connection_unit t ~f:(fun con ->
@@ -963,7 +961,7 @@ let trades t ~contract =
 let trades_exn t ~contract =
   trades t ~contract >>| function
   | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
 
 let cancel_trades = cancel_taq_data
 
@@ -982,7 +980,7 @@ let quotes t ~contract =
 let quotes_exn t ~contract =
   quotes t ~contract >>| function
   | Error e -> Error.raise e
-  | Ok (pipe, id) -> Pipe.map pipe ~f:Tws_result.ok_exn, id
+  | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
 
 let cancel_quotes = cancel_taq_data
 
@@ -1013,9 +1011,9 @@ module Quote_snapshot = struct
           Pipe.fold_without_pushback ticks ~init:(Empty Quote.empty)
             ~f:(fun snapshot result ->
               match result with
-              | Error tws_error ->
+              | Error e ->
                 cancel con id; Pipe.close_read ticks;
-                Tws_error.raise tws_error
+                raise (Error.to_exn e)
               | Ok `Snapshot_end ->
                 cancel con id; Pipe.close_read ticks;
                 snapshot
@@ -1093,9 +1091,9 @@ module Trade_snapshot = struct
         try_with (fun () ->
           Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
             match result with
-            | Error tws_error ->
+            | Error e ->
               cancel con id; Pipe.close_read ticks;
-              Tws_error.raise tws_error
+              Error.raise e
             | Ok `Snapshot_end ->
               cancel con id; Pipe.close_read ticks;
               snapshot
@@ -1168,9 +1166,9 @@ module Close_snapshot = struct
         try_with (fun () ->
           Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
             match result with
-            | Error tws_error ->
+            | Error e ->
               cancel con id; Pipe.close_read ticks;
-              Tws_error.raise tws_error
+              Error.raise e
             | Ok `Snapshot_end ->
               cancel con id; Pipe.close_read ticks;
               snapshot

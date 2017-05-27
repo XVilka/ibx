@@ -818,7 +818,8 @@ module Streaming_request = struct
                 (* Pipes are closed after cancellations of streaming
                    requests and write calls must be guarded against
                    subsequent incoming messages. *)
-                don't_wait_for (Pipe.write pipe_w (Error tws_error));
+                let e = Tws_error.to_error tws_error in
+                don't_wait_for (Pipe.write pipe_w (Error e));
               end;
               Ivar.fill_if_empty ivar (Ok (pipe_r, query_id));
               return `Keep

@@ -131,7 +131,7 @@ val market_data
   -> ?tick_types:Tick_type.t list (* default is the empty list *)
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Market_data.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Market_data.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 (** Same as [market_data], but raises an exception instead of returning an
     [Error] explicitly. *)
@@ -193,7 +193,7 @@ val submit_order
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> order:([< Order_action.t ], [< Order_type.t ]) Order.t
-  -> (Order_status.t Tws_result.t Pipe.Reader.t * Order_id.t) Or_error.t Deferred.t
+  -> (Order_status.t Or_error.t Pipe.Reader.t * Order_id.t) Or_error.t Deferred.t
 
 val submit_order_exn
   :  t
@@ -228,7 +228,7 @@ val filter_executions
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> action:Order_action.t
-  -> Execution.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
+  -> Execution.t Or_error.t Pipe.Reader.t Or_error.t Deferred.t
 
 val filter_executions_exn
   :  ?time:Time.t
@@ -258,7 +258,7 @@ val contract_details
   -> currency:Currency.t
   -> sec_type:[< Security_type.t ]
   -> Symbol.t
-  -> Contract_data.t Tws_result.t Pipe.Reader.t Or_error.t Deferred.t
+  -> Contract_data.t Or_error.t Pipe.Reader.t Or_error.t Deferred.t
 
 (** Same as [contract_details], but raises an exception instead of returning an
     [Error]. *)
@@ -370,7 +370,7 @@ val market_depth
   :  ?num_rows:int
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Book_update.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Book_update.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val market_depth_exn
   :  ?num_rows:int
@@ -411,7 +411,7 @@ val history
   -> ?until:Time.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> History.t Tws_result.t Or_error.t Deferred.t
+  -> History.t Or_error.t Or_error.t Deferred.t
 
 val history_exn
   :  ?bar_size:[
@@ -456,7 +456,7 @@ val realtime_bars
   -> ?use_rth:bool
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Bar.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Bar.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val realtime_bars_exn
   :  ?bar_size:[
@@ -489,7 +489,7 @@ end
 val trades
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Trade.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Trade.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val trades_exn
   :  t
@@ -526,7 +526,7 @@ end
 val quotes
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Quote.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Quote.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val quotes_exn
   :  t
@@ -547,7 +547,7 @@ end
 val taq_data
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> (TAQ.t Tws_result.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (TAQ.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
 
 val taq_data_exn
   :  t

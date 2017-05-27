@@ -69,5 +69,4 @@ module Tws            = Tws
 module Tws_error      = Response.Tws_error
 module Tws_prot       = Tws_prot
 module Tws_reqs       = Tws_reqs
-module Tws_result     = Tws_result
 module Volume         = Volume
