@@ -62,7 +62,7 @@ val with_client_or_error
   -> host:string
   -> port:int
   -> (t -> unit Deferred.t)
-  -> unit Or_error.t Deferred.t
+  -> unit Deferred.Or_error.t
 
 (** [is_connected t] checks whether the TWS client [t] is connected. *)
 val is_connected : t -> bool
@@ -84,7 +84,7 @@ val set_server_log_level
   -> unit
 
 (** [server_time t] returns the current time from the TWS server or an [Error]. *)
-val server_time : t -> Time.t Or_error.t Deferred.t
+val server_time : t -> Time.t Deferred.Or_error.t
 
 (** Same as [server_time], but raises an exception if an [Error] was returned. *)
 val server_time_exn : t -> Time.t Deferred.t
@@ -131,7 +131,7 @@ val market_data
   -> ?tick_types:Tick_type.t list (* default is the empty list *)
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Market_data.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Market_data.t Or_error.t Pipe.Reader.t * Query_id.t) Deferred.Or_error.t
 
 (** Same as [market_data], but raises an exception instead of returning an
     [Error] explicitly. *)
@@ -155,7 +155,7 @@ val option_price
   -> contract:[ `Option ] Contract.t
   -> volatility:float
   -> underlying_price:Price.t
-  -> Price.t Or_error.t Deferred.t
+  -> Price.t Deferred.Or_error.t
 
 (** Same as [option_price], but raises an exception in case of an [Error]. *)
 val option_price_exn
@@ -174,7 +174,7 @@ val implied_volatility
   -> contract:[ `Option ] Contract.t
   -> option_price:Price.t
   -> underlying_price:Price.t
-  -> float Or_error.t Deferred.t
+  -> float Deferred.Or_error.t
 
 (** Same as [implied_volatility], but raises an exception in case of an
     [Error]. *)
@@ -193,7 +193,7 @@ val submit_order
   :  t
   -> contract:[< Security_type.t ] Contract.t
   -> order:([< Order_action.t ], [< Order_type.t ]) Order.t
-  -> (Order_status.t Or_error.t Pipe.Reader.t * Order_id.t) Or_error.t Deferred.t
+  -> (Order_status.t Or_error.t Pipe.Reader.t * Order_id.t) Deferred.Or_error.t
 
 val submit_order_exn
   :  t
@@ -207,11 +207,11 @@ val cancel_order_status : t -> Order_id.t -> unit
 (** {1 Account and portfolio} *)
 (******************************************************************************)
 
-val account_updates : t -> Account_update.t Pipe.Reader.t Or_error.t Deferred.t
+val account_updates : t -> Account_update.t Pipe.Reader.t Deferred.Or_error.t
 
 val account_updates_exn : t -> Account_update.t Pipe.Reader.t Deferred.t
 
-val portfolio : t -> Position.t Pipe.Reader.t Or_error.t Deferred.t
+val portfolio : t -> Position.t Pipe.Reader.t Deferred.Or_error.t
 
 val portfolio_exn : t -> Position.t Pipe.Reader.t Deferred.t
 
@@ -228,7 +228,7 @@ val filter_executions
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> action:Order_action.t
-  -> Execution.t Or_error.t Pipe.Reader.t Or_error.t Deferred.t
+  -> Execution.t Or_error.t Pipe.Reader.t Deferred.Or_error.t
 
 val filter_executions_exn
   :  ?time:Time.t
@@ -258,7 +258,7 @@ val contract_details
   -> currency:Currency.t
   -> sec_type:[< Security_type.t ]
   -> Symbol.t
-  -> Contract_data.t Or_error.t Pipe.Reader.t Or_error.t Deferred.t
+  -> Contract_data.t Or_error.t Pipe.Reader.t Deferred.Or_error.t
 
 (** Same as [contract_details], but raises an exception instead of returning an
     [Error]. *)
@@ -284,7 +284,7 @@ val contract_details_exn
 val contract_data
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Contract_data.t Or_error.t Deferred.t
+  -> Contract_data.t Deferred.Or_error.t
 
 (** Same as [contract_data], but raises an exception in case of an [Error]. *)
 val contract_data_exn
@@ -370,7 +370,7 @@ val market_depth
   :  ?num_rows:int
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Book_update.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Book_update.t Or_error.t Pipe.Reader.t * Query_id.t) Deferred.Or_error.t
 
 val market_depth_exn
   :  ?num_rows:int
@@ -411,7 +411,7 @@ val history
   -> ?until:Time.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> History.t Or_error.t Or_error.t Deferred.t
+  -> History.t Or_error.t Deferred.Or_error.t
 
 val history_exn
   :  ?bar_size:[
@@ -456,7 +456,7 @@ val realtime_bars
   -> ?use_rth:bool
   -> t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Bar.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Bar.t Or_error.t Pipe.Reader.t * Query_id.t) Deferred.Or_error.t
 
 val realtime_bars_exn
   :  ?bar_size:[
@@ -489,7 +489,7 @@ end
 val trades
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Trade.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Trade.t Or_error.t Pipe.Reader.t * Query_id.t) Deferred.Or_error.t
 
 val trades_exn
   :  t
@@ -526,7 +526,7 @@ end
 val quotes
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> (Quote.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (Quote.t Or_error.t Pipe.Reader.t * Query_id.t) Deferred.Or_error.t
 
 val quotes_exn
   :  t
@@ -547,7 +547,7 @@ end
 val taq_data
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> (TAQ.t Or_error.t Pipe.Reader.t * Query_id.t) Or_error.t Deferred.t
+  -> (TAQ.t Or_error.t Pipe.Reader.t * Query_id.t) Deferred.Or_error.t
 
 val taq_data_exn
   :  t
@@ -565,7 +565,7 @@ val cancel_taq_data : t -> Query_id.t -> unit
 val latest_quote
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Quote.t Or_error.t Deferred.t
+  -> Quote.t Deferred.Or_error.t
 
 (** Same as [latest_quote] but raises an exception in case of an [Error]. *)
 val latest_quote_exn
@@ -578,7 +578,7 @@ val latest_quote_exn
 val latest_trade
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Trade.t Or_error.t Deferred.t
+  -> Trade.t Deferred.Or_error.t
 
 (** Same as [latest_trade] but raises an exception in case of an [Error]. *)
 val latest_trade_exn
@@ -602,7 +602,7 @@ end
 val latest_close
   :  t
   -> contract:[< Security_type.t ] Contract.t
-  -> Close.t Or_error.t Deferred.t
+  -> Close.t Deferred.Or_error.t
 
 (** Same as [latest_close] but raises an exception in case of an [Error]. *)
 val latest_close_exn

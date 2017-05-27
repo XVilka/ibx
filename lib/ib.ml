@@ -230,7 +230,7 @@ module type Connection = sig
     :  t
     -> client_version:int
     -> client_id:Client_id.t
-    -> Handshake_result.t Or_error.t Deferred.t
+    -> Handshake_result.t Deferred.Or_error.t
 end
 
 module Response_handler = struct

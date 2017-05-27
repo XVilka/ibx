@@ -66,7 +66,7 @@ module type Connection = sig
     :  t
     -> client_version:int
     -> client_id:Client_id.t
-    -> Handshake_result.t Or_error.t Deferred.t
+    -> Handshake_result.t Deferred.Or_error.t
 end
 module Connection : Connection
 
@@ -89,7 +89,7 @@ module Request : sig
     :  ('query, 'response) t
     -> Connection.t
     -> 'query
-    -> 'response Or_error.t Deferred.t
+    -> 'response Deferred.Or_error.t
 end
 
 module Streaming_request : sig
@@ -111,7 +111,7 @@ module Streaming_request : sig
     :  ('query, 'response) t
     -> Connection.t
     -> 'query
-    -> ('response Or_error.t Pipe.Reader.t * Id.t) Or_error.t Deferred.t
+    -> ('response Or_error.t Pipe.Reader.t * Id.t) Deferred.Or_error.t
 
   (** [cancel req con id] cancels the TWS data stream from the request
       associated with the unique identifier [id], which was returned
@@ -135,7 +135,7 @@ module Streaming_request_without_id : sig
     :  ('query, 'response) t
     -> Connection.t
     -> 'query
-    -> ('response Pipe.Reader.t) Or_error.t Deferred.t
+    -> ('response Pipe.Reader.t) Deferred.Or_error.t
 
   val cancel : (_, _) t -> Connection.t -> unit
 end
