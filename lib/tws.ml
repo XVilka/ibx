@@ -560,28 +560,19 @@ let contract_data_exn t ~contract =
    | Futures and option chains                                             |
    +-----------------------------------------------------------------------+ *)
 
-let extract_chain_exn details =
-  List.map details ~f:(fun x -> Contract_data.contract (Or_error.ok_exn x))
-
 let futures_chain t ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?include_expired ?exchange ~currency symbol =
   contract_details t
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?include_expired ?exchange ~currency ~sec_type:`Futures symbol
-  >>= function
-  | Error _ as e ->
-    return e
-  | Ok pipe ->
-    try_with ~extract_exn:true (fun () ->
-      Pipe.to_list pipe
-      >>| fun details -> Contract.sort_futures_chain (extract_chain_exn details)
-    ) >>| Or_error.of_exn_result
+  >>|? Pipe.map ~f:(Or_error.map ~f:Contract_data.contract)
 
 let futures_chain_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?sec_id ?include_expired ?exchange ~currency symbol =
   futures_chain t
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id ?include_expired
-    ?exchange ~currency symbol >>| Or_error.ok_exn
+    ?exchange ~currency symbol
+  >>|? Pipe.map ~f:Or_error.ok_exn >>| Or_error.ok_exn
 
 let option_chain t ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option) ~right
@@ -589,14 +580,7 @@ let option_chain t ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
   contract_details t
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id ?include_expired
     ?exchange ?expiry ?strike ~right ~currency ~sec_type symbol
-  >>= function
-  | Error _ as e ->
-    return e
-  | Ok pipe ->
-    try_with ~extract_exn:true (fun () ->
-      Pipe.to_list pipe
-      >>| fun details -> Contract.sort_option_chain (extract_chain_exn details)
-    ) >>| Or_error.of_exn_result
+  >>|? Pipe.map ~f:(Or_error.map ~f:Contract_data.contract)
 
 let option_chain_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?sec_id ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option)
@@ -604,7 +588,7 @@ let option_chain_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
   option_chain t
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id ?include_expired
     ?exchange ?expiry ?strike ~right ~currency ~sec_type symbol
-  >>| Or_error.ok_exn
+  >>|? Pipe.map ~f:Or_error.ok_exn >>| Or_error.ok_exn
 
 
 (* +-----------------------------------------------------------------------+
