@@ -40,8 +40,8 @@ end
 
 module Header = struct
   type 'a t =
-    { tag : 'a;
-      version : int;
+    { tag : 'a
+    ; version : int
     } [@@deriving sexp]
 
   let create ~tag ~version = { tag; version }
@@ -102,8 +102,8 @@ let of_tws u x = Ibx_result.try_with_unpickle (fun () -> Unpickler.run_exn u x)
 
 module Client_header = struct
   type t =
-    { client_version : int;
-      client_id      : Client_id.t;
+    { client_version : int
+    ; client_id      : Client_id.t
     } [@@deriving fields, sexp]
 
   let pickler =
@@ -120,8 +120,8 @@ end
 
 module Server_header = struct
   type t =
-    { server_version  : int;
-      connection_time : Time.t;
+    { server_version  : int
+    ; connection_time : Time.t
     } [@@deriving fields, sexp]
 
   let unpickler =
@@ -137,10 +137,10 @@ end
 
 module Query = struct
   type t =
-    { tag     : Send_tag.t;
-      version : int;
-      id      : Query_id.t option;
-      data    : string;
+    { tag     : Send_tag.t
+    ; version : int
+    ; id      : Query_id.t option
+    ; data    : string
     } [@@deriving fields, sexp]
 
   let pickler =
@@ -163,10 +163,10 @@ end
 
 module Response = struct
   type t =
-    { tag      : Recv_tag.t;
-      version  : int;
-      query_id : Query_id.t option;
-      data     : Response_data.t;
+    { tag      : Recv_tag.t
+    ; version  : int
+    ; query_id : Query_id.t option
+    ;  data     : Response_data.t
     } [@@deriving fields, sexp]
 
   let pickler =
@@ -242,15 +242,15 @@ module Response_handler = struct
        | `Die of Ibx_error.t ] Deferred.t
 
   type t =
-    { tag     : Recv_tag.t;
-      version : int;
-      run     : handler;
+    { tag     : Recv_tag.t
+    ; version : int
+    ; run     : handler
     }
 
   let create ~header ~run =
-    { tag = header.Header.tag;
-      version = header.Header.version;
-      run;
+    { tag = header.Header.tag
+    ; version = header.Header.version
+    ; run
     }
 end
 
@@ -275,14 +275,14 @@ end
 
 module Connection : Connection_internal = struct
   type t =
-    { writer        : Writer.t;
-      reader        : string Pipe.Reader.t;
-      open_queries  : (Query_id.t * Recv_tag.t * version, response_handler) Hashtbl.t;
-      next_order_id : Order_id.t Ivar.t;
-      account_code  : Account_code.t Ivar.t;
-      stop          : unit Ivar.t;
-      logfun        : logfun option;
-      extend_error  : Error.t -> unit;
+    { writer        : Writer.t
+    ; reader        : string Pipe.Reader.t
+    ; open_queries  : (Query_id.t * Recv_tag.t * version, response_handler) Hashtbl.t
+    ; next_order_id : Order_id.t Ivar.t
+    ; account_code  : Account_code.t Ivar.t
+    ; stop          : unit Ivar.t
+    ; logfun        : logfun option
+    ; extend_error  : Error.t -> unit
     }
   and version = int
   and response_handler = Response_handler.handler
@@ -336,15 +336,14 @@ module Connection : Connection_internal = struct
         Log.Global.debug "<< %s" (tr_null msg)
     in
     let t =
-      {
-        writer;
-        reader        = Reader.read_all reader read_one;
-        open_queries  = Hashtbl.Poly.create ~size:25 ();
-        next_order_id = Ivar.create ();
-        account_code  = Ivar.create ();
-        stop          = Ivar.create ();
-        logfun        = Option.some_if do_logging logfun;
-        extend_error;
+      { writer
+      ; reader        = Reader.read_all reader read_one
+      ; open_queries  = Hashtbl.Poly.create ~size:25 ()
+      ; next_order_id = Ivar.create ()
+      ; account_code  = Ivar.create ()
+      ; stop          = Ivar.create ()
+      ; logfun        = Option.some_if do_logging logfun
+      ; extend_error
       }
     in
     init_handler t
@@ -531,10 +530,10 @@ module Connection : Connection_internal = struct
     read_body reader tag
     >>|~ fun data ->
     { Response.
-      tag;
-      version;
-      query_id = id;
-      data = Ok (`Response data);
+      tag
+    ; version
+    ; query_id = id
+    ; data = Ok (`Response data)
     }
 
   let writer t = if Ivar.is_full t.stop then Error `Closed else Ok t.writer
@@ -546,10 +545,10 @@ module Connection : Connection_internal = struct
       let log_level = Server_log_level.create ~level in
       let query =
         { Query.
-          tag     = Send_tag.Set_server_log_level;
-          version = 1;
-          id      = None;
-          data    = to_tws Server_log_level.pickler log_level;
+          tag     = Send_tag.Set_server_log_level
+        ; version = 1
+        ; id      = None
+        ; data    = to_tws Server_log_level.pickler log_level;
         }
       in
       send_query ?logfun:t.logfun writer query
@@ -585,10 +584,10 @@ module Connection : Connection_internal = struct
           don't_wait_for (Deferred.ignore (
             response_handler
               { Response.
-                tag;
-                version;
-                query_id = Some query_id;
-                data = Ok `Cancel;
+                tag
+              ; version
+              ; query_id = Some query_id
+              ;  data = Ok `Cancel
               }))
       );
       Ok ()
@@ -659,10 +658,10 @@ module Connection : Connection_internal = struct
             don't_wait_for (Deferred.ignore (
               response_handler
                 { Response.
-                  tag;
-                  version;
-                  query_id = Some id;
-                  data = Error error
+                  tag
+                ; version
+                ; query_id = Some id
+                ; data = Error error
                 })));
         t.extend_error (Ibx_error.to_error error));
     Scheduler.within ~monitor loop
@@ -676,11 +675,12 @@ module Connection : Connection_internal = struct
   end
 
   let try_connect t ~client_version ~client_id =
-    let client_header = {
-      Client_header.
-      client_version;
-      client_id;
-    } in
+    let client_header =
+      { Client_header.
+        client_version
+      ; client_id
+      }
+    in
     begin match writer t with
       | Error `Closed ->
         return (Error Ibx_error.Connection_closed)
@@ -713,27 +713,27 @@ end
 
 module Request = struct
   type ('query, 'response) t =
-    { send_header  : Send_tag.t Header.t;
-      recv_header  : Recv_tag.t Header.t;
-      tws_query    : 'query    Tws_prot.Pickler.t;
-      tws_response : 'response Tws_prot.Unpickler.t;
+    { send_header  : Send_tag.t Header.t
+    ; recv_header  : Recv_tag.t Header.t
+    ; tws_query    : 'query    Tws_prot.Pickler.t
+    ; tws_response : 'response Tws_prot.Unpickler.t
     }
 
   let create ~send_header ~recv_header ~tws_query ~tws_response =
-    { send_header;
-      recv_header;
-      tws_query;
-      tws_response;
+    { send_header
+    ; recv_header
+    ; tws_query
+    ; tws_response
     }
 
   let dispatch t con query =
     let ivar = Ivar.create () in
     let query =
       { Query.
-        tag     = t.send_header.Header.tag;
-        version = t.send_header.Header.version;
-        id      = None;
-        data    = to_tws t.tws_query query;
+        tag     = t.send_header.Header.tag
+      ; version = t.send_header.Header.version
+      ; id      = None
+      ; data    = to_tws t.tws_query query
       }
     in
     let handler =
@@ -766,24 +766,24 @@ end
 
 module Streaming_request = struct
   type ('query, 'response) t =
-    { send_header  : Send_tag.t Header.t;
-      canc_header  : Send_tag.t Header.t option;
-      recv_header  : Recv_tag.t Header.t list;
-      skip_header  : Recv_tag.t Header.t list option;
-      tws_query    : 'query    Tws_prot.Pickler.t;
-      tws_response : 'response Tws_prot.Unpickler.t list;
+    { send_header  : Send_tag.t Header.t
+    ; canc_header  : Send_tag.t Header.t option
+    ; recv_header  : Recv_tag.t Header.t list
+    ; skip_header  : Recv_tag.t Header.t list option
+    ; tws_query    : 'query    Tws_prot.Pickler.t
+    ; tws_response : 'response Tws_prot.Unpickler.t list
     }
 
   module Id = Query_id
 
   let create ?canc_header ?skip_header ~send_header ~recv_header
       ~tws_query ~tws_response () =
-    { send_header;
-      canc_header;
-      recv_header;
-      skip_header;
-      tws_query;
-      tws_response;
+    { send_header
+    ; canc_header
+    ; recv_header
+    ; skip_header
+    ; tws_query
+    ; tws_response
     }
 
   let dispatch t con query =
@@ -792,10 +792,10 @@ module Streaming_request = struct
     let pipe_r, pipe_w = Pipe.create () in
     let query =
       { Query.
-        tag     = t.send_header.Header.tag;
-        version = t.send_header.Header.version;
-        id      = Some query_id;
-        data    = to_tws t.tws_query query;
+        tag     = t.send_header.Header.tag
+      ; version = t.send_header.Header.version
+      ; id      = Some query_id
+      ; data    = to_tws t.tws_query query
       }
     in
     let error_handler =
@@ -910,10 +910,10 @@ module Streaming_request = struct
       | Some header ->
         let query =
           { Query.
-            tag     = header.Header.tag;
-            version = header.Header.version;
-            id      = Some query_id;
-            data    = "";
+            tag     = header.Header.tag
+          ; version = header.Header.version
+          ; id      = Some query_id
+          ; data    = ""
           }
         in
         Connection.cancel_streaming con ~recv_header ~query_id ~query
@@ -923,20 +923,20 @@ end
 
 module Streaming_request_without_id = struct
   type ('query, 'response) t =
-    { send_header  : Send_tag.t Header.t;
-      recv_header  : Recv_tag.t Header.t list;
-      skip_header  : Recv_tag.t Header.t list option;
-      tws_query    : 'query    Tws_prot.Pickler.t;
-      tws_response : 'response Tws_prot.Unpickler.t list;
+    { send_header  : Send_tag.t Header.t
+    ; recv_header  : Recv_tag.t Header.t list
+    ; skip_header  : Recv_tag.t Header.t list option
+    ; tws_query    : 'query    Tws_prot.Pickler.t
+    ; tws_response : 'response Tws_prot.Unpickler.t list
     }
 
   let create ?skip_header ~send_header ~recv_header
       ~tws_query ~tws_response () =
-    { send_header;
-      recv_header;
-      skip_header;
-      tws_query;
-      tws_response;
+    { send_header
+    ; recv_header
+    ; skip_header
+    ; tws_query
+    ; tws_response
     }
 
   let dispatch t con query =
@@ -944,10 +944,10 @@ module Streaming_request_without_id = struct
     let pipe_r, pipe_w = Pipe.create () in
     let query =
       { Query.
-        tag     = t.send_header.Header.tag;
-        version = t.send_header.Header.version;
-        id      = None;
-        data    = to_tws t.tws_query query;
+        tag     = t.send_header.Header.tag
+      ; version = t.send_header.Header.version
+      ; id      = None
+      ; data    = to_tws t.tws_query query
       }
     in
     let skip_handlers =
