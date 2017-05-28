@@ -1553,6 +1553,39 @@ module History = struct
       Array.set vo i (bar.Bar.vo :> int);
     );
     { Data_frame.stamps; op; hi; lo; cl; vo; }
+
+  let time_ohlc t =
+    let ohlc = List.map t.bars ~f:(fun bar ->
+      Bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
+    in
+    (ohlc :> (Time.t * (float * float * float * float)) list)
+
+  type vwap_item = {
+    stamp : Time.t;
+    total_value : float;
+    total_volume : float
+  }
+
+  let time_vwap t =
+    let price bar = Bar.wap bar |> Price.to_float in
+    let volume bar = Bar.vo bar |> Volume.to_float in
+    match List.hd t.bars with
+    | None -> []
+    | Some bar ->
+      let item =
+        { stamp = Bar.stamp bar
+        ; total_value = Float.(price bar * volume bar)
+        ; total_volume = volume bar }
+      in
+      List.fold_left t.bars ~init:(item, [item]) ~f:(fun (item, items) bar ->
+        let item' =
+          { stamp = Bar.stamp bar
+          ; total_value = Float.(item.total_value + price bar * volume bar)
+          ; total_volume = Float.(item.total_volume + volume bar) }
+        in
+        item', item' :: items)
+      |> Tuple2.get2
+      |> List.map ~f:(fun x -> x.stamp, Float.(x.total_value / x.total_volume))
 end
 
 (* +-----------------------------------------------------------------------+

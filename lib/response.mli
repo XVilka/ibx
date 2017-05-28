@@ -475,6 +475,12 @@ module History : sig
   (** [unpack_bars t] unpacks bars into a data frame that stores prices and
       volumes in its columns. *)
   val unpack_bars : t -> Data_frame.t
+
+  (** [time_ohlc t] returns a time series of OHLC bars. *)
+  val time_ohlc : t -> (Time.t * (float * float * float * float)) list
+
+  (** [time_vwap t] returns a VWAP time series. *)
+  val time_vwap : t -> (Time.t * float) list
 end
 
 (** {1 Realtime bars} *)
