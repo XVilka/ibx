@@ -1577,7 +1577,7 @@ module History = struct
         ; total_value = Float.(price bar * volume bar)
         ; total_volume = volume bar }
       in
-      List.fold_left t.bars ~init:(item, [item]) ~f:(fun (item, items) bar ->
+      List.fold t.bars ~init:(item, [item]) ~f:(fun (item, items) bar ->
         let item' =
           { stamp = Bar.stamp bar
           ; total_value = Float.(item.total_value + price bar * volume bar)
