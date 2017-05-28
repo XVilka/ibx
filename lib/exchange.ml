@@ -100,6 +100,7 @@ type t =
   | `OMEGA
   | `OMS
   | `ONE
+  | `PEARL
   | `PHLX
   | `PINK
   | `PSE
@@ -207,6 +208,7 @@ let tws_of_t = function
   | `OMEGA -> "OMEGA"
   | `OMS -> "OMS"
   | `ONE -> "ONE"
+  | `PEARL -> "PEARL"
   | `PHLX -> "PHLX"
   | `PINK -> "PINK"
   | `PSE -> "PSE"
@@ -313,6 +315,7 @@ let t_of_tws = function
   | "OMEGA" -> `OMEGA
   | "OMS" -> `OMS
   | "ONE" -> `ONE
+  | "PEARL" -> `PEARL
   | "PHLX" -> `PHLX
   | "PINK" -> `PINK
   | "PSE" -> `PSE

@@ -103,6 +103,7 @@ type t =
   | `OMEGA      (* Omega ATS *)
   | `OMS        (* Stockholm Derivatives Exchange *)
   | `ONE        (* OneChicago *)
+  | `PEARL      (* MIAX PEARL *)
   | `PHLX       (* Philadelphia Stock Exchange *)
   | `PINK       (* Pink OTC Markets *)
   | `PSE        (* Pacific Exchange *)
