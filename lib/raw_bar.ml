@@ -56,7 +56,7 @@ let ( = ) t1 t2 : bool =
 let field_name field = Fieldslib.Field.name field
 
 let lift_bar_spec bar_spec =
-  Pickler.Spec.(
+  Encoder.Spec.(
     lift bar_spec
       (fun t ->
          `Args
@@ -71,8 +71,8 @@ let lift_bar_spec bar_spec =
          $ t.n_trades))
 
 module Historical_bar = struct
-  let pickler_spec () =
-    Pickler.Spec.(
+  let encoder_spec () =
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~stamp:(fields_value (required time))
@@ -86,8 +86,8 @@ module Historical_bar = struct
         ~n_trades:(fields_value (required int)))
     |> lift_bar_spec
 
-  let unpickler_spec () =
-    Unpickler.Spec.(
+  let decoder_spec () =
+    Decoder.Spec.(
       step (fun conv stamp op hi lo cl vo wap has_gaps n_trades ->
         conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps ~n_trades)
       )
@@ -113,8 +113,8 @@ module Historical_bar = struct
 end
 
 module Realtime_bar = struct
-  let pickler_spec () =
-    Pickler.Spec.(
+  let encoder_spec () =
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~stamp:(fields_value (required stamp))
@@ -128,8 +128,8 @@ module Realtime_bar = struct
         ~n_trades:(fields_value (required int)))
     |> lift_bar_spec
 
-  let unpickler_spec () =
-    Unpickler.Spec.(
+  let decoder_spec () =
+    Decoder.Spec.(
       step (fun conv stamp op hi lo cl vo wap n_trades ->
         conv (create ~stamp ~op ~hi ~lo ~cl ~vo ~wap ~has_gaps:false ~n_trades)
       )

@@ -111,9 +111,9 @@ module Protocol = struct
           data     : string;
         } [@@deriving fields, sexp]
 
-      let pickler =
-        Pickler.create ~name:"Simulation_server.Server_message"
-          Pickler.Spec.(
+      let encoder =
+        Encoder.create ~name:"Simulation_server.Server_message"
+          Encoder.Spec.(
             lift (
               Fields.fold
                 ~init:(empty ())
@@ -126,9 +126,9 @@ module Protocol = struct
     end
 
     module Server_header = struct
-      let pickler =
-        Pickler.create ~name:"Simulation_server.Server_header"
-          Pickler.Spec.(value (required int) ++ value (required time))
+      let encoder =
+        Encoder.create ~name:"Simulation_server.Server_header"
+          Encoder.Spec.(value (required int) ++ value (required time))
     end
 
     type t =
@@ -138,9 +138,9 @@ module Protocol = struct
 
     let to_tws = function
       | Server_header (version, conn_time) ->
-        Pickler.run Server_header.pickler (version, conn_time)
+        Encoder.run Server_header.encoder (version, conn_time)
       | Server_response response ->
-        Pickler.run Response.pickler response
+        Encoder.run Response.encoder response
   end
 
   module Transport = struct
@@ -271,7 +271,7 @@ module Message_generator = struct
   let (^@) s t = s^"\000"^t;;
 
   let generate_messages clt_msg =
-    let to_tws = Pickler.run in
+    let to_tws = Encoder.run in
     let module Query = Client_message.Query in
     let module Response = Server_message.Response in
     let module S = Send_tag in
@@ -302,13 +302,13 @@ module Message_generator = struct
         (* ==================== Connection and server ==================== *)
 
         | S.Server_time ->
-          let pickler = Only_in_test.force R.Server_time.pickler in
+          let encoder = Only_in_test.force R.Server_time.encoder in
           [ E.Server_response {
               Response.
               tag      = V.Server_time;
               version  = 1;
               query_id = None;
-              data     = to_tws pickler (Lazy.force Gen.server_time) }
+              data     = to_tws encoder (Lazy.force Gen.server_time) }
           ]
 
         | S.Set_server_log_level -> []
@@ -318,40 +318,40 @@ module Message_generator = struct
         | S.Market_data ->
           let market_data =  List.map (Lazy.force Gen.market_data) ~f:(function
             | `Tick_price x ->
-              let pickler = Only_in_test.force R.Tick_price.pickler in
+              let encoder = Only_in_test.force R.Tick_price.encoder in
               E.Server_response {
                 Response.
                 tag      = V.Tick_price;
                 version  = 6;
                 query_id = query.Query.id;
-                data     = to_tws pickler x;
+                data     = to_tws encoder x;
               }
             | `Tick_size x ->
-              let pickler = Only_in_test.force R.Tick_size.pickler in
+              let encoder = Only_in_test.force R.Tick_size.encoder in
               E.Server_response {
                 Response.
                 tag      = V.Tick_size;
                 version  = 6;
                 query_id = query.Query.id;
-                data     = to_tws pickler x;
+                data     = to_tws encoder x;
               }
             | `Tick_option x ->
-              let pickler = Only_in_test.force R.Tick_option.pickler in
+              let encoder = Only_in_test.force R.Tick_option.encoder in
               E.Server_response {
                 Response.
                 tag      = V.Tick_option;
                 version  = 6;
                 query_id = query.Query.id;
-                data     = to_tws pickler x;
+                data     = to_tws encoder x;
               }
             | `Tick_string x ->
-              let pickler = Only_in_test.force R.Tick_string.pickler in
+              let encoder = Only_in_test.force R.Tick_string.encoder in
               E.Server_response {
                 Response.
                 tag      = V.Tick_string;
                 version  = 6;
                 query_id = query.Query.id;
-                data     = to_tws pickler x;
+                data     = to_tws encoder x;
               })
           in
           let snapshot_ends = List.init 10 ~f:(fun _ ->
@@ -369,13 +369,13 @@ module Message_generator = struct
 
         | S.Option_price
         | S.Implied_volatility ->
-          let pickler = Only_in_test.force R.Tick_option.pickler in
+          let encoder = Only_in_test.force R.Tick_option.encoder in
           [ E.Server_response {
               Response.
               tag      = V.Tick_option;
               version  = 6;
               query_id = query.Query.id;
-              data     = to_tws pickler (Lazy.force Gen.tick_option) }
+              data     = to_tws encoder (Lazy.force Gen.tick_option) }
           ]
 
         | S.Cancel_option_price
@@ -384,14 +384,14 @@ module Message_generator = struct
         (* =========================== Orders ============================ *)
 
         | S.Submit_order ->
-          let pickler = Only_in_test.force R.Order_status.pickler in
+          let encoder = Only_in_test.force R.Order_status.encoder in
           List.map (Lazy.force Gen.order_states) ~f:(fun x ->
             E.Server_response {
               Response.
               tag      = V.Order_status;
               version  = 6;
               query_id = query.Query.id;
-              data     = to_tws pickler x;
+              data     = to_tws encoder x;
             })
 
         | S.Cancel_order -> []
@@ -409,22 +409,22 @@ module Message_generator = struct
         | S.Account_data ->
           List.append
             (List.map (Lazy.force Gen.account_updates) ~f:(fun x ->
-               let pickler = Only_in_test.force R.Account_update.pickler in
+               let encoder = Only_in_test.force R.Account_update.encoder in
                E.Server_response {
                  Response.
                  tag      = V.Account_update;
                  version  = 2;
                  query_id = None;
-                 data     = to_tws pickler x;
+                 data     = to_tws encoder x;
                }))
             (List.map (Lazy.force Gen.positions) ~f:(fun x ->
-               let pickler = Only_in_test.force R.Position.pickler in
+               let encoder = Only_in_test.force R.Position.encoder in
                E.Server_response {
                  Response.
                  tag      = V.Position;
                  version  = 7;
                  query_id = None;
-                 data     = to_tws pickler x;
+                 data     = to_tws encoder x;
                })) @
           [ E.Server_response {
               Response.
@@ -438,13 +438,13 @@ module Message_generator = struct
 
         | S.Executions ->
           List.map (Lazy.force Gen.executions) ~f:(fun x ->
-            let pickler = Only_in_test.force R.Execution.pickler in
+            let encoder = Only_in_test.force R.Execution.encoder in
             E.Server_response {
               Response.
               tag      = V.Execution;
               version  = 9;
               query_id = query.Query.id;
-              data     = to_tws pickler x;
+              data     = to_tws encoder x;
             }) @
           [ E.Server_response {
               Response.
@@ -458,13 +458,13 @@ module Message_generator = struct
 
         | S.Contract_data ->
           List.map (Lazy.force Gen.contract_details) ~f:(fun x ->
-            let pickler = Only_in_test.force R.Contract_data.pickler in
+            let encoder = Only_in_test.force R.Contract_data.encoder in
             E.Server_response {
               Response.
               tag      = V.Contract_data;
               version  = 8;
               query_id = query.Query.id;
-              data     = to_tws pickler x
+              data     = to_tws encoder x
             }) @
           [ E.Server_response {
               Response.
@@ -478,13 +478,13 @@ module Message_generator = struct
 
         | S.Market_depth ->
           List.map (Lazy.force Gen.book_updates) ~f:(fun x ->
-            let pickler = Only_in_test.force R.Book_update.pickler in
+            let encoder = Only_in_test.force R.Book_update.encoder in
             E.Server_response {
               Response.
               tag      = V.Book_update;
               version  = 1;
               query_id = query.Query.id;
-              data     = to_tws pickler x;
+              data     = to_tws encoder x;
             })
 
         | S.Cancel_market_depth -> []
@@ -514,13 +514,13 @@ module Message_generator = struct
         (* =========================== History =========================== *)
 
         | S.History ->
-          let pickler = Only_in_test.force History.pickler in
+          let encoder = Only_in_test.force History.encoder in
           [ E.Server_response {
               Response.
               tag      = V.History;
               version  = 3;
               query_id = query.Query.id;
-              data     = to_tws pickler (Lazy.force Gen.history) }
+              data     = to_tws encoder (Lazy.force Gen.history) }
           ]
 
         | S.Cancel_history -> []
@@ -529,13 +529,13 @@ module Message_generator = struct
 
         | S.Realtime_bars ->
           List.map (Lazy.force Gen.realtime_bars) ~f:(fun x ->
-            let pickler = Only_in_test.force R.Realtime_bar.pickler in
+            let encoder = Only_in_test.force R.Realtime_bar.encoder in
             E.Server_response {
               Response.
               tag      = V.Realtime_bar;
               version  = 3;
               query_id = query.Query.id;
-              data     = to_tws pickler x;
+              data     = to_tws encoder x;
             })
 
         | S.Cancel_realtime_bars -> []

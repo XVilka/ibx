@@ -1,4 +1,4 @@
-(* File: pickle_test.ml
+(* File: tws_prot_test.ml
 
    IBX - OCaml implementation of the Interactive Brokers TWS API
 
@@ -26,8 +26,8 @@ open Ibx
 open Test_lib
 open Tws_prot
 
-let to_tws = Pickler.run
-let of_tws = Unpickler.run_exn
+let to_tws = Encoder.run
+let of_tws = Decoder.run_exn
 
 let input_of_output output =
   let truncate_null s = String.sub s ~pos:0 ~len:(String.length s - 1) in
@@ -38,8 +38,8 @@ module Query = struct
   let gen_test (type s) query query_g =
     let expected = query_g () in
     let module Q = (val query : Query_intf.S with type t = s) in
-    let output = to_tws Q.pickler expected in
-    let actual = of_tws (Only_in_test.force Q.unpickler) (input_of_output output) in
+    let output = to_tws Q.encoder expected in
+    let actual = of_tws (Only_in_test.force Q.decoder) (input_of_output output) in
     assert_query_equal query ~expected ~actual;
     Deferred.unit
 
@@ -122,8 +122,8 @@ module Response = struct
   let gen_test (type s) response response_g =
     let expected = response_g () in
     let module R = (val response : Response_intf.S with type t = s) in
-    let output = to_tws (Only_in_test.force R.pickler) expected in
-    let actual = of_tws R.unpickler (input_of_output output) in
+    let output = to_tws (Only_in_test.force R.encoder) expected in
+    let actual = of_tws R.decoder (input_of_output output) in
     assert_response_equal response ~expected ~actual;
     Deferred.unit
 
@@ -199,10 +199,9 @@ module Response = struct
   ]
 end
 
-let test_all tests = fun () ->
-  Deferred.all_unit (List.map tests ~f:(fun f -> f ()))
+let test_all tests = fun () -> Deferred.all_unit (List.map tests ~f:(fun f -> f ()))
 
-let suite = "Pickle" >::: [
-  "query-pickle-unpickle" >:: (test_all Query.tests);
-  "response-pickle-unpickle" >:: (test_all Response.tests);
+let suite = "Tws_prot" >::: [
+  "query-encode-decode" >:: (test_all Query.tests);
+  "response-encode-decode" >:: (test_all Response.tests);
 ]

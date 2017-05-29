@@ -57,6 +57,6 @@ type t =
   | Commission
 [@@deriving sexp]
 include Twsable.S with type t := t
-include Unpickable.S with type t := t
+include Decodable.S with type t := t
 
 val corresponding_response_has_query_id : t -> bool

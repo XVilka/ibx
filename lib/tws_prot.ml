@@ -98,7 +98,7 @@ module Val_type = struct
   let zone = create Time.Zone.to_string time_zone_of_string
 end
 
-module Pickler = struct
+module Encoder = struct
 
   let serialize_aux raw_tws buf =
     Buffer.add_string buf raw_tws;
@@ -206,7 +206,7 @@ module Pickler = struct
     Buffer.contents buf
 end
 
-module Unpickler = struct
+module Decoder = struct
 
   let parse_aux name a_of_tws raw_tws =
     match Result.try_with (fun () -> a_of_tws raw_tws) with

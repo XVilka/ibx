@@ -194,8 +194,8 @@ module Request = struct
       let buggy_req = Ib.Request.create
           ~send_header:(Ib.Header.create ~tag:Send_tag.Server_time ~version:1)
           ~recv_header:(Ib.Header.create ~tag:wrong_recv_tag ~version:1)
-          ~tws_query:Query.Server_time.pickler
-          ~tws_response:Response.Server_time.unpickler
+          ~tws_query:Query.Server_time.encoder
+          ~tws_response:Response.Server_time.decoder
       in
       unix_pipe ()
       >>= fun (r, w) ->
@@ -292,8 +292,8 @@ module Streaming_request = struct
       ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
       ~canc_header:(Ib.Header.create ~tag:Send_tag.Cancel_market_data ~version:1)
       ~recv_header:[Ib.Header.create ~tag:Recv_tag.Tick_size ~version:6]
-      ~tws_query:Query.Market_data.pickler
-      ~tws_response:[Response.Tick_size.unpickler]
+      ~tws_query:Query.Market_data.encoder
+      ~tws_response:[Response.Tick_size.decoder]
       ()
 
   let tick_size con =
@@ -422,8 +422,8 @@ module Streaming_request = struct
       ) ~finally:(fun () -> Writer.close w)
     );
 
-    "unpickler-mismatch" >:: (fun () ->
-      let module U = Tws_prot.Unpickler in
+    "decoder-mismatch" >:: (fun () ->
+      let module D = Tws_prot.Decoder in
       let buggy_req =
         Ib.Streaming_request.create
           ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
@@ -431,10 +431,10 @@ module Streaming_request = struct
           ~recv_header:[
             Ib.Header.create ~tag:Recv_tag.Tick_size ~version:6
           ]
-          ~tws_query:Query.Market_data.pickler
+          ~tws_query:Query.Market_data.encoder
           ~tws_response:[
-            U.map Response.Tick_price.unpickler ~f:(fun x -> `Tick_price x);
-            U.map Response.Tick_size.unpickler  ~f:(fun x -> `Tick_size  x);
+            D.map Response.Tick_price.decoder ~f:(fun x -> `Tick_price x)
+          ; D.map Response.Tick_size.decoder  ~f:(fun x -> `Tick_size  x)
           ] ()
       in
       unix_pipe ()

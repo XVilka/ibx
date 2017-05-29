@@ -276,9 +276,9 @@ let ( = ) t1 t2 : bool =
     ~algo_strategy:(use (=))
     ~request_pre_trade_information:(use (=))
 
-let pickler =
-  Pickler.create ~name:"Query.Submit_order"
-    Pickler.Spec.(
+let encoder =
+  Encoder.create ~name:"Query.Submit_order"
+    Encoder.Spec.(
       lift (
         Fields.fold
           ~init:(empty ())
@@ -441,9 +441,9 @@ let pickler =
            $ t.algo_strategy
            $ t.request_pre_trade_information))
 
-let unpickler = Only_in_test.of_thunk (fun () ->
-  Unpickler.create ~name:"Query.Submit_order"
-    Unpickler.Spec.(
+let decoder = Only_in_test.of_thunk (fun () ->
+  Decoder.create ~name:"Query.Submit_order"
+    Decoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value (optional Contract_id.val_type ~none_on_default:"0"))

@@ -84,10 +84,10 @@ let ( = ) t1 t2 : bool =
     ~combo_legs:(use (=))
 
 
-module Pickler_specs = struct
+module Encoder_specs = struct
 
   let lift_contract_spec contract_spec =
-    Pickler.Spec.(
+    Encoder.Spec.(
       lift contract_spec
         (fun t ->
            `Args
@@ -108,7 +108,7 @@ module Pickler_specs = struct
            $ t.combo_legs))
 
   let market_data_query () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value (optional Contract_id.val_type))
@@ -129,7 +129,7 @@ module Pickler_specs = struct
     |> lift_contract_spec
 
   let common_option_calc () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value (optional Contract_id.val_type))
@@ -150,7 +150,7 @@ module Pickler_specs = struct
     |> lift_contract_spec
 
   let contract_details_query () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value (optional Contract_id.val_type))
@@ -171,7 +171,7 @@ module Pickler_specs = struct
     |> lift_contract_spec
 
   let market_depth_query () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value skipped)
@@ -192,7 +192,7 @@ module Pickler_specs = struct
     |> lift_contract_spec
 
   let history_query () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value skipped)
@@ -213,7 +213,7 @@ module Pickler_specs = struct
     |> lift_contract_spec
 
   let realtime_bars_query () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value skipped)
@@ -234,7 +234,7 @@ module Pickler_specs = struct
     |> lift_contract_spec
 
   let position_response () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value (optional Contract_id.val_type))
@@ -255,7 +255,7 @@ module Pickler_specs = struct
     |> lift_contract_spec
 
   let execution_response () =
-    Pickler.Spec.(
+    Encoder.Spec.(
       Fields.fold
         ~init:(empty ())
         ~con_id:(fields_value (optional Contract_id.val_type))
@@ -276,12 +276,12 @@ module Pickler_specs = struct
     |> lift_contract_spec
 end
 
-module Unpickler_specs = struct
+module Decoder_specs = struct
 
   let field_name field = Fieldslib.Field.name field
 
   let market_data_query () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv con_id symbol sec_type expiry strike right
              multiplier exchange prim_exch currency local_symbol
              _combo_legs ->
@@ -317,7 +317,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.combo_legs))
 
   let option_price_query () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv con_id symbol sec_type expiry strike right
              multiplier exchange prim_exch currency local_symbol ->
              let contract = create
@@ -351,7 +351,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.local_symbol))
 
   let implied_volatility_query () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv con_id symbol sec_type expiry strike right
              multiplier exchange prim_exch currency local_symbol ->
              let contract = create
@@ -385,7 +385,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.local_symbol))
 
   let contract_details_query () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv con_id symbol sec_type expiry strike right
              multiplier exchange currency local_symbol include_expired
              sec_id_type sec_id ->
@@ -424,7 +424,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.sec_id))
 
   let market_depth_query () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv symbol sec_type expiry strike right
              multiplier exchange currency local_symbol ->
              let contract = create
@@ -453,7 +453,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.local_symbol))
 
   let history_query () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv symbol sec_type expiry strike right multiplier
              exchange prim_exch currency local_symbol include_expired ->
              let contract = create
@@ -486,7 +486,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.include_expired))
 
   let realtime_bars_query () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv symbol sec_type expiry strike right
              multiplier exchange prim_exch currency local_symbol ->
              let contract = create
@@ -517,7 +517,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.local_symbol))
 
   let position_response () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv con_id symbol sec_type expiry strike right
              multiplier exchange currency local_symbol ->
              let contract = create
@@ -548,7 +548,7 @@ module Unpickler_specs = struct
         ~name:(field_name Fields.local_symbol))
 
   let execution_response () =
-    Unpickler.Spec.(
+    Decoder.Spec.(
       step (fun conv con_id symbol sec_type expiry strike right
              exchange currency local_symbol ->
              let contract = create

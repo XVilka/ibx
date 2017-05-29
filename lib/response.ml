@@ -38,18 +38,18 @@ module Tws_error = struct
 
   let ( = ) t1 t2 = (t1 = t2)
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Tws_error"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Tws_error"
+      Decoder.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~error_code:(fields_value (required int))
           ~error_msg:(fields_value (required string)))
       (fun error_code error_msg  -> { error_code; error_msg })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Tws_error"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Tws_error"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -75,17 +75,17 @@ module Server_time = struct
   let create ~time = time
   let ( = ) t1 t2 = (t1 = t2)
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Server_time"
-      Unpickler.Spec.(value (required int64) ~name:"time")
+  let decoder =
+    Decoder.create ~name:"Response.Server_time"
+      Decoder.Spec.(value (required int64) ~name:"time")
       (fun long_int ->
          Int64.to_float long_int
          |> Unix.localtime
          |> Time.of_tm ~zone:(Lazy.force Time.Zone.local))
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Server_time"
-      Pickler.Spec.(lift (value (required int64)) (fun tm ->
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Server_time"
+      Encoder.Spec.(lift (value (required int64)) (fun tm ->
         Time.to_span_since_epoch tm
         |> Time.Span.to_proportional_float
         |> Int64.of_float)))
@@ -150,9 +150,9 @@ module Tick_price = struct
       ~size:(use Volume.(=))
       ~can_auto_execute:(use (Option.equal (=)))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Tick_price"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Tick_price"
+      Decoder.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
@@ -162,9 +162,9 @@ module Tick_price = struct
       (fun tick_type price size can_auto_execute ->
          { tick_type; price; size; can_auto_execute })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Tick_price"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Tick_price"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -218,18 +218,18 @@ module Tick_size = struct
 
   let ( = ) t1 t2 = (t1 = t2)
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Tick_size"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Tick_size"
+      Decoder.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
           ~size:(fields_value (required Volume.val_type)))
       (fun tick_type size -> { tick_type; size })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Tick_size"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Tick_size"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -300,9 +300,9 @@ module Tick_option = struct
       ~theta:(use Float.(=.))
       ~under_price:(use Price.(=.))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Tick_option"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Tick_option"
+      Decoder.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
@@ -327,9 +327,9 @@ module Tick_option = struct
            under_price = if Price.(under_price < zero) then Price.nan else under_price;
          })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Tick_option"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Tick_option"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -561,18 +561,18 @@ module Tick_string = struct
       ~tick_type:(use (=))
       ~value:(use (=))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Tick_string"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Tick_string"
+      Decoder.Spec.(
         Fields.fold
           ~init:(step Fn.id)
           ~tick_type:(fields_value (required Type.val_type))
           ~value:(fields_value (required string)))
       (fun tick_type value -> { tick_type; value })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Tick_string"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Tick_string"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -659,9 +659,9 @@ module Order_status = struct
       ~client_id:(use Client_id.(=))
       ~why_held:(use (=))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Order_status"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Order_status"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~state:(fields_value (required State.val_type))
@@ -686,9 +686,9 @@ module Order_status = struct
           why_held;
         })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Order_status"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Order_status"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -738,9 +738,9 @@ module Account_update = struct
       ~currency:(use (=))
       ~account_code:(use (=))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Account_update"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Account_update"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~key:(fields_value (required string))
@@ -750,9 +750,9 @@ module Account_update = struct
       (fun key value currency account_code ->
          { key; value; currency; account_code })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Account_update"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Account_update"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -816,10 +816,10 @@ module Position = struct
       ~realized_pnl:(use Price.(=.))
       ~account_code:(use Account_code.(=))
 
-  let unpickler =
-    let contract_spec = Raw_contract.Unpickler_specs.position_response () in
-    Unpickler.create ~name:"Response.Position"
-      Unpickler.Spec.(
+  let decoder =
+    let contract_spec = Raw_contract.Decoder_specs.position_response () in
+    Decoder.create ~name:"Response.Position"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -842,12 +842,12 @@ module Position = struct
           account_code;
         })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
+  let encoder = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Pickler_specs.position_response ()
+      Raw_contract.Encoder_specs.position_response ()
     in
-    Pickler.create ~name:"Response.Position"
-      Pickler.Spec.(
+    Encoder.create ~name:"Response.Position"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -943,10 +943,10 @@ module Contract_data = struct
       ~trading_hours:(use (=))
       ~liquid_hours:(use (=))
 
-  let unpickler =
+  let decoder =
     let field_name field = Fieldslib.Field.name field in
-    Unpickler.create ~name:"Response.Contract_data"
-      Unpickler.Spec.(
+    Decoder.create ~name:"Response.Contract_data"
+      Decoder.Spec.(
         value (required Symbol.val_type)
           ~name:(field_name Raw_contract.Fields.symbol)
         ++ value (required string)
@@ -1041,9 +1041,9 @@ module Contract_data = struct
         ; liquid_hours
         })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Contract_data"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Contract_data"
+      Encoder.Spec.(
         lift (empty ()
               (* symbol *)
               ++ value (required Symbol.val_type)
@@ -1217,10 +1217,10 @@ module Execution = struct
       ~average_price:(use Price.(=.))
       ~order_ref:(use (=))
 
-  let unpickler =
-    let contract_spec = Raw_contract.Unpickler_specs.execution_response () in
-    Unpickler.create ~name:"Response.Execution"
-      Unpickler.Spec.(
+  let decoder =
+    let contract_spec = Raw_contract.Decoder_specs.execution_response () in
+    Decoder.create ~name:"Response.Execution"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~order_id:(fields_value (required Order_id.val_type))
@@ -1258,10 +1258,10 @@ module Execution = struct
         ; order_ref
         })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    let contract_spec = Raw_contract.Pickler_specs.execution_response () in
-    Pickler.create ~name:"Response.Execution"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    let contract_spec = Raw_contract.Encoder_specs.execution_response () in
+    Encoder.create ~name:"Response.Execution"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -1333,9 +1333,9 @@ module Commission = struct
       ~yield:(use Float.(=.))
       ~yield_redemption_date:(use (=))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Commission"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Commission"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~exec_id:(fields_value (required Execution_id.val_type))
@@ -1354,9 +1354,9 @@ module Commission = struct
         ; yield_redemption_date
         })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Commission"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Commission"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -1437,9 +1437,9 @@ module Book_update = struct
       ~price:(use Price.(=.))
       ~size:(use Volume.(=))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.Book_update"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.Book_update"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~position:(fields_value (required int))
@@ -1450,9 +1450,9 @@ module Book_update = struct
       (fun position operation side price size ->
          { position; operation; side; price; size })
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.Book_update"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.Book_update"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -1502,9 +1502,9 @@ module History = struct
       ~num_bars:(use (=))
       ~bars:(use (List.for_all2_exn ~f:Bar.(=)))
 
-  let unpickler =
-    Unpickler.create ~name:"Response.History"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Response.History"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~start:(fields_value (required string))
@@ -1519,18 +1519,18 @@ module History = struct
              Array.sub bars_msg ~pos:(num_fields * i) ~len:num_fields
              |> Queue.of_array
            in
-           let bar_u = Unpickler.create
-               Unpickler.Spec.(Raw_bar.Historical_bar.unpickler_spec ()) Fn.id
+           let bar_u = Decoder.create
+               Decoder.Spec.(Raw_bar.Historical_bar.decoder_spec ()) Fn.id
            in
-           Unpickler.run_exn bar_u bar_msg
+           Decoder.run_exn bar_u bar_msg
            |> Bar.of_raw)
          in
          create ~bars
       )
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create ~name:"Response.History"
-      Pickler.Spec.(
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create ~name:"Response.History"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -1539,11 +1539,11 @@ module History = struct
             ~num_bars:(fields_value (required int))
             ~bars:(fields_value tws_data))
           (fun t ->
-             let bar_p = Pickler.create
-                 Pickler.Spec.(Raw_bar.Historical_bar.pickler_spec ())
+             let bar_p = Encoder.create
+                 Encoder.Spec.(Raw_bar.Historical_bar.encoder_spec ())
              in
              let bars_msg =
-               List.map t.bars ~f:(fun bar -> Pickler.run bar_p (Bar.to_raw bar))
+               List.map t.bars ~f:(fun bar -> Encoder.run bar_p (Bar.to_raw bar))
                |> String.concat
              in
              `Args
@@ -1624,12 +1624,12 @@ module Realtime_bar = struct
   let create ~bar = bar
   let ( = ) = Bar.(=)
 
-  let unpickler = Unpickler.create
-      Unpickler.Spec.(Raw_bar.Realtime_bar.unpickler_spec ())
+  let decoder = Decoder.create
+      Decoder.Spec.(Raw_bar.Realtime_bar.decoder_spec ())
       Bar.of_raw
 
-  let pickler = Only_in_test.of_thunk (fun () ->
-    Pickler.create
-      Pickler.Spec.(
-        lift (Raw_bar.Realtime_bar.pickler_spec ()) Bar.to_raw))
+  let encoder = Only_in_test.of_thunk (fun () ->
+    Encoder.create
+      Encoder.Spec.(
+        lift (Raw_bar.Realtime_bar.encoder_spec ()) Bar.to_raw))
 end

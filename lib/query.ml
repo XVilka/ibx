@@ -27,12 +27,12 @@ module Unit (Arg : sig val name:string end) = struct
   type t = unit [@@deriving sexp]
   let create () = ()
   let ( = ) t1 t2 = (t1 = t2)
-  let pickler =
-    Pickler.create ~name:Arg.name
-      Pickler.Spec.(value (required unit))
-  let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:Arg.name
-      Unpickler.Spec.(value (required unit) ~name:"unit")
+  let encoder =
+    Encoder.create ~name:Arg.name
+      Encoder.Spec.(value (required unit))
+  let decoder = Only_in_test.of_thunk (fun () ->
+    Decoder.create ~name:Arg.name
+      Decoder.Spec.(value (required unit) ~name:"unit")
       Fn.id)
 end
 
@@ -74,13 +74,13 @@ module Server_log_level = struct
 
   let ( = ) t1 t2 = (t1 = t2)
 
-  let pickler =
-    Pickler.create ~name:"Query.Server_log_level"
-      Pickler.Spec.(value (required Level.val_type))
+  let encoder =
+    Encoder.create ~name:"Query.Server_log_level"
+      Encoder.Spec.(value (required Level.val_type))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Query.Server_log_level"
-      Unpickler.Spec.(value (required Level.val_type) ~name:"log_level")
+  let decoder = Only_in_test.of_thunk (fun () ->
+    Decoder.create ~name:"Query.Server_log_level"
+      Decoder.Spec.(value (required Level.val_type) ~name:"log_level")
       Fn.id)
 end
 
@@ -114,12 +114,12 @@ module Market_data = struct
       ~tick_types:(use (=))
       ~snapshot:(use (=))
 
-  let pickler =
+  let encoder =
     let contract_spec =
-      Raw_contract.Pickler_specs.market_data_query ()
+      Raw_contract.Encoder_specs.market_data_query ()
     in
-    Pickler.create ~name:"Query.Market_data"
-      Pickler.Spec.(
+    Encoder.create ~name:"Query.Market_data"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -129,12 +129,12 @@ module Market_data = struct
           (fun { contract; tick_types; snapshot } ->
              `Args $ contract $ tick_types $ snapshot))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
+  let decoder = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Unpickler_specs.market_data_query ()
+      Raw_contract.Decoder_specs.market_data_query ()
     in
-    Unpickler.create ~name:"Query.Market_data"
-      Unpickler.Spec.(
+    Decoder.create ~name:"Query.Market_data"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -166,12 +166,12 @@ module Option_price = struct
       ~volatility:(use Float.(=.))
       ~underlying_price:(use Price.(=.))
 
-  let pickler =
+  let encoder =
     let contract_spec =
-      Raw_contract.Pickler_specs.common_option_calc ()
+      Raw_contract.Encoder_specs.common_option_calc ()
     in
-    Pickler.create ~name:"Query.Option_price"
-      Pickler.Spec.(
+    Encoder.create ~name:"Query.Option_price"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -181,12 +181,12 @@ module Option_price = struct
           (fun { contract; volatility; underlying_price } ->
              `Args $ contract $ volatility $ underlying_price))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
+  let decoder = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Unpickler_specs.option_price_query ()
+      Raw_contract.Decoder_specs.option_price_query ()
     in
-    Unpickler.create ~name:"Query.Option_price"
-      Unpickler.Spec.(
+    Decoder.create ~name:"Query.Option_price"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -218,12 +218,12 @@ module Implied_volatility = struct
       ~option_price:(use Price.(=.))
       ~underlying_price:(use Price.(=.))
 
-  let pickler =
+  let encoder =
     let contract_spec =
-      Raw_contract.Pickler_specs.common_option_calc ()
+      Raw_contract.Encoder_specs.common_option_calc ()
     in
-    Pickler.create ~name:"Query.Implied_volatility"
-      Pickler.Spec.(
+    Encoder.create ~name:"Query.Implied_volatility"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -233,12 +233,12 @@ module Implied_volatility = struct
           (fun { contract; option_price; underlying_price } ->
              `Args $ contract $ option_price $ underlying_price))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
+  let decoder = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Unpickler_specs.implied_volatility_query ()
+      Raw_contract.Decoder_specs.implied_volatility_query ()
     in
-    Unpickler.create ~name:"Query.Implied_volatility"
-      Unpickler.Spec.(
+    Decoder.create ~name:"Query.Implied_volatility"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -275,9 +275,9 @@ module Updates (Arg : sig val name:string end) = struct
       ~subscribe:(use (=))
       ~account_code:(use Account_code.(=))
 
-  let pickler =
-    Pickler.create ~name:Arg.name
-      Pickler.Spec.(
+  let encoder =
+    Encoder.create ~name:Arg.name
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -285,9 +285,9 @@ module Updates (Arg : sig val name:string end) = struct
             ~account_code:(fields_value (required Account_code.val_type)))
           (fun t -> `Args $ t.subscribe $ t.account_code))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:Arg.name
-      Unpickler.Spec.(
+  let decoder = Only_in_test.of_thunk (fun () ->
+    Decoder.create ~name:Arg.name
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~subscribe:(fields_value (required bool))
@@ -349,9 +349,9 @@ module Executions = struct
       ~exchange:(use (=))
       ~action:(use (=))
 
-  let pickler =
-    Pickler.create ~name:"Query.Executions"
-      Pickler.Spec.(
+  let encoder =
+    Encoder.create ~name:"Query.Executions"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -372,9 +372,9 @@ module Executions = struct
              $ t.exchange
              $ t.action))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Query.Executions"
-      Unpickler.Spec.(
+  let decoder = Only_in_test.of_thunk (fun () ->
+    Decoder.create ~name:"Query.Executions"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~client_id:(fields_value (required Client_id.val_type))
@@ -424,13 +424,13 @@ module Contract_details = struct
 
   let ( = ) t1 t2 = Raw_contract.(=) t1 t2
 
-  let pickler =
-    Pickler.create ~name:"Query.Contract_details"
-      (Raw_contract.Pickler_specs.contract_details_query ())
+  let encoder =
+    Encoder.create ~name:"Query.Contract_details"
+      (Raw_contract.Encoder_specs.contract_details_query ())
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
-    Unpickler.create ~name:"Query.Contract_details"
-      (Raw_contract.Unpickler_specs.contract_details_query ())
+  let decoder = Only_in_test.of_thunk (fun () ->
+    Decoder.create ~name:"Query.Contract_details"
+      (Raw_contract.Decoder_specs.contract_details_query ())
       Fn.id)
 end
 
@@ -457,12 +457,12 @@ module Market_depth = struct
       ~contract:(use Raw_contract.(=))
       ~num_rows:(use (=))
 
-  let pickler =
+  let encoder =
     let contract_spec =
-      Raw_contract.Pickler_specs.market_depth_query ()
+      Raw_contract.Encoder_specs.market_depth_query ()
     in
-    Pickler.create ~name:"Query.Market_depth"
-      Pickler.Spec.(
+    Encoder.create ~name:"Query.Market_depth"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -470,12 +470,12 @@ module Market_depth = struct
             ~num_rows:(fields_value (required int)))
           (fun { contract; num_rows } -> `Args $ contract $ num_rows ))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
+  let decoder = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Unpickler_specs.market_depth_query ()
+      Raw_contract.Decoder_specs.market_depth_query ()
     in
-    Unpickler.create ~name:"Query.Market_depth"
-      Unpickler.Spec.(
+    Decoder.create ~name:"Query.Market_depth"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -561,10 +561,10 @@ module History = struct
       ~tick_type:(use (=))
       ~date_format:(use (=))
 
-  let pickler =
-    let contract_spec = Raw_contract.Pickler_specs.history_query () in
-    Pickler.create ~name:"Query.History"
-      Pickler.Spec.(
+  let encoder =
+    let contract_spec = Raw_contract.Encoder_specs.history_query () in
+    Encoder.create ~name:"Query.History"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -585,10 +585,10 @@ module History = struct
              $ t.tick_type
              $ t.date_format))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
-    let contract_spec = Raw_contract.Unpickler_specs.history_query () in
-    Unpickler.create ~name:"Query.History"
-      Unpickler.Spec.(
+  let decoder = Only_in_test.of_thunk (fun () ->
+    let contract_spec = Raw_contract.Decoder_specs.history_query () in
+    Decoder.create ~name:"Query.History"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))
@@ -677,12 +677,12 @@ module Realtime_bars = struct
       ~tick_type:(use (=))
       ~use_rth:(use (=))
 
-  let pickler =
+  let encoder =
     let contract_spec =
-      Raw_contract.Pickler_specs.realtime_bars_query ()
+      Raw_contract.Encoder_specs.realtime_bars_query ()
     in
-    Pickler.create ~name:"Query.Realtime_bars"
-      Pickler.Spec.(
+    Encoder.create ~name:"Query.Realtime_bars"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -693,12 +693,12 @@ module Realtime_bars = struct
           (fun { contract; bar_size; tick_type; use_rth } ->
              `Args $ contract $ bar_size $ tick_type $ use_rth ))
 
-  let unpickler = Only_in_test.of_thunk (fun () ->
+  let decoder = Only_in_test.of_thunk (fun () ->
     let contract_spec =
-      Raw_contract.Unpickler_specs.realtime_bars_query ()
+      Raw_contract.Decoder_specs.realtime_bars_query ()
     in
-    Unpickler.create ~name:"Query.Realtime_bars"
-      Unpickler.Spec.(
+    Decoder.create ~name:"Query.Realtime_bars"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~contract:(fun specs -> Fn.const (specs ++ contract_spec))

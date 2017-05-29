@@ -26,8 +26,8 @@ open Tws_prot
 module type S = sig
   type t
   include Sexpable.S with type t := t
-  include Unpickable.S with type t:= t
-  val pickler : t Pickler.t Only_in_test.t
+  include Decodable.S with type t:= t
+  val encoder : t Encoder.t Only_in_test.t
   val ( = ) : t -> t -> bool
 end
 

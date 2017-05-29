@@ -24,5 +24,5 @@ open Tws_prot
 
 module type S = sig
   type t
-  val unpickler : t Unpickler.t
+  val decoder : t Decoder.t
 end

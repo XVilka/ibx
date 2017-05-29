@@ -62,7 +62,7 @@ module Ibx_error = struct
     | Parse_error of Sexp.t
     | Tws_error of string
     | Unknown_response_handler of Query_id.t * Recv_tag.t * [ `Version of int ]
-    | Unpickler_mismatch of Sexp.t * Recv_tag.t Header.t list
+    | Decoder_mismatch of Sexp.t * Recv_tag.t Header.t list
     | Uncaught_exn of Sexp.t
   [@@deriving sexp]
   exception Ibx of t [@@deriving sexp]
@@ -85,7 +85,7 @@ module Ibx_result = struct
       (fun e -> Ibx_error.Read_error e)
       f
 
-  let try_with_unpickle f =
+  let try_with_decode f =
     make_try_with
       Result.try_with
       (fun x f -> x |> f)
@@ -97,8 +97,8 @@ module Ibx_result = struct
     | Error err -> Error (Ibx_error.to_error err)
 end
 
-let to_tws p x = Pickler.run p x
-let of_tws u x = Ibx_result.try_with_unpickle (fun () -> Unpickler.run_exn u x)
+let to_tws e x = Encoder.run e x
+let of_tws d x = Ibx_result.try_with_decode (fun () -> Decoder.run_exn d x)
 
 module Client_header = struct
   type t =
@@ -106,9 +106,9 @@ module Client_header = struct
     ; client_id      : Client_id.t
     } [@@deriving fields, sexp]
 
-  let pickler =
-    Pickler.create ~name:"Ib.Client_header"
-      Pickler.Spec.(
+  let encoder =
+    Encoder.create ~name:"Ib.Client_header"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -124,9 +124,9 @@ module Server_header = struct
     ; connection_time : Time.t
     } [@@deriving fields, sexp]
 
-  let unpickler =
-    Unpickler.create ~name:"Ib.Server_header"
-      Unpickler.Spec.(
+  let decoder =
+    Decoder.create ~name:"Ib.Server_header"
+      Decoder.Spec.(
         Fields.fold
           ~init:(empty ())
           ~server_version:(fields_value (required int))
@@ -143,9 +143,9 @@ module Query = struct
     ; data    : string
     } [@@deriving fields, sexp]
 
-  let pickler =
-    Pickler.create ~name:"Ib.Query"
-      Pickler.Spec.(
+  let encoder =
+    Encoder.create ~name:"Ib.Query"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -169,9 +169,9 @@ module Response = struct
     ; data     : Response_data.t
     } [@@deriving fields, sexp]
 
-  let pickler =
-    Pickler.create ~name:"Ib.Response"
-      Pickler.Spec.(
+  let encoder =
+    Encoder.create ~name:"Ib.Response"
+      Encoder.Spec.(
         lift (
           Fields.fold
             ~init:(empty ())
@@ -288,7 +288,7 @@ module Connection : Connection_internal = struct
   and response_handler = Response_handler.handler
   and logfun = [ `Send of Query.t | `Recv of Response.t ] -> unit
 
-  let init_handler t ~header ~unpickler ~action ~f =
+  let init_handler t ~header ~decoder ~action ~f =
     let id = Query_id.default in
     let tag = header.Header.tag in
     let version = header.Header.version in
@@ -300,7 +300,7 @@ module Connection : Connection_internal = struct
         assert false (* Response handler is not cancelable. *)
       | Ok (`Response data) ->
         begin
-          match of_tws unpickler data with
+          match of_tws decoder data with
           | Error err ->
             return (`Die err)
           | Ok response ->
@@ -329,10 +329,10 @@ module Connection : Connection_internal = struct
       let tr_null s = String.tr s ~target:'\000' ~replacement:'|' in
       match send_recv with
       | `Send query ->
-        let msg = to_tws Query.pickler query in
+        let msg = to_tws Query.encoder query in
         Log.Global.debug ">> %s" (tr_null msg)
       | `Recv response ->
-        let msg = to_tws Response.pickler response in
+        let msg = to_tws Response.encoder response in
         Log.Global.debug "<< %s" (tr_null msg)
     in
     let t =
@@ -348,27 +348,27 @@ module Connection : Connection_internal = struct
     in
     init_handler t
       ~header:Header.account_code
-      ~unpickler:Account_code.unpickler
+      ~decoder:Account_code.decoder
       ~action:`Remove
       ~f:(Ivar.fill t.account_code);
     init_handler t
       ~header:Header.order_id
-      ~unpickler:Order_id.unpickler
+      ~decoder:Order_id.decoder
       ~action:`Remove
       ~f:(Ivar.fill t.next_order_id);
     init_handler t
       ~header:Header.tws_error
-      ~unpickler:Tws_error.unpickler
+      ~decoder:Tws_error.decoder
       ~action:`Keep
       ~f:(fun e -> extend_status (Tws_error.to_string_hum e));
     init_handler t
       ~header:Header.execution
-      ~unpickler:Execution.unpickler
+      ~decoder:Execution.decoder
       ~action:`Keep
       ~f:extend_execution;
     init_handler t
       ~header:Header.commission
-      ~unpickler:Commission.unpickler
+      ~decoder:Commission.decoder
       ~action:`Keep
       ~f:extend_commission;
     return t
@@ -389,7 +389,7 @@ module Connection : Connection_internal = struct
       Pipe.close_read t.reader
     end else Deferred.unit
 
-  let send_tws writer pickler msg = Writer.write writer (to_tws pickler msg)
+  let send_tws writer encoder msg = Writer.write writer (to_tws encoder msg)
 
   let send_query ?logfun writer query =
     begin
@@ -397,7 +397,7 @@ module Connection : Connection_internal = struct
       | None -> ()
       | Some f -> f (`Send query)
     end;
-    send_tws writer Query.pickler query
+    send_tws writer Query.encoder query
 
   let really_read reader ~len =
     Pipe.read_exactly reader ~num_values:len >>| function
@@ -405,20 +405,20 @@ module Connection : Connection_internal = struct
     | `Fewer   result -> `Ok result
     | `Exactly result -> `Ok result
 
-  let read_tws reader unpickler ~len =
+  let read_tws reader decoder ~len =
     really_read reader ~len >>| function
     | `Eof -> Ok `Eof
     | `Ok raw_msg ->
       begin
-        match of_tws unpickler raw_msg with
+        match of_tws decoder raw_msg with
         | Error _ as x -> x
         | Ok x -> Ok (`Ok x)
       end
 
   module Version_id = struct
-    let unpickler =
-      Unpickler.create ~name:"Ib.Version_id"
-        Unpickler.Spec.(
+    let decoder =
+      Decoder.create ~name:"Ib.Version_id"
+        Decoder.Spec.(
           value (required int) ~name:"version"
           ++ value (required Query_id.val_type) ~name:"id"
         )
@@ -426,9 +426,9 @@ module Connection : Connection_internal = struct
   end
 
   module Version = struct
-    let unpickler =
-      Unpickler.create ~name:"Ib.Version"
-        Unpickler.Spec.(
+    let decoder =
+      Decoder.create ~name:"Ib.Version"
+        Decoder.Spec.(
           value (required int) ~name:"version"
         )
         (fun version -> (version, None))
@@ -436,8 +436,8 @@ module Connection : Connection_internal = struct
 
   let read_version_and_optional_id reader tag =
     if Recv_tag.corresponding_response_has_query_id tag
-    then read_tws reader Version_id.unpickler ~len:2
-    else read_tws reader Version.unpickler ~len:1
+    then read_tws reader Version_id.decoder ~len:2
+    else read_tws reader Version.decoder ~len:1
 
   let read_body reader tag =
     let module R = Recv_tag in
@@ -523,7 +523,7 @@ module Connection : Connection_internal = struct
   let (>>|~) = Deferred_read_result.(>>|)
 
   let read_response reader =
-    read_tws reader Recv_tag.unpickler ~len:1
+    read_tws reader Recv_tag.decoder ~len:1
     >>=~ fun tag ->
     read_version_and_optional_id reader tag
     >>=~ fun (version, id) ->
@@ -548,7 +548,7 @@ module Connection : Connection_internal = struct
           tag     = Send_tag.Set_server_log_level
         ; version = 1
         ; id      = None
-        ; data    = to_tws Server_log_level.pickler log_level;
+        ; data    = to_tws Server_log_level.encoder log_level;
         }
       in
       send_query ?logfun:t.logfun writer query
@@ -685,8 +685,8 @@ module Connection : Connection_internal = struct
       | Error `Closed ->
         return (Error Ibx_error.Connection_closed)
       | Ok writer ->
-        send_tws writer Client_header.pickler client_header;
-        read_tws t.reader Server_header.unpickler ~len:2
+        send_tws writer Client_header.encoder client_header;
+        read_tws t.reader Server_header.decoder ~len:2
         >>= function
         | Error err ->
           don't_wait_for (close t);
@@ -715,8 +715,8 @@ module Request = struct
   type ('query, 'response) t =
     { send_header  : Send_tag.t Header.t
     ; recv_header  : Recv_tag.t Header.t
-    ; tws_query    : 'query    Tws_prot.Pickler.t
-    ; tws_response : 'response Tws_prot.Unpickler.t
+    ; tws_query    : 'query    Tws_prot.Encoder.t
+    ; tws_response : 'response Tws_prot.Decoder.t
     }
 
   let create ~send_header ~recv_header ~tws_query ~tws_response =
@@ -770,8 +770,8 @@ module Streaming_request = struct
     ; canc_header  : Send_tag.t Header.t option
     ; recv_header  : Recv_tag.t Header.t list
     ; skip_header  : Recv_tag.t Header.t list option
-    ; tws_query    : 'query    Tws_prot.Pickler.t
-    ; tws_response : 'response Tws_prot.Unpickler.t list
+    ; tws_query    : 'query    Tws_prot.Encoder.t
+    ; tws_response : 'response Tws_prot.Decoder.t list
     }
 
   module Id = Query_id
@@ -809,7 +809,7 @@ module Streaming_request = struct
           return `Remove
         | Ok (`Response data) ->
           begin
-            match of_tws Tws_error.unpickler data with
+            match of_tws Tws_error.decoder data with
             | Error err ->
               Pipe.close pipe_w;
               return (`Die err)
@@ -837,7 +837,7 @@ module Streaming_request = struct
             | Ok (`Response _) -> return `Keep))
     in
     let data_handler_result = Result.try_with (fun () ->
-      List.map2_exn t.recv_header t.tws_response ~f:(fun header unpickler ->
+      List.map2_exn t.recv_header t.tws_response ~f:(fun header decoder ->
         Response_handler.create ~header ~run:(fun response ->
           let update pipe_w response =
             match response.Response.data with
@@ -849,7 +849,7 @@ module Streaming_request = struct
               return `Remove
             | Ok (`Response data) ->
               begin
-                match of_tws unpickler data with
+                match of_tws decoder data with
                 | Error err ->
                   Pipe.close pipe_w;
                   return (`Die err)
@@ -873,7 +873,7 @@ module Streaming_request = struct
             return `Remove
           | Ok (`Response data) ->
             begin
-              match of_tws unpickler data with
+              match of_tws decoder data with
               | Error err as x ->
                 Pipe.close pipe_w;
                 Ivar.fill_if_empty ivar x;
@@ -892,7 +892,7 @@ module Streaming_request = struct
       match data_handler_result with
       | Error exn ->
         don't_wait_for (Connection.close con);
-        let err = Ibx_error.Unpickler_mismatch (Exn.sexp_of_t exn, t.recv_header) in
+        let err = Ibx_error.Decoder_mismatch (Exn.sexp_of_t exn, t.recv_header) in
         Ivar.fill ivar (Error err)
       | Ok data_handlers ->
         let handlers = error_handler :: skip_handlers @ data_handlers in
@@ -926,8 +926,8 @@ module Streaming_request_without_id = struct
     { send_header  : Send_tag.t Header.t
     ; recv_header  : Recv_tag.t Header.t list
     ; skip_header  : Recv_tag.t Header.t list option
-    ; tws_query    : 'query    Tws_prot.Pickler.t
-    ; tws_response : 'response Tws_prot.Unpickler.t list
+    ; tws_query    : 'query    Tws_prot.Encoder.t
+    ; tws_response : 'response Tws_prot.Decoder.t list
     }
 
   let create ?skip_header ~send_header ~recv_header
@@ -962,7 +962,7 @@ module Streaming_request_without_id = struct
             | Ok (`Response _) -> return `Keep))
     in
     let data_handler_result = Result.try_with (fun () ->
-      List.map2_exn t.recv_header t.tws_response ~f:(fun header unpickler ->
+      List.map2_exn t.recv_header t.tws_response ~f:(fun header decoder ->
         Response_handler.create ~header ~run:(fun response ->
           let update pipe_w response =
             match response.Response.data with
@@ -974,7 +974,7 @@ module Streaming_request_without_id = struct
               return `Remove
             | Ok (`Response data) ->
               begin
-                match of_tws unpickler data with
+                match of_tws decoder data with
                 | Error err ->
                   Pipe.close pipe_w;
                   return (`Die err)
@@ -998,7 +998,7 @@ module Streaming_request_without_id = struct
             return `Remove
           | Ok (`Response data) ->
             begin
-              match of_tws unpickler data with
+              match of_tws decoder data with
               | Error err as x ->
                 Pipe.close pipe_w;
                 Ivar.fill_if_empty ivar x;
@@ -1014,7 +1014,7 @@ module Streaming_request_without_id = struct
       match data_handler_result with
       | Error exn ->
         don't_wait_for (Connection.close con);
-        let err = Ibx_error.Unpickler_mismatch (Exn.sexp_of_t exn, t.recv_header) in
+        let err = Ibx_error.Decoder_mismatch (Exn.sexp_of_t exn, t.recv_header) in
         Ivar.fill ivar (Error err)
       | Ok data_handlers ->
         let handlers = skip_handlers @ data_handlers in

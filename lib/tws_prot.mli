@@ -20,7 +20,7 @@
    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 *)
 
-(** A small pickler/unpickler library for the TWS protocol *)
+(** A small encoder/decoder library for the TWS protocol *)
 
 open Core
 
@@ -32,7 +32,7 @@ module Val_type : sig
   val create : ('a -> raw_tws) -> (raw_tws -> 'a) -> 'a t
 end
 
-module Pickler : sig
+module Encoder : sig
 
   module Spec : sig
 
@@ -40,7 +40,7 @@ module Pickler : sig
 
     val empty : unit -> [ `Args ] t
 
-    (** We may want to use a ['a] pickler to serialize ['b] values. *)
+    (** We may want to use a ['a] encoder to serialize ['b] values. *)
     val lift : 'a t -> ('b -> 'a) -> 'b t
 
     val (++) : 'a t -> 'b t -> ('a * 'b) t
@@ -83,7 +83,7 @@ module Pickler : sig
 
 end
 
-module Unpickler : sig
+module Decoder : sig
 
   module Spec : sig
 
