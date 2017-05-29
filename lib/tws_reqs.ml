@@ -137,7 +137,7 @@ let req_portfolio = Ib.Streaming_request_without_id.create
 (* ========================= Executions =========================== *)
 
 let req_executions = Ib.Streaming_request.create
-    ~send_header:(Ib.Header.create ~tag:Send_tag.Executions ~version:3)
+    ~send_header:(Ib.Header.create ~tag:S.Executions ~version:3)
     ~recv_header:[
       Ib.Header.create ~tag:R.Execution ~version:9
     ; Ib.Header.create ~tag:R.Executions_end ~version:1
@@ -182,8 +182,8 @@ let req_realtime_bars = Ib.Streaming_request.create
 (* ========================= TAQ data ============================= *)
 
 let req_taq_data = Ib.Streaming_request.create
-    ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
-    ~canc_header:(Ib.Header.create ~tag:Send_tag.Cancel_market_data ~version:1)
+    ~send_header:(Ib.Header.create ~tag:S.Market_data ~version:9)
+    ~canc_header:(Ib.Header.create ~tag:S.Cancel_market_data ~version:1)
     ~recv_header:[
       Ib.Header.create ~tag:R.Tick_price ~version:6
     ; Ib.Header.create ~tag:R.Tick_size ~version:6
