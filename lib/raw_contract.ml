@@ -24,42 +24,42 @@ open Core
 open Tws_prot
 
 type t =
-  { con_id : Contract_id.t option;
-    symbol : Symbol.t;
-    sec_type : string;
-    expiry : Date.t option;
-    strike : Price.t option;
-    right : Option_right.t option;
-    multiplier : int option;
-    exchange : Exchange.t;
-    prim_exch : Exchange.t option;
-    currency : Currency.t;
-    local_symbol : Symbol.t option;
-    include_expired : bool;
-    sec_id_type : Security_id.Type.t option;
-    sec_id : Security_id.Id.t option;
-    combo_legs : int;
+  { con_id : Contract_id.t option
+  ; symbol : Symbol.t
+  ; sec_type : string
+  ; expiry : Date.t option
+  ; strike : Price.t option
+  ; right : Option_right.t option
+  ; multiplier : int option
+  ; exchange : Exchange.t
+  ; prim_exch : Exchange.t option
+  ; currency : Currency.t
+  ; local_symbol : Symbol.t option
+  ; include_expired : bool
+  ; sec_id_type : Security_id.Type.t option
+  ; sec_id : Security_id.Id.t option
+  ; combo_legs : int
   }
 [@@deriving sexp, fields]
 
 let create ?con_id ?expiry ?strike ?right ?multiplier ?prim_exch
     ?local_symbol ?sec_id_type ?sec_id ?(include_expired=false)
     ?(exchange=`SMART) ~currency ~sec_type symbol =
-  { con_id;
-    symbol;
-    sec_type;
-    expiry;
-    strike;
-    right;
-    multiplier;
-    exchange;
-    prim_exch;
-    currency;
-    local_symbol;
-    include_expired;
-    sec_id_type;
-    sec_id;
-    combo_legs = 0;
+  { con_id
+  ; symbol
+  ; sec_type
+  ; expiry
+  ; strike
+  ; right
+  ; multiplier
+  ; exchange
+  ; prim_exch
+  ; currency
+  ; local_symbol
+  ; include_expired
+  ; sec_id_type
+  ; sec_id
+  ; combo_legs = 0
   }
 
 let ( = ) t1 t2 : bool =

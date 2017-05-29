@@ -24,15 +24,15 @@ open Core
 open Tws_prot
 
 type t =
-  { stamp : Time.t;
-    op : Price.t;
-    hi : Price.t;
-    lo : Price.t;
-    cl : Price.t;
-    vo : Volume.t;
-    wap : Price.t;
-    has_gaps : bool;
-    n_trades : int;
+  { stamp : Time.t
+  ; op : Price.t
+  ; hi : Price.t
+  ; lo : Price.t
+  ; cl : Price.t
+  ; vo : Volume.t
+  ; wap : Price.t
+  ; has_gaps : bool
+  ; n_trades : int
   }
 [@@deriving sexp, fields]
 

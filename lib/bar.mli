@@ -24,23 +24,23 @@ open Core
 
 (* A bar contained in [History] and [Realtime_bars] responses. *)
 type t = private
-  { stamp : Time.t;
+  { stamp : Time.t
     (* Timestamp of the bar. *)
-    op : Price.t;
+  ; op : Price.t
     (* The opening price of the bar. *)
-    hi : Price.t;
+  ; hi : Price.t
     (* The highest price during the time covered by the bar. *)
-    lo : Price.t;
+  ; lo : Price.t
     (* The lowest price during the time covered by the bar. *)
-    cl : Price.t;
+  ; cl : Price.t
     (* The closing price of the bar. *)
-    vo : Volume.t;
+  ; vo : Volume.t
     (* The volume during the time covered by the bar. *)
-    wap : Price.t;
+  ; wap : Price.t
     (* The weigthed average price during the time covered by the bar. *)
-    has_gaps : bool;
+  ; has_gaps : bool
     (* Determines whether or not there are gaps in the data. *)
-    n_trades : int;
+  ; n_trades : int
     (* The number of trades during the time covered by the bar.  Only set when
        the [tick_type] was [Trades]. *)
   } [@@deriving sexp, fields]
