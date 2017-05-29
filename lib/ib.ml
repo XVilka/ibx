@@ -166,7 +166,7 @@ module Response = struct
     { tag      : Recv_tag.t
     ; version  : int
     ; query_id : Query_id.t option
-    ;  data     : Response_data.t
+    ; data     : Response_data.t
     } [@@deriving fields, sexp]
 
   let pickler =

@@ -592,8 +592,8 @@ val latest_trade_exn
 
 module Close : sig
   type t = private
-    { stamp : Time.t;
-      price : Price.t;
+    { stamp : Time.t
+    ; price : Price.t
     } [@@deriving sexp, fields]
 end
 

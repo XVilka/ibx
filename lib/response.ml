@@ -30,8 +30,8 @@ open Tws_prot
 
 module Tws_error = struct
   type t =
-    { error_code : int;
-      error_msg : string;
+    { error_code : int
+    ; error_msg : string
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -97,7 +97,15 @@ end
 
 module Tick_price = struct
   module Type = struct
-    type t = Bid | Ask | Last | High | Low | Close | Open [@@deriving sexp]
+    type t =
+      | Bid
+      | Ask
+      | Last
+      | High
+      | Low
+      | Close
+      | Open
+    [@@deriving sexp]
 
     let tws_of_t = function
       | Bid -> "1"
@@ -122,10 +130,10 @@ module Tick_price = struct
   end
 
   type t =
-    { tick_type : Type.t;
-      price : Price.t;
-      size : Volume.t;
-      can_auto_execute : bool option;
+    { tick_type : Type.t
+    ; price : Price.t
+    ; size : Volume.t
+    ; can_auto_execute : bool option
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -178,7 +186,12 @@ end
 
 module Tick_size = struct
   module Type = struct
-    type t = Bid | Ask | Last | Volume [@@deriving sexp]
+    type t =
+      | Bid
+      | Ask
+      | Last
+      | Volume
+    [@@deriving sexp]
 
     let tws_of_t = function
       | Bid -> "0"
@@ -197,8 +210,8 @@ module Tick_size = struct
   end
 
   type t =
-    { tick_type : Type.t;
-      size : Volume.t;
+    { tick_type : Type.t
+    ; size : Volume.t
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -232,7 +245,13 @@ end
 
 module Tick_option = struct
   module Type = struct
-    type t = Bid | Ask | Last | Model | Custom [@@deriving sexp]
+    type t =
+      | Bid
+      | Ask
+      | Last
+      | Model
+      | Custom
+    [@@deriving sexp]
 
     let tws_of_t = function
       | Bid -> "10"
@@ -253,15 +272,15 @@ module Tick_option = struct
   end
 
   type t =
-    { tick_type : Type.t;
-      implied_vol : float;
-      delta : float;
-      option_price : Price.t;
-      pv_dividend : float;
-      gamma : float;
-      vega : float;
-      theta : float;
-      under_price : Price.t;
+    { tick_type : Type.t
+    ; implied_vol : float
+    ; delta : float
+    ; option_price : Price.t
+    ; pv_dividend : float
+    ; gamma : float
+    ; vega : float
+    ; theta : float
+    ; under_price : Price.t
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -528,8 +547,8 @@ module Tick_string = struct
   end
 
   type t =
-    { tick_type : Type.t;
-      value : string;
+    { tick_type : Type.t
+    ; value : string
     } [@@deriving fields, sexp]
 
   let create = Fields.create
@@ -612,17 +631,16 @@ module Order_status = struct
   end
 
   type t =
-    { state : State.t;
-      filled : Volume.t;
-      remaining : Volume.t;
-      avg_fill_price : Price.t;
-      permanent_id : int;
-      parent_id : Order_id.t;
-      last_fill_price : Price.t;
-      client_id : Client_id.t;
-      why_held : string option;
-    }
-  [@@deriving sexp, fields]
+    { state : State.t
+    ; filled : Volume.t
+    ; remaining : Volume.t
+    ; avg_fill_price : Price.t
+    ; permanent_id : int
+    ; parent_id : Order_id.t
+    ; last_fill_price : Price.t
+    ; client_id : Client_id.t
+    ; why_held : string option
+    } [@@deriving sexp, fields]
 
   let create = Fields.create
 
@@ -702,10 +720,10 @@ end
 
 module Account_update = struct
   type t =
-    { key : string;
-      value : string;
-      currency : string option;
-      account_code : Account_code.t;
+    { key : string
+    ; value : string
+    ; currency : string option
+    ; account_code : Account_code.t
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -747,26 +765,26 @@ end
 
 module Position = struct
   type t =
-    { contract : Raw_contract.t;
-      size : Volume.t;
-      market_price : Price.t;
-      market_value : Price.t;
-      average_cost : Price.t;
-      unrealized_pnl : Price.t;
-      realized_pnl : Price.t;
-      account_code : Account_code.t;
+    { contract : Raw_contract.t
+    ; size : Volume.t
+    ; market_price : Price.t
+    ; market_value : Price.t
+    ; average_cost : Price.t
+    ; unrealized_pnl : Price.t
+    ; realized_pnl : Price.t
+    ; account_code : Account_code.t
     } [@@deriving sexp, fields]
 
   let create ~contract ~size ~market_price ~market_value ~average_cost
       ~unrealized_pnl ~realized_pnl ~account_code =
-    { contract = Contract.to_raw contract;
-      size;
-      market_price;
-      market_value;
-      average_cost;
-      unrealized_pnl;
-      realized_pnl;
-      account_code;
+    { contract = Contract.to_raw contract
+    ; size
+    ; market_price
+    ; market_value
+    ; average_cost
+    ; unrealized_pnl
+    ; realized_pnl
+    ; account_code
     }
 
   let contract t = Contract.of_raw t.contract
@@ -859,43 +877,43 @@ end
 
 module Contract_data = struct
   type t =
-    { contract : Raw_contract.t;
-      market_name : string;
-      trading_class : string;
-      min_tick : float;
-      order_types : string list;
-      valid_exchanges : Exchange.t list;
-      price_magnifier : int;
-      underlying_id : int;
-      long_name : string;
-      contract_month : string;
-      industry : string;
-      category : string;
-      subcategory : string;
-      time_zone : Time.Zone.t option;
-      trading_hours : Trading_times.t list;
-      liquid_hours : Trading_times.t list;
+    { contract : Raw_contract.t
+    ; market_name : string
+    ; trading_class : string
+    ; min_tick : float
+    ; order_types : string list
+    ; valid_exchanges : Exchange.t list
+    ; price_magnifier : int
+    ; underlying_id : int
+    ; long_name : string
+    ; contract_month : string
+    ; industry : string
+    ; category : string
+    ; subcategory : string
+    ; time_zone : Time.Zone.t option
+    ; trading_hours : Trading_times.t list
+    ; liquid_hours : Trading_times.t list
     } [@@deriving sexp, fields]
 
   let create ~contract ~market_name ~trading_class ~min_tick ~order_types
       ~valid_exchanges ~price_magnifier ~underlying_id ~long_name ~contract_month
       ~industry ~category ~subcategory ~time_zone ~trading_hours ~liquid_hours =
-    { contract = Contract.to_raw contract;
-      market_name;
-      trading_class;
-      min_tick;
-      order_types;
-      valid_exchanges;
-      price_magnifier;
-      underlying_id;
-      long_name;
-      contract_month;
-      industry;
-      category;
-      subcategory;
-      time_zone = Some time_zone;
-      trading_hours;
-      liquid_hours;
+    { contract = Contract.to_raw contract
+    ; market_name
+    ; trading_class
+    ; min_tick
+    ; order_types
+    ; valid_exchanges
+    ; price_magnifier
+    ; underlying_id
+    ; long_name
+    ; contract_month
+    ; industry
+    ; category
+    ; subcategory
+    ; time_zone = Some time_zone
+    ; trading_hours
+    ; liquid_hours
     }
 
   let contract t = Contract.of_raw t.contract
@@ -986,39 +1004,41 @@ module Contract_data = struct
         valid_exchanges price_magnifier underlying_id long_name prim_exch
         contract_month industry category subcategory time_zone trading_hours
         liquid_hours ->
-        { contract =
-            { Raw_contract.
-              con_id;
-              symbol;
-              sec_type;
-              expiry;
-              strike;
-              right;
-              multiplier;
-              exchange;
-              prim_exch;
-              currency;
-              local_symbol;
-              include_expired = false;
-              sec_id_type = None;
-              sec_id = None;
-              combo_legs = 0;
-            };
-          market_name;
-          trading_class;
-          min_tick;
-          order_types;
-          valid_exchanges;
-          price_magnifier;
-          underlying_id;
-          long_name;
-          contract_month;
-          industry;
-          category;
-          subcategory;
-          time_zone;
-          trading_hours;
-          liquid_hours;
+        let contract =
+          { Raw_contract.
+            con_id
+          ; symbol
+          ; sec_type
+          ; expiry
+          ; strike
+          ; right
+          ; multiplier
+          ; exchange
+          ; prim_exch
+          ; currency
+          ; local_symbol
+          ; include_expired = false
+          ; sec_id_type = None
+          ; sec_id = None
+          ; combo_legs = 0
+          }
+        in
+        { contract
+        ; market_name
+        ; trading_class
+        ; min_tick
+        ; order_types
+        ; valid_exchanges
+        ; price_magnifier
+        ; underlying_id
+        ; long_name
+        ; contract_month
+        ; industry
+        ; category
+        ; subcategory
+        ; time_zone
+        ; trading_hours
+        ; liquid_hours
         })
 
   let pickler = Only_in_test.of_thunk (fun () ->
@@ -1116,7 +1136,10 @@ end
 module Execution = struct
   module Side = struct
     module T = struct
-      type t = [ `bought | `sold ] [@@deriving sexp]
+      type t =
+        [ `bought
+        | `sold
+        ] [@@deriving sexp]
     end
     include T
     include Sexpable.To_stringable (T)
@@ -1134,41 +1157,41 @@ module Execution = struct
   end
 
   type t =
-    { order_id : Order_id.t;
-      contract : Raw_contract.t;
-      exec_id : Execution_id.t;
-      time : Time.t;
-      account_code : Account_code.t;
-      exchange : Exchange.t;
-      side : Side.t;
-      volume : Volume.t;
-      price : Price.t;
-      permanent_id : int;
-      client_id : Client_id.t;
-      liquidation : int;
-      cumulative_volume : Volume.t;
-      average_price : Price.t;
-      order_ref : string option;
+    { order_id : Order_id.t
+    ; contract : Raw_contract.t
+    ; exec_id : Execution_id.t
+    ; time : Time.t
+    ; account_code : Account_code.t
+    ; exchange : Exchange.t
+    ; side : Side.t
+    ; volume : Volume.t
+    ; price : Price.t
+    ; permanent_id : int
+    ; client_id : Client_id.t
+    ; liquidation : int
+    ; cumulative_volume : Volume.t
+    ; average_price : Price.t
+    ; order_ref : string option
     } [@@deriving fields, sexp]
 
   let create ~order_id ~contract ~exec_id ~time ~account_code ~exchange ~side
       ~volume ~price ~permanent_id ~client_id ~liquidation ~cumulative_volume
       ~average_price ~order_ref =
-    { order_id;
-      contract = Contract.to_raw contract;
-      exec_id;
-      time;
-      account_code;
-      exchange;
-      side;
-      volume;
-      price;
-      permanent_id;
-      client_id;
-      liquidation;
-      cumulative_volume;
-      average_price;
-      order_ref;
+    { order_id
+    ; contract = Contract.to_raw contract
+    ; exec_id
+    ; time
+    ; account_code
+    ; exchange
+    ; side
+    ; volume
+    ; price
+    ; permanent_id
+    ; client_id
+    ; liquidation
+    ; cumulative_volume
+    ; average_price
+    ; order_ref
     }
 
   let contract t = Contract.of_raw t.contract
@@ -1218,21 +1241,21 @@ module Execution = struct
       (fun order_id contract exec_id time account_code exchange side
         volume price permanent_id client_id liquidation cumulative_volume
         average_price order_ref ->
-        { order_id;
-          contract;
-          exec_id;
-          time;
-          account_code;
-          exchange;
-          side;
-          volume;
-          price;
-          permanent_id;
-          client_id;
-          liquidation;
-          cumulative_volume;
-          average_price;
-          order_ref;
+        { order_id
+        ; contract
+        ; exec_id
+        ; time
+        ; account_code
+        ; exchange
+        ; side
+        ; volume
+        ; price
+        ; permanent_id
+        ; client_id
+        ; liquidation
+        ; cumulative_volume
+        ; average_price
+        ; order_ref
         })
 
   let pickler = Only_in_test.of_thunk (fun () ->
@@ -1288,12 +1311,12 @@ end
 
 module Commission = struct
   type t =
-    { exec_id : Execution_id.t;
-      commission : Price.t;
-      currency : Currency.t;
-      realized_pnl : Price.t;
-      yield : float;
-      yield_redemption_date : int option;
+    { exec_id : Execution_id.t
+    ; commission : Price.t
+    ; currency : Currency.t
+    ; realized_pnl : Price.t
+    ; yield : float
+    ; yield_redemption_date : int option
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -1323,12 +1346,12 @@ module Commission = struct
           ~yield_redemption_date:(fields_value (optional int)))
       (fun exec_id commission currency realized_pnl
         yield yield_redemption_date ->
-        { exec_id;
-          commission;
-          currency;
-          realized_pnl;
-          yield;
-          yield_redemption_date;
+        { exec_id
+        ; commission
+        ; currency
+        ; realized_pnl
+        ; yield
+        ; yield_redemption_date
         })
 
   let pickler = Only_in_test.of_thunk (fun () ->
@@ -1376,7 +1399,10 @@ module Book_update = struct
   end
 
   module Side = struct
-    type t = Ask | Bid [@@deriving sexp]
+    type t =
+      | Ask
+      | Bid
+    [@@deriving sexp]
 
     let tws_of_t = function
       | Ask -> "0"
@@ -1391,11 +1417,11 @@ module Book_update = struct
   end
 
   type t =
-    { position : int;
-      operation : Operation.t;
-      side : Side.t;
-      price : Price.t;
-      size : Volume.t;
+    { position : int
+    ; operation : Operation.t
+    ; side : Side.t
+    ; price : Price.t
+    ; size : Volume.t
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -1445,25 +1471,25 @@ end
 
 module History = struct
   type t =
-    { start : Time.t;
-      stop : Time.t;
-      num_bars : int;
-      bars : Bar.t list;
+    { start : Time.t
+    ; stop : Time.t
+    ; num_bars : int
+    ; bars : Bar.t list
     } [@@deriving sexp, fields]
 
   let create ~bars =
     let num_bars = List.length bars in
     if num_bars = 0 then
-      { start = Time.epoch;
-        stop = Time.epoch;
-        num_bars;
-        bars = []
+      { start = Time.epoch
+      ; stop = Time.epoch
+      ; num_bars
+      ; bars = []
       }
     else
-      { start = List.hd_exn bars |> Bar.stamp;
-        stop = List.last_exn bars |> Bar.stamp;
-        num_bars = List.length bars;
-        bars;
+      { start = List.hd_exn bars |> Bar.stamp
+      ; stop = List.last_exn bars |> Bar.stamp
+      ; num_bars = List.length bars
+      ; bars
       }
 
   let ( = ) t1 t2 =
@@ -1528,12 +1554,12 @@ module History = struct
 
   module Data_frame = struct
     type t =
-      { stamps : Time.t array;
-        op : float array;
-        hi : float array;
-        lo : float array;
-        cl : float array;
-        vo : int   array;
+      { stamps : Time.t array
+      ; op : float array
+      ; hi : float array
+      ; lo : float array
+      ; cl : float array
+      ; vo : int   array
       } [@@deriving sexp, fields]
   end
 
@@ -1560,11 +1586,11 @@ module History = struct
     in
     (ohlc :> (Time.t * (float * float * float * float)) list)
 
-  type vwap_item = {
-    stamp : Time.t;
-    total_value : float;
-    total_volume : float
-  }
+  type vwap_item =
+    { stamp : Time.t
+    ; total_value : float
+    ; total_volume : float
+    }
 
   let time_vwap t =
     let price bar = Bar.wap bar |> Price.to_float in

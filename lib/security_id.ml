@@ -25,7 +25,12 @@ open Tws_prot
 
 module Type = struct
   module T = struct
-    type t = [ `ISIN | `RIC | `CUSIP | `SEDOL ] [@@deriving sexp]
+    type t =
+      [ `ISIN
+      | `RIC
+      | `CUSIP
+      | `SEDOL
+      ] [@@deriving sexp]
   end
   include T
   include Sexpable.To_stringable (T)

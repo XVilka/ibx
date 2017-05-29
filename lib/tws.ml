@@ -43,23 +43,23 @@ end
 module Query_id = Ib.Streaming_request.Id
 
 type t =
-  { remote_host    : string;
-    remote_port    : int;
-    client_id      : Client_id.t;
-    client_version : int;
-    do_logging     : bool;
-    mutable con :
+  { remote_host    : string
+  ; remote_port    : int
+  ; client_id      : Client_id.t
+  ; client_version : int
+  ; do_logging     : bool
+  ; mutable con :
       [ `Disconnected
       | `Connecting of unit -> unit
-      | `Connected of Ib.Connection.t ];
-    mutable server_version  : int option;
-    mutable connection_time : Time.t option;
-    mutable account_code    : Account_code.t option;
-    messages    : Client_msg.t Tail.t;
-    exec_reader : Execution.t  Pipe.Reader.t;
-    exec_writer : Execution.t  Pipe.Writer.t;
-    comm_reader : Commission.t Pipe.Reader.t;
-    comm_writer : Commission.t Pipe.Writer.t;
+      | `Connected of Ib.Connection.t ]
+  ; mutable server_version  : int option
+  ; mutable connection_time : Time.t option
+  ; mutable account_code    : Account_code.t option
+  ; messages    : Client_msg.t Tail.t
+  ; exec_reader : Execution.t  Pipe.Reader.t
+  ; exec_writer : Execution.t  Pipe.Writer.t
+  ; comm_reader : Commission.t Pipe.Reader.t
+  ; comm_writer : Commission.t Pipe.Writer.t
   }
 
 let create
@@ -69,20 +69,20 @@ let create
   let exec_reader, exec_writer = Pipe.create () in
   let comm_reader, comm_writer = Pipe.create () in
   return
-    { client_id;
-      do_logging;
-      remote_host     = host;
-      remote_port     = port;
-      client_version  = Config.client_version;
-      con             = `Disconnected;
-      server_version  = None;
-      connection_time = None;
-      account_code    = None;
-      messages        = Tail.create ();
-      exec_reader;
-      exec_writer;
-      comm_reader;
-      comm_writer;
+    { client_id
+    ; do_logging
+    ; remote_host     = host
+    ; remote_port     = port
+    ; client_version  = Config.client_version
+    ; con             = `Disconnected
+    ; server_version  = None
+    ; connection_time = None
+    ; account_code    = None
+    ; messages        = Tail.create ()
+    ; exec_reader
+    ; exec_writer
+    ; comm_reader
+    ; comm_writer
     }
 
 exception Not_connected_yet [@@deriving sexp]
@@ -711,24 +711,27 @@ let cancel_realtime_bars t id =
 
 module Trade = struct
   type t =
-    { stamp : Time.t;
-      price : Price.t;
-      size  : Volume.t;
+    { stamp : Time.t
+    ; price : Price.t
+    ; size  : Volume.t
     } [@@deriving sexp, fields]
 
   let create ~price ~size =
-    { stamp = Time.now (); price; size }
+    { stamp = Time.now ()
+    ; price
+    ; size
+    }
 
   let empty =
-    { stamp = Time.epoch;
-      price = Price.nan;
-      size = Volume.zero
+    { stamp = Time.epoch
+    ; price = Price.nan
+    ; size = Volume.zero
     }
 
   let update_size t ~size =
     { t with
-      stamp = Time.now ();
-      size;
+      stamp = Time.now ()
+    ; size
     }
 
   let pp ppf t =
@@ -780,21 +783,21 @@ module Quote = struct
   end
 
   type t =
-    { stamp : Time.t;
-      ask_price : Price.t;
-      bid_price : Price.t;
-      ask_size : Volume.t;
-      bid_size : Volume.t;
-      change : Change.t;
+    { stamp : Time.t
+    ; ask_price : Price.t
+    ; bid_price : Price.t
+    ; ask_size : Volume.t
+    ; bid_size : Volume.t
+    ; change : Change.t
     } [@@deriving sexp, fields]
 
   let empty =
-    { stamp = Time.epoch;
-      ask_price = Price.nan;
-      ask_size = Volume.zero;
-      bid_price = Price.nan;
-      bid_size = Volume.zero;
-      change = Change.Unknown;
+    { stamp = Time.epoch
+    ; ask_price = Price.nan
+    ; ask_size = Volume.zero
+    ; bid_price = Price.nan
+    ; bid_size = Volume.zero
+    ; change = Change.Unknown
     }
 
   let pp ppf t =
@@ -807,36 +810,36 @@ module Quote = struct
 
   let update_ask t ~size ~price =
     { t with
-      stamp = Time.now ();
-      ask_price = price;
-      ask_size = size;
-      change = Change.ask_price_and_size
+      stamp = Time.now ()
+    ; ask_price = price
+    ; ask_size = size
+    ; change = Change.ask_price_and_size
           ~price_change:Price.(price - t.ask_price)
           ~size_change:Volume.(size - t.ask_size)
     }
 
   let update_bid t ~size ~price =
     { t with
-      stamp = Time.now ();
-      bid_size = size;
-      bid_price = price;
-      change = Change.bid_price_and_size
+      stamp = Time.now ()
+    ; bid_size = size
+    ; bid_price = price
+    ; change = Change.bid_price_and_size
           ~price_change:Price.(price - t.bid_price)
           ~size_change:Volume.(size - t.bid_size)
     }
 
   let update_ask_size t ~size =
     { t with
-      stamp = Time.now ();
-      ask_size = size;
-      change = Change.ask_size ~size_change:Volume.(size - t.ask_size);
+      stamp = Time.now ()
+    ; ask_size = size
+    ; change = Change.ask_size ~size_change:Volume.(size - t.ask_size)
     }
 
   let update_bid_size t ~size =
     { t with
-      stamp = Time.now ();
-      bid_size = size;
-      change = Change.bid_size ~size_change:Volume.(size - t.bid_size);
+      stamp = Time.now ()
+    ; bid_size = size
+    ; change = Change.bid_size ~size_change:Volume.(size - t.bid_size)
     }
 end
 
@@ -1124,8 +1127,8 @@ let latest_trade_exn t ~contract = latest_trade t ~contract >>| Or_error.ok_exn
 
 module Close = struct
   type t =
-    { stamp : Time.t;
-      price : Price.t;
+    { stamp : Time.t
+    ; price : Price.t
     } [@@deriving sexp, fields]
 
   let create ~price = { stamp = Time.now (); price }

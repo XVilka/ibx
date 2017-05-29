@@ -42,7 +42,13 @@ end
 
 module Server_log_level = struct
   module Level = struct
-    type t = [ `System | `Error | `Warning | `Information | `Detail ] [@@deriving sexp]
+    type t =
+      [ `System
+      | `Error
+      | `Warning
+      | `Information
+      | `Detail
+      ] [@@deriving sexp]
 
     let tws_of_t = function
       | `System -> "1"
@@ -79,8 +85,8 @@ module Server_log_level = struct
 end
 
 module Server_time = Unit (struct
-    let name = "Query.Server_time"
-  end)
+  let name = "Query.Server_time"
+end)
 
 (* +-----------------------------------------------------------------------+
    | Market data                                                           |
@@ -88,15 +94,15 @@ module Server_time = Unit (struct
 
 module Market_data = struct
   type t =
-    { contract : Raw_contract.t;
-      tick_types : Tick_type.t list;
-      snapshot : bool;
+    { contract : Raw_contract.t
+    ; tick_types : Tick_type.t list
+    ; snapshot : bool
     } [@@deriving sexp, fields]
 
   let create ~contract ~tick_types ~snapshot =
-    { contract = Contract.to_raw contract;
-      tick_types;
-      snapshot;
+    { contract = Contract.to_raw contract
+    ; tick_types
+    ; snapshot
     }
 
   let ( = ) t1 t2 : bool =
@@ -140,15 +146,15 @@ end
 
 module Option_price = struct
   type t =
-    { contract : Raw_contract.t;
-      volatility : float;
-      underlying_price : Price.t;
+    { contract : Raw_contract.t
+    ; volatility : float
+    ; underlying_price : Price.t
     } [@@deriving sexp, fields]
 
   let create ~contract ~volatility ~underlying_price =
-    { contract = Contract.to_raw contract;
-      volatility;
-      underlying_price;
+    { contract = Contract.to_raw contract
+    ; volatility
+    ; underlying_price
     }
 
   let ( = ) t1 t2 =
@@ -192,15 +198,15 @@ end
 
 module Implied_volatility = struct
   type t =
-    { contract : Raw_contract.t;
-      option_price : Price.t;
-      underlying_price : Price.t;
+    { contract : Raw_contract.t
+    ; option_price : Price.t
+    ; underlying_price : Price.t
     } [@@deriving sexp, fields]
 
   let create ~contract ~option_price ~underlying_price =
-    { contract = Contract.to_raw contract;
-      option_price;
-      underlying_price;
+    { contract = Contract.to_raw contract
+    ; option_price
+    ; underlying_price
     }
 
   let ( = ) t1 t2 =
@@ -255,8 +261,8 @@ module Submit_order = Submit_order
 
 module Updates (Arg : sig val name:string end) = struct
   type t =
-    { subscribe : bool;
-      account_code : Account_code.t;
+    { subscribe : bool
+    ; account_code : Account_code.t
     } [@@deriving sexp, fields]
 
   let create = Fields.create
@@ -290,12 +296,12 @@ module Updates (Arg : sig val name:string end) = struct
 end
 
 module Account_updates = Updates (struct
-    let name = "Query.Account_updates"
-  end)
+  let name = "Query.Account_updates"
+end)
 
 module Positions = Updates (struct
-    let name = "Query.Positions"
-  end)
+  let name = "Query.Positions"
+end)
 
 (* +-----------------------------------------------------------------------+
    | Executions                                                            |
@@ -310,24 +316,24 @@ module Executions = struct
   end
 
   type t =
-    { client_id : Client_id.t;
-      account_code : Account_code.t;
-      time : Time.t;
-      symbol : Symbol.t;
-      sec_type : string;
-      exchange : Exchange.t;
-      action : Order_action.t;
+    { client_id : Client_id.t
+    ; account_code : Account_code.t
+    ; time : Time.t
+    ; symbol : Symbol.t
+    ; sec_type : string
+    ; exchange : Exchange.t
+    ; action : Order_action.t
     } [@@deriving sexp, fields]
 
   let create ~contract ~client_id ~account_code ~time ~action =
     let contract = Contract.to_raw contract in
-    { client_id;
-      account_code;
-      time;
-      symbol = Raw_contract.symbol contract;
-      sec_type = Raw_contract.sec_type contract;
-      exchange = Raw_contract.exchange contract;
-      action;
+    { client_id
+    ; account_code
+    ; time
+    ; symbol = Raw_contract.symbol contract
+    ; sec_type = Raw_contract.sec_type contract
+    ; exchange = Raw_contract.exchange contract
+    ; action
     }
 
   let ( = ) t1 t2 =
@@ -379,13 +385,13 @@ module Executions = struct
           ~exchange:(fields_value (required Exchange.val_type))
           ~action:(fields_value (required Order_action.val_type)))
       (fun client_id account_code time symbol sec_type exchange action ->
-         { client_id;
-           account_code;
-           time;
-           symbol;
-           sec_type;
-           exchange;
-           action;
+         { client_id
+         ; account_code
+         ; time
+         ; symbol
+         ; sec_type
+         ; exchange
+         ; action
          }))
 end
 
@@ -434,13 +440,13 @@ end
 
 module Market_depth = struct
   type t =
-    { contract : Raw_contract.t;
-      num_rows : int;
+    { contract : Raw_contract.t
+    ; num_rows : int
     } [@@deriving sexp, fields]
 
   let create ~contract ~num_rows =
-    { contract = Contract.to_raw contract;
-      num_rows;
+    { contract = Contract.to_raw contract
+    ; num_rows
     }
 
   let ( = ) t1 t2 =
@@ -523,23 +529,23 @@ module History = struct
   end
 
   type t =
-    { contract : Raw_contract.t;
-      until : Time.t;
-      bar_size : Bar.Size.t;
-      duration : Bar.Duration.t;
-      use_rth : bool;
-      tick_type : Tick_type.t;
-      date_format : string;
+    { contract : Raw_contract.t
+    ; until : Time.t
+    ; bar_size : Bar.Size.t
+    ; duration : Bar.Duration.t
+    ; use_rth : bool
+    ; tick_type : Tick_type.t
+    ; date_format : string
     } [@@deriving sexp, fields]
 
   let create ~contract ~until ~bar_size ~duration ~use_rth ~tick_type =
-    { contract = Contract.to_raw contract;
-      until;
-      bar_size;
-      duration;
-      use_rth;
-      tick_type;
-      date_format = "1";
+    { contract = Contract.to_raw contract
+    ; until
+    ; bar_size
+    ; duration
+    ; use_rth
+    ; tick_type
+    ; date_format = "1"
     }
 
   let ( = ) t1 t2 : bool =
@@ -593,13 +599,13 @@ module History = struct
           ~tick_type:(fields_value (required Tick_type.val_type))
           ~date_format:(fields_value (required string)))
       (fun contract until bar_size duration use_rth tick_type date_format ->
-         { contract;
-           until;
-           bar_size;
-           duration;
-           use_rth;
-           tick_type;
-           date_format;
+         { contract
+         ; until
+         ; bar_size
+         ; duration
+         ; use_rth
+         ; tick_type
+         ; date_format
          }))
 end
 
@@ -609,7 +615,9 @@ end
 
 module Realtime_bars = struct
   module Bar_size = struct
-    type t = [ `Five_sec ] [@@deriving sexp]
+    type t =
+      [ `Five_sec
+      ] [@@deriving sexp]
 
     let tws_of_t = function
       | `Five_sec -> "5"
@@ -622,7 +630,12 @@ module Realtime_bars = struct
   end
 
   module Tick_type = struct
-    type t = [ `Trades | `Midpoint | `Bid | `Ask ] [@@deriving sexp]
+    type t =
+      [ `Trades
+      | `Midpoint
+      | `Bid
+      | `Ask
+      ] [@@deriving sexp]
 
     let tws_of_t = function
       | `Trades -> "TRADES"
@@ -641,17 +654,17 @@ module Realtime_bars = struct
   end
 
   type t =
-    { contract : Raw_contract.t;
-      bar_size : Bar_size.t;
-      tick_type : Tick_type.t;
-      use_rth : bool;
+    { contract : Raw_contract.t
+    ; bar_size : Bar_size.t
+    ; tick_type : Tick_type.t
+    ; use_rth : bool
     } [@@deriving sexp, fields]
 
   let create ~contract ~tick_type ~use_rth =
-    { contract = Contract.to_raw contract;
-      bar_size = `Five_sec;
-      tick_type;
-      use_rth;
+    { contract = Contract.to_raw contract
+    ; bar_size = `Five_sec
+    ; tick_type
+    ; use_rth
     }
 
   let ( = ) t1 t2 =

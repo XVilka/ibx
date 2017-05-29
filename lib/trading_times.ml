@@ -24,8 +24,8 @@ open Core
 open Tws_prot
 
 type t =
-  { date  : Date.t;
-    hours : Time.Ofday.t list;
+  { date  : Date.t
+  ; hours : Time.Ofday.t list
   } [@@deriving sexp]
 
 let create ~date ~hours = { date; hours }

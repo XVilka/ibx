@@ -29,7 +29,13 @@ open Core
 
 module Server_log_level : sig
   module Level : sig
-    type t = [ `System | `Error | `Warning | `Information | `Detail ] [@@deriving sexp]
+    type t =
+      [ `System
+      | `Error
+      | `Warning
+      | `Information
+      | `Detail
+      ] [@@deriving sexp]
   end
   type t [@@deriving sexp]
   include Query_intf.S with type t := t
@@ -196,7 +202,12 @@ end
 
 module Realtime_bars : sig
   module Tick_type : sig
-    type t = [ `Trades | `Midpoint | `Bid | `Ask ]
+    type t =
+      [ `Trades
+      | `Midpoint
+      | `Bid
+      | `Ask
+      ] [@@deriving sexp]
   end
 
   type t [@@deriving sexp]

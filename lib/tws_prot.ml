@@ -25,10 +25,10 @@ open Core
 type raw_tws = string [@@deriving sexp]
 
 module Val_type = struct
-  type 'a t = {
-    tws_of_a : 'a -> raw_tws;
-    a_of_tws : raw_tws -> 'a;
-  }
+  type 'a t =
+    { tws_of_a : 'a -> raw_tws
+    ; a_of_tws : raw_tws -> 'a
+    }
 
   let create tws_of_a a_of_tws = { tws_of_a; a_of_tws }
 

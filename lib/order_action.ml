@@ -24,7 +24,11 @@ open Core
 open Tws_prot
 
 module T = struct
-  type t = [ `Buy | `Sell | `Sell_short ] [@@deriving sexp]
+  type t =
+    [ `Buy
+    | `Sell
+    | `Sell_short
+    ] [@@deriving sexp]
 end
 include T
 include Sexpable.To_stringable (T)

@@ -23,7 +23,12 @@
 open Core
 
 module Type : sig
-  type t = [ `ISIN | `RIC | `CUSIP | `SEDOL ] [@@deriving sexp]
+  type t =
+    [ `ISIN
+    | `RIC
+    | `CUSIP
+    | `SEDOL
+    ] [@@deriving sexp]
   include Twsable.S with type t := t
 end
 
