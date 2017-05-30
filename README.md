@@ -52,9 +52,9 @@ This simple program will connect to the IB Gateway running on localhost
 and retrieve the closing price for a given stock symbol:
 
     :::ocaml
-    open Core.Std
-    open Async.Std
-    open Ibx.Std
+    open Core
+    open Async
+    open Ibx
 
     let host = "localhost"
     let port = 4001
