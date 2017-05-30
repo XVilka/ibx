@@ -5,6 +5,7 @@
               core
               str))
   (preprocess (pps (ppx_sexp_conv
-                    ppx_fields_conv)))))
+                    ppx_fields_conv
+                    ppx_let)))))
 
 (jbuild_version 1)
