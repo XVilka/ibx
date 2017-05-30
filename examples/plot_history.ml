@@ -37,28 +37,28 @@ let () =
          >>= fun data ->
          Tws.history_exn tws ~contract:stock ~duration
          >>| fun history ->
+         let zone = Contract_data.time_zone data |> Option.value ~default:zone in
          let start = Time.to_date (History.start history) ~zone in
          let stop = Time.to_date (History.stop history) ~zone in
          (* Widen the date range to avoid Gnuplot plotting bars on the border. *)
          let start = Date.add_days start (-1) in
          let stop = Date.add_days stop 1 in
-         let range = Range.Date (start, stop) in
-         let bars = (List.map (History.bars history) ~f:(fun bar ->
-           Bar.(Time.to_date (stamp bar) ~zone, (op bar, hi bar, lo bar, cl bar))
-         ) :> (Date.t * (float * float * float * float)) list)
+         let date_ohlc =
+           History.time_ohlc history
+           |> List.map ~f:(Tuple2.map_fst ~f:(Time.to_date ~zone))
          in
          let gp = Gp.create () in
          Gp.set gp ~title:(Contract_data.long_name data) ~use_grid:true;
          [ (* Create a candlestick chart series. *)
-           Series.candles_date_ohlc bars ~color:`Red |> Option.some;
+           Series.candles_date_ohlc date_ohlc ~color:`Red |> Option.some
            (* Create a moving average time series of the closing prices. *)
-           Option.map sma_period ~f:(fun period ->
+         ; Option.map sma_period ~f:(fun period ->
              let title = sprintf "SMA %d" period in
              let sma = unstage (Filter.sma ~period) in
-             Series.lines_datey ~title ~color:`Green
-               (List.map bars ~f:(fun (d, (_, _, _, cl)) -> d, sma cl))
+             List.map date_ohlc ~f:(fun (d, (_,_,_,c)) -> d, sma c)
+             |> Series.lines_datey ~title ~color:`Green
            )
-         ] |> List.filter_opt |> Gp.plot_many gp ~range ~format:"%b %d'%y";
+         ] |> List.filter_opt |> Gp.plot_many gp ~range:(Range.Date (start, stop));
          Gp.close gp
        )
     )
