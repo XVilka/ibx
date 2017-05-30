@@ -91,7 +91,7 @@ you can simply build it by running
     $ ocamlbuild -use-ocamlfind -tag thread -pkg ibx show_close.native
 
 and then use it to get the closing price of a stock (e.g. Apple Inc.)
-as follows:
+as follows
 
     $ ./show_close.native AAPL
 
@@ -104,7 +104,7 @@ and then run
 
     $ ./plot_history.native -sma 100 AAPL
 
-to plot a candle stick chart of Apple prices with a simple 100-day moving average:
+to plot a candle stick chart of Apple prices with a simple 100-day moving average
 
 ![AAPL SMA](http://ogu.bitbucket.io/aapl_sma.png)
 
@@ -118,7 +118,7 @@ which creates a plot similar to this image
 ![AAPL TAQ](http://ogu.bitbucket.io/aapl_taq.png)
 
 
-__NOTE:__ This TAQ data plots does not reflect the true market history, since
+__NOTE:__ This TAQ data plot does not reflect the true market history, since
 Interactive Brokers accumulates market data in time increments of 300 milliseconds.
 
 ### More Examples
