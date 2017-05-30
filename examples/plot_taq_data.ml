@@ -29,8 +29,11 @@ let plot_taq_data ~client_id ~do_logging ~period ~currency ~zone ~symbol =
     let bids = List.rev (bids : ('t * Price.t) list :> ('t * float) list) in
     let asks = List.rev (asks : ('t * Price.t) list :> ('t * float) list) in
     let trades = List.rev (trades : ('t * Price.t) list :> ('t * float) list) in
+    let start = List.hd_exn bids |> Tuple2.get1 in
+    let stop = List.last_exn bids |> Tuple2.get1 in
+    let zone = Option.value (Contract_data.time_zone data) ~default:zone in
     let gp = Gp.create () in
-    Gp.plot_many gp ~format:"%H:%M:%S"
+    Gp.plot_many gp ~format:"%H:%M:%S" ~range:(Range.Time (start, stop, zone))
       ~title:(Contract_data.long_name data) ~use_grid:true
       [ Series.steps_timey bids ~zone ~title:"Bid Price" ~color:`Green
       ; Series.steps_timey asks ~zone ~title:"Ask Price" ~color:`Red
