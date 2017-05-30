@@ -50,7 +50,7 @@ let () =
          let gp = Gp.create () in
          Gp.set gp ~title:(Contract_data.long_name data) ~use_grid:true;
          [ (* Create a candlestick chart series. *)
-           Series.candles_date_ohlc bars |> Option.some;
+           Series.candles_date_ohlc bars ~color:`Red |> Option.some;
            (* Create a moving average time series of the closing prices. *)
            Option.map sma_period ~f:(fun period ->
              let title = sprintf "SMA %d" period in
