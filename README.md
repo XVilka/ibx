@@ -96,32 +96,30 @@ as follows:
     $ ./show_close.native AAPL
 
 For more complex examples please refer to the `examples`-directory of this
-distribution. You can build the examples by typing
+distribution. For instance, you can build the `plot_history` example by typing
 
-    $ ./configure --enable-examples
-    $ make
+    $ ocamlbuild -use-ocamlfind -tag thread -pkg ibx,gnuplot plot_history.native
 
-in the top-level directory of this distribution. If the compilation of the
-examples was successful, you can type
+and then run
 
-    $ ./plot_history.native -duration "(Month 6)" -sma 100 AAPL
+    $ ./plot_history.native -sma 100 AAPL
 
-to plot a 6-month candle stick chart of Apple prices with a simple 100-day
-moving average:
+to plot a candle stick chart of Apple prices with a simple 100-day moving average:
 
 ![AAPL SMA](http://ogu.bitbucket.io/aapl_sma.png)
 
-The next command accumulates 1 minute of intraday trade and quote (TAQ) data
+Moreover, to plot 1 minute of intraday trade and quote (TAQ) data, type
 
+    $ ocamlbuild -use-ocamlfind -tag thread -pkg ibx,gnuplot plot_taq_data.native
     $ ./plot_taq_data.native AAPL
 
-and generates a plot that looks similar to this image:
+which creates a plot similar to this image
 
 ![AAPL TAQ](http://ogu.bitbucket.io/aapl_taq.png)
 
-However, please note that these TAQ data plots do not reflect the true market
-history, since Interactive Brokers accumulates market data in time increments
-of 300 milliseconds.
+
+__NOTE:__ This TAQ data plots does not reflect the true market history, since
+Interactive Brokers accumulates market data in time increments of 300 milliseconds.
 
 ### More Examples
 
