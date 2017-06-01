@@ -84,6 +84,7 @@ let create
     ; comm_reader
     ; comm_writer
     }
+;;
 
 exception Not_connected_yet [@@deriving sexp]
 
@@ -168,6 +169,7 @@ let connect t =
       >>= function
       | Error exn -> close_connection (Monitor.extract_exn exn)
       | Ok () -> return ()
+;;
 
 let client_id       t = t.client_id
 let server_version  t = t.server_version
@@ -181,11 +183,13 @@ let is_connected t = match t.con with
   | `Disconnected
   | `Connecting _ -> false
   | `Connected _  -> true
+;;
 
 let state t = match t.con with
   | `Disconnected -> `Disconnected
   | `Connecting _ -> `Connecting
   | `Connected  _ -> `Connected
+;;
 
 let disconnect t =
   let module C = Client_msg in
@@ -200,6 +204,7 @@ let disconnect t =
     Pipe.close t.exec_writer;
     Pipe.close t.comm_writer;
     Ib.Connection.close con
+;;
 
 let with_client
     ?do_logging
@@ -244,6 +249,7 @@ let with_client
         disconnect t
     )
   | _ -> return ()
+;;
 
 let with_client_or_error
     ?do_logging
@@ -264,7 +270,7 @@ let with_client_or_error
   match result with
   | Ok _ as x -> x
   | Error exn -> Or_error.of_exn (Monitor.extract_exn exn)
-
+;;
 
 (* +-----------------------------------------------------------------------+
    | Helper functions                                                      |
@@ -274,25 +280,26 @@ let with_connection t ~f = match t.con with
   | `Disconnected
   | `Connecting _  -> return (Or_error.of_exn Not_connected_yet)
   | `Connected con -> f con
+;;
 
 let with_connection_unit t ~f = match t.con with
   | `Disconnected
   | `Connecting _  -> ()
   | `Connected con -> f con
+;;
 
 let dispatch_and_cancel req con query =
   Ib.Streaming_request.(
     dispatch req con query
-    >>= function
-    | Error _ as e -> return e
-    | Ok (reader, id) ->
-      Pipe.read' reader ~max_queue_length:1
-      >>| fun read_result ->
-      Exn.protectx read_result ~f:(function
-        | `Eof -> Or_error.of_exn Eof_from_client
-        | `Ok result -> Ok (Queue.dequeue_exn result)
-      ) ~finally:(fun _ -> cancel req con id)
+    >>=? fun (reader, id) ->
+    Pipe.read' reader ~max_queue_length:1
+    >>| fun read_result ->
+    Exn.protectx read_result ~f:(function
+      | `Eof -> Or_error.of_exn Eof_from_client
+      | `Ok result -> Ok (Queue.dequeue_exn result)
+    ) ~finally:(fun _ -> cancel req con id)
   )
+;;
 
 (* +-----------------------------------------------------------------------+
    | Connection and server                                                 |
@@ -302,12 +309,14 @@ let set_server_log_level t ~level = match t.con with
   | `Disconnected
   | `Connecting _  -> ()
   | `Connected con -> Ib.Connection.set_server_log_level con ~level
+;;
 
 let server_time t =
   with_connection t ~f:(fun con ->
     let q = Query.Server_time.create () in
     Ib.Request.dispatch Tws_reqs.req_server_time con q
   )
+;;
 
 let server_time_exn t = server_time t >>| Or_error.ok_exn
 
@@ -342,16 +351,19 @@ let market_data ?(snapshot=false) ?(tick_types=[]) t ~contract =
     let q = Query.Market_data.create ~contract ~tick_types ~snapshot in
     Ib.Streaming_request.dispatch Tws_reqs.req_market_data con q
   )
+;;
 
 let market_data_exn ?snapshot ?tick_types t ~contract =
   market_data ?snapshot ?tick_types t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
+;;
 
 let cancel_market_data t id =
   with_connection_unit t ~f:(fun con ->
     Ib.Streaming_request.cancel Tws_reqs.req_market_data con id
   )
+;;
 
 let option_price t ~contract ~volatility ~underlying_price =
   with_connection t ~f:(fun con ->
@@ -370,9 +382,11 @@ let option_price t ~contract ~volatility ~underlying_price =
           Error (Error.of_string "missing option price")
         else Ok opt_price
   )
+;;
 
 let option_price_exn t ~contract ~volatility ~underlying_price =
   option_price t ~contract ~volatility ~underlying_price >>| Or_error.ok_exn
+;;
 
 let implied_volatility t ~contract ~option_price ~underlying_price =
   with_connection t ~f:(fun con ->
@@ -391,10 +405,11 @@ let implied_volatility t ~contract ~option_price ~underlying_price =
           Error (Error.of_string "missing implied volatility")
         else Ok implied_vol
   )
+;;
 
 let implied_volatility_exn t ~contract ~option_price ~underlying_price =
-  implied_volatility t ~contract ~option_price ~underlying_price
-  >>| Or_error.ok_exn
+  implied_volatility t ~contract ~option_price ~underlying_price >>| Or_error.ok_exn
+;;
 
 (* +-----------------------------------------------------------------------+
    | Orders                                                                |
@@ -413,6 +428,7 @@ let dedup_adjacents ~equal pipe =
       )
     ) : 'a option Deferred.t)
   )
+;;
 
 let submit_order t ~contract ~order =
   with_connection t ~f:(fun con ->
@@ -423,28 +439,30 @@ let submit_order t ~contract ~order =
            can only call it in a handler of [Tws.with_client]. *)
         ~account_code:(Option.value_exn (account_code t))
     in
-    Ib.Streaming_request.dispatch Tws_reqs.req_submit_order con q >>| function
-    | Error _ as e -> e
-    | Ok (pipe, id) ->
-      let equal t1 t2 = match t1, t2 with
-        | Error e1, Error e2 -> e1 = e2
-        | Ok x1, Ok x2 -> Order_status.(=) x1 x2
-        | _, _ -> false
-      in
-      let oid = Order_id.of_int_exn (Query_id.to_int_exn id) in
-      Ok (dedup_adjacents ~equal pipe, oid)
+    Ib.Streaming_request.dispatch Tws_reqs.req_submit_order con q
+    >>|? fun (pipe, id) ->
+    let equal t1 t2 = match t1, t2 with
+      | Error e1, Error e2 -> e1 = e2
+      | Ok x1, Ok x2 -> Order_status.(=) x1 x2
+      | _, _ -> false
+    in
+    let oid = Order_id.of_int_exn (Query_id.to_int_exn id) in
+    dedup_adjacents ~equal pipe, oid
   )
+;;
 
 let submit_order_exn t ~contract ~order =
   submit_order t ~contract ~order >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
+;;
 
 let cancel_order_status t oid =
   with_connection_unit t ~f:(fun con ->
     let id = Query_id.of_int_exn (Order_id.to_int_exn oid) in
     Ib.Streaming_request.cancel Tws_reqs.req_submit_order con id
   )
+;;
 
 (* +-----------------------------------------------------------------------+
    | Account and portfolio                                                 |
@@ -454,21 +472,27 @@ let updates_gen t req create_query =
   with_connection t ~f:(fun con ->
     let code = Option.value_exn (account_code t) in
     let q = create_query ~subscribe:true ~account_code:code  in
-    Ib.Streaming_request_without_id.(dispatch req con q >>| function
-    | Error _ as e -> e
-    | Ok pipe ->
+    Ib.Streaming_request_without_id.(
+      dispatch req con q
+      >>|? fun pipe ->
       Pipe.filter_map pipe ~f:(function
         | `Update update -> Some update
         | `Update_end c  -> if Account_code.(code = c) then cancel req con; None
-      ) |> Or_error.return
+      )
     )
   )
+;;
 
 let account_updates t =
   updates_gen t Tws_reqs.req_account_updates Query.Account_updates.create
+;;
+
 let account_updates_exn t = account_updates t >>| Or_error.ok_exn
 
-let portfolio t = updates_gen t Tws_reqs.req_portfolio Query.Positions.create
+let portfolio t =
+  updates_gen t Tws_reqs.req_portfolio Query.Positions.create
+;;
+
 let portfolio_exn t = portfolio t >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
@@ -486,21 +510,23 @@ let filter_executions ?time t ~contract ~action =
         ~time:(Option.value time ~default:(Time.sub (Time.now ()) Time.Span.day))
         ~action
     in
-    Ib.Streaming_request.(dispatch Tws_reqs.req_executions con q >>| function
-    | Error _ as e -> e
-    | Ok (pipe, id) ->
+    Ib.Streaming_request.(
+      dispatch Tws_reqs.req_executions con q
+      >>|? fun (pipe, id) ->
       Pipe.filter_map pipe ~f:(function
         | Error _ as e -> Some e
         | Ok (`Execution x)  -> Some (Ok x)
         | Ok `Executions_end -> cancel Tws_reqs.req_executions con id; None
-      ) |> Or_error.return
+      )
     )
   )
+;;
 
 let filter_executions_exn ?time t ~contract ~action =
   filter_executions ?time t ~contract ~action >>| function
   | Error e -> Error.raise e
   | Ok pipe -> Pipe.map pipe ~f:Or_error.ok_exn
+;;
 
 (* +-----------------------------------------------------------------------+
    | Contract details                                                      |
@@ -515,16 +541,17 @@ let contract_details t ?con_id ?multiplier ?prim_exch ?local_symbol
         ?include_expired ?exchange ?right ?expiry ?strike ~currency
         ~sec_type symbol
     in
-    Ib.Streaming_request.(dispatch Tws_reqs.req_contract_details con q >>| function
-    | Error _ as e -> e
-    | Ok (pipe, id) ->
+    Ib.Streaming_request.(
+      dispatch Tws_reqs.req_contract_details con q
+      >>|? fun (pipe, id) ->
       Pipe.filter_map pipe ~f:(function
         | Error _ as e -> Some e
         | Ok (`Contract_data x) -> Some (Ok x)
         | Ok `Contract_data_end -> cancel Tws_reqs.req_contract_details con id; None
-      ) |> Or_error.return
+      )
     )
   )
+;;
 
 let contract_details_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?sec_id ?include_expired ?exchange ?right ?expiry ?strike ~currency
@@ -534,6 +561,7 @@ let contract_details_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?exchange ?right ?expiry ?strike ~currency ~sec_type symbol >>| function
   | Error e -> Error.raise e
   | Ok pipe -> Pipe.map pipe ~f:Or_error.ok_exn
+;;
 
 let contract_data t ~contract =
   let c = Contract.to_raw contract in
@@ -544,17 +572,13 @@ let contract_data t ~contract =
     ~currency:(Raw_contract.currency c)
     ~sec_type:(Raw_contract.sec_type c |> Security_type.t_of_tws)
     (Raw_contract.symbol c)
-  >>= function
-  | Error _ as e ->
-    return e
-  | Ok pipe ->
-    try_with ~extract_exn:true (fun () ->
-      return (Option.value_exn (Pipe.peek pipe) |> Or_error.ok_exn)
-    ) >>| Or_error.of_exn_result
+  >>=? fun pipe ->
+  try_with ~extract_exn:true (fun () ->
+    return (Option.value_exn (Pipe.peek pipe) |> Or_error.ok_exn)
+  ) >>| Or_error.of_exn_result
+;;
 
-let contract_data_exn t ~contract =
-  contract_data t ~contract >>| Or_error.ok_exn
-
+let contract_data_exn t ~contract = contract_data t ~contract >>| Or_error.ok_exn
 
 (* +-----------------------------------------------------------------------+
    | Futures and option chains                                             |
@@ -566,6 +590,7 @@ let futures_chain t ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?include_expired ?exchange ~currency ~sec_type:`Futures symbol
   >>|? Pipe.map ~f:(Or_error.map ~f:Contract_data.contract)
+;;
 
 let futures_chain_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?sec_id ?include_expired ?exchange ~currency symbol =
@@ -573,6 +598,7 @@ let futures_chain_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id ?include_expired
     ?exchange ~currency symbol
   >>|? Pipe.map ~f:Or_error.ok_exn >>| Or_error.ok_exn
+;;
 
 let option_chain t ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option) ~right
@@ -581,6 +607,7 @@ let option_chain t ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id ?include_expired
     ?exchange ?expiry ?strike ~right ~currency ~sec_type symbol
   >>|? Pipe.map ~f:(Or_error.map ~f:Contract_data.contract)
+;;
 
 let option_chain_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?sec_id ?include_expired ?exchange ?expiry ?strike ?(sec_type=`Option)
@@ -589,7 +616,7 @@ let option_chain_exn t ?con_id ?multiplier ?prim_exch ?local_symbol
     ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id ?include_expired
     ?exchange ?expiry ?strike ~right ~currency ~sec_type symbol
   >>|? Pipe.map ~f:Or_error.ok_exn >>| Or_error.ok_exn
-
+;;
 
 (* +-----------------------------------------------------------------------+
    | Market depth                                                          |
@@ -600,16 +627,19 @@ let market_depth ?(num_rows = 10) t ~contract =
     let q = Query.Market_depth.create ~contract ~num_rows in
     Ib.Streaming_request.dispatch Tws_reqs.req_market_depth con q
   )
+;;
 
 let market_depth_exn ?num_rows t ~contract =
   market_depth ?num_rows t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
+;;
 
 let cancel_market_depth t id =
   with_connection_unit t ~f:(fun con ->
     Ib.Streaming_request.cancel Tws_reqs.req_market_depth con id
   )
+;;
 
 (* +-----------------------------------------------------------------------+
    | History                                                               |
@@ -627,6 +657,7 @@ let history
         ~contract ~until ~bar_size ~duration ~use_rth ~tick_type in
     dispatch_and_cancel Tws_reqs.req_history con q
   )
+;;
 
 let history_exn
     ?(bar_size = `One_day)
@@ -639,6 +670,7 @@ let history_exn
   >>| function
   | Error e -> Error.raise e
   | Ok result -> Or_error.ok_exn result
+;;
 
 (* +-----------------------------------------------------------------------+
    | Realtime bars                                                         |
@@ -654,6 +686,7 @@ let five_secs_bars_multiples = function
   | `Five_min    ->  60
   | `Fifteen_min -> 180
   | `Thirty_min  -> 360
+;;
 
 let realtime_bars
     ?(bar_size = `Five_sec)
@@ -664,46 +697,47 @@ let realtime_bars
     let q = Query.Realtime_bars.create
         ~contract ~tick_type ~use_rth in
     Ib.Streaming_request.dispatch Tws_reqs.req_realtime_bars con q
-    >>= function
-    | Error _ as e -> return e
-    | Ok (bars, id) ->
-      (* The number of five secs bars that make up a bar of the given size. *)
-      let n_bars = five_secs_bars_multiples bar_size in
-      let bars = Pipe.create_reader ~close_on_exception:true (fun w ->
-        Deferred.ignore (Pipe.fold bars ~init:(None, n_bars) ~f:(fun state bar ->
-          match bar with
-          | Error _ as e ->
-            don't_wait_for (Pipe.write w e);
-            return state
-          | Ok current ->
-            return (match state with
-              | None, 1 as state ->
-                don't_wait_for (Pipe.write w (Ok current));
-                state
-              | None, n ->
-                Some current, n-1
-              | Some bar, 1 ->
-                let bar = Bar.combine bar ~bar:current in
-                don't_wait_for (Pipe.write w (Ok bar));
-                None, n_bars
-              | Some bar, n ->
-                Some (Bar.combine bar ~bar:current), n-1
-            )
-        ) : (Bar.t option * int) Deferred.t)
-      )
-      in
-      return (Ok (bars, id))
+    >>|? fun (bars, id) ->
+    (* The number of five secs bars that make up a bar of the given size. *)
+    let n_bars = five_secs_bars_multiples bar_size in
+    let bars = Pipe.create_reader ~close_on_exception:true (fun w ->
+      Deferred.ignore (Pipe.fold bars ~init:(None, n_bars) ~f:(fun state bar ->
+        match bar with
+        | Error _ as e ->
+          don't_wait_for (Pipe.write w e);
+          return state
+        | Ok current ->
+          return (match state with
+            | None, 1 as state ->
+              don't_wait_for (Pipe.write w (Ok current));
+              state
+            | None, n ->
+              Some current, n-1
+            | Some bar, 1 ->
+              let bar = Bar.combine bar ~bar:current in
+              don't_wait_for (Pipe.write w (Ok bar));
+              None, n_bars
+            | Some bar, n ->
+              Some (Bar.combine bar ~bar:current), n-1
+          )
+      ) : (Bar.t option * int) Deferred.t)
+    )
+    in
+    bars, id
   )
+;;
 
 let realtime_bars_exn ?bar_size ?tick_type ?use_rth t ~contract =
   realtime_bars ?bar_size ?tick_type ?use_rth t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
+;;
 
 let cancel_realtime_bars t id =
   with_connection_unit t ~f:(fun con ->
     Ib.Streaming_request.cancel Tws_reqs.req_realtime_bars con id
   )
+;;
 
 (* +-----------------------------------------------------------------------+
    | Trades                                                                |
@@ -862,62 +896,61 @@ module TAQ = struct
       let q = Query.Market_data.create
           ~contract ~tick_types:[] ~snapshot:false
       in
-      Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q >>| function
-      | Error _ as e -> e
-      | Ok (ticks, id) ->
-        let taq_data = Pipe.create_reader ~close_on_exception:true (fun w ->
-          Deferred.ignore (
-            Pipe.fold ticks ~init:(Trade.empty, Quote.empty)
-              ~f:(fun ((trade, quote) as taq) tick ->
-                match tick with
-                | Error _ as e ->
-                  don't_wait_for (Pipe.write w e);
-                  return taq
-                | Ok (`Tick_price tick) ->
-                  let module T = Tick_price.Type in
-                  return (match Tick_price.tick_type tick with
-                    | T.Ask ->
-                      let price, size = Tick_price.(price tick, size tick) in
-                      let quote = Quote.update_ask quote ~price ~size in
-                      don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                      trade, quote
-                    | T.Bid ->
-                      let price, size = Tick_price.(price tick, size tick) in
-                      let quote = Quote.update_bid quote ~price ~size in
-                      don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                      trade, quote
-                    | T.Last ->
-                      let price, size = Tick_price.(price tick, size tick) in
-                      let trade = Trade.create ~price ~size in
-                      don't_wait_for (Pipe.write w (Ok (Trade trade)));
-                      trade, quote
-                    | T.Open | T.High | T.Low | T.Close ->
-                      taq
-                  )
-                | Ok (`Tick_size tick) ->
-                  let module T = Tick_size.Type in
-                  return (match Tick_size.tick_type tick with
-                    | T.Ask ->
-                      let size = Tick_size.size tick in
-                      let quote = Quote.update_ask_size quote ~size in
-                      don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                      trade, quote
-                    | T.Bid ->
-                      let size = Tick_size.size tick in
-                      let quote = Quote.update_bid_size quote ~size in
-                      don't_wait_for (Pipe.write w (Ok (Quote quote)));
-                      trade, quote
-                    | T.Last ->
-                      let size = Tick_size.size tick in
-                      let trade = Trade.update_size trade ~size in
-                      don't_wait_for (Pipe.write w (Ok (Trade trade)));
-                      trade, quote
-                    | T.Volume ->
-                      taq
-                  )
-              ) : (Trade.t * Quote.t) Deferred.t))
-        in
-        Ok (taq_data, id)
+      Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q
+      >>|? fun (ticks, id) ->
+      let taq_data = Pipe.create_reader ~close_on_exception:true (fun w ->
+        Deferred.ignore (
+          Pipe.fold ticks ~init:(Trade.empty, Quote.empty)
+            ~f:(fun ((trade, quote) as taq) tick ->
+              match tick with
+              | Error _ as e ->
+                don't_wait_for (Pipe.write w e);
+                return taq
+              | Ok (`Tick_price tick) ->
+                let module T = Tick_price.Type in
+                return (match Tick_price.tick_type tick with
+                  | T.Ask ->
+                    let price, size = Tick_price.(price tick, size tick) in
+                    let quote = Quote.update_ask quote ~price ~size in
+                    don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                    trade, quote
+                  | T.Bid ->
+                    let price, size = Tick_price.(price tick, size tick) in
+                    let quote = Quote.update_bid quote ~price ~size in
+                    don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                    trade, quote
+                  | T.Last ->
+                    let price, size = Tick_price.(price tick, size tick) in
+                    let trade = Trade.create ~price ~size in
+                    don't_wait_for (Pipe.write w (Ok (Trade trade)));
+                    trade, quote
+                  | T.Open | T.High | T.Low | T.Close ->
+                    taq
+                )
+              | Ok (`Tick_size tick) ->
+                let module T = Tick_size.Type in
+                return (match Tick_size.tick_type tick with
+                  | T.Ask ->
+                    let size = Tick_size.size tick in
+                    let quote = Quote.update_ask_size quote ~size in
+                    don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                    trade, quote
+                  | T.Bid ->
+                    let size = Tick_size.size tick in
+                    let quote = Quote.update_bid_size quote ~size in
+                    don't_wait_for (Pipe.write w (Ok (Quote quote)));
+                    trade, quote
+                  | T.Last ->
+                    let size = Tick_size.size tick in
+                    let trade = Trade.update_size trade ~size in
+                    don't_wait_for (Pipe.write w (Ok (Trade trade)));
+                    trade, quote
+                  | T.Volume ->
+                    taq
+                )
+            ) : (Trade.t * Quote.t) Deferred.t))
+      in
+      taq_data, id
     )
 end
 
@@ -927,50 +960,53 @@ let taq_data_exn t ~contract =
   taq_data t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
+;;
 
 let cancel_taq_data t id =
   with_connection_unit t ~f:(fun con ->
     Ib.Streaming_request.cancel Tws_reqs.req_taq_data con id
   )
+;;
 
 let trades t ~contract =
-  taq_data t ~contract >>| function
-  | Error _ as e  -> e
-  | Ok (pipe, id) ->
-    let trades = Pipe.filter_map pipe ~f:(function
-      | Error _ as e -> Some e
-      | Ok (TAQ.Trade trade) -> Some (Ok trade)
-      | Ok (TAQ.Quote _) -> None
-    )
-    in
-    Ok (trades, id)
+  taq_data t ~contract
+  >>|? fun (pipe, id) ->
+  let trades = Pipe.filter_map pipe ~f:(function
+    | Error _ as e -> Some e
+    | Ok (TAQ.Trade trade) -> Some (Ok trade)
+    | Ok (TAQ.Quote _) -> None
+  )
+  in
+  trades, id
+;;
 
 let trades_exn t ~contract =
   trades t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
+;;
 
 let cancel_trades = cancel_taq_data
 
 let quotes t ~contract =
-  taq_data t ~contract >>| function
-  | Error _ as e  -> e
-  | Ok (pipe, id) ->
-    let quotes = Pipe.filter_map pipe ~f:(function
-      | Error _ as e -> Some e
-      | Ok (TAQ.Quote quote) -> Some (Ok quote)
-      | Ok (TAQ.Trade _) -> None
-    )
-    in
-    Ok (quotes, id)
+  taq_data t ~contract
+  >>|? fun (pipe, id) ->
+  let quotes = Pipe.filter_map pipe ~f:(function
+    | Error _ as e -> Some e
+    | Ok (TAQ.Quote quote) -> Some (Ok quote)
+    | Ok (TAQ.Trade _) -> None
+  )
+  in
+  quotes, id
+;;
 
 let quotes_exn t ~contract =
   quotes t ~contract >>| function
   | Error e -> Error.raise e
   | Ok (pipe, id) -> Pipe.map pipe ~f:Or_error.ok_exn, id
+;;
 
 let cancel_quotes = cancel_taq_data
-
 
 (* +-----------------------------------------------------------------------+
    | TAQ snapshots                                                         |
@@ -989,75 +1025,72 @@ module Quote_snapshot = struct
           ~contract ~tick_types:[] ~snapshot:true
       in
       Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
-      >>= function
-      | Error _ as e -> return e
-      | Ok (ticks, id) ->
-        let module T = Tick_price.Type in
-        let cancel = Ib.Streaming_request.cancel Tws_reqs.req_taq_data in
-        try_with (fun () ->
-          Pipe.fold_without_pushback ticks ~init:(Empty Quote.empty)
-            ~f:(fun snapshot result ->
-              match result with
-              | Error e ->
-                cancel con id; Pipe.close_read ticks;
-                raise (Error.to_exn e)
-              | Ok `Snapshot_end ->
-                cancel con id; Pipe.close_read ticks;
+      >>=? fun (ticks, id) ->
+      let module T = Tick_price.Type in
+      let cancel = Ib.Streaming_request.cancel Tws_reqs.req_taq_data in
+      try_with (fun () ->
+        Pipe.fold_without_pushback ticks ~init:(Empty Quote.empty)
+          ~f:(fun snapshot result ->
+            match result with
+            | Error e ->
+              cancel con id; Pipe.close_read ticks;
+              raise (Error.to_exn e)
+            | Ok `Snapshot_end ->
+              cancel con id; Pipe.close_read ticks;
+              snapshot
+            | Ok (`Tick_price tick) ->
+              match Tick_price.tick_type tick with
+              | T.Bid ->
+                (match snapshot with
+                 | Empty quote as empty_quote ->
+                   let price, size = Tick_price.(price tick, size tick) in
+                   if Price.is_nan price then begin
+                     (* Received invalid price.  Cancel the request. *)
+                     cancel con id; Pipe.close_read ticks;
+                     empty_quote
+                   end else With_bid (Quote.update_bid quote ~price ~size)
+                 | With_ask quote ->
+                   (* Received complete snapshot.  Cancel the request. *)
+                   cancel con id; Pipe.close_read ticks;
+                   let price, size = Tick_price.(price tick, size tick) in
+                   With_ask_and_bid (Quote.update_bid quote ~price ~size)
+                 | With_ask_and_bid _ | With_bid _ as snapshot ->
+                   snapshot
+                )
+              | T.Ask ->
+                (match snapshot with
+                 | Empty quote as empty_quote ->
+                   let price, size = Tick_price.(price tick, size tick) in
+                   if Price.is_nan price then begin
+                     (* Received invalid price.  Cancel the request. *)
+                     cancel con id; Pipe.close_read ticks;
+                     empty_quote
+                   end else With_ask (Quote.update_ask quote ~price ~size)
+                 | With_bid quote ->
+                   (* Received complete snapshot.  Cancel the request. *)
+                   cancel con id; Pipe.close_read ticks;
+                   let price, size = Tick_price.(price tick, size tick) in
+                   With_ask_and_bid (Quote.update_ask quote ~price ~size)
+                 | With_ask_and_bid _ | With_ask _ as snapshot ->
+                   snapshot
+                )
+              | T.Last | T.Low | T.High | T.Close | T.Open ->
                 snapshot
-              | Ok (`Tick_price tick) ->
-                match Tick_price.tick_type tick with
-                | T.Bid ->
-                  (match snapshot with
-                   | Empty quote as empty_quote ->
-                     let price, size = Tick_price.(price tick, size tick) in
-                     if Price.is_nan price then begin
-                       (* Received invalid price.  Cancel the request. *)
-                       cancel con id; Pipe.close_read ticks;
-                       empty_quote
-                     end else With_bid (Quote.update_bid quote ~price ~size)
-                   | With_ask quote ->
-                     (* Received complete snapshot.  Cancel the request. *)
-                     cancel con id; Pipe.close_read ticks;
-                     let price, size = Tick_price.(price tick, size tick) in
-                     With_ask_and_bid (Quote.update_bid quote ~price ~size)
-                   | With_ask_and_bid _ | With_bid _ as snapshot ->
-                     snapshot
-                  )
-                | T.Ask ->
-                  (match snapshot with
-                   | Empty quote as empty_quote ->
-                     let price, size = Tick_price.(price tick, size tick) in
-                     if Price.is_nan price then begin
-                       (* Received invalid price.  Cancel the request. *)
-                       cancel con id; Pipe.close_read ticks;
-                       empty_quote
-                     end else With_ask (Quote.update_ask quote ~price ~size)
-                   | With_bid quote ->
-                     (* Received complete snapshot.  Cancel the request. *)
-                     cancel con id; Pipe.close_read ticks;
-                     let price, size = Tick_price.(price tick, size tick) in
-                     With_ask_and_bid (Quote.update_ask quote ~price ~size)
-                   | With_ask_and_bid _ | With_ask _ as snapshot ->
-                     snapshot
-                  )
-                | T.Last | T.Low | T.High | T.Close | T.Open ->
-                  snapshot
-            )
-        ) >>| function
-        | Error exn ->
-          Or_error.of_exn (Monitor.extract_exn exn)
-        | Ok Empty _ ->
-          let name = Contract.to_string contract in
-          Or_error.error_string (sprintf "No quote was received for %s" name)
-        | Ok (With_ask_and_bid quote) ->
-          Ok quote
-        | Ok _ -> assert false
+          )
+      ) >>| function
+      | Error exn ->
+        Or_error.of_exn (Monitor.extract_exn exn)
+      | Ok Empty _ ->
+        let name = Contract.to_string contract in
+        Or_error.error_string (sprintf "No quote was received for %s" name)
+      | Ok (With_ask_and_bid quote) ->
+        Ok quote
+      | Ok _ -> assert false
     )
 end
 
 let latest_quote = Quote_snapshot.get_snapshot
 let latest_quote_exn t ~contract = latest_quote t ~contract >>| Or_error.ok_exn
-
 
 module Trade_snapshot = struct
   type t =
@@ -1070,56 +1103,53 @@ module Trade_snapshot = struct
           ~contract ~tick_types:[] ~snapshot:true
       in
       Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
-      >>= function
-      | Error _ as e -> return e
-      | Ok (ticks, id) ->
-        let module T = Tick_price.Type in
-        let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
-        try_with (fun () ->
-          Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
-            match result with
-            | Error e ->
-              cancel con id; Pipe.close_read ticks;
-              Error.raise e
-            | Ok `Snapshot_end ->
-              cancel con id; Pipe.close_read ticks;
+      >>=? fun (ticks, id) ->
+      let module T = Tick_price.Type in
+      let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
+      try_with (fun () ->
+        Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
+          match result with
+          | Error e ->
+            cancel con id; Pipe.close_read ticks;
+            Error.raise e
+          | Ok `Snapshot_end ->
+            cancel con id; Pipe.close_read ticks;
+            snapshot
+          | Ok (`Tick_price tick) ->
+            match Tick_price.tick_type tick with
+            | T.Last ->
+              (match snapshot with
+               | Empty ->
+                 (* Received complete snapshot.  Cancel the request. *)
+                 cancel con id; Pipe.close_read ticks;
+                 let price, size = Tick_price.(price tick, size tick) in
+                 With_trade (Trade.create ~price ~size)
+               | With_trade _ as snapshot ->
+                 snapshot
+              )
+            | T.Bid ->
+              let price = Tick_price.price tick in
+              if Price.is_nan price then begin
+                (* We won't receive a trade.  Cancel the request. *)
+                cancel con id; Pipe.close_read ticks;
+                Empty
+              end else snapshot
+            | T.Ask | T.Open | T.Low | T.High | T.Close ->
               snapshot
-            | Ok (`Tick_price tick) ->
-              match Tick_price.tick_type tick with
-              | T.Last ->
-                (match snapshot with
-                 | Empty ->
-                   (* Received complete snapshot.  Cancel the request. *)
-                   cancel con id; Pipe.close_read ticks;
-                   let price, size = Tick_price.(price tick, size tick) in
-                   With_trade (Trade.create ~price ~size)
-                 | With_trade _ as snapshot ->
-                   snapshot
-                )
-              | T.Bid ->
-                let price = Tick_price.price tick in
-                if Price.is_nan price then begin
-                  (* We won't receive a trade.  Cancel the request. *)
-                  cancel con id; Pipe.close_read ticks;
-                  Empty
-                end else snapshot
-              | T.Ask | T.Open | T.Low | T.High | T.Close ->
-                snapshot
-          )
-        ) >>| function
-        | Error exn ->
-          Or_error.of_exn (Monitor.extract_exn exn)
-        | Ok Empty ->
-          let name = Contract.to_string contract in
-          Or_error.error_string (sprintf "No trade received for %s" name)
-        | Ok (With_trade snapshot) ->
-          Ok snapshot
+        )
+      ) >>| function
+      | Error exn ->
+        Or_error.of_exn (Monitor.extract_exn exn)
+      | Ok Empty ->
+        let name = Contract.to_string contract in
+        Or_error.error_string (sprintf "No trade received for %s" name)
+      | Ok (With_trade snapshot) ->
+        Ok snapshot
     )
 end
 
 let latest_trade = Trade_snapshot.get_snapshot
 let latest_trade_exn t ~contract = latest_trade t ~contract >>| Or_error.ok_exn
-
 
 (* +-----------------------------------------------------------------------+
    | Close snapshot                                                        |
@@ -1145,42 +1175,40 @@ module Close_snapshot = struct
           ~contract ~tick_types:[] ~snapshot:true
       in
       Ib.Streaming_request.dispatch Tws_reqs.req_snapshot con q
-      >>= function
-      | Error _ as e -> return e
-      | Ok (ticks, id) ->
-        let module T = Tick_price.Type in
-        let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
-        try_with (fun () ->
-          Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
-            match result with
-            | Error e ->
-              cancel con id; Pipe.close_read ticks;
-              Error.raise e
-            | Ok `Snapshot_end ->
-              cancel con id; Pipe.close_read ticks;
+      >>=? fun (ticks, id) ->
+      let module T = Tick_price.Type in
+      let cancel = Ib.Streaming_request.cancel Tws_reqs.req_snapshot in
+      try_with (fun () ->
+        Pipe.fold_without_pushback ticks ~init:Empty ~f:(fun snapshot result ->
+          match result with
+          | Error e ->
+            cancel con id; Pipe.close_read ticks;
+            Error.raise e
+          | Ok `Snapshot_end ->
+            cancel con id; Pipe.close_read ticks;
+            snapshot
+          | Ok (`Tick_price tick) ->
+            match Tick_price.tick_type tick with
+            | T.Close ->
+              (match snapshot with
+               | Empty ->
+                 (* Received close snapshot.  Cancel the request. *)
+                 cancel con id; Pipe.close_read ticks;
+                 With_close (Close.create ~price:(Tick_price.price tick))
+               | With_close _ as snapshot ->
+                 snapshot
+              )
+            | T.Bid | T.Ask | T.Open | T.Low | T.High | T.Last ->
               snapshot
-            | Ok (`Tick_price tick) ->
-              match Tick_price.tick_type tick with
-              | T.Close ->
-                (match snapshot with
-                 | Empty ->
-                   (* Received close snapshot.  Cancel the request. *)
-                   cancel con id; Pipe.close_read ticks;
-                   With_close (Close.create ~price:(Tick_price.price tick))
-                 | With_close _ as snapshot ->
-                   snapshot
-                )
-              | T.Bid | T.Ask | T.Open | T.Low | T.High | T.Last ->
-                snapshot
-          )
-        ) >>| function
-        | Error exn ->
-          Or_error.of_exn (Monitor.extract_exn exn)
-        | Ok Empty ->
-          let name = Contract.to_string contract in
-          Or_error.error_string (sprintf "No close was received for %s" name)
-        | Ok (With_close snapshot) ->
-          Ok snapshot
+        )
+      ) >>| function
+      | Error exn ->
+        Or_error.of_exn (Monitor.extract_exn exn)
+      | Ok Empty ->
+        let name = Contract.to_string contract in
+        Or_error.error_string (sprintf "No close was received for %s" name)
+      | Ok (With_close snapshot) ->
+        Ok snapshot
     )
 end
 
