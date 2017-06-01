@@ -418,15 +418,15 @@ let implied_volatility_exn t ~contract ~option_price ~underlying_price =
 let dedup_adjacents ~equal pipe =
   Pipe.create_reader ~close_on_exception:true (fun w ->
     Deferred.ignore (Pipe.fold pipe ~init:None ~f:(fun last x ->
-      return (match last with
+      Deferred.Option.return (match last with
         | None ->
-          don't_wait_for (Pipe.write w x); Some x
-        | Some y as last ->
-          if equal x y then last else (
-            don't_wait_for (Pipe.write w x); Some x
-          )
+          don't_wait_for (Pipe.write w x); x
+        | Some y ->
+          if equal x y then y else begin
+            don't_wait_for (Pipe.write w x); x
+          end
       )
-    ) : 'a option Deferred.t)
+    ) : _ Deferred.Option.t)
   )
 ;;
 
