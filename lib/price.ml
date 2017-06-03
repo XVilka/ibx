@@ -1,4 +1,4 @@
-open Core
+open Core_kernel
 open Tws_prot
 
 let tws_of_t x =

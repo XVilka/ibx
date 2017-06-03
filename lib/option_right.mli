@@ -1,4 +1,4 @@
-open Core
+open Core_kernel
 
 type t = [ `Call | `Put ] [@@deriving sexp]
 include Stringable.S with type t := t

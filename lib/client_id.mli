@@ -1,4 +1,4 @@
-open Core
+open Core_kernel
 
 type t
 include Unique_id.Id with type t := t

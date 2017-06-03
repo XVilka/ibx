@@ -1,4 +1,4 @@
-open Core
+open Core_kernel
 
 type 'a t
   constraint 'a = [< Security_type.t ] [@@deriving sexp]

@@ -1,4 +1,4 @@
-open Core
+open Core_kernel
 open Tws_prot
 
 include Unique_id.Int63 (struct end)

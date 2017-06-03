@@ -1,4 +1,4 @@
-open Core
+open Core_kernel
 
 type t = private string
 include Identifiable.S with type t := t

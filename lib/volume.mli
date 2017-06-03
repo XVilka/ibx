@@ -1,4 +1,4 @@
-open Core
+open Core_kernel
 
 type t = private int
 include Int_intf.S with type t := t
