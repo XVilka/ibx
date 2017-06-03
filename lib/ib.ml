@@ -53,6 +53,7 @@ module Ibx_result = struct
     try_with f >>| function
     | Ok _ as x -> x
     | Error exn -> Error (constructor (Exn.sexp_of_t exn))
+  ;;
 
   let try_with_read f =
     make_try_with
@@ -60,6 +61,7 @@ module Ibx_result = struct
       (>>|)
       (fun e -> Ibx_error.Read_error e)
       f
+  ;;
 
   let try_with_decode f =
     make_try_with
@@ -67,10 +69,12 @@ module Ibx_result = struct
       (fun x f -> x |> f)
       (fun e -> Ibx_error.Parse_error e)
       f
+  ;;
 
   let or_error = function
     | Ok _ as x -> x
     | Error err -> Error (Ibx_error.to_error err)
+  ;;
 end
 
 let to_tws e x = Encoder.run e x
@@ -283,6 +287,7 @@ module Connection : Connection_internal = struct
             f response;
             return action
         end)
+  ;;
 
   let create
       ?(do_logging = false)
@@ -348,11 +353,13 @@ module Connection : Connection_internal = struct
       ~action:`Keep
       ~f:extend_commission;
     return t
+  ;;
 
   let next_query_id t =
     let new_id = Query_id.create () in
     let%map oid = Ivar.read t.next_order_id in
     Query_id.increase new_id (Order_id.to_int_exn oid)
+  ;;
 
   let is_closed t = Ivar.is_full t.stop
   let closed t = Ivar.read t.stop
@@ -364,6 +371,7 @@ module Connection : Connection_internal = struct
       >>| fun () ->
       Pipe.close_read t.reader
     end else Deferred.unit
+  ;;
 
   let send_tws writer encoder msg = Writer.write writer (to_tws encoder msg)
 
@@ -374,12 +382,14 @@ module Connection : Connection_internal = struct
       | Some f -> f (`Send query)
     end;
     send_tws writer Query.encoder query
+  ;;
 
   let really_read reader ~len =
     Pipe.read_exactly reader ~num_values:len >>| function
     | `Eof -> `Eof
     | `Fewer   result -> `Ok result
     | `Exactly result -> `Ok result
+  ;;
 
   let read_tws reader decoder ~len =
     really_read reader ~len >>| function
@@ -390,6 +400,7 @@ module Connection : Connection_internal = struct
         | Error _ as x -> x
         | Ok x -> Ok (`Ok x)
       end
+  ;;
 
   module Version_id = struct
     let decoder =
@@ -414,6 +425,7 @@ module Connection : Connection_internal = struct
     if Recv_tag.corresponding_response_has_query_id tag
     then read_tws reader Version_id.decoder ~len:2
     else read_tws reader Version.decoder ~len:1
+  ;;
 
   let read_body reader tag =
     let module R = Recv_tag in
@@ -471,6 +483,7 @@ module Connection : Connection_internal = struct
       | R.Snapshot_end -> empty_read
       | R.Commission -> read ~len:6
     )
+  ;;
 
   module Deferred_read_result : sig
     type 'a t = [ `Eof | `Ok of 'a ] Ibx_result.t Deferred.t
@@ -511,6 +524,7 @@ module Connection : Connection_internal = struct
     ; query_id = id
     ; data = Ok (`Response data)
     }
+  ;;
 
   let writer t = if Ivar.is_full t.stop then Error `Closed else Ok t.writer
 
@@ -528,6 +542,7 @@ module Connection : Connection_internal = struct
         }
       in
       send_query ?logfun:t.logfun writer query
+  ;;
 
   let dispatch t ~handlers query =
     match writer t with
@@ -542,6 +557,7 @@ module Connection : Connection_internal = struct
         Hashtbl.set t.open_queries ~key:(id, tag, version) ~data:run
       );
       Ok ()
+  ;;
 
   let cancel_streaming ?query t ~recv_header ~query_id =
     match writer t with
@@ -567,6 +583,7 @@ module Connection : Connection_internal = struct
               }))
       );
       Ok ()
+  ;;
 
   let handle_response t response =
     let id = Option.value response.Response.query_id ~default:Query_id.default in
@@ -591,6 +608,7 @@ module Connection : Connection_internal = struct
         | `Die err ->
           `Stop err
       end
+  ;;
 
   let handle_incoming t =
     let rec loop () =
@@ -641,6 +659,7 @@ module Connection : Connection_internal = struct
                 })));
         t.extend_error (Ibx_error.to_error error));
     Scheduler.within ~monitor loop
+  ;;
 
   module Handshake_result = struct
     type t =
@@ -685,6 +704,7 @@ module Connection : Connection_internal = struct
             ))
           end
     end >>| Ibx_result.or_error
+  ;;
 end
 
 module Request = struct
@@ -701,6 +721,7 @@ module Request = struct
     ; tws_query
     ; tws_response
     }
+  ;;
 
   let dispatch t con query =
     let ivar = Ivar.create () in
@@ -738,6 +759,7 @@ module Request = struct
       | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
     end;
     Ivar.read ivar >>| Ibx_result.or_error
+  ;;
 end
 
 module Streaming_request = struct
@@ -761,6 +783,7 @@ module Streaming_request = struct
     ; tws_query
     ; tws_response
     }
+  ;;
 
   let dispatch t con query =
     let%bind query_id = Connection.next_query_id con in
@@ -877,6 +900,7 @@ module Streaming_request = struct
         | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
     end;
     Ivar.read ivar >>| Ibx_result.or_error
+  ;;
 
   let cancel t con query_id =
     let recv_header = Header.tws_error :: t.recv_header in
@@ -895,6 +919,7 @@ module Streaming_request = struct
         Connection.cancel_streaming con ~recv_header ~query_id ~query
     in
     ignore (result : (unit, [ `Closed ]) Result.t)
+  ;;
 end
 
 module Streaming_request_without_id = struct
@@ -914,6 +939,7 @@ module Streaming_request_without_id = struct
     ; tws_query
     ; tws_response
     }
+  ;;
 
   let dispatch t con query =
     let ivar = Ivar.create () in
@@ -999,6 +1025,7 @@ module Streaming_request_without_id = struct
         | Error `Closed -> Ivar.fill ivar (Error Ibx_error.Connection_closed)
     end;
     Ivar.read ivar >>| Ibx_result.or_error
+  ;;
 
   let cancel t con =
     let result =
@@ -1007,4 +1034,5 @@ module Streaming_request_without_id = struct
         ~query_id:Query_id.default
     in
     ignore (result : (unit, [ `Closed ]) Result.t)
+  ;;
 end
