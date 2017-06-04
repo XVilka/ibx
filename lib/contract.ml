@@ -20,6 +20,7 @@ let sec_id t = Option.map t.Raw_contract.sec_id_type ~f:(function
   | `CUSIP -> `CUSIP (Option.value_exn t.Raw_contract.sec_id)
   | `SEDOL -> `SEDOL (Option.value_exn t.Raw_contract.sec_id)
   | `RIC   -> `RIC   (Option.value_exn t.Raw_contract.sec_id))
+;;
 
 let right  t = Option.value_exn t.Raw_contract.right
 let strike t = Option.value_exn t.Raw_contract.strike
@@ -31,14 +32,17 @@ let combo_legs t = t.Raw_contract.combo_legs
 
 let sort_by_expiry chain =
   List.sort chain ~cmp:(fun c1 c2 -> Date.compare (expiry c1) (expiry c2))
-
-let sort_futures_chain = sort_by_expiry
+;;
 
 let group_by_expiry chain =
   List.group chain ~break:(fun c1 c2 -> Date.(expiry c1 <> expiry c2))
+;;
 
 let sort_by_strike chain =
   List.sort chain ~cmp:(fun c1 c2 -> Price.compare (strike c1) (strike c2))
+;;
+
+let sort_futures_chain = sort_by_expiry
 
 let sort_option_chain chain =
   let flat_map ~f = Fn.flip List.(>>=) f in
@@ -46,6 +50,7 @@ let sort_option_chain chain =
   |> group_by_expiry
   |> List.map ~f:sort_by_strike
   |> flat_map ~f:Fn.id
+;;
 
 let to_string t =
   let expiry_to_string d =
@@ -67,6 +72,7 @@ let to_string t =
       (Option.value_exn t.Raw_contract.expiry |> expiry_to_string)
       (Option.value_exn t.Raw_contract.strike |> Price.to_float |> Float.to_int)
       (Option.value_exn t.Raw_contract.right  |> Option_right.to_string)
+;;
 
 let stock ?con_id ?prim_exch ?local_symbol ?sec_id ?exchange ~currency symbol =
   of_raw (
@@ -81,6 +87,7 @@ let stock ?con_id ?prim_exch ?local_symbol ?sec_id ?exchange ~currency symbol =
       ~sec_type:"STK"
       symbol
   )
+;;
 
 let index ?con_id ?local_symbol ?sec_id ?exchange ~currency symbol =
   of_raw (
@@ -95,6 +102,7 @@ let index ?con_id ?local_symbol ?sec_id ?exchange ~currency symbol =
       ~sec_type:"IND"
       symbol
   )
+;;
 
 let futures ?con_id ?multiplier ?local_symbol ?sec_id ?include_expired ?exchange
     ~currency ~expiry symbol =
@@ -113,6 +121,7 @@ let futures ?con_id ?multiplier ?local_symbol ?sec_id ?include_expired ?exchange
       ~expiry
       symbol
   )
+;;
 
 let option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
     ~right ~expiry ~strike symbol =
@@ -132,6 +141,7 @@ let option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
       ~right
       symbol
   )
+;;
 
 let futures_option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
     ~right ~expiry ~strike symbol =
@@ -151,6 +161,7 @@ let futures_option ?con_id ?multiplier ?local_symbol ?sec_id ?exchange ~currency
       ~right
       symbol
   )
+;;
 
 let forex ?con_id ?local_symbol ?sec_id ?(exchange=`IDEALPRO) ~currency symbol =
   of_raw (
@@ -165,6 +176,7 @@ let forex ?con_id ?local_symbol ?sec_id ?(exchange=`IDEALPRO) ~currency symbol =
       ~sec_type:"CASH"
       symbol
   )
+;;
 
 let underlying t =
   match Raw_contract.sec_type t with
@@ -178,3 +190,4 @@ let underlying t =
       ~expiry:(Option.value_exn t.Raw_contract.expiry)
       t.Raw_contract.symbol
   | _ -> assert false
+;;
