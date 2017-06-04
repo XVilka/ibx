@@ -37,5 +37,5 @@ type t =
 [@@deriving sexp]
 include Twsable.S with type t := t
 
-val t_of_tws : raw_tws -> t
+val t_of_tws : string -> t
 val corresponding_query_has_id : t -> bool

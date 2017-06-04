@@ -64,7 +64,7 @@ module Response : sig
     { tag      : Recv_tag.t
     ; version  : int
     ; query_id : Query_id.t option
-    ; data     : raw_tws Queue.t Response_data.t
+    ; data     : string Queue.t Response_data.t
     }
   [@@deriving sexp]
   include Encodable.S with type t := t

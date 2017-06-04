@@ -10,5 +10,5 @@ type t =
   | `Forex
   ] [@@deriving sexp]
 include Stringable.S with type t := t
-val tws_of_t : [< t ] -> raw_tws
-val t_of_tws : raw_tws -> [> t]
+val tws_of_t : [< t ] -> string
+val t_of_tws : string -> [> t]

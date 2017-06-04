@@ -95,7 +95,7 @@ module Response = struct
     { tag      : Recv_tag.t
     ; version  : int
     ; query_id : Query_id.t option
-    ; data     : raw_tws Queue.t Response_data.t
+    ; data     : string Queue.t Response_data.t
     }
   [@@deriving fields, sexp]
 
