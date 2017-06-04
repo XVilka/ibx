@@ -27,7 +27,7 @@ type t =
   ; mutable con :
       [ `Disconnected
       | `Connecting of unit -> unit
-      | `Connected of Ib.Connection.t ]
+      | `Connected of Connection.t ]
   ; mutable server_version  : int option
   ; mutable connection_time : Time.t option
   ; mutable account_code    : Account_code.t option
@@ -100,7 +100,7 @@ let connect t =
       return ()
     | Ok s ->
       let fd = Socket.fd s in
-      Ib.Connection.create
+      Connection.create
         ~do_logging:t.do_logging
         ~extend_error:(fun e ->
           Tail.extend t.messages (C.Error e))
@@ -119,11 +119,11 @@ let connect t =
         Tail.close_exn t.messages;
         Pipe.close t.exec_writer;
         Pipe.close t.comm_writer;
-        Ib.Connection.close con
+        Connection.close con
       in
       Monitor.try_with ~name:"try connect" (fun () ->
-        let module H = Ib.Connection.Handshake_result in
-        Ib.Connection.try_connect con
+        let module H = Connection.Handshake_result in
+        Connection.try_connect con
           ~client_version:t.client_version
           ~client_id:t.client_id
         >>| function
@@ -179,7 +179,7 @@ let disconnect t =
     Tail.close_exn t.messages;
     Pipe.close t.exec_writer;
     Pipe.close t.comm_writer;
-    Ib.Connection.close con
+    Connection.close con
 ;;
 
 let with_client
@@ -284,7 +284,7 @@ let dispatch_and_cancel req con query =
 let set_server_log_level t ~level = match t.con with
   | `Disconnected
   | `Connecting _  -> ()
-  | `Connected con -> Ib.Connection.set_server_log_level con ~level
+  | `Connected con -> Connection.set_server_log_level con ~level
 ;;
 
 let server_time t =

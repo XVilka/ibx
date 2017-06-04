@@ -3,7 +3,8 @@ open Async
 open Ibx
 open Test_lib
 
-module H = Ib.Connection.Handshake_result
+module H = Connection.Handshake_result
+module P = Protocol
 
 let unix_pipe () =
   Unix.pipe (Info.of_string "Connection_test.unix_pipe")
@@ -16,7 +17,7 @@ let with_tws_conn reader ~f =
   Unix.openfile "/dev/null" ~mode:[`Wronly] ~perm:0o0666
   >>= fun fd ->
   let writer = Writer.create fd in
-  Ib.Connection.create
+  Connection.create
     ~do_logging:true
     ~extend_error:(fun e -> Log.Global.error "%s" (Error.to_string_hum e))
     ~extend_status:(fun _ -> assert false)
@@ -27,7 +28,7 @@ let with_tws_conn reader ~f =
   >>= fun con -> f con
 
 let connect con =
-  Ib.Connection.try_connect con
+  Connection.try_connect con
     ~client_version:Ibx.Config.client_version
     ~client_id:(Client_id.of_int_exn 1)
   >>| fun handshake_result ->
@@ -45,7 +46,7 @@ let send_server_header w =
 module Handshake = struct
 
   let try_handshake con =
-    Ib.Connection.try_connect con
+    Connection.try_connect con
       ~client_version:Ibx.Config.client_version
       ~client_id:(Client_id.of_int_exn 1)
 
@@ -60,7 +61,7 @@ module Handshake = struct
           try_handshake con
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con
+          | Error _ -> Connection.closed con
         )
       ) ~finally:(fun ()-> Writer.close w)
     );
@@ -76,7 +77,7 @@ module Handshake = struct
         | Error _ -> assert false
         | Ok handshake_result ->
           match handshake_result with
-          | H.Eof -> Ib.Connection.closed con
+          | H.Eof -> Connection.closed con
           | H.Server_header _ -> assert false
           | H.Version_failure _ -> assert false
       )
@@ -100,7 +101,7 @@ module Handshake = struct
               assert_string_equal
                 ~expected:too_small_version
                 ~actual:(Int.to_string version);
-              Ib.Connection.close con
+              Connection.close con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -132,7 +133,7 @@ module Handshake = struct
               assert_string_equal
                 ~expected:account_code
                 ~actual:(Account_code.to_string name);
-              Ib.Connection.close con
+              Connection.close con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -162,7 +163,7 @@ module Request = struct
             server_time con
             >>= function
             | Ok _ -> assert false
-            | Error _ -> Ib.Connection.closed con
+            | Error _ -> Connection.closed con
           )
         ) ~finally:(fun () -> Writer.close w))
     );
@@ -170,8 +171,8 @@ module Request = struct
     "missing-response-handler" >:: (fun () ->
       let wrong_recv_tag = Recv_tag.Snapshot_end in
       let buggy_req = Ib.Request.create
-          ~send_header:(Ib.Header.create ~tag:Send_tag.Server_time ~version:1)
-          ~recv_header:(Ib.Header.create ~tag:wrong_recv_tag ~version:1)
+          ~send_header:P.Header.{ tag = Send_tag.Server_time; version = 1 }
+          ~recv_header:P.Header.{ tag = wrong_recv_tag; version = 1 }
           ~tws_query:Query.Server_time.encoder
           ~tws_response:Response.Server_time.decoder
       in
@@ -186,7 +187,7 @@ module Request = struct
           Ib.Request.dispatch buggy_req con (Query.Server_time.create ())
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con
+          | Error _ -> Connection.closed con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -204,7 +205,7 @@ module Request = struct
           server_time con
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con
+          | Error _ -> Connection.closed con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -221,7 +222,7 @@ module Request = struct
           server_time con
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con
+          | Error _ -> Connection.closed con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -239,7 +240,7 @@ module Request = struct
         server_time con
         >>= function
         | Ok _ -> assert false
-        | Error _ -> Ib.Connection.closed con
+        | Error _ -> Connection.closed con
       )
     );
 
@@ -256,8 +257,8 @@ module Request = struct
           >>= function
           | Error _ -> assert false
           | Ok _time ->
-            assert (not (Ib.Connection.is_closed con));
-            Ib.Connection.close con
+            assert (not (Connection.is_closed con));
+            Connection.close con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -267,9 +268,9 @@ end
 module Streaming_request = struct
 
   let req_tick_size = Ib.Streaming_request.create
-      ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
-      ~canc_header:(Ib.Header.create ~tag:Send_tag.Cancel_market_data ~version:1)
-      ~recv_header:[Ib.Header.create ~tag:Recv_tag.Tick_size ~version:6]
+      ~send_header:P.Header.{ tag = Send_tag.Market_data; version = 9 }
+      ~canc_header:P.Header.{ tag = Send_tag.Cancel_market_data; version = 1 }
+      ~recv_header:[P.Header.{ tag = Recv_tag.Tick_size; version = 6 }]
       ~tws_query:Query.Market_data.encoder
       ~tws_response:[Response.Tick_size.decoder]
       ()
@@ -312,7 +313,7 @@ module Streaming_request = struct
             tick_size con
             >>= function
             | Ok _ -> assert false
-            | Error _ -> Ib.Connection.closed con
+            | Error _ -> Connection.closed con
           )
         ) ~finally:(fun () -> Writer.close w))
     );
@@ -331,7 +332,7 @@ module Streaming_request = struct
           tick_size con
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con
+          | Error _ -> Connection.closed con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -349,7 +350,7 @@ module Streaming_request = struct
           tick_size con
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con
+          | Error _ -> Connection.closed con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -369,7 +370,7 @@ module Streaming_request = struct
           tick_size con
           >>= function
           | Ok (pipe_r, _id) ->
-            Ib.Connection.closed con
+            Connection.closed con
             >>= fun () ->
             Pipe.closed pipe_r
           | Error _ -> assert false
@@ -393,9 +394,9 @@ module Streaming_request = struct
           | Ok (pipe_r, id) ->
             cancel_tick_size con id;
             assert (Pipe.is_closed pipe_r);
-            Ib.Connection.close con
+            Connection.close con
             >>= fun () ->
-            Ib.Connection.closed con
+            Connection.closed con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
@@ -404,11 +405,9 @@ module Streaming_request = struct
       let module D = Tws_prot.Decoder in
       let buggy_req =
         Ib.Streaming_request.create
-          ~send_header:(Ib.Header.create ~tag:Send_tag.Market_data ~version:9)
-          ~canc_header:(Ib.Header.create ~tag:Send_tag.Cancel_market_data ~version:1)
-          ~recv_header:[
-            Ib.Header.create ~tag:Recv_tag.Tick_size ~version:6
-          ]
+          ~send_header:P.Header.{ tag = Send_tag.Market_data; version = 9 }
+          ~canc_header:P.Header.{ tag = Send_tag.Cancel_market_data; version = 1 }
+          ~recv_header:[P.Header.{ tag = Recv_tag.Tick_size; version = 6 }]
           ~tws_query:Query.Market_data.encoder
           ~tws_response:[
             D.map Response.Tick_price.decoder ~f:(fun x -> `Tick_price x)
@@ -427,7 +426,7 @@ module Streaming_request = struct
           Ib.Streaming_request.dispatch buggy_req con (Rg.Q.market_data_g ())
           >>= function
           | Ok _ -> assert false
-          | Error _ -> Ib.Connection.closed con
+          | Error _ -> Connection.closed con
         )
       ) ~finally:(fun () -> Writer.close w)
     );
