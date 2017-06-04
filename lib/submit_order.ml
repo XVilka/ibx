@@ -17,9 +17,9 @@ type t =
     sec_id_type : Security_id.Type.t option;
     sec_id : Security_id.Id.t option;
     (* ====================== order fields ====================== *)
-    action : string;
+    action : Order_action.t;
     quantity : Volume.t;
-    order_kind : string;
+    order_kind : Order_type.t;
     limit_price : Price.t option;
     stop_price : Price.t option;
     time_in_force : Raw_order.Time_in_force.t option;
@@ -97,7 +97,7 @@ let create ~contract ~order ~account_code =
     right                           = contract.Raw_contract.right;
     multiplier                      = contract.Raw_contract.multiplier;
     exchange                        = contract.Raw_contract.exchange;
-    prim_exch                = contract.Raw_contract.prim_exch;
+    prim_exch                       = contract.Raw_contract.prim_exch;
     currency                        = contract.Raw_contract.currency;
     local_symbol                    = contract.Raw_contract.local_symbol;
     sec_id_type                     = contract.Raw_contract.sec_id_type;
@@ -273,9 +273,9 @@ let encoder =
           ~local_symbol:(fields_value (optional Symbol.val_type))
           ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
           ~sec_id:(fields_value (optional Security_id.Id.val_type))
-          ~action:(fields_value (required string))
+          ~action:(fields_value (required Order_action.val_type))
           ~quantity:(fields_value (required Volume.val_type))
-          ~order_kind:(fields_value (required string))
+          ~order_kind:(fields_value (required Order_type.val_type))
           ~limit_price:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
           ~stop_price:(fields_value (optional Price.val_type ~default_on_none:"0.0"))
           ~time_in_force:(fields_value (optional Raw_order.Time_in_force.val_type))
@@ -437,9 +437,9 @@ let decoder = Only_in_test.of_thunk (fun () ->
         ~local_symbol:(fields_value (optional Symbol.val_type))
         ~sec_id_type:(fields_value (optional Security_id.Type.val_type))
         ~sec_id:(fields_value (optional Security_id.Id.val_type))
-        ~action:(fields_value (required string))
+        ~action:(fields_value (required Order_action.val_type))
         ~quantity:(fields_value (required Volume.val_type))
-        ~order_kind:(fields_value (required string))
+        ~order_kind:(fields_value (required Order_type.val_type))
         ~limit_price:(fields_value (optional Price.val_type ~none_on_default:"0.0"))
         ~stop_price:(fields_value (optional Price.val_type ~none_on_default:"0.0"))
         ~time_in_force:(fields_value (optional Raw_order.Time_in_force.val_type))

@@ -241,9 +241,9 @@ end
 type t =
   { (* ===================== main order fields ==================== *)
     order_id : Order_id.t;
-    action : string;
+    action : Order_action.t;
     quantity : Volume.t;
-    order_type : string;
+    order_type : Order_type.t;
     limit_price : Price.t option;
     stop_price : Price.t option;
     (* ================== extended order fields =================== *)

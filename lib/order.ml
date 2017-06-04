@@ -10,14 +10,14 @@ let of_raw = Fn.id
 
 let ( = ) t1 t2 = Raw_order.(=) (to_raw t1) (to_raw t2)
 
-let order_type t = Order_type.t_of_tws t.Raw_order.order_type
+let order_type t = t.Raw_order.order_type
 let quantity t = t.Raw_order.quantity
 
 let buy_limit ~quantity limit_price =
   of_raw (
     Raw_order.create
-      ~action:"BUY"
-      ~order_type:"LMT"
+      ~action:`Buy
+      ~order_type:`Limit
       ~quantity
       ~limit_price
       ()
@@ -26,8 +26,8 @@ let buy_limit ~quantity limit_price =
 let sell_limit ~quantity limit_price =
   of_raw (
     Raw_order.create
-      ~action:"SELL"
-      ~order_type:"LMT"
+      ~action:`Sell
+      ~order_type:`Limit
       ~quantity
       ~limit_price
       ()
@@ -36,8 +36,8 @@ let sell_limit ~quantity limit_price =
 let buy_market ~quantity =
   of_raw (
     Raw_order.create
-      ~action:"BUY"
-      ~order_type:"MKT"
+      ~action:`Buy
+      ~order_type:`Market
       ~quantity
       ()
   )
@@ -45,8 +45,8 @@ let buy_market ~quantity =
 let sell_market ~quantity =
   of_raw (
     Raw_order.create
-      ~action:"SELL"
-      ~order_type:"MKT"
+      ~action:`Sell
+      ~order_type:`Market
       ~quantity
       ()
   )
