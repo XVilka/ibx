@@ -11,6 +11,7 @@ let req_server_time = Ib.Request.create
     ~recv_header:(Ib.Header.create ~tag:R.Server_time ~version:1)
     ~tws_query:Query.Server_time.encoder
     ~tws_response:Response.Server_time.decoder
+;;
 
 (* ========================= Market data ========================== *)
 
@@ -34,6 +35,7 @@ let req_market_data = Ib.Streaming_request.create
     ; D.map Response.Tick_option.decoder ~f:(fun x -> `Tick_option x)
     ; D.map Response.Tick_string.decoder ~f:(fun x -> `Tick_string x)
     ] ()
+;;
 
 let req_option_price = Ib.Streaming_request.create
     ~send_header:(Ib.Header.create ~tag:S.Option_price ~version:1)
@@ -43,6 +45,7 @@ let req_option_price = Ib.Streaming_request.create
     ~tws_response:[
       D.map Response.Tick_option.decoder ~f:Response.Tick_option.option_price
     ] ()
+;;
 
 let req_implied_volatility = Ib.Streaming_request.create
     ~send_header:(Ib.Header.create ~tag:S.Implied_volatility ~version:1)
@@ -52,6 +55,7 @@ let req_implied_volatility = Ib.Streaming_request.create
     ~tws_response:[
       D.map Response.Tick_option.decoder ~f:Response.Tick_option.implied_vol
     ] ()
+;;
 
 (* ===================== Contract details ========================= *)
 
@@ -66,6 +70,7 @@ let req_contract_details = Ib.Streaming_request.create
       D.map Response.Contract_data.decoder ~f:(fun x -> `Contract_data x)
     ; D.const `Contract_data_end
     ] ()
+;;
 
 (* ========================== Orders ============================== *)
 
@@ -77,6 +82,7 @@ let req_submit_order = Ib.Streaming_request.create
     ~tws_query:Query.Submit_order.encoder
     ~tws_response:[Response.Order_status.decoder]
     ()
+;;
 
 (* ================== Account and portfolio ======================= *)
 
@@ -95,6 +101,7 @@ let req_account_updates = Ib.Streaming_request_without_id.create
       D.map Response.Account_update.decoder ~f:(fun x -> `Update x)
     ; D.map Account_code.decoder ~f:(fun x -> `Update_end x)
     ] ()
+;;
 
 let req_portfolio = Ib.Streaming_request_without_id.create
     ~send_header:(Ib.Header.create ~tag:S.Account_data ~version:2)
@@ -111,6 +118,7 @@ let req_portfolio = Ib.Streaming_request_without_id.create
       D.map Response.Position.decoder ~f:(fun x -> `Update x)
     ; D.map Account_code.decoder ~f:(fun x -> `Update_end x)
     ] ()
+;;
 
 (* ========================= Executions =========================== *)
 
@@ -125,6 +133,7 @@ let req_executions = Ib.Streaming_request.create
       D.map Response.Execution.decoder ~f:(fun x -> `Execution x)
     ; D.const `Executions_end
     ] ()
+;;
 
 (* ======================== Market depth ========================== *)
 
@@ -136,6 +145,7 @@ let req_market_depth = Ib.Streaming_request.create
     ~tws_query:Query.Market_depth.encoder
     ~tws_response:[Response.Book_update.decoder]
     ()
+;;
 
 (* =========================== History ============================ *)
 
@@ -146,6 +156,7 @@ let req_history = Ib.Streaming_request.create
     ~tws_query:Query.History.encoder
     ~tws_response:[Response.History.decoder]
     ()
+;;
 
 (* ======================== Realtime bars ========================= *)
 
@@ -156,6 +167,7 @@ let req_realtime_bars = Ib.Streaming_request.create
     ~tws_query:Query.Realtime_bars.encoder
     ~tws_response:[Response.Realtime_bar.decoder]
     ()
+;;
 
 (* ========================= TAQ data ============================= *)
 
@@ -175,6 +187,7 @@ let req_taq_data = Ib.Streaming_request.create
       D.map Response.Tick_price.decoder ~f:(fun x -> `Tick_price x)
     ; D.map Response.Tick_size.decoder  ~f:(fun x -> `Tick_size  x)
     ] ()
+;;
 
 (* ========================= Snapshots ============================ *)
 
@@ -196,3 +209,4 @@ let req_snapshot = Ib.Streaming_request.create
       D.map Response.Tick_price.decoder ~f:(fun x -> `Tick_price x)
     ; D.const `Snapshot_end;
     ] ()
+;;
