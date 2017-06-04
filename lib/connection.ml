@@ -299,13 +299,13 @@ let set_server_log_level t ~level =
   match writer t with
   | Error `Closed -> ()
   | Ok writer ->
-    let log_level = Query.Server_log_level.create ~level in
+    let level = Query.Server_log_level.create ~level in
     let query =
       { P.Query.
         tag     = Send_tag.Set_server_log_level
       ; version = 1
       ; id      = None
-      ; data    = Util.to_tws Query.Server_log_level.encoder log_level;
+      ; data    = Util.to_tws Query.Server_log_level.encoder level;
       }
     in
     send_query ?logfun:t.logfun writer query
@@ -318,12 +318,11 @@ let dispatch t ~handlers query =
     send_query ?logfun:t.logfun writer query;
     let id = Option.value query.P.Query.id ~default:Query_id.default in
     List.iter handlers ~f:(fun h ->
-      let run = h.Response_handler.run in
       Hashtbl.set t.open_queries ~key:(
         id,
         h.Response_handler.header.P.Header.tag,
         h.Response_handler.header.P.Header.version
-      ) ~data:run
+      ) ~data:h.Response_handler.run
     );
     Ok ()
 ;;
