@@ -20,7 +20,7 @@ let try_with_read f =
 let try_with_decode f =
   make_try_with
     Result.try_with
-    (fun x f -> x |> f)
+    (|>)
     (fun e -> Ibx_error.Parse_error e)
     f
 ;;
