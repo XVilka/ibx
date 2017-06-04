@@ -5,9 +5,6 @@ open Tws_prot
 module P = Protocol
 module R = Recv_tag
 
-let to_tws e x = Encoder.run e x
-let of_tws d x = Ibx_result.try_with_decode (fun () -> Decoder.run_exn d x)
-
 module Response_handler = struct
   type handler =
     P.Response.t
@@ -50,7 +47,7 @@ let init_handler t ~header ~decoder ~action ~f =
       assert false (* Response handler is not cancelable. *)
     | Ok (`Response data) ->
       begin
-        match of_tws decoder data with
+        match Util.of_tws decoder data with
         | Error err ->
           return (`Die err)
         | Ok response ->
@@ -80,10 +77,10 @@ let create
     let tr_null s = String.tr s ~target:'\000' ~replacement:'|' in
     match send_recv with
     | `Send query ->
-      let msg = to_tws P.Query.encoder query in
+      let msg = Util.to_tws P.Query.encoder query in
       Log.Global.debug ">> %s" (tr_null msg)
     | `Recv response ->
-      let msg = to_tws P.Response.encoder response in
+      let msg = Util.to_tws P.Response.encoder response in
       Log.Global.debug "<< %s" (tr_null msg)
   in
   let t =
@@ -143,7 +140,7 @@ let close t =
   end else Deferred.unit
 ;;
 
-let send_tws writer encoder msg = Writer.write writer (to_tws encoder msg)
+let send_tws writer encoder msg = Writer.write writer (Util.to_tws encoder msg)
 
 let send_query ?logfun writer query =
   begin
@@ -166,7 +163,7 @@ let read_tws reader decoder ~len =
   | `Eof -> Ok `Eof
   | `Ok raw_msg ->
     begin
-      match of_tws decoder raw_msg with
+      match Util.of_tws decoder raw_msg with
       | Error _ as x -> x
       | Ok x -> Ok (`Ok x)
     end
@@ -308,7 +305,7 @@ let set_server_log_level t ~level =
         tag     = Send_tag.Set_server_log_level
       ; version = 1
       ; id      = None
-      ; data    = to_tws Query.Server_log_level.encoder log_level;
+      ; data    = Util.to_tws Query.Server_log_level.encoder log_level;
       }
     in
     send_query ?logfun:t.logfun writer query

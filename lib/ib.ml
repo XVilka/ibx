@@ -4,9 +4,6 @@ open Tws_prot
 
 module P = Protocol
 
-let to_tws e x = Encoder.run e x
-let of_tws d x = Ibx_result.try_with_decode (fun () -> Decoder.run_exn d x)
-
 module Header = struct
   let tws_error = P.Header.{ tag = Recv_tag.Tws_error; version = 2 }
 end
@@ -34,7 +31,7 @@ module Request = struct
         tag     = t.send_header.P.Header.tag
       ; version = t.send_header.P.Header.version
       ; id      = None
-      ; data    = to_tws t.tws_query query
+      ; data    = Util.to_tws t.tws_query query
       }
     in
     let handler =
@@ -48,7 +45,7 @@ module Request = struct
           assert false (* Non-streaming requests are not cancelable. *)
         | Ok (`Response data) ->
           begin
-            match of_tws t.tws_response data with
+            match Util.of_tws t.tws_response data with
             | Error err as x ->
               Ivar.fill ivar x;
               return (`Die err)
@@ -98,7 +95,7 @@ module Streaming_request = struct
         tag     = t.send_header.P.Header.tag
       ; version = t.send_header.P.Header.version
       ; id      = Some query_id
-      ; data    = to_tws t.tws_query query
+      ; data    = Util.to_tws t.tws_query query
       }
     in
     let error_handler =
@@ -112,7 +109,7 @@ module Streaming_request = struct
           return `Remove
         | Ok (`Response data) ->
           begin
-            match of_tws Response.Tws_error.decoder data with
+            match Util.of_tws Response.Tws_error.decoder data with
             | Error err ->
               Pipe.close pipe_w;
               return (`Die err)
@@ -152,7 +149,7 @@ module Streaming_request = struct
               return `Remove
             | Ok (`Response data) ->
               begin
-                match of_tws decoder data with
+                match Util.of_tws decoder data with
                 | Error err ->
                   Pipe.close pipe_w;
                   return (`Die err)
@@ -176,7 +173,7 @@ module Streaming_request = struct
             return `Remove
           | Ok (`Response data) ->
             begin
-              match of_tws decoder data with
+              match Util.of_tws decoder data with
               | Error err as x ->
                 Pipe.close pipe_w;
                 Ivar.fill_if_empty ivar x;
@@ -253,7 +250,7 @@ module Streaming_request_without_id = struct
         tag     = t.send_header.P.Header.tag
       ; version = t.send_header.P.Header.version
       ; id      = None
-      ; data    = to_tws t.tws_query query
+      ; data    = Util.to_tws t.tws_query query
       }
     in
     let skip_handlers =
@@ -280,7 +277,7 @@ module Streaming_request_without_id = struct
               return `Remove
             | Ok (`Response data) ->
               begin
-                match of_tws decoder data with
+                match Util.of_tws decoder data with
                 | Error err ->
                   Pipe.close pipe_w;
                   return (`Die err)
@@ -304,7 +301,7 @@ module Streaming_request_without_id = struct
             return `Remove
           | Ok (`Response data) ->
             begin
-              match of_tws decoder data with
+              match Util.of_tws decoder data with
               | Error err as x ->
                 Pipe.close pipe_w;
                 Ivar.fill_if_empty ivar x;
