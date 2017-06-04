@@ -7,13 +7,6 @@ module Execution = Response.Execution
 module Commission = Response.Commission
 module Server_log_level = Query.Server_log_level
 
-module Query_id = struct
-  include Unique_id.Int63 (struct end)
-  let default = of_int_exn (-1)
-  let increase t num = of_int_exn (to_int_exn t + num)
-  let val_type = Val_type.create to_string of_string
-end
-
 module Header = struct
   type 'a t =
     { tag : 'a

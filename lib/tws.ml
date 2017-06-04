@@ -18,8 +18,6 @@ module Client_msg = struct
   [@@deriving sexp]
 end
 
-module Query_id = Ib.Streaming_request.Id
-
 type t =
   { remote_host    : string
   ; remote_port    : int

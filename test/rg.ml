@@ -16,7 +16,6 @@ module Rg_common : sig
   val og : 'a gen -> 'a option gen
   val oneof : 'a gen list -> 'a gen
 
-  val query_id_g : Query_id.t gen
   val client_id_g : Client_id.t gen
   val order_id_g : Order_id.t gen
   val contract_id_g : Contract_id.t gen
@@ -81,7 +80,6 @@ end = struct
   let oneof xs =
     List.nth_exn xs (Random.int (List.length xs))
 
-  let query_id_g    () = Query_id.create ()
   let client_id_g   () = Client_id.create ()
   let order_id_g    () = Order_id.create ()
   let contract_id_g () = Contract_id.create ()

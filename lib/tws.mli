@@ -2,8 +2,6 @@ open Core
 open Async
 open Response
 
-module Query_id : Unique_id
-
 type t (** A TWS client *)
 
 (** {1 Connection and server} *)

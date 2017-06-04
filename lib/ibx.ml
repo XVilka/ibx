@@ -25,7 +25,6 @@ module Order_type     = Order_type
 module Position       = Response.Position
 module Price          = Price
 module Query          = Query
-module Query_id       = Tws.Query_id
 module Query_intf     = Query_intf
 module Quote          = Tws.Quote
 module Recv_tag       = Recv_tag

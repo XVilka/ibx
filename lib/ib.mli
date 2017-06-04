@@ -73,8 +73,6 @@ end
 module Streaming_request : sig
   type ('query, 'response) t
 
-  module Id : Unique_id
-
   val create
     :  ?canc_header:Send_tag.t Header.t
     -> ?skip_header:Recv_tag.t Header.t list
@@ -89,12 +87,12 @@ module Streaming_request : sig
     :  ('query, 'response) t
     -> Connection.t
     -> 'query
-    -> ('response Or_error.t Pipe.Reader.t * Id.t) Deferred.Or_error.t
+    -> ('response Or_error.t Pipe.Reader.t * Query_id.t) Deferred.Or_error.t
 
   (** [cancel req con id] cancels the TWS data stream from the request
       associated with the unique identifier [id], which was returned
       as part of a call to [dispatch]. *)
-  val cancel : (_, _) t -> Connection.t -> Id.t -> unit
+  val cancel : (_, _) t -> Connection.t -> Query_id.t -> unit
 end
 
 module Streaming_request_without_id : sig
