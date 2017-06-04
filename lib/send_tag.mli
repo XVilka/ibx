@@ -1,3 +1,5 @@
+open Tws_prot
+
 type t =
   | Market_data
   | Cancel_market_data
@@ -35,4 +37,5 @@ type t =
 [@@deriving sexp]
 include Twsable.S with type t := t
 
+val t_of_tws : raw_tws -> t
 val corresponding_query_has_id : t -> bool
