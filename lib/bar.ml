@@ -37,7 +37,7 @@ module Duration = struct
       | `Week  of int
       | `Month of int
       | `Year  of int
-      ] [@@deriving sexp]
+      ] [@@deriving sexp, eq]
   end
   include T
   include Sexpable.To_stringable (T)
@@ -74,7 +74,7 @@ module Size = struct
       [ `One_sec     | `Five_sec   | `Fifteen_sec | `Thirty_sec
       | `One_min     | `Two_min    | `Three_min   | `Five_min
       | `Fifteen_min | `Thirty_min | `One_hour    | `One_day
-      ] [@@deriving sexp]
+      ] [@@deriving sexp, eq]
   end
   include T
   include Sexpable.To_stringable (T)

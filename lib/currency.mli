@@ -20,6 +20,6 @@ type t =
   | `SEK    (* Swedish krona *)
   | `SGD    (* Singapore dollar *)
   | `KRW    (* South Korean won *)
-  ] [@@deriving sexp]
+  ] [@@deriving sexp, eq]
 include Stringable.S with type t := t
 include Twsable.S with type t := t

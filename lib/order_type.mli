@@ -26,6 +26,6 @@ type t =
   | `Trailing_stop
   | `Trailing_stop_limit
   | `VWAP
-  ] [@@deriving sexp]
+  ] [@@deriving sexp, eq]
 include Stringable.S with type t := t
 include Twsable.S with type t := t

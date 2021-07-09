@@ -13,6 +13,8 @@ __DISCLAIMER:__ This software is not approved by Interactive Brokers or any
 of its affiliates. It comes with absolutely no warranty and the use of
 this software for actual trading is at your own risk.
 
+A fork of the original but abandoned project: https://bitbucket.org/ogu/ibx
+
 Installation
 ------------
 
@@ -125,11 +127,3 @@ Interactive Brokers accumulates market data in time increments of 300 millisecon
 
 For even more examples, please check out the
 [IBX command line tools](https://bitbucket.org/ogu/ibx-tools).
-
-
-Contact Information
--------------------
-
-In case of bugs, feature requests and similar, please contact:
-
-  * Oliver Gu <gu.oliver@yahoo.com>

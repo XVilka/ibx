@@ -9,7 +9,7 @@ module Time_in_force = struct
     | `Immediate_or_cancel
     | `Fill_or_kill
     | `Good_till_date_time
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Day -> "DAY"
@@ -34,7 +34,7 @@ module Oca_type = struct
     [ `cancel_with_block
     | `reduce_with_block
     | `reduce_non_block
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
 
 
   let tws_of_t = function
@@ -60,7 +60,7 @@ module Stop_trigger_method = struct
     | `Bid_ask
     | `Last_bid_ask
     | `Midpoint
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Default -> "0"
@@ -95,7 +95,7 @@ module Rule80A = struct
     | `Individual_PT
     | `Agency_PT
     | `Agent_other_member_PT
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Individual -> "I"
@@ -124,7 +124,7 @@ module Rule80A = struct
 end
 
 module Open_close = struct
-  type t = [ `Open | `Close ] [@@deriving sexp]
+  type t = [ `Open | `Close ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Open -> "O"
@@ -139,7 +139,7 @@ module Open_close = struct
 end
 
 module Origin = struct
-  type t = [ `Customer | `Firm ] [@@deriving sexp]
+  type t = [ `Customer | `Firm ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Customer -> "0"
@@ -154,7 +154,7 @@ module Origin = struct
 end
 
 module Auction_strategy = struct
-  type t = [ `Match | `Improvement | `Transparent ] [@@deriving sexp]
+  type t = [ `Match | `Improvement | `Transparent ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Match -> "1"
@@ -171,7 +171,7 @@ module Auction_strategy = struct
 end
 
 module Volatility_type = struct
-  type t = [ `daily | `annual ] [@@deriving sexp]
+  type t = [ `daily | `annual ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `daily -> "1"
@@ -186,7 +186,7 @@ module Volatility_type = struct
 end
 
 module Reference_price_type = struct
-  type t = [ `average | `bid_or_ask ] [@@deriving sexp]
+  type t = [ `average | `bid_or_ask ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `average -> "1"
@@ -201,7 +201,7 @@ module Reference_price_type = struct
 end
 
 module Hedge_type = struct
-  type t = [ `Delta | `Beta | `Fx | `Pair ] [@@deriving sexp]
+  type t = [ `Delta | `Beta | `Fx | `Pair ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Delta -> "D"
@@ -220,7 +220,7 @@ module Hedge_type = struct
 end
 
 module Clearing_intent = struct
-  type t = [ `Default | `IB | `Away | `Post_trade_allocation ] [@@deriving sexp]
+  type t = [ `Default | `IB | `Away | `Post_trade_allocation ] [@@deriving sexp, eq]
 
   let tws_of_t = function
     | `Default -> ""
@@ -497,80 +497,80 @@ let ( = ) t1 t2 : bool =
   in
   Fields.for_all
     ~order_id:(use Order_id.(=))
-    ~action:(use (=))
-    ~quantity:(use (=))
-    ~order_type:(use (=))
+    ~action:(use Order_action.equal)
+    ~quantity:(use Volume.(=))
+    ~order_type:(use Order_type.equal)
     ~limit_price:(use (Option.equal Price.(=.)))
     ~stop_price:(use (Option.equal Price.(=.)))
-    ~time_in_force:(use (=))
-    ~oca_group_name:(use (=))
-    ~oca_type:(use (=))
-    ~order_ref:(use (=))
-    ~transmit:(use (=))
+    ~time_in_force:(use (Option.equal Time_in_force.equal))
+    ~oca_group_name:(use (Option.equal String.(=)))
+    ~oca_type:(use (Option.equal Oca_type.equal))
+    ~order_ref:(use (Option.equal String.(=)))
+    ~transmit:(use Bool.(=))
     ~parent_id:(use (Option.equal Order_id.(=)))
-    ~block_order:(use (=))
-    ~sweep_to_fill:(use (=))
-    ~display_size:(use (=))
-    ~stop_trigger_method:(use (=))
-    ~outside_regular_trading_hours:(use (=))
-    ~hidden:(use (=))
+    ~block_order:(use Bool.(=))
+    ~sweep_to_fill:(use Bool.(=))
+    ~display_size:(use (Option.equal Volume.equal))
+    ~stop_trigger_method:(use Stop_trigger_method.equal)
+    ~outside_regular_trading_hours:(use Bool.(=))
+    ~hidden:(use Bool.(=))
     ~good_after_date_time:(use (Option.equal Time.(=)))
     ~good_till_date_time:(use (Option.equal Time.(=)))
-    ~override_percentage_constraints:(use (=))
-    ~rule80A:(use (=))
-    ~all_or_none:(use (=))
-    ~minimum_quantity:(use (=))
+    ~override_percentage_constraints:(use Bool.(=))
+    ~rule80A:(use (Option.equal Rule80A.equal))
+    ~all_or_none:(use Bool.(=))
+    ~minimum_quantity:(use (Option.equal Volume.equal))
     ~percent_offset:(use (Option.equal Float.(=.)))
     ~trailing_stop_price:(use (Option.equal Price.(=.)))
     ~trailing_percent:(use (Option.equal Float.(=.)))
-    ~financial_advisor_group:(use (=))
-    ~financial_advisor_method:(use (=))
-    ~financial_advisor_percentage:(use (=))
-    ~financial_advisor_profile:(use (=))
-    ~open_close:(use (=))
-    ~origin:(use (=))
-    ~short_sale_slot:(use (=))
-    ~designated_location:(use (=))
+    ~financial_advisor_group:(use (Option.equal String.(=)))
+    ~financial_advisor_method:(use (Option.equal String.(=)))
+    ~financial_advisor_percentage:(use (Option.equal String.(=)))
+    ~financial_advisor_profile:(use (Option.equal String.(=)))
+    ~open_close:(use Open_close.equal)
+    ~origin:(use Origin.equal)
+    ~short_sale_slot:(use (Option.equal (=)))
+    ~designated_location:(use (Option.equal String.(=)))
     ~exemption_code:(use (=))
     ~discretionary_amount:(use (Option.equal Float.(=.)))
-    ~electronic_trade_only:(use (=))
-    ~firm_quote_only:(use (=))
+    ~electronic_trade_only:(use Bool.(=))
+    ~firm_quote_only:(use Bool.(=))
     ~nbbo_price_cap:(use (Option.equal Float.(=.)))
-    ~opt_out_smart_routing:(use (=))
-    ~auction_strategy:(use (=))
+    ~opt_out_smart_routing:(use Bool.(=))
+    ~auction_strategy:(use (Option.equal Auction_strategy.equal))
     ~starting_price:(use (Option.equal Price.(=.)))
     ~stock_reference_price:(use (Option.equal Price.(=.)))
     ~delta:(use (Option.equal Float.(=.)))
     ~lower_stock_price_range:(use (Option.equal Price.(=.)))
     ~upper_stock_price_range:(use (Option.equal Price.(=.)))
     ~volatility:(use (Option.equal Float.(=.)))
-    ~volatility_type:(use (=))
-    ~continuous_update:(use (=))
-    ~reference_price_type:(use (=))
-    ~delta_neutral_order_type:(use (=))
+    ~volatility_type:(use (Option.equal Volatility_type.equal))
+    ~continuous_update:(use Bool.(=))
+    ~reference_price_type:(use (Option.equal Reference_price_type.equal))
+    ~delta_neutral_order_type:(use (Option.equal Order_type.equal))
     ~delta_neutral_aux_price:(use (Option.equal Price.(=.)))
     ~delta_neutral_contract_id:(use (Option.equal Contract_id.(=)))
-    ~delta_neutral_settling_firm:(use (=))
-    ~delta_neutral_clearing_account:(use (=))
-    ~delta_neutral_clearing_intent:(use (=))
-    ~basis_points:(use (=))
-    ~basis_points_type:(use (=))
-    ~scale_initial_level_size:(use (=))
-    ~scale_subsequent_level_size:(use (=))
+    ~delta_neutral_settling_firm:(use (Option.equal String.(=)))
+    ~delta_neutral_clearing_account:(use (Option.equal String.(=)))
+    ~delta_neutral_clearing_intent:(use (Option.equal String.(=)))
+    ~basis_points:(use (Option.equal Float.(=.)))
+    ~basis_points_type:(use (Option.equal (=)))
+    ~scale_initial_level_size:(use (Option.equal Volume.equal))
+    ~scale_subsequent_level_size:(use (Option.equal Volume.equal))
     ~scale_price_increment:(use (Option.equal Float.(=.)))
     ~scale_price_adjust_value:(use (Option.equal Float.(=.)))
-    ~scale_price_adjust_interval:(use (=))
+    ~scale_price_adjust_interval:(use (Option.equal (=)))
     ~scale_profit_offset:(use (Option.equal Float.(=.)))
-    ~scale_auto_reset:(use (=))
-    ~scale_init_position:(use (=))
-    ~scale_init_fill_quantity:(use (=))
-    ~scale_random_percent:(use (=))
-    ~hedge_type:(use (=))
-    ~hedge_parameter:(use (=))
+    ~scale_auto_reset:(use Bool.(=))
+    ~scale_init_position:(use (Option.equal (=)))
+    ~scale_init_fill_quantity:(use (Option.equal (=)))
+    ~scale_random_percent:(use Bool.(=))
+    ~hedge_type:(use (Option.equal Hedge_type.equal))
+    ~hedge_parameter:(use (Option.equal String.(=)))
     ~account_code:(use (Option.equal Account_code.(=)))
-    ~settling_firm:(use (=))
-    ~clearing_account:(use (=))
-    ~clearing_intent:(use (=))
-    ~algo_strategy:(use (=))
-    ~request_pre_trade_information:(use (=))
-    ~not_held:(use (=))
+    ~settling_firm:(use (Option.equal String.(=)))
+    ~clearing_account:(use (Option.equal String.(=)))
+    ~clearing_intent:(use (Option.equal Clearing_intent.equal))
+    ~algo_strategy:(use (Option.equal String.(=)))
+    ~request_pre_trade_information:(use Bool.(=))
+    ~not_held:(use Bool.(=))

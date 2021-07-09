@@ -9,7 +9,7 @@ module T = struct
     | `Option
     | `Fut_opt
     | `Forex
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
 end
 include T
 include Sexpable.To_stringable (T)

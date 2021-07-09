@@ -1,5 +1,5 @@
 open Core_kernel
 
-type t = [ `Call | `Put ] [@@deriving sexp]
+type t = [ `Call | `Put ] [@@deriving sexp, eq]
 include Stringable.S with type t := t
 include Twsable.S with type t := t

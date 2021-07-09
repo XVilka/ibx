@@ -2,9 +2,9 @@ open Core
 open Tws_prot
 
 module Unit (Arg : sig val name:string end) = struct
-  type t = unit [@@deriving sexp]
+  type t = unit [@@deriving sexp, eq]
   let create () = ()
-  let ( = ) t1 t2 = (t1 = t2)
+  let ( = ) t1 t2 = equal t1 t2
   let encoder =
     Encoder.create ~name:Arg.name
       Encoder.Spec.(value (required unit))
@@ -26,7 +26,7 @@ module Server_log_level = struct
       | `Warning
       | `Information
       | `Detail
-      ] [@@deriving sexp]
+      ] [@@deriving sexp, eq]
 
     let tws_of_t = function
       | `System -> "1"
@@ -50,7 +50,7 @@ module Server_log_level = struct
 
   let create ~level = level
 
-  let ( = ) t1 t2 = (t1 = t2)
+  let ( = ) t1 t2 = Level.equal t1 t2
 
   let encoder =
     Encoder.create ~name:"Query.Server_log_level"
@@ -89,8 +89,8 @@ module Market_data = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~tick_types:(use (=))
-      ~snapshot:(use (=))
+      ~tick_types:(use (List.equal Tick_type.equal))
+      ~snapshot:(use Bool.(=))
 
   let encoder =
     let contract_spec =
@@ -250,7 +250,7 @@ module Updates (Arg : sig val name:string end) = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~subscribe:(use (=))
+      ~subscribe:(use Bool.(=))
       ~account_code:(use Account_code.(=))
 
   let encoder =
@@ -323,9 +323,9 @@ module Executions = struct
       ~account_code:(use Account_code.(=))
       ~time:(use Time.(=))
       ~symbol:(use Symbol.(=))
-      ~sec_type:(use (=))
-      ~exchange:(use (=))
-      ~action:(use (=))
+      ~sec_type:(use String.(=))
+      ~exchange:(use Exchange.equal)
+      ~action:(use Order_action.equal)
 
   let encoder =
     Encoder.create ~name:"Query.Executions"
@@ -380,8 +380,6 @@ end
 module Contract_details = struct
   type t = Raw_contract.t [@@deriving sexp]
 
-  let create ~contract = Contract.to_raw contract
-
   let create ?con_id ?multiplier ?prim_exch ?local_symbol ?sec_id
       ?include_expired ?exchange ?right ?expiry ?strike ~sec_type ~currency
       symbol =
@@ -392,6 +390,7 @@ module Contract_details = struct
       ?local_symbol
       ?sec_id_type:(Option.map sec_id ~f:Security_id.sec_id_type)
       ?sec_id:(Option.map sec_id ~f:Security_id.sec_id)
+      ?include_expired
       ?exchange
       ?expiry
       ?strike
@@ -477,7 +476,7 @@ module History = struct
         | `Historical_volatility
         | `Implied_volatility
         | `Option_volume
-        ] [@@deriving sexp]
+        ] [@@deriving sexp, eq]
     end
     include T
     include Sexpable.To_stringable (T)
@@ -533,11 +532,11 @@ module History = struct
     Fields.for_all
       ~contract:(use Raw_contract.(=))
       ~until:(use Time.(=))
-      ~bar_size:(use (=))
-      ~duration:(use (=))
-      ~use_rth:(use (=))
-      ~tick_type:(use (=))
-      ~date_format:(use (=))
+      ~bar_size:(use Bar.Size.equal)
+      ~duration:(use Bar.Duration.equal)
+      ~use_rth:(use Bool.(=))
+      ~tick_type:(use Tick_type.equal)
+      ~date_format:(use String.(=))
 
   let encoder =
     let contract_spec = Raw_contract.Encoder_specs.history_query () in
@@ -595,7 +594,7 @@ module Realtime_bars = struct
   module Bar_size = struct
     type t =
       [ `Five_sec
-      ] [@@deriving sexp]
+      ] [@@deriving sexp, eq]
 
     let tws_of_t = function
       | `Five_sec -> "5"
@@ -613,7 +612,7 @@ module Realtime_bars = struct
       | `Midpoint
       | `Bid
       | `Ask
-      ] [@@deriving sexp]
+      ] [@@deriving sexp, eq]
 
     let tws_of_t = function
       | `Trades -> "TRADES"
@@ -651,9 +650,9 @@ module Realtime_bars = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~bar_size:(use (=))
-      ~tick_type:(use (=))
-      ~use_rth:(use (=))
+      ~bar_size:(use Bar_size.equal)
+      ~tick_type:(use Tick_type.equal)
+      ~use_rth:(use Bool.(=))
 
   let encoder =
     let contract_spec =

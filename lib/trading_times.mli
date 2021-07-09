@@ -1,6 +1,6 @@
 open Core_kernel
 
-type t [@@deriving sexp]
+type t [@@deriving sexp, eq]
 include Twsable.S with type t := t
 
 val create : date:Date.t -> hours:Time.Ofday.t list -> t

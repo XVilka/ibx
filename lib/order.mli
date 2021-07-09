@@ -1,5 +1,3 @@
-open Core_kernel
-
 type ('a, 'b) t
   constraint 'a = [< Order_action.t ]
   constraint 'b = [< Order_type.t ]

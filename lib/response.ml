@@ -10,11 +10,11 @@ module Tws_error = struct
   type t =
     { error_code : int
     ; error_msg : string
-    } [@@deriving sexp, fields]
+    } [@@deriving sexp, fields, eq]
 
   let create = Fields.create
 
-  let ( = ) t1 t2 = (t1 = t2)
+  let ( = ) t1 t2 = equal t1 t2
 
   let decoder =
     Decoder.create ~name:"Response.Tws_error"
@@ -51,7 +51,8 @@ module Server_time = struct
   type t = Time.t [@@deriving sexp]
 
   let create ~time = time
-  let ( = ) t1 t2 = (t1 = t2)
+  let equal t1 t2 = Time.equal t1 t2
+  let ( = ) t1 t2 = equal t1 t2
 
   let decoder =
     Decoder.create ~name:"Response.Server_time"
@@ -83,7 +84,7 @@ module Tick_price = struct
       | Low
       | Close
       | Open
-    [@@deriving sexp]
+    [@@deriving sexp, eq]
 
     let tws_of_t = function
       | Bid -> "1"
@@ -123,10 +124,10 @@ module Tick_price = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~tick_type:(use (=))
+      ~tick_type:(use Type.equal)
       ~price:(use Price.(=.))
       ~size:(use Volume.(=))
-      ~can_auto_execute:(use (Option.equal (=)))
+      ~can_auto_execute:(use (Option.equal Bool.(=)))
 
   let decoder =
     Decoder.create ~name:"Response.Tick_price"
@@ -169,7 +170,7 @@ module Tick_size = struct
       | Ask
       | Last
       | Volume
-    [@@deriving sexp]
+    [@@deriving sexp, eq]
 
     let tws_of_t = function
       | Bid -> "0"
@@ -190,11 +191,11 @@ module Tick_size = struct
   type t =
     { tick_type : Type.t
     ; size : Volume.t
-    } [@@deriving sexp, fields]
+    } [@@deriving sexp, fields, eq]
 
   let create = Fields.create
 
-  let ( = ) t1 t2 = (t1 = t2)
+  let ( = ) t1 t2 = equal t1 t2
 
   let decoder =
     Decoder.create ~name:"Response.Tick_size"
@@ -229,7 +230,7 @@ module Tick_option = struct
       | Last
       | Model
       | Custom
-    [@@deriving sexp]
+    [@@deriving sexp, eq]
 
     let tws_of_t = function
       | Bid -> "10"
@@ -268,7 +269,7 @@ module Tick_option = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~tick_type:(use (=))
+      ~tick_type:(use Type.equal)
       ~implied_vol:(use Float.(=.))
       ~delta:(use Float.(=.))
       ~option_price:(use Price.(=.))
@@ -293,15 +294,14 @@ module Tick_option = struct
           ~theta:(fields_value (required float))
           ~under_price:(fields_value (required Price.val_type)))
       (fun tick_type implied_vol delta option_price pv_dividend gamma vega theta under_price ->
-         let abs = Float.abs in
          { tick_type;
-           implied_vol = if implied_vol < 0. then Float.nan else implied_vol;
-           delta = if abs delta > 1. then Float.nan else delta;
+           implied_vol = if Float.(implied_vol < 0.) then Float.nan else implied_vol;
+           delta = if Float.(abs delta > 1.) then Float.nan else delta;
            option_price = if Price.(option_price < zero) then Price.nan else option_price;
-           pv_dividend = if pv_dividend < 0. then Float.nan else pv_dividend;
-           gamma = if abs gamma > 1. then Float.nan else gamma;
-           vega = if abs vega > 1. then Float.nan else vega;
-           theta = if abs theta > 1. then Float.nan else theta;
+           pv_dividend = if Float.(pv_dividend < 0.) then Float.nan else pv_dividend;
+           gamma = if Float.(abs gamma > 1.) then Float.nan else gamma;
+           vega = if Float.(abs vega > 1.) then Float.nan else vega;
+           theta = if Float.(abs theta > 1.) then Float.nan else theta;
            under_price = if Price.(under_price < zero) then Price.nan else under_price;
          })
 
@@ -406,7 +406,7 @@ module Tick_string = struct
       | Ask_yield
       | Last_yield
       | Cust_option_comp
-    [@@deriving sexp]
+    [@@deriving sexp, eq]
 
     let tws_of_t = function
       | Bid_size -> "0"
@@ -536,8 +536,8 @@ module Tick_string = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~tick_type:(use (=))
-      ~value:(use (=))
+      ~tick_type:(use Type.equal)
+      ~value:(use String.(=))
 
   let decoder =
     Decoder.create ~name:"Response.Tick_string"
@@ -584,7 +584,7 @@ module Order_status = struct
       | `Cancelled
       | `Filled
       | `Inactive
-      ] [@@deriving sexp]
+      ] [@@deriving sexp, eq]
 
     let tws_of_t = function
       | `Pending_submit -> "PendingSubmit"
@@ -627,15 +627,15 @@ module Order_status = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~state:(use (=))
-      ~filled:(use (=))
-      ~remaining:(use (=))
+      ~state:(use State.equal)
+      ~filled:(use Volume.equal)
+      ~remaining:(use Volume.equal)
       ~avg_fill_price:(use Price.(=.))
       ~permanent_id:(use (=))
       ~parent_id:(use Order_id.(=))
       ~last_fill_price:(use Price.(=.))
       ~client_id:(use Client_id.(=))
-      ~why_held:(use (=))
+      ~why_held:(use (Option.equal String.(=)))
 
   let decoder =
     Decoder.create ~name:"Response.Order_status"
@@ -711,10 +711,10 @@ module Account_update = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~key:(use (=))
-      ~value:(use (=))
-      ~currency:(use (=))
-      ~account_code:(use (=))
+      ~key:(use String.(=))
+      ~value:(use String.(=))
+      ~currency:(use (Option.equal String.(=)))
+      ~account_code:(use Account_code.equal)
 
   let decoder =
     Decoder.create ~name:"Response.Account_update"
@@ -905,21 +905,21 @@ module Contract_data = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~market_name:(use (=))
-      ~trading_class:(use (=))
+      ~market_name:(use String.(=))
+      ~trading_class:(use String.(=))
       ~min_tick:(use Float.(=.))
-      ~order_types:(use List.equal ~equal:String.(=))
-      ~valid_exchanges:(use (List.equal ~equal:(=)))
+      ~order_types:(use (List.equal String.(=)))
+      ~valid_exchanges:(use (List.equal Exchange.equal))
       ~price_magnifier:(use (=))
       ~underlying_id:(use (=))
-      ~long_name:(use (=))
-      ~contract_month:(use (=))
-      ~industry:(use (=))
-      ~category:(use (=))
-      ~subcategory:(use (=))
+      ~long_name:(use String.(=))
+      ~contract_month:(use String.(=))
+      ~industry:(use String.(=))
+      ~category:(use String.(=))
+      ~subcategory:(use String.(=))
       ~time_zone:(use (Option.equal Time.Zone.(=)))
-      ~trading_hours:(use (=))
-      ~liquid_hours:(use (=))
+      ~trading_hours:(use (List.equal Trading_times.equal))
+      ~liquid_hours:(use (List.equal Trading_times.equal))
 
   let decoder =
     let field_name field = Fieldslib.Field.name field in
@@ -1117,7 +1117,7 @@ module Execution = struct
       type t =
         [ `bought
         | `sold
-        ] [@@deriving sexp]
+        ] [@@deriving sexp, eq]
     end
     include T
     include Sexpable.To_stringable (T)
@@ -1184,8 +1184,8 @@ module Execution = struct
       ~exec_id:(use Execution_id.(=))
       ~time:(use Time.(=))
       ~account_code:(use Account_code.(=))
-      ~exchange:(use (=))
-      ~side:(use (=))
+      ~exchange:(use Exchange.equal)
+      ~side:(use Side.equal)
       ~volume:(use Volume.(=))
       ~price:(use Price.(=.))
       ~permanent_id:(use (=))
@@ -1193,7 +1193,7 @@ module Execution = struct
       ~liquidation:(use (=))
       ~cumulative_volume:(use Volume.(=))
       ~average_price:(use Price.(=.))
-      ~order_ref:(use (=))
+      ~order_ref:(use (Option.equal String.(=)))
 
   let decoder =
     let contract_spec = Raw_contract.Decoder_specs.execution_response () in
@@ -1304,12 +1304,12 @@ module Commission = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~exec_id:(use (=))
+      ~exec_id:(use Execution_id.equal)
       ~commission:(use Price.(=.))
-      ~currency:(use (=))
+      ~currency:(use Currency.equal)
       ~realized_pnl:(use Price.(=.))
       ~yield:(use Float.(=.))
-      ~yield_redemption_date:(use (=))
+      ~yield_redemption_date:(use (Option.equal (=)))
 
   let decoder =
     Decoder.create ~name:"Response.Commission"
@@ -1360,7 +1360,7 @@ end
 
 module Book_update = struct
   module Operation = struct
-    type t = Insert | Update | Delete [@@deriving sexp]
+    type t = Insert | Update | Delete [@@deriving sexp, eq]
 
     let tws_of_t = function
       | Insert -> "0"
@@ -1380,7 +1380,7 @@ module Book_update = struct
     type t =
       | Ask
       | Bid
-    [@@deriving sexp]
+    [@@deriving sexp, eq]
 
     let tws_of_t = function
       | Ask -> "0"
@@ -1410,8 +1410,8 @@ module Book_update = struct
     in
     Fields.for_all
       ~position:(use (=))
-      ~operation:(use (=))
-      ~side:(use (=))
+      ~operation:(use Operation.equal)
+      ~side:(use Side.equal)
       ~price:(use Price.(=.))
       ~size:(use Volume.(=))
 
@@ -1475,8 +1475,8 @@ module History = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~start:(use (=))
-      ~stop:(use (=))
+      ~start:(use Time.equal)
+      ~stop:(use Time.equal)
       ~num_bars:(use (=))
       ~bars:(use (List.for_all2_exn ~f:Bar.(=)))
 
@@ -1498,7 +1498,7 @@ module History = struct
              |> Queue.of_array
            in
            let bar_u = Decoder.create
-               Decoder.Spec.(Raw_bar.Historical_bar.decoder_spec ()) Fn.id
+               (Raw_bar.Historical_bar.decoder_spec ()) Fn.id
            in
            Decoder.run_exn bar_u bar_msg
            |> Bar.of_raw)
@@ -1517,8 +1517,7 @@ module History = struct
             ~num_bars:(fields_value (required int))
             ~bars:(fields_value tws_data))
           (fun t ->
-             let bar_p = Encoder.create
-                 Encoder.Spec.(Raw_bar.Historical_bar.encoder_spec ())
+             let bar_p = Encoder.create (Raw_bar.Historical_bar.encoder_spec ())
              in
              let bars_msg =
                List.map t.bars ~f:(fun bar -> Encoder.run bar_p (Bar.to_raw bar))
@@ -1603,7 +1602,7 @@ module Realtime_bar = struct
   let ( = ) = Bar.(=)
 
   let decoder = Decoder.create
-      Decoder.Spec.(Raw_bar.Realtime_bar.decoder_spec ())
+      (Raw_bar.Realtime_bar.decoder_spec ())
       Bar.of_raw
 
   let encoder = Only_in_test.of_thunk (fun () ->

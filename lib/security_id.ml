@@ -8,7 +8,7 @@ module Type = struct
       | `RIC
       | `CUSIP
       | `SEDOL
-      ] [@@deriving sexp]
+      ] [@@deriving sexp, eq]
   end
   include T
   include Sexpable.To_stringable (T)
@@ -30,7 +30,7 @@ module T = struct
     | `RIC   of Id.t
     | `CUSIP of Id.t
     | `SEDOL of Id.t
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
 end
 include T
 include Sexpable.To_stringable (T)

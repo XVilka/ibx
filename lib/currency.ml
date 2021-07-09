@@ -21,7 +21,7 @@ type t =
   | `SEK
   | `SGD
   | `KRW
-  ] [@@deriving sexp]
+  ] [@@deriving sexp, eq]
 
 let tws_of_t = function
   | `USD -> "USD"

@@ -28,7 +28,7 @@ let ( = ) t1 t2 : bool =
     ~cl:(use Price.(=.))
     ~vo:(use Volume.(=))
     ~wap:(use Price.(=.))
-    ~has_gaps:(use (=))
+    ~has_gaps:(use Bool.(=))
     ~n_trades:(use (=))
 
 let field_name field = Fieldslib.Field.name field
