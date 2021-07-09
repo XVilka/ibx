@@ -1,6 +1,5 @@
 open Core
 open Async
-open Tws_prot
 
 module P = Protocol
 

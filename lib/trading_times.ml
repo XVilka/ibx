@@ -4,7 +4,7 @@ open Tws_prot
 type t =
   { date  : Date.t
   ; hours : Time.Ofday.t list
-  } [@@deriving sexp]
+  } [@@deriving sexp, eq]
 
 let create ~date ~hours = { date; hours }
 
@@ -24,13 +24,15 @@ let stop t ~zone =
 let start_exn t ~zone = Option.value_exn (start t ~zone)
 let stop_exn t ~zone = Option.value_exn (stop t ~zone)
 
+let closed_exn l = String.equal (Option.value_exn (List.last l)) "CLOSED"
+
 let t_of_tws s =
   let ofday_of_string s =
     let x = Int.of_string s in
     Time.Ofday.create ~hr:(x / 100) ~min:(x mod 100) ()
   in
   let l = String.split_on_chars s ~on:[':';'-';','] in
-  if List.length l = 2 && List.last_exn l = "CLOSED" then
+  if List.length l = 2 && closed_exn l then
     { date  = List.hd_exn l |> Date.of_string; hours = [] }
   else
     { date  = List.hd_exn l |> Date.of_string;

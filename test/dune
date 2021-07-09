@@ -1,0 +1,14 @@
+(executables
+ (names test_runner)
+  (libraries async
+              core
+              ibx
+              textutils)
+  (preprocess (pps ppx_sexp_conv
+                    ppx_fields_conv
+                    ppx_let)))
+
+(rule
+ (alias runtest)
+  (deps test_runner.exe)
+  (action (run ${<})))

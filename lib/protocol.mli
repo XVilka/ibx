@@ -1,5 +1,4 @@
 open Core_kernel
-open Tws_prot
 
 module Header : sig
   type 'a t =

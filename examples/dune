@@ -1,6 +1,6 @@
 (executables
- ((names
-   (buy_market_order
+ (names
+   buy_market_order
     demultiplex
     futures_chain
     last_price
@@ -13,11 +13,9 @@
     quote_table
     server_time
     show_portfolio
-    submit_orders))
-  (libraries (async
+    submit_orders)
+  (libraries async
               core
               gnuplot
               ibx
-              textutils))))
-
-(jbuild_version 1)
+              textutils))

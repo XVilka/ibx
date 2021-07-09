@@ -1,5 +1,3 @@
-open Security_type
-
 module type S = sig
   type raw
   type 'a t constraint 'a = [< Security_type.t ]

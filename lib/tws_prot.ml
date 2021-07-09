@@ -23,7 +23,7 @@ module Val_type = struct
   let tws_of_float x =
     let s = Float.to_string x in
     let n = String.length s in
-    if s.[n-1] = '.' then s^"0" else s
+    if Char.(s.[n-1] = '.') then s^"0" else s
   let float_of_tws = Float.of_string
   let float = create tws_of_float float_of_tws
 

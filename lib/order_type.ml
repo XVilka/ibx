@@ -28,7 +28,7 @@ module T = struct
     | `Trailing_stop
     | `Trailing_stop_limit
     | `VWAP
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
 end
 include T
 include Sexpable.To_stringable (T)

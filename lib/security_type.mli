@@ -1,5 +1,4 @@
 open Core_kernel
-open Tws_prot
 
 type t =
   [ `Stock
@@ -8,7 +7,7 @@ type t =
   | `Option
   | `Fut_opt
   | `Forex
-  ] [@@deriving sexp]
+  ] [@@deriving sexp, eq]
 include Stringable.S with type t := t
 val tws_of_t : [< t ] -> string
 val t_of_tws : string -> [> t]

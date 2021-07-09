@@ -112,6 +112,6 @@ type t =
   | `VIRTX      (* VIRT-X *)
   | `VSE        (* Vienna Stock Exchange *)
   | `VWAP       (* IB VWAP Dealing Network (VWAP) *)
-  ] [@@deriving sexp]
+  ] [@@deriving sexp, eq]
 include Stringable.S with type t := t
 include Twsable.S with type t := t

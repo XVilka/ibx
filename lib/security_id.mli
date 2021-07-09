@@ -6,7 +6,7 @@ module Type : sig
     | `RIC
     | `CUSIP
     | `SEDOL
-    ] [@@deriving sexp]
+    ] [@@deriving sexp, eq]
   include Twsable.S with type t := t
 end
 
@@ -21,7 +21,7 @@ type t =
   | `RIC   of Id.t
   | `CUSIP of Id.t
   | `SEDOL of Id.t
-  ] [@@deriving sexp]
+  ] [@@deriving sexp, eq]
 include Stringable.S with type t := t
 
 val isin  : Id.t -> t

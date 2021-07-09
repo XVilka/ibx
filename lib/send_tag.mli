@@ -1,5 +1,3 @@
-open Tws_prot
-
 type t =
   | Market_data
   | Cancel_market_data

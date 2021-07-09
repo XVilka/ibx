@@ -107,7 +107,7 @@ type t =
   | `VIRTX
   | `VSE
   | `VWAP
-  ] [@@deriving sexp]
+  ] [@@deriving sexp, eq]
 
 let tws_of_t = function
   | `AEB -> "AEB"

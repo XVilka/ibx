@@ -2,7 +2,7 @@ open Core_kernel
 open Tws_prot
 
 module T = struct
-  type t = [ `Call | `Put ] [@@deriving sexp]
+  type t = [ `Call | `Put ] [@@deriving sexp, eq]
 end
 include T
 include Sexpable.To_stringable (T)

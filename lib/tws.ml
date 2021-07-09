@@ -393,7 +393,7 @@ let implied_volatility_exn t ~contract ~option_price ~underlying_price =
 
 let dedup_adjacents ~equal pipe =
   Pipe.create_reader ~close_on_exception:true (fun w ->
-    Deferred.ignore (Pipe.fold pipe ~init:None ~f:(fun last x ->
+    Deferred.ignore_m (Pipe.fold pipe ~init:None ~f:(fun last x ->
       Deferred.Option.return (match last with
         | None ->
           don't_wait_for (Pipe.write w x); x
@@ -677,7 +677,7 @@ let realtime_bars
     (* The number of five secs bars that make up a bar of the given size. *)
     let n_bars = five_secs_bars_multiples bar_size in
     let bars = Pipe.create_reader ~close_on_exception:true (fun w ->
-      Deferred.ignore (Pipe.fold bars ~init:(None, n_bars) ~f:(fun state bar ->
+      Deferred.ignore_m (Pipe.fold bars ~init:(None, n_bars) ~f:(fun state bar ->
         match bar with
         | Error _ as e ->
           don't_wait_for (Pipe.write w e);
@@ -875,7 +875,7 @@ module TAQ = struct
       Ib.Streaming_request.dispatch Tws_reqs.req_taq_data con q
       >>|? fun (ticks, id) ->
       let taq_data = Pipe.create_reader ~close_on_exception:true (fun w ->
-        Deferred.ignore (
+        Deferred.ignore_m (
           Pipe.fold ticks ~init:(Trade.empty, Quote.empty)
             ~f:(fun ((trade, quote) as taq) tick ->
               match tick with
