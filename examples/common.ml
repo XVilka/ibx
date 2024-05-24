@@ -63,11 +63,11 @@ let sma_period_arg () =
   )
 
 module Timezone = struct
-  let arg_type = Command.Spec.Arg_type.create Time.Zone.find_exn
+  let arg_type = Command.Spec.Arg_type.create Time_float_unix.Zone.find_exn
 end
 
 let timezone_arg () =
   Command.Spec.(
     flag "-zone" ~doc:" the time zone in which the symbol is traded"
-      (optional_with_default (Lazy.force Time.Zone.local) Timezone.arg_type)
+      (optional_with_default (Lazy.force Time_float_unix.Zone.local) Timezone.arg_type)
   )

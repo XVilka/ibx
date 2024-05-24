@@ -6,7 +6,7 @@ module Client_msg = struct
   module Control = struct
     type t =
       | Connecting of [ `Client_version of int ] * Host_and_port.t
-      | Connected  of [ `Server_version of int ] * Time.t
+      | Connected  of [ `Server_version of int ] * Time_float_unix.t
       | Disconnected
     [@@deriving sexp]
   end
@@ -29,7 +29,7 @@ type t =
       | `Connecting of unit -> unit
       | `Connected of Connection.t ]
   ; mutable server_version  : int option
-  ; mutable connection_time : Time.t option
+  ; mutable connection_time : Time_float_unix.t option
   ; mutable account_code    : Account_code.t option
   ; messages    : Client_msg.t Tail.t
   ; exec_reader : Execution.t  Pipe.Reader.t
@@ -483,7 +483,8 @@ let filter_executions ?time t ~contract ~action =
         (* Note: [account_code t] won't return [None] since we
            can only call it in a handler of [Tws.with_client]. *)
         ~account_code:(Option.value_exn (account_code t))
-        ~time:(Option.value time ~default:(Time.sub (Time.now ()) Time.Span.day))
+        ~time:(Option.value time ~default:(Time_float_unix.sub (Time_float_unix.now ())
+        Time_float_unix.Span.day))
         ~action
     in
     Ib.Streaming_request.(
@@ -626,7 +627,7 @@ let history
     ?(duration = `Year 1)
     ?(use_rth = true)
     ?(tick_type = `Trades)
-    ?(until = Time.now ())
+    ?(until = Time_float_unix.now ())
     t ~contract =
   with_connection t ~f:(fun con ->
     let q = Query.History.create
@@ -640,7 +641,7 @@ let history_exn
     ?(duration = `Year 1)
     ?(use_rth = true)
     ?(tick_type = `Trades)
-    ?(until = Time.now ())
+    ?(until = Time_float_unix.now ())
     t ~contract =
   history t ~bar_size ~duration ~use_rth ~tick_type ~until ~contract
   >>| function
@@ -721,32 +722,32 @@ let cancel_realtime_bars t id =
 
 module Trade = struct
   type t =
-    { stamp : Time.t
+    { stamp : Time_float_unix.t
     ; price : Price.t
     ; size  : Volume.t
     } [@@deriving sexp, fields]
 
   let create ~price ~size =
-    { stamp = Time.now ()
+    { stamp = Time_float_unix.now ()
     ; price
     ; size
     }
 
   let empty =
-    { stamp = Time.epoch
+    { stamp = Time_float_unix.epoch
     ; price = Price.nan
     ; size = Volume.zero
     }
 
   let update_size t ~size =
     { t with
-      stamp = Time.now ()
+      stamp = Time_float_unix.now ()
     ; size
     }
 
   let pp ppf t =
     Format.fprintf ppf "T|%s|%4.2f|%4d"
-      (Time.to_string t.stamp)
+      (Time_float_unix.to_string t.stamp)
       (t.price :> float)
       (t.size :> int)
 end
@@ -793,7 +794,7 @@ module Quote = struct
   end
 
   type t =
-    { stamp : Time.t
+    { stamp : Time_float_unix.t
     ; ask_price : Price.t
     ; bid_price : Price.t
     ; ask_size : Volume.t
@@ -802,7 +803,7 @@ module Quote = struct
     } [@@deriving sexp, fields]
 
   let empty =
-    { stamp = Time.epoch
+    { stamp = Time_float_unix.epoch
     ; ask_price = Price.nan
     ; ask_size = Volume.zero
     ; bid_price = Price.nan
@@ -812,7 +813,7 @@ module Quote = struct
 
   let pp ppf t =
     Format.fprintf ppf "Q|%s|%4.2f|%4.2f|%4d|%4d"
-      (Time.to_string t.stamp)
+      (Time_float_unix.to_string t.stamp)
       (t.bid_price :> float)
       (t.ask_price :> float)
       (t.bid_size :> int)
@@ -820,7 +821,7 @@ module Quote = struct
 
   let update_ask t ~size ~price =
     { t with
-      stamp = Time.now ()
+      stamp = Time_float_unix.now ()
     ; ask_price = price
     ; ask_size = size
     ; change = Change.ask_price_and_size
@@ -830,7 +831,7 @@ module Quote = struct
 
   let update_bid t ~size ~price =
     { t with
-      stamp = Time.now ()
+      stamp = Time_float_unix.now ()
     ; bid_size = size
     ; bid_price = price
     ; change = Change.bid_price_and_size
@@ -840,14 +841,14 @@ module Quote = struct
 
   let update_ask_size t ~size =
     { t with
-      stamp = Time.now ()
+      stamp = Time_float_unix.now ()
     ; ask_size = size
     ; change = Change.ask_size ~size_change:Volume.(size - t.ask_size)
     }
 
   let update_bid_size t ~size =
     { t with
-      stamp = Time.now ()
+      stamp = Time_float_unix.now ()
     ; bid_size = size
     ; change = Change.bid_size ~size_change:Volume.(size - t.bid_size)
     }
@@ -1133,11 +1134,11 @@ let latest_trade_exn t ~contract = latest_trade t ~contract >>| Or_error.ok_exn
 
 module Close = struct
   type t =
-    { stamp : Time.t
+    { stamp : Time_float_unix.t
     ; price : Price.t
     } [@@deriving sexp, fields]
 
-  let create ~price = { stamp = Time.now (); price }
+  let create ~price = { stamp = Time_float_unix.now (); price }
 end
 
 module Close_snapshot = struct

@@ -4,7 +4,7 @@ authors: [ "Oliver Gu <gu.oliver@yahoo.com>" ]
 homepage: "https://bitbucket.org/ogu/ibx"
 bug-reports: "https://bitbucket.org/ogu/ibx/issues"
 dev-repo: "git+https://bitbucket.org/ogu/ibx.git"
-license: "LGPL-2.1+ with OCaml linking exception"
+license: [ "OCaml-LGPL-linking-exception" ]
 build: [
   ["dune" "build" "--only-packages" "ibx" "--root" "." "-j" jobs "@install"]
 ]
@@ -13,6 +13,8 @@ depends: [
   "core"
   "dune"                {build}
   "textutils"
+  "ppx_deriving"
+  "ppx_sexp_conv"
 ]
 descr: "
 OCaml implementation of the Interactive Brokers TWS API

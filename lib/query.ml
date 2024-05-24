@@ -287,16 +287,16 @@ end)
 
 module Executions = struct
   module Time = struct
-    include Time
-    let tws_of_t tm = Time.format tm "%Y%m%d-%H:%M:%S" ~zone:(Lazy.force Time.Zone.local)
-    let t_of_tws s = Time.of_string (String.tr ~target:'-' ~replacement:' ' s)
+    include Time_float_unix
+    let tws_of_t tm = Time_float_unix.format tm "%Y%m%d-%H:%M:%S" ~zone:(Lazy.force Time_float_unix.Zone.local)
+    let t_of_tws s = Time_float_unix.of_string (String.tr ~target:'-' ~replacement:' ' s)
     let val_type = Val_type.create tws_of_t t_of_tws
   end
 
   type t =
     { client_id : Client_id.t
     ; account_code : Account_code.t
-    ; time : Time.t
+    ; time : Time_float_unix.t
     ; symbol : Symbol.t
     ; sec_type : string
     ; exchange : Exchange.t
@@ -321,7 +321,7 @@ module Executions = struct
     Fields.for_all
       ~client_id:(use Client_id.(=))
       ~account_code:(use Account_code.(=))
-      ~time:(use Time.(=))
+      ~time:(use Time_float_unix.(=))
       ~symbol:(use Symbol.(=))
       ~sec_type:(use String.(=))
       ~exchange:(use Exchange.equal)
@@ -507,7 +507,7 @@ module History = struct
 
   type t =
     { contract : Raw_contract.t
-    ; until : Time.t
+    ; until : Time_float_unix.t
     ; bar_size : Bar.Size.t
     ; duration : Bar.Duration.t
     ; use_rth : bool
@@ -531,7 +531,7 @@ module History = struct
     in
     Fields.for_all
       ~contract:(use Raw_contract.(=))
-      ~until:(use Time.(=))
+      ~until:(use Time_float_unix.(=))
       ~bar_size:(use Bar.Size.equal)
       ~duration:(use Bar.Duration.equal)
       ~use_rth:(use Bool.(=))

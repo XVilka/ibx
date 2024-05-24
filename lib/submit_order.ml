@@ -38,8 +38,8 @@ type t =
     hidden : bool;
     shares_allocation : string;
     discretionary_amount : float option;
-    good_after_date_time : Time.t option;
-    good_till_date_time : Time.t option;
+    good_after_date_time : Time_float_unix.t option;
+    good_till_date_time : Time_float_unix.t option;
     financial_advisor_group : string option;
     financial_advisor_method : string option;
     financial_advisor_percentage : string option;
@@ -209,8 +209,8 @@ let ( = ) t1 t2 : bool =
     ~hidden:(use Bool.(=))
     ~shares_allocation:(use String.(=))
     ~discretionary_amount:(use (Option.equal Float.(=.)))
-    ~good_after_date_time:(use (Option.equal Time.(=)))
-    ~good_till_date_time:(use (Option.equal Time.(=)))
+    ~good_after_date_time:(use (Option.equal Time_float_unix.(=)))
+    ~good_till_date_time:(use (Option.equal Time_float_unix.(=)))
     ~financial_advisor_group:(use (Option.equal String.(=)))
     ~financial_advisor_method:(use (Option.equal String.(=)))
     ~financial_advisor_percentage:(use (Option.equal String.(=)))

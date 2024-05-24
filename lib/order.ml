@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 
 type ('a, 'b) t = Raw_order.t
   constraint 'a = [< Order_action.t ]

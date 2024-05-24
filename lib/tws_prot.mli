@@ -29,10 +29,10 @@ module Encoder : sig
     val float  : float       Val_type.t
     val bool   : bool        Val_type.t
     val bools  : bool        Val_type.t
-    val stamp  : Time.t      Val_type.t
-    val time   : Time.t      Val_type.t
+    val stamp  : Time_float_unix.t      Val_type.t
+    val time   : Time_float_unix.t      Val_type.t
     val date   : Date.t      Val_type.t
-    val zone   : Time.Zone.t Val_type.t
+    val zone   : Time_float_unix.Zone.t Val_type.t
 
     type 'a value
 
@@ -76,10 +76,10 @@ module Decoder : sig
     val float  : float       Val_type.t
     val bool   : bool        Val_type.t
     val bools  : bool        Val_type.t
-    val stamp  : Time.t      Val_type.t
-    val time   : Time.t      Val_type.t
+    val stamp  : Time_float_unix.t      Val_type.t
+    val time   : Time_float_unix.t      Val_type.t
     val date   : Date.t      Val_type.t
-    val zone   : Time.Zone.t Val_type.t
+    val zone   : Time_float_unix.Zone.t Val_type.t
 
     type 'a value
 

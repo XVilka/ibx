@@ -48,10 +48,10 @@ module Tws_error = struct
 end
 
 module Server_time = struct
-  type t = Time.t [@@deriving sexp]
+  type t = Time_float_unix.t [@@deriving sexp]
 
   let create ~time = time
-  let equal t1 t2 = Time.equal t1 t2
+  let equal t1 t2 = Time_float_unix.equal t1 t2
   let ( = ) t1 t2 = equal t1 t2
 
   let decoder =
@@ -60,13 +60,13 @@ module Server_time = struct
       (fun long_int ->
          Int64.to_float long_int
          |> Unix.localtime
-         |> Time.of_tm ~zone:(Lazy.force Time.Zone.local))
+         |> Time_float_unix.of_tm ~zone:(Lazy.force Time_float_unix.Zone.local))
 
   let encoder = Only_in_test.of_thunk (fun () ->
     Encoder.create ~name:"Response.Server_time"
       Encoder.Spec.(lift (value (required int64)) (fun tm ->
-        Time.to_span_since_epoch tm
-        |> Time.Span.to_proportional_float
+        Time_float_unix.to_span_since_epoch tm
+        |> Time_float_unix.Span.to_proportional_float
         |> Int64.of_float)))
 end
 
@@ -565,8 +565,8 @@ module Tick_string = struct
        | Type.Last_timestamp ->
          Float.of_string t.value
          |> Unix.localtime
-         |> Time.of_tm ~zone:(Lazy.force Time.Zone.local)
-         |> Time.to_string_trimmed ~zone:(Lazy.force Time.Zone.local)
+         |> Time_float_unix.of_tm ~zone:(Lazy.force Time_float_unix.Zone.local)
+         |> Time_float_unix.to_string_trimmed ~zone:(Lazy.force Time_float_unix.Zone.local)
        | _ -> t.value)
 end
 
@@ -868,7 +868,7 @@ module Contract_data = struct
     ; industry : string
     ; category : string
     ; subcategory : string
-    ; time_zone : Time.Zone.t option
+    ; time_zone : Time_float_unix.Zone.t option
     ; trading_hours : Trading_times.t list
     ; liquid_hours : Trading_times.t list
     } [@@deriving sexp, fields]
@@ -917,7 +917,7 @@ module Contract_data = struct
       ~industry:(use String.(=))
       ~category:(use String.(=))
       ~subcategory:(use String.(=))
-      ~time_zone:(use (Option.equal Time.Zone.(=)))
+      ~time_zone:(use (Option.equal Time_float_unix.Zone.(=)))
       ~trading_hours:(use (List.equal Trading_times.equal))
       ~liquid_hours:(use (List.equal Trading_times.equal))
 
@@ -1138,7 +1138,7 @@ module Execution = struct
     { order_id : Order_id.t
     ; contract : Raw_contract.t
     ; exec_id : Execution_id.t
-    ; time : Time.t
+    ; time : Time_float_unix.t
     ; account_code : Account_code.t
     ; exchange : Exchange.t
     ; side : Side.t
@@ -1182,7 +1182,7 @@ module Execution = struct
       ~order_id:(use Order_id.(=))
       ~contract:(use Raw_contract.(=))
       ~exec_id:(use Execution_id.(=))
-      ~time:(use Time.(=))
+      ~time:(use Time_float_unix.(=))
       ~account_code:(use Account_code.(=))
       ~exchange:(use Exchange.equal)
       ~side:(use Side.equal)
@@ -1280,7 +1280,7 @@ module Execution = struct
     Format.fprintf ppf
       "Execution: exec_id=%s time=%s exchange=%s side=%s shares=%d price=%4.2f"
       (t.exec_id  |> Execution_id.to_string)
-      (t.time     |> Time.to_string_trimmed ~zone:(Lazy.force Time.Zone.local))
+      (t.time     |> Time_float_unix.to_string_trimmed ~zone:(Lazy.force Time_float_unix.Zone.local))
       (t.exchange |> Exchange.to_string)
       (t.side     |> Side.to_string)
       (t.volume   :> int)
@@ -1449,8 +1449,8 @@ end
 
 module History = struct
   type t =
-    { start : Time.t
-    ; stop : Time.t
+    { start : Time_float_unix.t
+    ; stop : Time_float_unix.t
     ; num_bars : int
     ; bars : Bar.t list
     } [@@deriving sexp, fields]
@@ -1458,8 +1458,8 @@ module History = struct
   let create ~bars =
     let num_bars = List.length bars in
     if num_bars = 0 then
-      { start = Time.epoch
-      ; stop = Time.epoch
+      { start = Time_float_unix.epoch
+      ; stop = Time_float_unix.epoch
       ; num_bars
       ; bars = []
       }
@@ -1475,8 +1475,8 @@ module History = struct
       op (Field.get field t1) (Field.get field t2)
     in
     Fields.for_all
-      ~start:(use Time.equal)
-      ~stop:(use Time.equal)
+      ~start:(use Time_float_unix.equal)
+      ~stop:(use Time_float_unix.equal)
       ~num_bars:(use (=))
       ~bars:(use (List.for_all2_exn ~f:Bar.(=)))
 
@@ -1524,14 +1524,14 @@ module History = struct
                |> String.concat
              in
              `Args
-             $ Time.to_string t.start
-             $ Time.to_string t.stop
+             $ Time_float_unix.to_string t.start
+             $ Time_float_unix.to_string t.stop
              $ t.num_bars
              $ bars_msg)))
 
   module Data_frame = struct
     type t =
-      { stamps : Time.t array
+      { stamps : Time_float_unix.t array
       ; op : float array
       ; hi : float array
       ; lo : float array
@@ -1541,7 +1541,7 @@ module History = struct
   end
 
   let unpack_bars t =
-    let stamps = Array.create ~len:t.num_bars Time.epoch in
+    let stamps = Array.create ~len:t.num_bars Time_float_unix.epoch in
     let op = Array.create ~len:t.num_bars Float.nan in
     let hi = Array.create ~len:t.num_bars Float.nan in
     let lo = Array.create ~len:t.num_bars Float.nan in
@@ -1561,10 +1561,10 @@ module History = struct
     let ohlc = List.map t.bars ~f:(fun bar ->
       Bar.(stamp bar, (op bar, hi bar, lo bar, cl bar)))
     in
-    (ohlc :> (Time.t * (float * float * float * float)) list)
+    (ohlc :> (Time_float_unix.t * (float * float * float * float)) list)
 
   type vwap_item =
-    { stamp : Time.t
+    { stamp : Time_float_unix.t
     ; total_value : float
     ; total_volume : float
     }

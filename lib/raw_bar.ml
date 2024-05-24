@@ -2,7 +2,7 @@ open Core
 open Tws_prot
 
 type t =
-  { stamp : Time.t
+  { stamp : Time_float_unix.t
   ; op : Price.t
   ; hi : Price.t
   ; lo : Price.t
@@ -21,7 +21,7 @@ let ( = ) t1 t2 : bool =
     op (Field.get field t1) (Field.get field t2)
   in
   Fields.for_all
-    ~stamp:(use Time.(=))
+    ~stamp:(use Time_float_unix.(=))
     ~op:(use Price.(=.))
     ~hi:(use Price.(=.))
     ~lo:(use Price.(=.))

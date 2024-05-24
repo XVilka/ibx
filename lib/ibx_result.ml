@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 open Async_kernel
 
 type 'a t = ('a, Ibx_error.t) Result.t [@@deriving sexp]

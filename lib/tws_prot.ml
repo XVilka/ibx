@@ -38,28 +38,28 @@ module Val_type = struct
   let bools = create Bool.to_string Bool.of_string
 
   let tws_of_stamp t =
-    Time.to_span_since_epoch t
-    |> Time.Span.to_proportional_float
+    Time_float_unix.to_span_since_epoch t
+    |> Time_float_unix.Span.to_proportional_float
     |> Float.to_string
 
   let stamp_of_tws s =
     Float.of_string s
     |> Unix.localtime
-    |> Time.of_tm ~zone:(Lazy.force Time.Zone.local)
+    |> Time_float_unix.of_tm ~zone:(Lazy.force Time_float_unix.Zone.local)
 
   let stamp = create tws_of_stamp stamp_of_tws
 
-  let tws_of_time tm = Time.format tm "%Y%m%d %H:%M:%S"
-      ~zone:(Lazy.force Time.Zone.local)
+  let tws_of_time tm = Time_float_unix.format tm "%Y%m%d %H:%M:%S"
+      ~zone:(Lazy.force Time_float_unix.Zone.local)
 
   let unescape = unstage (String.Escaping.unescape ~escape_char:' ')
   let time_of_date d =
-    Time.(of_date_ofday d Ofday.start_of_day ~zone:(Lazy.force Zone.local))
+    Time_float_unix.(of_date_ofday d Ofday.start_of_day ~zone:(Lazy.force Zone.local))
 
   let time_of_tws s =
     let len = String.length s in
     if len = 8 then time_of_date (Date.of_string_iso8601_basic s ~pos:0)
-    else if len = 18 then Time.of_string (unescape s) else Time.of_string s
+    else if len = 18 then Time_float_unix.of_string (unescape s) else Time_float_unix.of_string s
 
   let time = create tws_of_time time_of_tws
 
@@ -68,12 +68,12 @@ module Val_type = struct
   let date = create tws_of_date date_of_tws
 
   let time_zone_of_string = function
-    | "CST" -> Time.Zone.find_exn "America/Chicago"
+    | "CST" -> Time_float_unix.Zone.find_exn "America/Chicago"
     (* NOTE: Futures traded in Chicago, like ES, have CST as time zone which is
        ambiguous.  Return the time zone of Chicago instead. *)
-    | s -> Time.Zone.of_string s
+    | s -> Time_float_unix.Zone.of_string s
 
-  let zone = create Time.Zone.to_string time_zone_of_string
+  let zone = create Time_float_unix.Zone.to_string time_zone_of_string
 end
 
 module Encoder = struct

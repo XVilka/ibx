@@ -21,10 +21,10 @@ module Tws_error : sig
 end
 
 module Server_time : sig
-  type t = Time.t [@@deriving sexp]
+  type t = Time_float_unix.t [@@deriving sexp]
   include Response_intf.S with type t := t
 
-  val create : time:Time.t -> t
+  val create : time:Time_float_unix.t -> t
 end
 
 (** {1 Market data} *)
@@ -307,7 +307,7 @@ module Contract_data : sig
     ; industry : string
     ; category : string
     ; subcategory : string
-    ; time_zone : Time.Zone.t option
+    ; time_zone : Time_float_unix.Zone.t option
     ; trading_hours : Trading_times.t list
     ; liquid_hours : Trading_times.t list
     } [@@deriving sexp, fields]
@@ -327,7 +327,7 @@ module Contract_data : sig
     -> industry:string
     -> category:string
     -> subcategory:string
-    -> time_zone:Time.Zone.t
+    -> time_zone:Time_float_unix.Zone.t
     -> trading_hours:Trading_times.t list
     -> liquid_hours:Trading_times.t list
     -> t
@@ -354,7 +354,7 @@ module Execution : sig
     { order_id : Order_id.t
     ; contract : Raw_contract.t
     ; exec_id : Execution_id.t
-    ; time : Time.t
+    ; time : Time_float_unix.t
     ; account_code : Account_code.t
     ; exchange : Exchange.t
     ; side : Side.t
@@ -373,7 +373,7 @@ module Execution : sig
     :  order_id:Order_id.t
     -> contract:[< Security_type.t ] Contract.t
     -> exec_id:Execution_id.t
-    -> time:Time.t
+    -> time:Time_float_unix.t
     -> account_code:Account_code.t
     -> exchange:Exchange.t
     -> side:Side.t
@@ -455,8 +455,8 @@ end
 
 module History : sig
   type t = private
-    { start : Time.t
-    ; stop : Time.t
+    { start : Time_float_unix.t
+    ; stop : Time_float_unix.t
     ; num_bars : int
     ; bars : Bar.t list
     } [@@deriving sexp, fields]
@@ -466,7 +466,7 @@ module History : sig
 
   module Data_frame : sig
     type t = private
-      { stamps : Time.t array
+      { stamps : Time_float_unix.t array
       ; op : float array
       ; hi : float array
       ; lo : float array
@@ -480,10 +480,10 @@ module History : sig
   val unpack_bars : t -> Data_frame.t
 
   (** [time_ohlc t] returns a time series of OHLC bars. *)
-  val time_ohlc : t -> (Time.t * (float * float * float * float)) list
+  val time_ohlc : t -> (Time_float_unix.t * (float * float * float * float)) list
 
   (** [time_vwap t] returns a VWAP time series. *)
-  val time_vwap : t -> (Time.t * float) list
+  val time_vwap : t -> (Time_float_unix.t * float) list
 end
 
 (** {1 Realtime bars} *)

@@ -259,8 +259,8 @@ type t =
     stop_trigger_method : Stop_trigger_method.t;
     outside_regular_trading_hours : bool;
     hidden : bool;
-    good_after_date_time : Time.t option;  (* Format: YYYYMMDD hh:mm:ss {time zone} *)
-    good_till_date_time : Time.t option;   (* Format: YYYYMMDD hh:mm:ss {time zone} *)
+    good_after_date_time : Time_float_unix.t option;  (* Format: YYYYMMDD hh:mm:ss {time zone} *)
+    good_till_date_time : Time_float_unix.t option;   (* Format: YYYYMMDD hh:mm:ss {time zone} *)
     override_percentage_constraints : bool;
     rule80A : Rule80A.t option;
     all_or_none : bool;
@@ -514,8 +514,8 @@ let ( = ) t1 t2 : bool =
     ~stop_trigger_method:(use Stop_trigger_method.equal)
     ~outside_regular_trading_hours:(use Bool.(=))
     ~hidden:(use Bool.(=))
-    ~good_after_date_time:(use (Option.equal Time.(=)))
-    ~good_till_date_time:(use (Option.equal Time.(=)))
+    ~good_after_date_time:(use (Option.equal Time_float_unix.(=)))
+    ~good_till_date_time:(use (Option.equal Time_float_unix.(=)))
     ~override_percentage_constraints:(use Bool.(=))
     ~rule80A:(use (Option.equal Rule80A.equal))
     ~all_or_none:(use Bool.(=))

@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 
 module Header : sig
   type 'a t =
@@ -22,7 +22,7 @@ module Ibx_error : sig
 end
 
 module Ibx_result : sig
-  type 'a t = ('a, Ibx_error.t) Core_kernel.Result.t [@@deriving sexp]
+  type 'a t = ('a, Ibx_error.t) Base.Result.t [@@deriving sexp]
 end
 
 module Response_data : sig
@@ -41,7 +41,7 @@ end
 module Server_header : sig
   type t =
     { server_version  : int
-    ; connection_time : Time.t
+    ; connection_time : Time_float_unix.t
     }
   [@@deriving sexp]
   include Decodable.S with type t := t

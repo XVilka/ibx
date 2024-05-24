@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 
 type t = private float [@@deriving sexp]
 include Floatable.S with type t := t

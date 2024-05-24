@@ -2,7 +2,7 @@ open Core
 
 (* A bar contained in [History] and [Realtime_bars] responses. *)
 type t = private
-  { stamp : Time.t
+  { stamp : Time_float_unix.t
     (* Timestamp of the bar. *)
   ; op : Price.t
     (* The opening price of the bar. *)
@@ -29,7 +29,7 @@ include Raw_bar_intf.S
 
 (** Creates a new bar from the given arguments. *)
 val create
-  :  stamp:Time.t
+  :  stamp:Time_float_unix.t
   -> op:Price.t
   -> hi:Price.t
   -> lo:Price.t
@@ -74,5 +74,5 @@ module Size : sig
   include Twsable.S with type t := t
 
   (** [to_span t] converts the bar size specification into a time span. *)
-  val to_span : t -> Time.Span.t
+  val to_span : t -> Time_float_unix.Span.t
 end

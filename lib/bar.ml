@@ -25,7 +25,7 @@ let combine t ~bar =
 let pp ppf t =
   Format.fprintf ppf
     "Bar<%s> op=%.2f hi=%.2f lo=%.2f cl=%.2f vo=%d wap=%.2f trades=%d"
-    (t.stamp |> Time.to_sec_string ~zone:(Lazy.force Time.Zone.local))
+    (t.stamp |> Time_float_unix.to_sec_string ~zone:(Lazy.force Time_float_unix.Zone.local))
     (t.op :> float) (t.hi :> float) (t.lo :> float) (t.cl :> float)
     (t.vo :> int) (t.wap :> float) (t.n_trades)
 
@@ -111,16 +111,16 @@ module Size = struct
   let val_type = Val_type.create tws_of_t t_of_tws
 
   let to_span = function
-    | `One_sec -> Time.Span.second
-    | `Five_sec -> Time.Span.of_sec 5.
-    | `Fifteen_sec -> Time.Span.of_sec 15.
-    | `Thirty_sec -> Time.Span.of_sec 30.
-    | `One_min -> Time.Span.minute
-    | `Two_min -> Time.Span.of_min 2.
-    | `Three_min -> Time.Span.of_min 3.
-    | `Five_min -> Time.Span.of_min 5.
-    | `Fifteen_min -> Time.Span.of_min 15.
-    | `Thirty_min -> Time.Span.of_min 30.
-    | `One_hour -> Time.Span.hour
-    | `One_day -> Time.Span.day
+    | `One_sec -> Time_float_unix.Span.second
+    | `Five_sec -> Time_float_unix.Span.of_sec 5.
+    | `Fifteen_sec -> Time_float_unix.Span.of_sec 15.
+    | `Thirty_sec -> Time_float_unix.Span.of_sec 30.
+    | `One_min -> Time_float_unix.Span.minute
+    | `Two_min -> Time_float_unix.Span.of_min 2.
+    | `Three_min -> Time_float_unix.Span.of_min 3.
+    | `Five_min -> Time_float_unix.Span.of_min 5.
+    | `Fifteen_min -> Time_float_unix.Span.of_min 15.
+    | `Thirty_min -> Time_float_unix.Span.of_min 30.
+    | `One_hour -> Time_float_unix.Span.hour
+    | `One_day -> Time_float_unix.Span.day
 end

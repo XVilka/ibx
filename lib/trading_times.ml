@@ -1,9 +1,9 @@
-open Core_kernel
+open Core
 open Tws_prot
 
 type t =
   { date  : Date.t
-  ; hours : Time.Ofday.t list
+  ; hours : Time_float_unix.Ofday.t list
   } [@@deriving sexp, eq]
 
 let create ~date ~hours = { date; hours }
@@ -13,12 +13,12 @@ let closed t = List.is_empty t.hours
 
 let start t ~zone =
   Option.map (List.hd t.hours) ~f:(fun ofday ->
-    Time.of_date_ofday t.date ofday ~zone)
+    Time_float_unix.of_date_ofday t.date ofday ~zone)
 ;;
 
 let stop t ~zone =
   Option.map (List.last t.hours) ~f:(fun ofday ->
-    Time.of_date_ofday t.date ofday ~zone)
+    Time_float_unix.of_date_ofday t.date ofday ~zone)
 ;;
 
 let start_exn t ~zone = Option.value_exn (start t ~zone)
@@ -29,7 +29,7 @@ let closed_exn l = String.equal (Option.value_exn (List.last l)) "CLOSED"
 let t_of_tws s =
   let ofday_of_string s =
     let x = Int.of_string s in
-    Time.Ofday.create ~hr:(x / 100) ~min:(x mod 100) ()
+    Time_float_unix.Ofday.create ~hr:(x / 100) ~min:(x mod 100) ()
   in
   let l = String.split_on_chars s ~on:[':';'-';','] in
   if List.length l = 2 && closed_exn l then
@@ -42,8 +42,8 @@ let t_of_tws s =
 let tws_of_t t =
   let ofday_to_string ofday =
     let mins =
-      Time.Ofday.to_span_since_start_of_day ofday
-      |> Time.Span.to_min
+      Time_float_unix.Ofday.to_span_since_start_of_day ofday
+      |> Time_float_unix.Span.to_min
       |> Float.to_int
     in
     String.concat

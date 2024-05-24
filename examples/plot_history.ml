@@ -38,14 +38,14 @@ let () =
          Tws.history_exn tws ~contract:stock ~duration
          >>| fun history ->
          let zone = Contract_data.time_zone data |> Option.value ~default:zone in
-         let start = Time.to_date (History.start history) ~zone in
-         let stop = Time.to_date (History.stop history) ~zone in
+         let start = Time_float_unix.to_date (History.start history) ~zone in
+         let stop = Time_float_unix.to_date (History.stop history) ~zone in
          (* Widen the date range to avoid Gnuplot plotting bars on the border. *)
          let start = Date.add_days start (-1) in
          let stop = Date.add_days stop 1 in
          let date_ohlc =
            History.time_ohlc history
-           |> List.map ~f:(Tuple2.map_fst ~f:(Time.to_date ~zone))
+           |> List.map ~f:(Tuple2.map_fst ~f:(Time_float_unix.to_date ~zone))
          in
          let gp = Gp.create () in
          Gp.set gp ~title:(Contract_data.long_name data) ~use_grid:true;

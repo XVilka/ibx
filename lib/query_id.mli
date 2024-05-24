@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 
 type t [@@deriving sexp]
 include Twsable.S with type t := t

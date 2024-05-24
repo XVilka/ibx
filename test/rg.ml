@@ -9,8 +9,8 @@ module Rg_common : sig
   val nng : int gen
   val sg : string gen
   val pfg : float gen
-  val tmg : Time.t gen
-  val tzg : Time.Zone.t gen
+  val tmg : Time_float_unix.t gen
+  val tzg : Time_float_unix.Zone.t gen
 
   val always : 'a -> 'a gen
   val og : 'a gen -> 'a option gen
@@ -63,14 +63,14 @@ end = struct
   let pfg () = Random.float 100. +. 20.
 
   let tmg () =
-    Time.to_span_since_epoch (Time.now ())
-    |> Time.Span.to_proportional_float
+    Time_float_unix.to_span_since_epoch (Time_float_unix.now ())
+    |> Time_float_unix.Span.to_proportional_float
     |> Float.modf
     |> Float.Parts.integral
     |> Unix.localtime
-    |> Time.of_tm ~zone:(Lazy.force Time.Zone.local)
+    |> Time_float_unix.of_tm ~zone:(Lazy.force Time_float_unix.Zone.local)
 
-  let tzg () = (Lazy.force Time.Zone.local)
+  let tzg () = (Lazy.force Time_float_unix.Zone.local)
 
   let always x () = x
 
@@ -1017,15 +1017,15 @@ end = struct
               (symbol_g ()))
         ] ()
     in
-    let zone = Lazy.force Time.Zone.local in
+    let zone = Lazy.force Time_float_unix.Zone.local in
     let active_times =
       Trading_times.create
         ~date:(Date.today ~zone)
         ~hours:[
-          Time.Ofday.create ~hr:17 ~min:0  ();
-          Time.Ofday.create ~hr:15 ~min:15 ();
-          Time.Ofday.create ~hr:15 ~min:30 ();
-          Time.Ofday.create ~hr:16 ~min:15 ();
+          Time_float_unix.Ofday.create ~hr:17 ~min:0  ();
+          Time_float_unix.Ofday.create ~hr:15 ~min:15 ();
+          Time_float_unix.Ofday.create ~hr:15 ~min:30 ();
+          Time_float_unix.Ofday.create ~hr:16 ~min:15 ();
         ]
     in
     let inactive_times =

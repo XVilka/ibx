@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 
 (* Futher information about the exchange listings can be found
    {{:http://www.interactivebrokers.com/en/index.php?f=exchanges} online}. *)

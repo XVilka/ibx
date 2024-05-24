@@ -104,7 +104,7 @@ module Executions : sig
     :  contract:[< Security_type.t] Contract.t
     -> client_id:Client_id.t
     -> account_code:Account_code.t
-    -> time:Time.t
+    -> time:Time_float_unix.t
     -> action:Order_action.t
     -> t
 end
@@ -167,7 +167,7 @@ module History : sig
   include Query_intf.S with type t := t
   val create
     :  contract:[< Security_type.t ] Contract.t
-    -> until:Time.t
+    -> until:Time_float_unix.t
     -> bar_size:Bar.Size.t
     -> duration:Bar.Duration.t
     -> use_rth:bool

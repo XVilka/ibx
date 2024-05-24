@@ -112,7 +112,7 @@ module Handshake = struct
       Monitor.protect (fun () ->
         with_tws_conn r ~f:(fun con ->
           let server_version = Int.to_string Ibx.Config.server_version in
-          let server_time = Time.to_string (Time.now ()) in
+          let server_time = Time_float_unix.to_string (Time_float_unix.now ()) in
           let account_code = "DU15133" in
           Writer.write w (server_version ^@ server_time ^@ "");
           Writer.write w ("15" ^@ "1" ^@ account_code ^@ "");
@@ -129,7 +129,7 @@ module Handshake = struct
                 ~actual:(Int.to_string version);
               assert_string_equal
                 ~expected:server_time
-                ~actual:(Time.to_string time);
+                ~actual:(Time_float_unix.to_string time);
               assert_string_equal
                 ~expected:account_code
                 ~actual:(Account_code.to_string name);

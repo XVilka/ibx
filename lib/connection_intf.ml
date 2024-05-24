@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 open Async
 open Response
 
@@ -34,7 +34,7 @@ module type S = sig
     type t =
       | Eof
       | Version_failure of int
-      | Server_header of [ `Version of int ] * Time.t * Account_code.t
+      | Server_header of [ `Version of int ] * Time_float_unix.t * Account_code.t
     [@@deriving sexp]
   end
 

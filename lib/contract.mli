@@ -1,4 +1,4 @@
-open Core_kernel
+open Core
 
 type 'a t constraint 'a = [< Security_type.t ] [@@deriving sexp]
 (** A contract belonging to a security type like stock, futures, option etc. *)
@@ -51,7 +51,7 @@ val sort_option_chain : [< `Option | `Fut_opt ] t list -> [> `Option | `Fut_opt 
 
 val days_to_expiry
   :  [< `Futures | `Option | `Fut_opt ] t
-  -> zone:Time.Zone.t
+  -> zone:Time_float_unix.Zone.t
   -> int
 (** Returns the number of days until a futures or option contract expires *)
 

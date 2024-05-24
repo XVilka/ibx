@@ -23,7 +23,7 @@ module Ibx_error = struct
 end
 
 module Ibx_result = struct
-  type 'a t = ('a, Ibx_error.t) Core_kernel.Result.t [@@deriving sexp]
+  type 'a t = ('a, Ibx_error.t) Base.Result.t [@@deriving sexp]
 end
 
 module Response_data = struct
@@ -52,7 +52,7 @@ end
 module Server_header = struct
   type t =
     { server_version  : int
-    ; connection_time : Time.t
+    ; connection_time : Time_float_unix.t
     }
   [@@deriving fields, sexp]
 

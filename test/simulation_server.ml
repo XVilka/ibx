@@ -110,7 +110,7 @@ module Protocol = struct
     end
 
     type t =
-      | Server_header of int * Time.t
+      | Server_header of int * Time_float_unix.t
       | Server_response of Response.t
     [@@deriving sexp]
 
@@ -258,7 +258,7 @@ module Message_generator = struct
     let module R = Ibx.Response in
     match clt_msg with
     | Client_message.Client_header (_client_version, _client_id) ->
-      [ E.Server_header (Ibx.Config.server_version, Time.now ())
+      [ E.Server_header (Ibx.Config.server_version, Time_float_unix.now ())
       ; E.Server_response {
           Response.
           tag      = V.Managed_accounts;

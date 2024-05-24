@@ -1,7 +1,7 @@
-open Core_kernel
+open Core
 open Tws_prot
 
-include Unique_id.Int63 (struct end)
+include Unique_id.Int63 ()
 
 let default = of_int_exn (-1)
 

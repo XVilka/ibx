@@ -60,10 +60,10 @@ val set_server_log_level
   -> unit
 
 (** [server_time t] returns the current time from the TWS server or an [Error]. *)
-val server_time : t -> Time.t Deferred.Or_error.t
+val server_time : t -> Time_float_unix.t Deferred.Or_error.t
 
 (** Same as [server_time], but raises an exception if an [Error] was returned. *)
-val server_time_exn : t -> Time.t Deferred.t
+val server_time_exn : t -> Time_float_unix.t Deferred.t
 
 (** [server_version t] returns the version of the TWS server upon successful
     connection of the TWS client [t], otherwise [None] is returned. *)
@@ -71,7 +71,7 @@ val server_version : t -> int option
 
 (** [connection_time t] returns the time the client [t] was connected to TWS or
     [None] when no connection was established. *)
-val connection_time : t -> Time.t option
+val connection_time : t -> Time_float_unix.t option
 
 (** [account_code t] returns the code of the Interactive Brokers account upon
     successful connection of the TWS client [t], otherwise [None] is returned. *)
@@ -200,14 +200,14 @@ val commissions : t -> Commission.t Pipe.Reader.t
 val executions : t -> Execution.t Pipe.Reader.t
 
 val filter_executions
-  :  ?time:Time.t
+  :  ?time:Time_float_unix.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> action:Order_action.t
   -> Execution.t Or_error.t Pipe.Reader.t Deferred.Or_error.t
 
 val filter_executions_exn
-  :  ?time:Time.t
+  :  ?time:Time_float_unix.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> action:Order_action.t
@@ -384,7 +384,7 @@ val history
     | `Implied_volatility
     | `Option_volume
   ]
-  -> ?until:Time.t
+  -> ?until:Time_float_unix.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> History.t Or_error.t Deferred.Or_error.t
@@ -413,7 +413,7 @@ val history_exn
     | `Implied_volatility
     | `Option_volume
   ]
-  -> ?until:Time.t
+  -> ?until:Time_float_unix.t
   -> t
   -> contract:[< Security_type.t ] Contract.t
   -> History.t Deferred.t
@@ -454,7 +454,7 @@ val cancel_realtime_bars : t -> Query_id.t -> unit
 
 module Trade : sig
   type t = private
-    { stamp : Time.t;
+    { stamp : Time_float_unix.t;
       price : Price.t;
       size  : Volume.t;
     } [@@deriving sexp, fields]
@@ -488,7 +488,7 @@ module Quote : sig
   end
 
   type t = private
-    { stamp : Time.t;
+    { stamp : Time_float_unix.t;
       ask_price : Price.t;
       bid_price : Price.t;
       ask_size : Volume.t;
@@ -568,7 +568,7 @@ val latest_trade_exn
 
 module Close : sig
   type t = private
-    { stamp : Time.t
+    { stamp : Time_float_unix.t
     ; price : Price.t
     } [@@deriving sexp, fields]
 end

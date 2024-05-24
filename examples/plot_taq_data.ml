@@ -53,7 +53,7 @@ let () =
     )
     (fun do_logging host port client_id quiet period currency zone symbol () ->
        verbose := not quiet;
-       if Time.Span.(period > minute) then
+       if Time_float_unix.Span.(period > minute) then
          return (Or_error.error_string "Maximum period is 1 minute")
        else plot_taq_data
            ~do_logging ~host ~port ~client_id ~period ~currency ~zone ~symbol
